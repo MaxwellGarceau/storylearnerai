@@ -9,6 +9,7 @@ A collection of tools used in this project
 
 ### Styling/Components
 - Shadcn/ui
+  - Add components with `npx shadcn@latest add [options] [components...]`
 - Tailwind/PostCSS
 - Radix UI
   - [Color scheme](https://www.radix-ui.com/blog/themes-3)
