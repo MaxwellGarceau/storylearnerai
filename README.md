@@ -1,24 +1,16 @@
-# Getting Started
+# Overview
+Story Learner AI is an application that allows the user to translate their favorite stories into a level suitable for their language level.
+
+More detailed information is available in the [docs](/docs/table-of-contents.md) folder
+
+## Getting Started
 `nvm use`
 `npm install`
 `npm run dev`
 
 Access the FE on `http://localhost:5173/`
 
-# Overview
-Story Learner AI is an application that allows the user to translate their favorite stories into a level suitable for their language level.
-
-## Architecture
-
-### Dev Tools
-- NPM
-
-### FE
-- React (vite react boilerplate)
-- TypeScript
-- Vitest
-
-# React + TypeScript + Vite
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -27,7 +19,7 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+### Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
