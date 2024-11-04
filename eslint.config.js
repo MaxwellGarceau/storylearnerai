@@ -23,6 +23,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+	  'indent': ['error', 2, { 'SwitchCase': 1 }], // Enforce 2 spaces, adjust as desired
     },
   },
 )
