@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 203 100% 96.1%;  /* Tailwind sky-50 */
+    --foreground: 203 89% 15%;     /* Tailwind sky-900 */
+    --card: 203 100% 96.1%;        /* Tailwind sky-50 */
+    --card-foreground: 203 89% 15%;/* Tailwind sky-900 */
+    --popover: 203 100% 96.1%;     /* Tailwind sky-50 */
+    --popover-foreground: 203 89% 15%; /* Tailwind sky-900 */
+    --primary: 203 100% 57.3%;     /* Tailwind sky-500 */
+    --primary-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --secondary: 203 100% 86%;     /* Tailwind sky-100 */
+    --secondary-foreground: 203 89% 15%; /* Tailwind sky-900 */
+    --muted: 203 100% 86%;         /* Tailwind sky-100 */
+    --muted-foreground: 203 90% 46.1%; /* Tailwind sky-700 */
+    --accent: 203 100% 86%;        /* Tailwind sky-100 */
+    --accent-foreground: 203 89% 15%; /* Tailwind sky-900 */
+    --destructive: 0 84.2% 60.2%;  /* Keeping red color as per original */
+    --destructive-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --border: 203 92% 85.2%;       /* Tailwind sky-200 */
+    --input: 203 92% 85.2%;        /* Tailwind sky-200 */
+    --ring: 203 100% 57.3%;        /* Tailwind sky-500 */
+    --chart-1: 203 100% 57.3%;     /* Tailwind sky-500 */
+    --chart-2: 203 100% 76.5%;     /* Tailwind sky-300 */
+    --chart-3: 203 100% 47.6%;     /* Tailwind sky-600 */
+    --chart-4: 203 100% 86%;       /* Tailwind sky-100 */
+    --chart-5: 203 100% 96.1%;     /* Tailwind sky-50 */
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 203 89% 15%;     /* Tailwind sky-900 */
+    --foreground: 203 100% 96.1%;  /* Tailwind sky-50 */
+    --card: 203 89% 15%;           /* Tailwind sky-900 */
+    --card-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --popover: 203 89% 15%;        /* Tailwind sky-900 */
+    --popover-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --primary: 203 100% 86%;       /* Tailwind sky-100 */
+    --primary-foreground: 203 89% 15%; /* Tailwind sky-900 */
+    --secondary: 203 89% 27.5%;    /* Tailwind sky-800 */
+    --secondary-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --muted: 203 89% 27.5%;        /* Tailwind sky-800 */
+    --muted-foreground: 203 80% 50.1%; /* Tailwind sky-600 */
+    --accent: 203 89% 27.5%;       /* Tailwind sky-800 */
+    --accent-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --destructive: 0 62.8% 30.6%;  /* Keeping red color as per original */
+    --destructive-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
+    --border: 203 89% 27.5%;       /* Tailwind sky-800 */
+    --input: 203 89% 27.5%;        /* Tailwind sky-800 */
+    --ring: 203 70% 43%;           /* Tailwind sky-600 */
+    --chart-1: 203 100% 57.3%;     /* Tailwind sky-500 */
+    --chart-2: 203 100% 76.5%;     /* Tailwind sky-300 */
+    --chart-3: 203 100% 47.6%;     /* Tailwind sky-600 */
+    --chart-4: 203 100% 86%;       /* Tailwind sky-100 */
+    --chart-5: 203 100% 96.1%;     /* Tailwind sky-50 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
