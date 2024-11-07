@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
 import { Button } from './ui/Button';
-import TextArea from './ui/TextArea'; // Assuming this is in the same directory or adjust path accordingly
+import TextArea from './ui/TextArea';
+import Label from './ui/Label'; // Adjust the import path if necessary
 
 const StoryUploadForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,29 +12,24 @@ const StoryUploadForm: React.FC = () => {
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prevFormData => (
-      {
-        ...prevFormData,
-        story: event.target.value
-      }
-    ));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      story: event.target.value,
+    }));
   };
 
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
-    setFormData(prevFormData => (
-      {
-        ...prevFormData,
-        [field]: value
-      }
-    ));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [field]: value,
+    }));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle form submission logic here
+    console.log(formData);
   };
-  
-  console.log(formData);
+
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white shadow-lg rounded-lg">
       <TextArea
@@ -47,11 +43,12 @@ const StoryUploadForm: React.FC = () => {
       />
 
       <div>
-        <label htmlFor="language" className="block text-sm font-medium text-gray-700">
-          Translation Language
-        </label>
+        <Label htmlFor="language">Translation Language</Label>
         <Select value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
-          <SelectTrigger aria-label="Select translation language" className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200">
+          <SelectTrigger
+            aria-label="Select translation language"
+            className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
+          >
             {formData.language}
           </SelectTrigger>
           <SelectContent>
@@ -61,11 +58,12 @@ const StoryUploadForm: React.FC = () => {
       </div>
 
       <div>
-        <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700">
-          Story Difficulty (CEFR)
-        </label>
+        <Label htmlFor="difficulty">Story Difficulty (CEFR)</Label>
         <Select value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
-          <SelectTrigger aria-label="Select difficulty level" className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200">
+          <SelectTrigger
+            aria-label="Select difficulty level"
+            className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
+          >
             {formData.difficulty}
           </SelectTrigger>
           <SelectContent>
