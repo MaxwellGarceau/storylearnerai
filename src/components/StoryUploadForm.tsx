@@ -27,13 +27,16 @@ const StoryUploadForm: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    // TODO: Handle form submission
     console.log(formData);
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white shadow-lg rounded-lg">
       <TextArea
-        id="story"
+        id="storyUpload-story"
+        name="storyUpload-story"
         value={formData.story}
         onChange={handleInputChange}
         placeholder="Enter your story here"
@@ -43,8 +46,8 @@ const StoryUploadForm: React.FC = () => {
       />
 
       <div>
-        <Label htmlFor="language">Translation Language</Label>
-        <Select value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
+        <Label htmlFor="storyUpload-language">Translation Language</Label>
+        <Select id="storyUpload-language" name="storyUpload-language" value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
           <SelectTrigger
             aria-label="Select translation language"
             className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
@@ -58,8 +61,8 @@ const StoryUploadForm: React.FC = () => {
       </div>
 
       <div>
-        <Label htmlFor="difficulty">Story Difficulty (CEFR)</Label>
-        <Select value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
+        <Label htmlFor="storyUpload-difficulty">Story Difficulty (CEFR)</Label>
+        <Select id="storyUpload-difficulty" name="storyUpload-difficulty" value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
           <SelectTrigger
             aria-label="Select difficulty level"
             className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
