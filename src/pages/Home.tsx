@@ -7,11 +7,8 @@ const Home: React.FC = () => {
   return (
     <Layout>
       <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-4">This is the layout page</h2>
+        <h2 className="text-2xl font-semibold mb-4">Story Learner AI</h2>
         <StoryUploadForm />
-        <p className="text-gray-700 dark:text-gray-300">
-          Layout using TypeScript and ShadCN (Tailwind/Radix UI).
-        </p>
       </div>
     </Layout>
   );
