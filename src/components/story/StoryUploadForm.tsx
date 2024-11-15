@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
-import { Button } from './ui/Button';
-import TextArea from './ui/TextArea';
-import Label from './ui/Label'; // Adjust the import path if necessary
+import { Button } from '../ui/Button';
+import TextArea from '../ui/TextArea';
+import Label from '../ui/Label'; // Adjust the import path if necessary
 
-const StoryUploadForm: React.FC = () => {
+interface StoryUploadFormProps {
+  onSubmitStory: (story: string) => void;
+}
+
+const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const [formData, setFormData] = useState({
     story: '',
     language: 'English',
@@ -27,9 +31,7 @@ const StoryUploadForm: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-
-    // TODO: Handle form submission
-    console.log(formData);
+    onSubmitStory(formData.story); // Call the prop function to pass the story to the parent
   };
 
   return (
