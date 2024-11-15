@@ -4,7 +4,7 @@ interface StoryProps {
   content: string;
 }
 
-const Story: React.FC<StoryProps> = ({ content }) => {
+const StoryRender: React.FC<StoryProps> = ({ content }) => {
   if (!content) {
     return null; // Don't render if no content is provided
   }
@@ -17,4 +17,4 @@ const Story: React.FC<StoryProps> = ({ content }) => {
   );
 };
 
-export default Story;
+export default StoryRender;
