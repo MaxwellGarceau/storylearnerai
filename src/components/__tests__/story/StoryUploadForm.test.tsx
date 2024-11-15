@@ -35,25 +35,30 @@ describe('StoryUploadForm', () => {
     expect(onSubmitStoryMock).toHaveBeenCalledTimes(1);
   });
 
-  it('handles select changes for language and difficulty', () => {
+  it('handles select changes for language', () => {
     render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-
+  
     const languageSelectTrigger = screen.getByLabelText('Select translation language');
     fireEvent.click(languageSelectTrigger);
-
+  
     // More specific query to select the option
     const languageOption = screen.getByRole('option', { name: 'English' });
     fireEvent.click(languageOption);
-
+  
     expect(screen.getByLabelText('Select translation language')).toHaveTextContent('English');
-
+  });
+  
+  it('handles select changes for difficulty', () => {
+    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+  
     const difficultySelectTrigger = screen.getByLabelText('Select difficulty level');
     fireEvent.click(difficultySelectTrigger);
-
+  
     // More specific query to select the option
     const difficultyOption = screen.getByRole('option', { name: 'B1' });
     fireEvent.click(difficultyOption);
-
+  
     expect(screen.getByLabelText('Select difficulty level')).toHaveTextContent('B1');
   });
+  
 });
