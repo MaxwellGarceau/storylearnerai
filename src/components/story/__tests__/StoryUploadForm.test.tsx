@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StoryUploadForm from '../../story/StoryUploadForm';
+import StoryUploadForm from '../StoryUploadForm';
 import { vi } from 'vitest';
 
 describe('StoryUploadForm', () => {

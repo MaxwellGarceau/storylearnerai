@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect } from 'vitest';
-import StoryContainer from '../../story/StoryContainer';
+import StoryContainer from '../StoryContainer';
 
 describe('StoryContainer Component', () => {
   it('renders StoryRender when a story is submitted', () => {

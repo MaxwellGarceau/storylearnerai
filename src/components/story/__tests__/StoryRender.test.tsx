@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect } from 'vitest';
-import StoryRender from '../../story/StoryRender';
+import StoryRender from '../StoryRender';
 
 describe('StoryRender Component', () => {
   it('renders the component when content is provided', () => {
