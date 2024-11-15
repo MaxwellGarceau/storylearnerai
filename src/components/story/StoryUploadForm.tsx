@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
-import { Button } from './ui/Button';
-import TextArea from './ui/TextArea';
-import Label from './ui/Label'; // Adjust the import path if necessary
+import { Button } from '../ui/Button';
+import TextArea from '../ui/TextArea';
+import Label from '../ui/Label'; // Adjust the import path if necessary
 
 const StoryUploadForm: React.FC = () => {
   const [formData, setFormData] = useState({

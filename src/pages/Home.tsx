@@ -1,7 +1,7 @@
 // pages/Home.tsx
 import React from 'react';
 import Layout from '../components/Layout';
-import StoryUploadForm from '../components/StoryUploadForm';
+import StoryUploadForm from '../components/story/StoryUploadForm';
 
 const Home: React.FC = () => {
   return (
