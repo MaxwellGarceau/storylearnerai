@@ -21,7 +21,7 @@ const StoryUploadForm: React.FC = () => {
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [field]: value,
+      [field]: value || prevFormData[field], // Fixes bug where value was ''
     }));
   };
 
@@ -47,8 +47,9 @@ const StoryUploadForm: React.FC = () => {
 
       <div>
         <Label htmlFor="storyUpload-language">Translation Language</Label>
-        <Select id="storyUpload-language" name="storyUpload-language" value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
+        <Select name="storyUpload-language" value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
           <SelectTrigger
+            id="storyUpload-language"
             aria-label="Select translation language"
             className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
           >
@@ -62,8 +63,9 @@ const StoryUploadForm: React.FC = () => {
 
       <div>
         <Label htmlFor="storyUpload-difficulty">Story Difficulty (CEFR)</Label>
-        <Select id="storyUpload-difficulty" name="storyUpload-difficulty" value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
+        <Select name="storyUpload-difficulty" value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
           <SelectTrigger
+            id="storyUpload-difficulty"
             aria-label="Select difficulty level"
             className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
           >
