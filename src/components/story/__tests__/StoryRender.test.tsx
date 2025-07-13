@@ -84,12 +84,12 @@ describe('StoryRender Component', () => {
 
     // Check if the whitespace-pre-wrap class is applied to preserve formatting
     // Use a more flexible text matcher for multiline content
-    const originalTextElement = screen.getByText((content, element) => {
+    const originalTextElement = screen.getByText((_, element) => {
       return element?.textContent === 'Primera línea.\n\nSegunda línea.';
     });
     expect(originalTextElement).toHaveClass('whitespace-pre-wrap');
 
-    const translatedTextElement = screen.getByText((content, element) => {
+    const translatedTextElement = screen.getByText((_, element) => {
       return element?.textContent === 'First line.\n\nSecond line.';
     });
     expect(translatedTextElement).toHaveClass('whitespace-pre-wrap');
