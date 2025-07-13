@@ -10,6 +10,9 @@ jobs:
     name: Test & Lint
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        node-version: [18, 20]
     
     steps:
       - name: Checkout code
@@ -18,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
           
       - name: Install dependencies
@@ -36,10 +39,12 @@ jobs:
       - name: Run tests
         run: npm run test:once
         
-      - name: Run tests with coverage
+      - name: Run tests with coverage (Node 20 only)
+        if: matrix.node-version == '20'
         run: npm run test:coverage
         
       - name: Upload coverage reports
+        if: matrix.node-version == '20'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage/lcov.info
