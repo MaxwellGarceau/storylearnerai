@@ -7,16 +7,12 @@ module.exports = {
     upload: {
       target: 'temporary-public-storage',
     },
-    server: {
-      command: 'npx serve -s dist -p 8080',
-      port: 8080,
-      timeout: 30000,
-    },
+
     collect: {
       url: ['http://localhost:8080'],
       numberOfRuns: 3,
       settings: {
-        chromeFlags: '--no-sandbox --disable-dev-shm-usage',
+        chromeFlags: '--no-sandbox --disable-dev-shm-usage --disable-gpu --disable-dev-shm-usage',
         preset: 'desktop',
         throttling: {
           rttMs: 40,
