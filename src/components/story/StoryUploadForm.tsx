@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
 import { Button } from '../ui/Button';
 import TextArea from '../ui/TextArea';
-import Label from '../ui/Label'; // Adjust the import path if necessary
+import Label from '../ui/Label';
 
 interface StoryUploadFormProps {
-  onSubmitStory: (story: string) => void;
+  onSubmitStory: (storyData: { story: string; language: string; difficulty: string }) => void;
 }
 
 const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const [formData, setFormData] = useState({
     story: '',
-    language: 'English',
+    language: 'English', // Target language (always English for now)
     difficulty: 'A1',
   });
 
@@ -25,34 +25,43 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [field]: value || prevFormData[field], // Fixes bug where value was ''
+      [field]: value || prevFormData[field],
     }));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmitStory(formData.story); // Call the prop function to pass the story to the parent
+    onSubmitStory(formData); // Pass the complete form data
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white shadow-lg rounded-lg">
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-sm text-blue-800">
+          <strong>Translation:</strong> Spanish → English
+        </p>
+        <p className="text-xs text-blue-600 mt-1">
+          Enter your Spanish story below, and it will be translated to English at your selected difficulty level.
+        </p>
+      </div>
+
       <TextArea
         id="storyUpload-story"
         name="storyUpload-story"
         value={formData.story}
         onChange={handleInputChange}
-        placeholder="Enter your story here"
+        placeholder="Ingresa tu historia en español aquí... (Enter your Spanish story here...)"
         required
-        label="Story"
-        helperText="Write or paste the story text you wish to translate."
+        label="Spanish Story"
+        helperText="Write or paste the Spanish story text you wish to translate to English."
       />
 
       <div>
-        <Label htmlFor="storyUpload-language">Translation Language</Label>
+        <Label htmlFor="storyUpload-language">Target Language</Label>
         <Select name="storyUpload-language" value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
           <SelectTrigger
             id="storyUpload-language"
-            aria-label="Select translation language"
+            aria-label="Select target language"
             className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
           >
             {formData.language}
@@ -61,10 +70,13 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             <SelectItem value="English">English</SelectItem>
           </SelectContent>
         </Select>
+        <p className="text-xs text-gray-500 mt-1">
+          Currently only English translation is supported.
+        </p>
       </div>
 
       <div>
-        <Label htmlFor="storyUpload-difficulty">Story Difficulty (CEFR)</Label>
+        <Label htmlFor="storyUpload-difficulty">Target Difficulty (CEFR)</Label>
         <Select name="storyUpload-difficulty" value={formData.difficulty} onValueChange={(value) => handleSelectChange('difficulty', value)}>
           <SelectTrigger
             id="storyUpload-difficulty"
@@ -74,16 +86,19 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             {formData.difficulty}
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="A1">A1</SelectItem>
-            <SelectItem value="A2">A2</SelectItem>
-            <SelectItem value="B1">B1</SelectItem>
-            <SelectItem value="B2">B2</SelectItem>
+            <SelectItem value="A1">A1 (Beginner)</SelectItem>
+            <SelectItem value="A2">A2 (Elementary)</SelectItem>
+            <SelectItem value="B1">B1 (Intermediate)</SelectItem>
+            <SelectItem value="B2">B2 (Upper Intermediate)</SelectItem>
           </SelectContent>
         </Select>
+        <p className="text-xs text-gray-500 mt-1">
+          The story will be adapted to this English proficiency level.
+        </p>
       </div>
 
       <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-300">
-        Submit
+        Translate Story
       </Button>
     </form>
   );
