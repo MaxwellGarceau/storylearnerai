@@ -2,14 +2,14 @@ name: CI Pipeline
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [labeled]
   workflow_dispatch:
 
 jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
         node-version: [18, 20]
@@ -56,7 +56,7 @@ jobs:
     name: Build & Bundle Analysis
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Checkout code
@@ -94,7 +94,7 @@ jobs:
     name: Lighthouse CI
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Checkout code
@@ -134,7 +134,7 @@ jobs:
     name: Performance Budget Check
     runs-on: ubuntu-latest
     needs: lighthouse
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Download Lighthouse results
