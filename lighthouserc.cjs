@@ -29,7 +29,7 @@ module.exports = {
         'categories:performance': ['error', { minScore: 0.8 }],
         'categories:accessibility': ['error', { minScore: 0.95 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['off'], // Skipped for early development
+        'categories:seo': ['error', { minScore: 0.9 }], // Re-enabled after fixing SEO issues
         'categories:pwa': ['off'],
         
         // Core Web Vitals

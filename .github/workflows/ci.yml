@@ -209,18 +209,19 @@ jobs:
           PERF_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.performance.score * 100' | head -1)
           ACCESSIBILITY_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.accessibility.score * 100' | head -1)
           BEST_PRACTICES_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories."best-practices".score * 100' | head -1)
+          SEO_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.seo.score * 100' | head -1)
           
           echo "Performance: ${PERF_SCORE}%"
           echo "Accessibility: ${ACCESSIBILITY_SCORE}%"
           echo "Best Practices: ${BEST_PRACTICES_SCORE}%"
-          echo "SEO: Disabled for early development"
+          echo "SEO: ${SEO_SCORE}%"
           echo ""
           
           # Set performance budgets
           PERF_BUDGET=80
           ACCESSIBILITY_BUDGET=95
           BEST_PRACTICES_BUDGET=90
-          # SEO_BUDGET disabled for early development
+          SEO_BUDGET=90
           
           # Check budgets
           if (( $(echo "$PERF_SCORE < $PERF_BUDGET" | bc -l) )); then
@@ -238,6 +239,9 @@ jobs:
             exit 1
           fi
           
-          # SEO budget check disabled for early development
+          if (( $(echo "$SEO_SCORE < $SEO_BUDGET" | bc -l) )); then
+            echo "❌ SEO score ($SEO_SCORE%) is below budget ($SEO_BUDGET%)"
+            exit 1
+          fi
           
           echo "✅ All performance budgets met!" 
