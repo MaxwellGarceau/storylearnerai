@@ -99,10 +99,13 @@ jobs:
     steps:
       - name: Debug job conditions
         run: |
+          echo "=== Job Condition Debug ==="
           echo "Event name: ${{ github.event_name }}"
           echo "PR labels: ${{ toJson(github.event.pull_request.labels.*.name) }}"
           echo "Contains run-ci: ${{ contains(github.event.pull_request.labels.*.name, 'run-ci') }}"
           echo "Is workflow_dispatch: ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "Job should run: ${{ contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch' }}"
+          echo "========================="
           
       - name: Checkout code
         uses: actions/checkout@v4
@@ -147,7 +150,29 @@ jobs:
           curl -v http://localhost:8080/
           
       - name: Run Lighthouse CI
-        run: lhci autorun
+        run: |
+          echo "=== Running Lighthouse CI ==="
+          echo "Current working directory: $(pwd)"
+          echo "Lighthouse CI version: $(lhci --version)"
+          echo "Starting lighthouse CI..."
+          
+          # Run lighthouse CI and capture exit code
+          lhci autorun
+          LHCI_EXIT_CODE=$?
+          
+          echo "Lighthouse CI finished with exit code: $LHCI_EXIT_CODE"
+          
+          # Check if .lighthouseci directory was created
+          if [ -d ".lighthouseci/" ]; then
+            echo "✅ Lighthouse CI created .lighthouseci/ directory"
+            echo "Contents:"
+            ls -la .lighthouseci/
+          else
+            echo "❌ Lighthouse CI did not create .lighthouseci/ directory"
+          fi
+          
+          # Exit with the original lighthouse CI exit code
+          exit $LHCI_EXIT_CODE
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           
@@ -161,17 +186,36 @@ jobs:
       - name: Verify Lighthouse results exist
         if: always()
         run: |
+          echo "=== Debugging Lighthouse Results ==="
+          echo "Current working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo ""
           echo "Checking for Lighthouse results..."
           ls -la .lighthouseci/ || echo "No .lighthouseci directory found"
+          
           if [ -d ".lighthouseci/" ]; then
+            echo "✅ .lighthouseci/ directory exists!"
             echo "Contents:"
             ls -la .lighthouseci/
             echo "Found $(ls -1 .lighthouseci/ | wc -l) files in .lighthouseci/"
           else
+            echo "❌ .lighthouseci/ directory not found"
             echo "Creating empty .lighthouseci directory for artifact upload"
             mkdir -p .lighthouseci/
             echo "Lighthouse CI did not run successfully - $(date)" > .lighthouseci/error.txt
             echo "Error details: Previous lighthouse step may have failed" >> .lighthouseci/error.txt
+            echo "GitHub Actions Exit Code: $?" >> .lighthouseci/error.txt
+            echo "Working Directory: $(pwd)" >> .lighthouseci/error.txt
+            
+            # Verify the directory was created
+            if [ -d ".lighthouseci/" ]; then
+              echo "✅ Successfully created .lighthouseci/ directory"
+              ls -la .lighthouseci/
+            else
+              echo "❌ Failed to create .lighthouseci/ directory"
+              exit 1
+            fi
           fi
           
       - name: Upload Lighthouse results
