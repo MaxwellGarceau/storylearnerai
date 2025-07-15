@@ -13,7 +13,7 @@ Access the FE on `http://localhost:5173/`
 ## CI/CD Pipeline
 
 ### Overview
-This project uses a comprehensive GitHub Actions CI/CD pipeline with **25+ automated tests** including security audits, performance monitoring, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
+This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **25+ automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
 
 ### 🏷️ Triggering the Pipeline
 
@@ -32,34 +32,38 @@ This project uses a comprehensive GitHub Actions CI/CD pipeline with **25+ autom
 
 #### **Method 2: Manual Trigger**
 1. Go to **Actions tab** in GitHub
-2. Select **"CI Pipeline"** workflow
+2. Select **"CI/CD"** workflow
 3. Click **"Run workflow"** button
 4. Choose branch and click **"Run workflow"**
 
 ### 🧪 What the Pipeline Tests
 
 #### **Job 1: Test & Lint (Node 18 & 20)**
-- ✅ **Security audit** with `npm audit`
+- ✅ **Security audit** with `npm audit` (high severity level)
 - ✅ **TypeScript type checking** with `tsc --noEmit`
 - ✅ **ESLint code quality** checks
 - ✅ **Unit & component tests** with Vitest
 - ✅ **Test coverage** reporting to Codecov
 
 #### **Job 2: Build & Bundle Analysis**
-- ✅ **Production build** with Vite
+- ✅ **Production build** with Vite v5.4.19 (Node.js 20.11.1 compatible)
 - ✅ **Bundle size analysis** with detailed reporting
 - ✅ **TypeScript compilation** validation
+- ✅ **Build artifacts** uploaded for deployment
 
-#### **Job 3: Lighthouse Performance Testing**
+#### **Job 3: Lighthouse Performance Audit**
 - ✅ **Core Web Vitals** monitoring (LCP, CLS, FCP, TBT)
-- ✅ **Resource budgets** (JS < 500KB, CSS < 60KB, Images < 200KB)
+- ✅ **SEO validation** (meta description, robots.txt, crawlability)
 - ✅ **Performance best practices** validation
+- ✅ **Accessibility audits** with ARIA compliance
+- ✅ **Lighthouse reports** uploaded as artifacts
 
-#### **Job 4: Performance Budget Validation**
+#### **Job 4: Performance Budget Validation (Fail-Fast)**
 - ✅ **Performance score** ≥ 80%
 - ✅ **Accessibility score** ≥ 95%
 - ✅ **Best Practices score** ≥ 90%
 - ✅ **SEO score** ≥ 90%
+- ⚠️ **Pipeline fails immediately** if any budget is not met
 
 ### 📊 Reading Results
 
@@ -113,16 +117,31 @@ npm run build              # Production build
 ### 🚨 Troubleshooting
 
 #### **Common Issues**
-- **Security audit failures** → Run `npm audit fix`
+- **Security audit failures** → Run `npm audit fix` (high severity only)
 - **TypeScript errors** → Check `tsc --noEmit` output
 - **Test failures** → Run `npm run test:once` locally
 - **Performance budget violations** → Optimize bundle size or adjust budgets in `lighthouserc.js`
+- **SEO audit failures** → Check meta description in `index.html` and `robots.txt` in `public/`
+- **Node.js compatibility** → Ensure Node.js 20.11.1+ (Vite v5.4.19 compatible)
+- **Development server crashes** → Verify Node.js version and run `npm ci`
+
+#### **SEO Requirements**
+- ✅ **Meta description** present in `index.html`
+- ✅ **Robots.txt** accessible at `/robots.txt`
+- ✅ **Crawlable content** (no blocking CSS/JS)
+- ✅ **Valid HTML structure** with proper headings
+
+#### **Node.js Compatibility**
+- **Supported**: Node.js 20.11.1+ (current project version)
+- **Vite version**: v5.4.19 (compatible with Node.js 20.11.1)
+- **Note**: Vite v7+ requires Node.js ^20.19.0 or >=22.12.0
 
 #### **Getting Help**
 - Check **Actions tab** for detailed logs
-- Review **performance reports** in artifacts
+- Review **lighthouse reports** in artifacts (7-day retention)
 - Compare **bundle analysis** output for size changes
 - Verify **Node compatibility** across both versions tested
+- Download **SEO audit results** from lighthouse artifacts
 
 ## CSS Architecture & Strategy
 
