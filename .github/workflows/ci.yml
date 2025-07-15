@@ -218,21 +218,35 @@ jobs:
             fi
           fi
           
-      - name: Pre-upload verification
+      - name: Prepare artifacts for upload
         if: always()
         run: |
-          echo "=== Pre-upload verification ==="
+          echo "=== Preparing artifacts for upload ==="
           echo "Working directory: $(pwd)"
           echo "Full path: $(realpath .)"
-          echo "Files to upload:"
+          
+          # Create a simple artifacts directory
+          mkdir -p artifacts
+          
+          # Copy lighthouse files if they exist
           if [ -d ".lighthouseci" ]; then
-            echo "Directory exists at: $(realpath .lighthouseci)"
+            echo "✅ Found .lighthouseci directory"
+            echo "Contents:"
             find .lighthouseci -type f -exec ls -la {} \;
+            
+            # Copy all files to artifacts directory
+            cp -r .lighthouseci/* artifacts/ 2>/dev/null || echo "No files to copy"
+            
+            echo "Artifacts directory contents:"
+            ls -la artifacts/
           else
-            echo "No .lighthouseci directory found"
+            echo "❌ No .lighthouseci directory found"
+            # Create a placeholder file so artifact upload doesn't fail
+            echo "Lighthouse CI did not run - $(date)" > artifacts/lighthouse-error.txt
           fi
-          echo "Directory structure:"
-          ls -la
+          
+          echo "Final artifacts directory:"
+          find artifacts -type f -exec ls -la {} \;
           echo "========================"
           
       - name: Upload Lighthouse results
@@ -240,8 +254,7 @@ jobs:
         if: always()
         with:
           name: lighthouse-results
-          path: |
-            .lighthouseci
+          path: artifacts/
           retention-days: 7
 
   performance-budget:
@@ -265,11 +278,17 @@ jobs:
           echo "Working directory: $(pwd)"
           echo "Directory contents:"
           ls -la
-          if [ -d ".lighthouseci" ]; then
-            echo "Contents of .lighthouseci/:"
-            ls -la .lighthouseci/
+          
+          # Check if lighthouse results were downloaded
+          if [ -f "lighthouse-error.txt" ]; then
+            echo "⚠️  Lighthouse error file found:"
+            cat lighthouse-error.txt
+          elif [ -f "assertion-results.json" ]; then
+            echo "✅ Lighthouse results found"
+            echo "Available lighthouse files:"
+            ls -la *.json *.html 2>/dev/null || echo "No lighthouse files found"
           else
-            echo "No .lighthouseci directory found after download"
+            echo "❌ No lighthouse results found after download"
           fi
           echo "========================"
           
@@ -278,32 +297,35 @@ jobs:
           echo "🚀 Performance Budget Check"
           echo "==========================="
           
-          # Check if lighthouse results directory exists
-          if [ ! -d ".lighthouseci/" ]; then
-            echo "⚠️  No Lighthouse results found - artifact may not have been uploaded"
+          # Check if lighthouse error file exists
+          if [ -f "lighthouse-error.txt" ]; then
+            echo "⚠️  Lighthouse CI did not run successfully"
+            cat lighthouse-error.txt
             echo "Skipping performance budget check"
             exit 0
           fi
           
           # Check if lighthouse results exist
-          if [ -f .lighthouseci/error.txt ]; then
-            echo "⚠️  Lighthouse CI did not run successfully"
+          if [ ! -f "assertion-results.json" ]; then
+            echo "⚠️  No Lighthouse results found - assertion-results.json missing"
+            echo "Available files:"
+            ls -la
             echo "Skipping performance budget check"
             exit 0
           fi
           
           # Check if JSON results exist
-          if ! ls .lighthouseci/lhr-*.json 1> /dev/null 2>&1; then
+          if ! ls lhr-*.json 1> /dev/null 2>&1; then
             echo "⚠️  No Lighthouse JSON results found"
             echo "Skipping performance budget check"
             exit 0
           fi
           
           # Extract performance scores from latest run
-          PERF_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.performance.score * 100' | head -1)
-          ACCESSIBILITY_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.accessibility.score * 100' | head -1)
-          BEST_PRACTICES_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories."best-practices".score * 100' | head -1)
-          SEO_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.seo.score * 100' | head -1)
+          PERF_SCORE=$(cat lhr-*.json | jq -r '.categories.performance.score * 100' | head -1)
+          ACCESSIBILITY_SCORE=$(cat lhr-*.json | jq -r '.categories.accessibility.score * 100' | head -1)
+          BEST_PRACTICES_SCORE=$(cat lhr-*.json | jq -r '.categories."best-practices".score * 100' | head -1)
+          SEO_SCORE=$(cat lhr-*.json | jq -r '.categories.seo.score * 100' | head -1)
           
           echo "Performance: ${PERF_SCORE}%"
           echo "Accessibility: ${ACCESSIBILITY_SCORE}%"
