@@ -169,7 +169,7 @@ jobs:
     name: 📊 Performance Budget Check
     runs-on: ubuntu-latest
     needs: lighthouse
-    if: (contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch') && always()
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Download Lighthouse results
@@ -177,7 +177,6 @@ jobs:
         with:
           name: lighthouse-results
           path: ./
-        continue-on-error: true
           
       - name: Check Performance Budget
         run: |
@@ -186,24 +185,24 @@ jobs:
           
           # Check if lighthouse error file exists
           if [ -f "lighthouse-error.txt" ]; then
-            echo "⚠️  Lighthouse CI did not run successfully"
+            echo "❌ Lighthouse CI did not run successfully"
             cat lighthouse-error.txt
-            echo "Skipping performance budget check"
-            exit 0
+            echo "Failing pipeline due to missing lighthouse results"
+            exit 1
           fi
           
           # Check if lighthouse results exist
           if [ ! -f "assertion-results.json" ]; then
-            echo "⚠️  No Lighthouse results found - assertion-results.json missing"
-            echo "Skipping performance budget check"
-            exit 0
+            echo "❌ No Lighthouse results found - assertion-results.json missing"
+            echo "Failing pipeline due to missing lighthouse results"
+            exit 1
           fi
           
           # Check if JSON results exist
           if ! ls lhr-*.json 1> /dev/null 2>&1; then
-            echo "⚠️  No Lighthouse JSON results found"
-            echo "Skipping performance budget check"
-            exit 0
+            echo "❌ No Lighthouse JSON results found"
+            echo "Failing pipeline due to missing lighthouse results"
+            exit 1
           fi
           
           # Extract performance scores from latest run
