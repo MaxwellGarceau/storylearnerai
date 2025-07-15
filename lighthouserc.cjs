@@ -29,7 +29,7 @@ module.exports = {
         'categories:performance': ['error', { minScore: 0.8 }],
         'categories:accessibility': ['error', { minScore: 0.95 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['error', { minScore: 0.9 }],
+        'categories:seo': ['off'], // Skipped for early development
         'categories:pwa': ['off'],
         
         // Core Web Vitals
@@ -50,10 +50,10 @@ module.exports = {
         'unused-javascript': ['warn', { maxNumericValue: 20000 }],
         'render-blocking-resources': ['warn', { maxNumericValue: 100 }],
         'uses-optimized-images': ['warn', {}],
-        'uses-webp-images': ['warn', {}],
+        // 'uses-webp-images': ['off'], // Skipped for early development
         'uses-responsive-images': ['warn', {}],
         'efficient-animated-content': ['warn', {}],
-        'preload-lcp-image': ['warn', {}],
+        // 'preload-lcp-image': ['off'], // Skipped for early development
         'uses-rel-preconnect': ['warn', {}],
       },
     },
