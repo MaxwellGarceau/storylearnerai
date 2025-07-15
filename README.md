@@ -10,6 +10,139 @@ More detailed information is available in the [docs](/docs/table-of-contents.md)
 
 Access the FE on `http://localhost:5173/`
 
+## CI/CD Pipeline
+
+### Overview
+This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **25+ automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
+
+### 🏷️ Triggering the Pipeline
+
+#### **Method 1: Label-Based (Recommended)**
+1. **Create or update a Pull Request**
+2. **Apply the `run-ci` label** to the PR:
+   ```bash
+   # Using GitHub CLI
+   gh pr edit [PR-NUMBER] --add-label "run-ci"
+   
+   # Or via GitHub web interface:
+   # Go to PR → Labels → Add "run-ci" label
+   ```
+3. **Monitor execution** in the Actions tab
+4. **Remove label** when done to stop future CI runs and conserve minutes
+
+#### **Method 2: Manual Trigger**
+1. Go to **Actions tab** in GitHub
+2. Select **"CI/CD"** workflow
+3. Click **"Run workflow"** button
+4. Choose branch and click **"Run workflow"**
+
+### 🧪 What the Pipeline Tests
+
+#### **Job 1: Test & Lint (Node 18 & 20)**
+- ✅ **Security audit** with `npm audit` (high severity level)
+- ✅ **TypeScript type checking** with `tsc --noEmit`
+- ✅ **ESLint code quality** checks
+- ✅ **Unit & component tests** with Vitest
+- ✅ **Test coverage** reporting to Codecov
+
+#### **Job 2: Build & Bundle Analysis**
+- ✅ **Production build** with Vite v5.4.19 (Node.js 20.11.1 compatible)
+- ✅ **Bundle size analysis** with detailed reporting
+- ✅ **TypeScript compilation** validation
+- ✅ **Build artifacts** uploaded for deployment
+
+#### **Job 3: Lighthouse Performance Audit**
+- ✅ **Core Web Vitals** monitoring (LCP, CLS, FCP, TBT)
+- ✅ **SEO validation** (meta description, robots.txt, crawlability)
+- ✅ **Performance best practices** validation
+- ✅ **Accessibility audits** with ARIA compliance
+- ✅ **Lighthouse reports** uploaded as artifacts
+
+#### **Job 4: Performance Budget Validation (Fail-Fast)**
+- ✅ **Performance score** ≥ 80%
+- ✅ **Accessibility score** ≥ 95%
+- ✅ **Best Practices score** ≥ 90%
+- ✅ **SEO score** ≥ 90%
+- ⚠️ **Pipeline fails immediately** if any budget is not met
+
+### 📊 Reading Results
+
+#### **Success Indicators**
+- ✅ All jobs show green checkmarks
+- ✅ Performance budgets are met
+- ✅ No security vulnerabilities found
+- ✅ Tests pass on both Node 18 & 20
+
+#### **Downloading Reports**
+1. Go to **Actions tab** → Select workflow run
+2. Scroll to **Artifacts** section
+3. Download:
+   - **lighthouse-results** - Performance reports (7-day retention)
+   - **build-files** - Production build artifacts (1-day retention)
+
+### 💰 Cost Optimization
+
+#### **Why Label-Based?**
+- **70-80% cost reduction** - Only runs when explicitly triggered
+- **Selective execution** - Apply label when ready for comprehensive testing
+- **Free tier friendly** - Conserves GitHub Actions minutes
+
+#### **Best Practices**
+- ✅ Apply `run-ci` label before merging
+- ✅ Remove label after successful run
+- ✅ Use draft PRs for early development
+- ✅ Test locally first with `npm run test:once` and `npm run build`
+
+### 🛠️ Local Testing (Before CI)
+
+Run these commands locally to catch issues early:
+
+```bash
+# Security & dependencies
+npm audit                    # Check for vulnerabilities
+npm ci                      # Clean install
+
+# Code quality
+npx tsc --noEmit           # TypeScript type checking
+npm run lint               # ESLint checks
+
+# Testing
+npm run test:once          # Unit & component tests
+npm run test:coverage      # Tests with coverage
+
+# Build verification
+npm run build              # Production build
+```
+
+### 🚨 Troubleshooting
+
+#### **Common Issues**
+- **Security audit failures** → Run `npm audit fix` (high severity only)
+- **TypeScript errors** → Check `tsc --noEmit` output
+- **Test failures** → Run `npm run test:once` locally
+- **Performance budget violations** → Optimize bundle size or adjust budgets in `lighthouserc.js`
+- **SEO audit failures** → Check meta description in `index.html` and `robots.txt` in `public/`
+- **Node.js compatibility** → Ensure Node.js 20.11.1+ (Vite v5.4.19 compatible)
+- **Development server crashes** → Verify Node.js version and run `npm ci`
+
+#### **SEO Requirements**
+- ✅ **Meta description** present in `index.html`
+- ✅ **Robots.txt** accessible at `/robots.txt`
+- ✅ **Crawlable content** (no blocking CSS/JS)
+- ✅ **Valid HTML structure** with proper headings
+
+#### **Node.js Compatibility**
+- **Supported**: Node.js 20.11.1+ (current project version)
+- **Vite version**: v5.4.19 (compatible with Node.js 20.11.1)
+- **Note**: Vite v7+ requires Node.js ^20.19.0 or >=22.12.0
+
+#### **Getting Help**
+- Check **Actions tab** for detailed logs
+- Review **lighthouse reports** in artifacts (7-day retention)
+- Compare **bundle analysis** output for size changes
+- Verify **Node compatibility** across both versions tested
+- Download **SEO audit results** from lighthouse artifacts
+
 ## CSS Architecture & Strategy
 
 ### Overview
