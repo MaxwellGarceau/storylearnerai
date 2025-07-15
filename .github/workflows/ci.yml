@@ -223,7 +223,7 @@ jobs:
         if: always()
         with:
           name: lighthouse-results
-          path: .lighthouseci/
+          path: .lighthouseci/*
           retention-days: 7
 
   performance-budget:
