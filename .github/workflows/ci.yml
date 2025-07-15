@@ -223,12 +223,16 @@ jobs:
         run: |
           echo "=== Pre-upload verification ==="
           echo "Working directory: $(pwd)"
+          echo "Full path: $(realpath .)"
           echo "Files to upload:"
           if [ -d ".lighthouseci" ]; then
+            echo "Directory exists at: $(realpath .lighthouseci)"
             find .lighthouseci -type f -exec ls -la {} \;
           else
             echo "No .lighthouseci directory found"
           fi
+          echo "Directory structure:"
+          ls -la
           echo "========================"
           
       - name: Upload Lighthouse results
@@ -236,7 +240,8 @@ jobs:
         if: always()
         with:
           name: lighthouse-results
-          path: .lighthouseci/**/*
+          path: |
+            .lighthouseci
           retention-days: 7
 
   performance-budget:
@@ -250,7 +255,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lighthouse-results
-          path: .lighthouseci/
+          path: ./
         continue-on-error: true
           
       - name: Post-download verification
