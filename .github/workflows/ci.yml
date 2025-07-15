@@ -218,12 +218,25 @@ jobs:
             fi
           fi
           
+      - name: Pre-upload verification
+        if: always()
+        run: |
+          echo "=== Pre-upload verification ==="
+          echo "Working directory: $(pwd)"
+          echo "Files to upload:"
+          if [ -d ".lighthouseci" ]; then
+            find .lighthouseci -type f -exec ls -la {} \;
+          else
+            echo "No .lighthouseci directory found"
+          fi
+          echo "========================"
+          
       - name: Upload Lighthouse results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lighthouse-results
-          path: .lighthouseci/*
+          path: .lighthouseci/**/*
           retention-days: 7
 
   performance-budget:
@@ -239,6 +252,21 @@ jobs:
           name: lighthouse-results
           path: .lighthouseci/
         continue-on-error: true
+          
+      - name: Post-download verification
+        if: always()
+        run: |
+          echo "=== Post-download verification ==="
+          echo "Working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          if [ -d ".lighthouseci" ]; then
+            echo "Contents of .lighthouseci/:"
+            ls -la .lighthouseci/
+          else
+            echo "No .lighthouseci directory found after download"
+          fi
+          echo "========================"
           
       - name: Check Performance Budget
         run: |
