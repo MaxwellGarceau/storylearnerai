@@ -97,16 +97,6 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
-      - name: Debug job conditions
-        run: |
-          echo "=== Job Condition Debug ==="
-          echo "Event name: ${{ github.event_name }}"
-          echo "PR labels: ${{ toJson(github.event.pull_request.labels.*.name) }}"
-          echo "Contains run-ci: ${{ contains(github.event.pull_request.labels.*.name, 'run-ci') }}"
-          echo "Is workflow_dispatch: ${{ github.event_name == 'workflow_dispatch' }}"
-          echo "Job should run: ${{ contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch' }}"
-          echo "========================="
-          
       - name: Checkout code
         uses: actions/checkout@v4
         
@@ -145,34 +135,8 @@ jobs:
             sleep 2
           done
           
-      - name: Verify server is responding
-        run: |
-          curl -v http://localhost:8080/
-          
       - name: Run Lighthouse CI
-        run: |
-          echo "=== Running Lighthouse CI ==="
-          echo "Current working directory: $(pwd)"
-          echo "Lighthouse CI version: $(lhci --version)"
-          echo "Starting lighthouse CI..."
-          
-          # Run lighthouse CI and capture exit code
-          lhci autorun
-          LHCI_EXIT_CODE=$?
-          
-          echo "Lighthouse CI finished with exit code: $LHCI_EXIT_CODE"
-          
-          # Check if .lighthouseci directory was created
-          if [ -d ".lighthouseci/" ]; then
-            echo "✅ Lighthouse CI created .lighthouseci/ directory"
-            echo "Contents:"
-            ls -la .lighthouseci/
-          else
-            echo "❌ Lighthouse CI did not create .lighthouseci/ directory"
-          fi
-          
-          # Exit with the original lighthouse CI exit code
-          exit $LHCI_EXIT_CODE
+        run: lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           
@@ -183,71 +147,15 @@ jobs:
             kill $SERVER_PID || true
           fi
           
-      - name: Verify Lighthouse results exist
-        if: always()
-        run: |
-          echo "=== Debugging Lighthouse Results ==="
-          echo "Current working directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
-          echo ""
-          echo "Checking for Lighthouse results..."
-          ls -la .lighthouseci/ || echo "No .lighthouseci directory found"
-          
-          if [ -d ".lighthouseci/" ]; then
-            echo "✅ .lighthouseci/ directory exists!"
-            echo "Contents:"
-            ls -la .lighthouseci/
-            echo "Found $(ls -1 .lighthouseci/ | wc -l) files in .lighthouseci/"
-          else
-            echo "❌ .lighthouseci/ directory not found"
-            echo "Creating empty .lighthouseci directory for artifact upload"
-            mkdir -p .lighthouseci/
-            echo "Lighthouse CI did not run successfully - $(date)" > .lighthouseci/error.txt
-            echo "Error details: Previous lighthouse step may have failed" >> .lighthouseci/error.txt
-            echo "GitHub Actions Exit Code: $?" >> .lighthouseci/error.txt
-            echo "Working Directory: $(pwd)" >> .lighthouseci/error.txt
-            
-            # Verify the directory was created
-            if [ -d ".lighthouseci/" ]; then
-              echo "✅ Successfully created .lighthouseci/ directory"
-              ls -la .lighthouseci/
-            else
-              echo "❌ Failed to create .lighthouseci/ directory"
-              exit 1
-            fi
-          fi
-          
       - name: Prepare artifacts for upload
         if: always()
         run: |
-          echo "=== Preparing artifacts for upload ==="
-          echo "Working directory: $(pwd)"
-          echo "Full path: $(realpath .)"
-          
-          # Create a simple artifacts directory
           mkdir -p artifacts
-          
-          # Copy lighthouse files if they exist
           if [ -d ".lighthouseci" ]; then
-            echo "✅ Found .lighthouseci directory"
-            echo "Contents:"
-            find .lighthouseci -type f -exec ls -la {} \;
-            
-            # Copy all files to artifacts directory
             cp -r .lighthouseci/* artifacts/ 2>/dev/null || echo "No files to copy"
-            
-            echo "Artifacts directory contents:"
-            ls -la artifacts/
           else
-            echo "❌ No .lighthouseci directory found"
-            # Create a placeholder file so artifact upload doesn't fail
             echo "Lighthouse CI did not run - $(date)" > artifacts/lighthouse-error.txt
           fi
-          
-          echo "Final artifacts directory:"
-          find artifacts -type f -exec ls -la {} \;
-          echo "========================"
           
       - name: Upload Lighthouse results
         uses: actions/upload-artifact@v4
@@ -271,27 +179,6 @@ jobs:
           path: ./
         continue-on-error: true
           
-      - name: Post-download verification
-        if: always()
-        run: |
-          echo "=== Post-download verification ==="
-          echo "Working directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
-          
-          # Check if lighthouse results were downloaded
-          if [ -f "lighthouse-error.txt" ]; then
-            echo "⚠️  Lighthouse error file found:"
-            cat lighthouse-error.txt
-          elif [ -f "assertion-results.json" ]; then
-            echo "✅ Lighthouse results found"
-            echo "Available lighthouse files:"
-            ls -la *.json *.html 2>/dev/null || echo "No lighthouse files found"
-          else
-            echo "❌ No lighthouse results found after download"
-          fi
-          echo "========================"
-          
       - name: Check Performance Budget
         run: |
           echo "🚀 Performance Budget Check"
@@ -308,8 +195,6 @@ jobs:
           # Check if lighthouse results exist
           if [ ! -f "assertion-results.json" ]; then
             echo "⚠️  No Lighthouse results found - assertion-results.json missing"
-            echo "Available files:"
-            ls -la
             echo "Skipping performance budget check"
             exit 0
           fi
