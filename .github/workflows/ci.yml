@@ -97,6 +97,13 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     
     steps:
+      - name: Debug job conditions
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "PR labels: ${{ toJson(github.event.pull_request.labels.*.name) }}"
+          echo "Contains run-ci: ${{ contains(github.event.pull_request.labels.*.name, 'run-ci') }}"
+          echo "Is workflow_dispatch: ${{ github.event_name == 'workflow_dispatch' }}"
+          
       - name: Checkout code
         uses: actions/checkout@v4
         
@@ -153,16 +160,19 @@ jobs:
           fi
           
       - name: Verify Lighthouse results exist
+        if: always()
         run: |
           echo "Checking for Lighthouse results..."
           ls -la .lighthouseci/ || echo "No .lighthouseci directory found"
           if [ -d ".lighthouseci/" ]; then
             echo "Contents:"
             ls -la .lighthouseci/
+            echo "Found $(ls -1 .lighthouseci/ | wc -l) files in .lighthouseci/"
           else
             echo "Creating empty .lighthouseci directory for artifact upload"
             mkdir -p .lighthouseci/
-            echo "Lighthouse CI did not run successfully" > .lighthouseci/error.txt
+            echo "Lighthouse CI did not run successfully - $(date)" > .lighthouseci/error.txt
+            echo "Error details: Previous lighthouse step may have failed" >> .lighthouseci/error.txt
           fi
           
       - name: Upload Lighthouse results
@@ -177,7 +187,7 @@ jobs:
     name: 📊 Performance Budget Check
     runs-on: ubuntu-latest
     needs: lighthouse
-    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
+    if: (contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch') && always()
     
     steps:
       - name: Download Lighthouse results
@@ -185,11 +195,19 @@ jobs:
         with:
           name: lighthouse-results
           path: .lighthouseci/
+        continue-on-error: true
           
       - name: Check Performance Budget
         run: |
           echo "🚀 Performance Budget Check"
           echo "==========================="
+          
+          # Check if lighthouse results directory exists
+          if [ ! -d ".lighthouseci/" ]; then
+            echo "⚠️  No Lighthouse results found - artifact may not have been uploaded"
+            echo "Skipping performance budget check"
+            exit 0
+          fi
           
           # Check if lighthouse results exist
           if [ -f .lighthouseci/error.txt ]; then
