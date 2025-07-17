@@ -115,11 +115,11 @@ In development mode, the translation service will use a mock implementation by d
 ## CI/CD Pipeline
 
 ### Overview
-This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **25+ automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
+This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
 
 ### 🏷️ Triggering the Pipeline
 
-#### **Method 1: Label-Based (Recommended)**
+#### **Label-Based Trigger**
 1. **Create or update a Pull Request**
 2. **Apply the `run-ci` label** to the PR:
    ```bash
@@ -131,69 +131,6 @@ This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast
    ```
 3. **Monitor execution** in the Actions tab
 4. **Remove label** when done to stop future CI runs and conserve minutes
-
-#### **Method 2: Manual Trigger**
-1. Go to **Actions tab** in GitHub
-2. Select **"CI/CD"** workflow
-3. Click **"Run workflow"** button
-4. Choose branch and click **"Run workflow"**
-
-### 🧪 What the Pipeline Tests
-
-#### **Job 1: Test & Lint (Node 18 & 20)**
-- ✅ **Security audit** with `npm audit` (high severity level)
-- ✅ **TypeScript type checking** with `tsc --noEmit`
-- ✅ **ESLint code quality** checks
-- ✅ **Unit & component tests** with Vitest
-- ✅ **Test coverage** reporting to Codecov
-
-#### **Job 2: Build & Bundle Analysis**
-- ✅ **Production build** with Vite v5.4.19 (Node.js 20.11.1 compatible)
-- ✅ **Bundle size analysis** with detailed reporting
-- ✅ **TypeScript compilation** validation
-- ✅ **Build artifacts** uploaded for deployment
-
-#### **Job 3: Lighthouse Performance Audit**
-- ✅ **Core Web Vitals** monitoring (LCP, CLS, FCP, TBT)
-- ✅ **SEO validation** (meta description, robots.txt, crawlability)
-- ✅ **Performance best practices** validation
-- ✅ **Accessibility audits** with ARIA compliance
-- ✅ **Lighthouse reports** uploaded as artifacts
-
-#### **Job 4: Performance Budget Validation (Fail-Fast)**
-- ✅ **Performance score** ≥ 80%
-- ✅ **Accessibility score** ≥ 95%
-- ✅ **Best Practices score** ≥ 90%
-- ✅ **SEO score** ≥ 90%
-- ⚠️ **Pipeline fails immediately** if any budget is not met
-
-### 📊 Reading Results
-
-#### **Success Indicators**
-- ✅ All jobs show green checkmarks
-- ✅ Performance budgets are met
-- ✅ No security vulnerabilities found
-- ✅ Tests pass on both Node 18 & 20
-
-#### **Downloading Reports**
-1. Go to **Actions tab** → Select workflow run
-2. Scroll to **Artifacts** section
-3. Download:
-   - **lighthouse-results** - Performance reports (7-day retention)
-   - **build-files** - Production build artifacts (1-day retention)
-
-### 💰 Cost Optimization
-
-#### **Why Label-Based?**
-- **70-80% cost reduction** - Only runs when explicitly triggered
-- **Selective execution** - Apply label when ready for comprehensive testing
-- **Free tier friendly** - Conserves GitHub Actions minutes
-
-#### **Best Practices**
-- ✅ Apply `run-ci` label before merging
-- ✅ Remove label after successful run
-- ✅ Use draft PRs for early development
-- ✅ Test locally first with `npm run test:once` and `npm run build`
 
 ### 🛠️ Local Testing (Before CI)
 
