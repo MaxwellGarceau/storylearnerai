@@ -56,7 +56,8 @@ export abstract class LLMService {
   /**
    * Handle API response and convert to LLMResponse
    */
-  protected async handleResponse(response: Response): Promise<Record<string, unknown>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected async handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
       const errorText = await response.text();
       throw this.createError(
