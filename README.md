@@ -151,6 +151,30 @@ npm run test:coverage      # Tests with coverage
 
 # Build verification
 npm run build              # Production build
+
+# CI/CD check (runs all checks locally)
+npm run ci-check           # Run all CI checks locally
+```
+
+### 🔧 Development Workflow
+
+#### **Pre-Push Checks**
+Before pushing code, run all CI checks locally to catch errors early:
+
+```bash
+npm run ci-check
+```
+
+This script runs:
+- ✅ **ESLint** - Code style and quality checks
+- ✅ **TypeScript Build** - Type checking and compilation
+- ✅ **Tests** - Complete test suite with coverage
+
+You can also run individual checks:
+```bash
+npm run lint         # ESLint only
+npm run build        # TypeScript build only
+npm test -- --run    # Tests only
 ```
 
 ### 🚨 Troubleshooting

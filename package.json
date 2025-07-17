@@ -11,7 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ci-check": "./scripts/ci-check.sh"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.1.2",
