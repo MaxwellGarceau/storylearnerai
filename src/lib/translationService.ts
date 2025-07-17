@@ -1,3 +1,6 @@
+import { llmServiceManager } from './llm/LLMServiceManager';
+import { EnvironmentConfig } from './config/env';
+
 export interface TranslationRequest {
   text: string;
   fromLanguage: string;
@@ -11,6 +14,8 @@ export interface TranslationResponse {
   fromLanguage: string;
   toLanguage: string;
   difficulty: string;
+  provider?: string;
+  model?: string;
 }
 
 export interface TranslationError {
@@ -19,41 +24,28 @@ export interface TranslationError {
 }
 
 class TranslationService {
-  private apiEndpoint: string;
-
   constructor() {
-    // TODO: Configure this with environment variables
-    this.apiEndpoint = '/api/translate';
+    // Environment configuration is now handled by LLMServiceManager
   }
 
   async translateStory(request: TranslationRequest): Promise<TranslationResponse> {
     try {
-      const response = await fetch(this.apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: request.text,
-          fromLanguage: request.fromLanguage,
-          toLanguage: request.toLanguage,
-          difficulty: request.difficulty,
-          prompt: this.buildTranslationPrompt(request),
-        }),
+      const prompt = this.buildTranslationPrompt(request);
+      
+      const llmResponse = await llmServiceManager.generateCompletion({
+        prompt,
+        maxTokens: 2000,
+        temperature: 0.7,
       });
 
-      if (!response.ok) {
-        throw new Error(`Translation failed: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
       return {
         originalText: request.text,
-        translatedText: data.translatedText,
+        translatedText: llmResponse.content,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
         difficulty: request.difficulty,
+        provider: llmResponse.provider,
+        model: llmResponse.model,
       };
     } catch (error) {
       console.error('Translation service error:', error);
@@ -94,6 +86,30 @@ class TranslationService {
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
+      provider: 'mock',
+      model: 'mock-model',
+    };
+  }
+
+  // New method to check if the LLM service is available
+  async isLLMServiceAvailable(): Promise<boolean> {
+    if (EnvironmentConfig.isDevelopment()) {
+      return false; // Use mock in development by default
+    }
+    
+    try {
+      return await llmServiceManager.healthCheck();
+    } catch (error) {
+      console.warn('LLM service health check failed:', error);
+      return false;
+    }
+  }
+
+  // Method to get current LLM provider info
+  getLLMProviderInfo(): { provider: string; model: string } {
+    return {
+      provider: llmServiceManager.getProvider(),
+      model: llmServiceManager.getModel(),
     };
   }
 }

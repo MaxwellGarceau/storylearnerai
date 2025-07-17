@@ -4,11 +4,113 @@ Story Learner AI is an application that allows the user to translate their favor
 More detailed information is available in the [docs](/docs/table-of-contents.md) folder
 
 ## Getting Started
-`nvm use`
-`npm install`
-`npm run dev`
+
+### Prerequisites
+- Node.js (see `.nvmrc` for version)
+- npm
+- LLM API key (OpenAI, Anthropic, or custom provider)
+
+### Setup
+1. `nvm use`
+2. `npm install`
+3. Copy `env.example` to `.env` and configure your LLM settings:
+   ```bash
+   cp env.example .env
+   ```
+4. Edit `.env` with your LLM provider configuration
+5. `npm run dev`
 
 Access the FE on `http://localhost:5173/`
+
+## LLM Service Configuration
+
+### Overview
+Story Learner AI uses a flexible LLM service system that supports multiple providers through a unified interface. The system is designed to be provider-agnostic, allowing you to easily switch between OpenAI, Anthropic, Google Gemini, or custom API endpoints.
+
+### Supported Providers
+
+#### OpenAI GPT
+```bash
+VITE_LLM_PROVIDER=openai
+VITE_LLM_API_KEY=your-openai-api-key
+VITE_LLM_ENDPOINT=https://api.openai.com/v1
+VITE_LLM_MODEL=gpt-4o-mini
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Anthropic Claude
+```bash
+VITE_LLM_PROVIDER=anthropic
+VITE_LLM_API_KEY=your-anthropic-api-key
+VITE_LLM_ENDPOINT=https://api.anthropic.com/v1
+VITE_LLM_MODEL=claude-3-haiku-20240307
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Google Gemini
+```bash
+VITE_LLM_PROVIDER=google
+VITE_LLM_API_KEY=your-gemini-api-key
+VITE_LLM_ENDPOINT=https://generativelanguage.googleapis.com/v1
+VITE_LLM_MODEL=gemini-pro
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Meta Llama
+```bash
+VITE_LLM_PROVIDER=llama
+VITE_LLM_API_KEY=your-llama-api-key-or-none-for-ollama
+VITE_LLM_ENDPOINT=http://localhost:11434
+VITE_LLM_MODEL=llama3.1:8b
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+VITE_LLAMA_PROVIDER=ollama
+VITE_LLAMA_SYSTEM_PROMPT=You are a helpful assistant.
+VITE_LLAMA_STOP_SEQUENCES=["<|end|>", "<|stop|>"]
+```
+
+##### Llama Provider Options:
+- **ollama**: Local Ollama deployment (default endpoint: http://localhost:11434)
+- **groq**: Groq cloud API (fast Llama inference)
+- **together**: Together AI API
+- **replicate**: Replicate API
+- **custom**: Custom Llama-compatible endpoint
+
+#### Custom API
+```bash
+VITE_LLM_PROVIDER=custom
+VITE_LLM_API_KEY=your-custom-api-key
+VITE_LLM_ENDPOINT=https://your-custom-endpoint.com/v1
+VITE_LLM_MODEL=your-custom-model
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+### Architecture
+
+The LLM service system follows a modular architecture:
+
+- **LLMService (Abstract Base Class)**: Defines the contract for all LLM providers
+- **Provider Implementations**: Concrete classes for OpenAI, Anthropic, Llama, and Custom APIs
+- **LLMServiceFactory**: Creates service instances based on provider configuration
+- **LLMServiceManager**: Singleton that manages the active LLM service and configuration
+- **Environment Configuration**: Handles environment variable parsing and validation
+
+### Adding New Providers
+
+To add a new LLM provider:
+
+1. Create a new service class extending `LLMService`
+2. Implement the required methods (`generateCompletion`, `healthCheck`)
+3. Add provider-specific configuration types
+4. Update the `LLMServiceFactory` to handle the new provider
+
+### Development Mode
+
+In development mode, the translation service will use a mock implementation by default. To test with a real LLM provider, ensure your environment variables are properly configured and the service passes health checks.
 
 ## CI/CD Pipeline
 
