@@ -56,7 +56,7 @@ export abstract class LLMService {
   /**
    * Handle API response and convert to LLMResponse
    */
-  protected async handleResponse(response: Response): Promise<any> {
+  protected async handleResponse(response: Response): Promise<Record<string, unknown>> {
     if (!response.ok) {
       const errorText = await response.text();
       throw this.createError(
@@ -68,7 +68,7 @@ export abstract class LLMService {
 
     try {
       return await response.json();
-    } catch (error) {
+    } catch {
       throw this.createError(
         'Failed to parse API response',
         'PARSE_ERROR',

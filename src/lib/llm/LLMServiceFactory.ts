@@ -1,5 +1,5 @@
 import { LLMService } from './LLMService';
-import { ProviderConfig } from '../types/llm';
+import { ProviderConfig, OpenAIConfig, AnthropicConfig, LlamaConfig, CustomConfig } from '../types/llm';
 import { OpenAIService } from './providers/OpenAIService';
 import { AnthropicService } from './providers/AnthropicService';
 import { LlamaService } from './providers/LlamaService';
@@ -12,10 +12,10 @@ export class LLMServiceFactory {
   static createService(config: ProviderConfig): LLMService {
     switch (config.provider) {
       case 'openai':
-        return new OpenAIService(config as any);
+        return new OpenAIService(config as OpenAIConfig);
       
       case 'anthropic':
-        return new AnthropicService(config as any);
+        return new AnthropicService(config as AnthropicConfig);
       
       case 'google':
         // For now, Google uses the custom service pattern
@@ -23,16 +23,16 @@ export class LLMServiceFactory {
         return new CustomService({
           ...config,
           provider: 'custom',
-        } as any);
+        } as CustomConfig);
       
       case 'llama':
-        return new LlamaService(config as any);
+        return new LlamaService(config as LlamaConfig);
       
       case 'custom':
-        return new CustomService(config as any);
+        return new CustomService(config as CustomConfig);
       
       default:
-        throw new Error(`Unsupported LLM provider: ${(config as any).provider}`);
+        throw new Error(`Unsupported LLM provider: ${(config as ProviderConfig).provider}`);
     }
   }
 

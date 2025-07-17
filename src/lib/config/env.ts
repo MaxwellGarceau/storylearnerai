@@ -88,7 +88,7 @@ export class EnvironmentConfig {
     try {
       // Try parsing as JSON array first
       return JSON.parse(stopSequencesString);
-    } catch (error) {
+    } catch {
       // Fallback to comma-separated string
       return stopSequencesString.split(',').map(s => s.trim()).filter(s => s.length > 0);
     }

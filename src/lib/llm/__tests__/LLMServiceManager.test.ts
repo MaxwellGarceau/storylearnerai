@@ -36,6 +36,7 @@ describe('LLMServiceManager', () => {
 
   afterEach(() => {
     // Reset singleton instance
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (LLMServiceManager as any).instance = undefined;
   });
 

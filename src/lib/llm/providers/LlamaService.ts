@@ -81,6 +81,7 @@ export class LlamaService extends LLMService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private buildRequestBody(request: LLMRequest, config: LlamaConfig): any {
     const provider = config.llamaProvider || 'ollama';
     const baseBody = {
@@ -143,6 +144,7 @@ export class LlamaService extends LLMService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private parseResponse(data: any, config: LlamaConfig): LLMResponse {
     const provider = config.llamaProvider || 'ollama';
     
