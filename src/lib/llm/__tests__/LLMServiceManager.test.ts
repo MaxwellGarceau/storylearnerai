@@ -64,7 +64,7 @@ describe('LLMServiceManager', () => {
       
       expect(providers).toContain('openai');
       expect(providers).toContain('anthropic');
-      expect(providers).toContain('google');
+      expect(providers).toContain('gemini');
       expect(providers).toContain('custom');
     });
   });
@@ -76,7 +76,7 @@ describe('LLMServiceManager', () => {
       
       expect(displayNames['openai']).toBe('OpenAI GPT');
       expect(displayNames['anthropic']).toBe('Anthropic Claude');
-      expect(displayNames['google']).toBe('Google Gemini');
+      expect(displayNames['gemini']).toBe('Google Gemini');
       expect(displayNames['custom']).toBe('Custom API');
     });
   });

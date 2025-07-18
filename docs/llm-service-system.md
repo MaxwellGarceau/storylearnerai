@@ -158,7 +158,7 @@ export interface NewProviderConfig extends LLMConfig {
 }
 
 // Update union type
-export type ProviderConfig = OpenAIConfig | AnthropicConfig | GoogleConfig | CustomConfig | NewProviderConfig;
+export type ProviderConfig = OpenAIConfig | AnthropicConfig | GeminiConfig | CustomConfig | NewProviderConfig;
 ```
 
 ### Step 2: Create Provider Service
@@ -221,7 +221,7 @@ export class LLMServiceFactory {
   }
 
   static getAvailableProviders(): string[] {
-    return ['openai', 'anthropic', 'google', 'llama', 'custom', 'newprovider'];
+    return ['openai', 'anthropic', 'gemini', 'llama', 'custom', 'newprovider'];
   }
 }
 ```

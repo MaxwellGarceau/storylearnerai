@@ -18,14 +18,6 @@ export class LLMServiceFactory {
       case 'anthropic':
         return new AnthropicService(config as AnthropicConfig);
       
-      case 'google':
-        // For now, Google uses the custom service pattern
-        // In the future, we can create a dedicated GoogleService
-        return new CustomService({
-          ...config,
-          provider: 'custom',
-        } as CustomConfig);
-      
       case 'gemini':
         return new GeminiService(config as GeminiConfig);
       
@@ -44,7 +36,7 @@ export class LLMServiceFactory {
    * Get available providers
    */
   static getAvailableProviders(): string[] {
-    return ['openai', 'anthropic', 'google', 'gemini', 'llama', 'custom'];
+    return ['openai', 'anthropic', 'gemini', 'llama', 'custom'];
   }
 
   /**
@@ -54,7 +46,7 @@ export class LLMServiceFactory {
     return {
       openai: 'OpenAI GPT',
       anthropic: 'Anthropic Claude',
-      google: 'Google Gemini',
+      gemini: 'Google Gemini',
       llama: 'Meta Llama',
       custom: 'Custom API',
     };
@@ -67,7 +59,6 @@ export class LLMServiceFactory {
     return {
       openai: 'OpenAI GPT models including GPT-4, GPT-3.5, and GPT-4o',
       anthropic: 'Anthropic Claude models including Claude-3 Haiku, Sonnet, and Opus',
-      google: 'Google Gemini models including Gemini Pro and Gemini Flash',
       gemini: 'Google Gemini models via Google GenAI SDK including Gemini Pro, Flash, and Ultra',
       llama: 'Meta Llama models via Ollama, Groq, Together AI, Replicate, or custom endpoints',
       custom: 'Custom API endpoint for other LLM providers',
