@@ -91,10 +91,19 @@ class TranslationService {
     };
   }
 
+  // Smart translation method that chooses between mock and real based on environment
+  async translate(request: TranslationRequest): Promise<TranslationResponse> {
+    if (EnvironmentConfig.isMockTranslationEnabled()) {
+      return await this.mockTranslateStory(request);
+    } else {
+      return await this.translateStory(request);
+    }
+  }
+
   // New method to check if the LLM service is available
   async isLLMServiceAvailable(): Promise<boolean> {
-    if (EnvironmentConfig.isDevelopment()) {
-      return false; // Use mock in development by default
+    if (EnvironmentConfig.isMockTranslationEnabled()) {
+      return true; // Mock is always available
     }
     
     try {
@@ -111,6 +120,11 @@ class TranslationService {
       provider: llmServiceManager.getProvider(),
       model: llmServiceManager.getModel(),
     };
+  }
+
+  // Method to check if mock translation is enabled
+  isMockTranslationEnabled(): boolean {
+    return EnvironmentConfig.isMockTranslationEnabled();
   }
 }
 

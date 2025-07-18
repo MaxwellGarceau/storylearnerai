@@ -14,8 +14,8 @@ const StoryContainer: React.FC = () => {
     setTranslatedStory(null);
 
     try {
-      // Using mock translation for development - replace with actual service when ready
-      const response = await translationService.mockTranslateStory({
+      // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
+      const response = await translationService.translate({
         text: storyData.story,
         fromLanguage: 'Spanish',
         toLanguage: 'English',

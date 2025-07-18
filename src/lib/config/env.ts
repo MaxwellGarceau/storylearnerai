@@ -101,4 +101,8 @@ export class EnvironmentConfig {
   static isProduction(): boolean {
     return import.meta.env.MODE === 'production';
   }
+
+  static isMockTranslationEnabled(): boolean {
+    return import.meta.env.VITE_ENABLE_MOCK_TRANSLATION === 'true';
+  }
 } 

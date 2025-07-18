@@ -8,6 +8,7 @@ import type { TranslationResponse } from '../../../lib/translationService';
 // Mock the translation service
 vi.mock('../../../lib/translationService', () => ({
   translationService: {
+    translate: vi.fn(),
     mockTranslateStory: vi.fn(),
     translateStory: vi.fn(),
   },
@@ -29,7 +30,7 @@ describe('StoryContainer Component', () => {
       difficulty: 'A1',
     };
 
-    mockTranslationService.mockTranslateStory.mockResolvedValue(mockTranslationResponse);
+    mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
 
     render(<StoryContainer />);
 
@@ -63,7 +64,7 @@ describe('StoryContainer Component', () => {
   });
 
   it('displays error message when translation fails', async () => {
-    mockTranslationService.mockTranslateStory.mockRejectedValue(new Error('Translation service error'));
+    mockTranslationService.translate.mockRejectedValue(new Error('Translation service error'));
 
     render(<StoryContainer />);
 
@@ -81,7 +82,7 @@ describe('StoryContainer Component', () => {
 
   it('shows loading state during translation', async () => {
     // Mock a delayed response
-    mockTranslationService.mockTranslateStory.mockImplementation(
+    mockTranslationService.translate.mockImplementation(
       () => new Promise(resolve => setTimeout(resolve, 100))
     );
 
@@ -109,7 +110,7 @@ describe('StoryContainer Component', () => {
       difficulty: 'B1',
     };
 
-    mockTranslationService.mockTranslateStory.mockResolvedValue(mockTranslationResponse);
+    mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
 
     render(<StoryContainer />);
 
@@ -120,7 +121,7 @@ describe('StoryContainer Component', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockTranslationService.mockTranslateStory).toHaveBeenCalledWith({
+      expect(mockTranslationService.translate).toHaveBeenCalledWith({
         text: 'Test story',
         fromLanguage: 'Spanish',
         toLanguage: 'English',
