@@ -1,4 +1,4 @@
-export type LLMProvider = 'openai' | 'anthropic' | 'google' | 'llama' | 'custom';
+export type LLMProvider = 'openai' | 'anthropic' | 'google' | 'gemini' | 'llama' | 'custom';
 
 export interface LLMConfig {
   provider: LLMProvider;
@@ -50,6 +50,11 @@ export interface GoogleConfig extends LLMConfig {
   projectId?: string;
 }
 
+export interface GeminiConfig extends LLMConfig {
+  provider: 'gemini';
+  projectId?: string;
+}
+
 export interface LlamaConfig extends LLMConfig {
   provider: 'llama';
   llamaProvider?: 'ollama' | 'groq' | 'together' | 'replicate' | 'custom';
@@ -63,4 +68,4 @@ export interface CustomConfig extends LLMConfig {
   headers?: Record<string, string>;
 }
 
-export type ProviderConfig = OpenAIConfig | AnthropicConfig | GoogleConfig | LlamaConfig | CustomConfig; 
+export type ProviderConfig = OpenAIConfig | AnthropicConfig | GoogleConfig | GeminiConfig | LlamaConfig | CustomConfig; 

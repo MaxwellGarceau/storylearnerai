@@ -1,7 +1,8 @@
 import { LLMService } from './LLMService';
-import { ProviderConfig, OpenAIConfig, AnthropicConfig, LlamaConfig, CustomConfig } from '../types/llm';
+import { ProviderConfig, OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../types/llm';
 import { OpenAIService } from './providers/OpenAIService';
 import { AnthropicService } from './providers/AnthropicService';
+import { GeminiService } from './providers/GeminiService';
 import { LlamaService } from './providers/LlamaService';
 import { CustomService } from './providers/CustomService';
 
@@ -25,6 +26,9 @@ export class LLMServiceFactory {
           provider: 'custom',
         } as CustomConfig);
       
+      case 'gemini':
+        return new GeminiService(config as GeminiConfig);
+      
       case 'llama':
         return new LlamaService(config as LlamaConfig);
       
@@ -40,7 +44,7 @@ export class LLMServiceFactory {
    * Get available providers
    */
   static getAvailableProviders(): string[] {
-    return ['openai', 'anthropic', 'google', 'llama', 'custom'];
+    return ['openai', 'anthropic', 'google', 'gemini', 'llama', 'custom'];
   }
 
   /**
@@ -64,6 +68,7 @@ export class LLMServiceFactory {
       openai: 'OpenAI GPT models including GPT-4, GPT-3.5, and GPT-4o',
       anthropic: 'Anthropic Claude models including Claude-3 Haiku, Sonnet, and Opus',
       google: 'Google Gemini models including Gemini Pro and Gemini Flash',
+      gemini: 'Google Gemini models via Google GenAI SDK including Gemini Pro, Flash, and Ultra',
       llama: 'Meta Llama models via Ollama, Groq, Together AI, Replicate, or custom endpoints',
       custom: 'Custom API endpoint for other LLM providers',
     };
