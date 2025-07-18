@@ -42,11 +42,11 @@ export class EnvironmentConfig {
           version: import.meta.env.VITE_ANTHROPIC_VERSION || '2023-06-01',
         };
       
-      case 'google':
+      case 'gemini':
         return {
           ...baseConfig,
-          provider: 'google',
-          projectId: import.meta.env.VITE_GOOGLE_PROJECT_ID,
+          provider: 'gemini',
+          projectId: import.meta.env.VITE_GEMINI_PROJECT_ID,
         };
       
       case 'llama':
