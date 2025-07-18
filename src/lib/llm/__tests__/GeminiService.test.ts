@@ -29,7 +29,7 @@ describe('GeminiService', () => {
     };
     
     service = new GeminiService(config);
-    mockGenerateContent = (service as any).genAI.models.generateContent;
+    mockGenerateContent = (service as unknown as { genAI: { models: { generateContent: ReturnType<typeof vi.fn> } } }).genAI.models.generateContent;
   });
 
   it('should generate completion with Gemini format', async () => {
