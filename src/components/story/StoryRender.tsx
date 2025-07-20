@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TranslationResponse } from '../../lib/translationService';
 
 interface StoryRenderProps {
@@ -6,31 +6,57 @@ interface StoryRenderProps {
 }
 
 const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
+  const [showOriginal, setShowOriginal] = useState(false);
+
   if (!translationData) {
     return null;
   }
 
+  const toggleStoryView = () => {
+    setShowOriginal(!showOriginal);
+  };
+
   return (
     <div className="mt-4 space-y-4">
-      {/* Original Spanish Story */}
-      <div className="p-4 border rounded-md bg-yellow-50 border-yellow-200">
-        <h3 className="text-lg font-semibold mb-2 text-yellow-800">
-          Original Story (Spanish):
-        </h3>
-        <p className="text-gray-700 whitespace-pre-wrap">{translationData.originalText}</p>
-      </div>
-
-      {/* Translated English Story */}
-      <div className="p-4 border rounded-md bg-green-50 border-green-200">
+      {/* Single Story Container - Toggleable */}
+      <div className={`p-4 border rounded-md transition-all duration-300 ${
+        showOriginal 
+          ? 'bg-yellow-50 border-yellow-200' 
+          : 'bg-green-50 border-green-200'
+      }`}>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold text-green-800">
-            Translated Story (English):
+          <h3 className={`text-lg font-semibold transition-colors duration-300 ${
+            showOriginal ? 'text-yellow-800' : 'text-green-800'
+          }`}>
+            {showOriginal 
+              ? 'Original Story (Spanish):' 
+              : 'Translated Story (English):'
+            }
           </h3>
-          <span className="text-sm px-2 py-1 bg-green-100 text-green-700 rounded">
-            {translationData.difficulty} Level
-          </span>
+          <div className="flex items-center space-x-2">
+            {!showOriginal && (
+              <span className="text-sm px-2 py-1 bg-green-100 text-green-700 rounded">
+                {translationData.difficulty} Level
+              </span>
+            )}
+            <button
+              onClick={toggleStoryView}
+              className={`px-3 py-1 text-sm font-medium rounded transition-all duration-200 ${
+                showOriginal
+                  ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300'
+                  : 'bg-green-200 text-green-800 hover:bg-green-300'
+              }`}
+            >
+              {showOriginal ? 'Show translated story' : 'Show original story'}
+            </button>
+          </div>
         </div>
-        <p className="text-gray-700 whitespace-pre-wrap">{translationData.translatedText}</p>
+        
+        <div className="relative overflow-hidden">
+          <p className="text-gray-700 whitespace-pre-wrap transition-opacity duration-300">
+            {showOriginal ? translationData.originalText : translationData.translatedText}
+          </p>
+        </div>
       </div>
 
       {/* Translation Info */}
