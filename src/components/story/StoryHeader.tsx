@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { TranslationResponse } from '../../lib/translationService';
-import { FloatingModal } from '../ui/FloatingModal';
+import * as Popover from '@radix-ui/react-popover';
 import TranslationInfoContent from './TranslationInfoContent';
 import { InfoButton } from '../ui/InfoButton';
 import { InfoLabel } from '../ui/InfoLabel';
@@ -17,15 +17,6 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
   onToggleView
 }) => {
   const [showTranslationInfo, setShowTranslationInfo] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const toggleTranslationInfo = () => {
-    setShowTranslationInfo(!showTranslationInfo);
-  };
-
-  const closeTranslationInfo = () => {
-    setShowTranslationInfo(false);
-  };
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4">
@@ -41,15 +32,31 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
       <div className="flex flex-col sm:flex-row lg:flex-row items-start sm:items-center lg:items-center gap-2 sm:gap-3 lg:gap-2 flex-wrap relative">
         {!showOriginal && (
           <>
-            <InfoButton
-              ref={buttonRef}
-              onClick={toggleTranslationInfo}
-              variant="primary"
-              size="sm"
-              className="order-2 sm:order-1"
-            >
-              Show translation info
-            </InfoButton>
+            <Popover.Root open={showTranslationInfo} onOpenChange={setShowTranslationInfo}>
+              <Popover.Trigger asChild>
+                <InfoButton
+                  variant="primary"
+                  size="sm"
+                  className="order-2 sm:order-1"
+                >
+                  Show translation info
+                </InfoButton>
+              </Popover.Trigger>
+              
+              <Popover.Portal>
+                <Popover.Content 
+                  className="z-50 w-72 max-w-[calc(100vw-32px)] rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                  side="bottom"
+                  align="end"
+                  sideOffset={16}
+                  avoidCollisions={true}
+                  collisionPadding={16}
+                >
+                  <TranslationInfoContent translationData={translationData} />
+                  <Popover.Arrow className="fill-popover drop-shadow-sm" />
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
             
             <InfoLabel 
               variant="success"
@@ -73,19 +80,6 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
         </InfoButton>
-
-        {/* Translation Info Modal */}
-        <FloatingModal
-          isOpen={showTranslationInfo}
-          onClose={closeTranslationInfo}
-          triggerRef={buttonRef}
-          side="bottom"
-          align="end"
-          size="default"
-          showArrow={true}
-        >
-          <TranslationInfoContent translationData={translationData} />
-        </FloatingModal>
       </div>
     </div>
   );
