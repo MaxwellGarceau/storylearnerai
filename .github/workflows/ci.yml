@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: 🧪 Tests & Linting
+  # Full test suite - only runs with label or manual dispatch
+  full-ci:
+    name: 🧪 Full CI (Tests & Linting)
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     timeout-minutes: 15
@@ -44,20 +45,31 @@ jobs:
       - name: Run tests (Node 18 only)
         if: matrix.node-version == '18'
         run: npm run test:once
-        
-      ##
-      ## TODO: Add Codecov
-      ## Codecov is disabled during development
-      ## but will be enabled in production.
-      ##
-      # - name: Upload coverage reports
-      #   if: matrix.node-version == '20'
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     file: ./coverage/lcov.info
-      #     flags: unittests
-      #     name: codecov-umbrella
-      #     fail_ci_if_error: false
+
+  # Always runs to provide status - reports on full CI or skipped state
+  ci-status:
+    name: 🚦 CI Status
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [full-ci]
+    timeout-minutes: 2
+    
+    steps:
+      - name: Check CI Status
+        run: |
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch' }}" == "true" ]]; then
+            if [[ "${{ needs.full-ci.result }}" == "success" ]]; then
+              echo "✅ Full CI completed successfully"
+              exit 0
+            else
+              echo "❌ Full CI failed or was cancelled"
+              exit 1
+            fi
+          else
+            echo "⏭️  Full CI skipped (add 'run-ci' label to run)"
+            echo "💡 This PR is ready for basic review, full CI available on-demand"
+            exit 0
+          fi
 
   ##
   ## TODO: Add Build & Bundle Analysis
