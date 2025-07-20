@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { TranslationResponse } from '../../lib/translationService';
 import TranslationInfoModal from './TranslationInfoModal';
+import InfoButton from './InfoButton';
+import InfoLabel from './InfoLabel';
 
 interface StoryHeaderProps {
   translationData: TranslationResponse;
@@ -38,29 +40,37 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
       <div className="flex flex-col sm:flex-row lg:flex-row items-start sm:items-center lg:items-center gap-2 sm:gap-3 lg:gap-2 flex-wrap relative">
         {!showOriginal && (
           <>
-            <button
+            <InfoButton
               ref={buttonRef}
               onClick={toggleTranslationInfo}
-              className="px-2 py-1.5 sm:px-2 sm:py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors duration-200 whitespace-nowrap order-2 sm:order-1"
+              variant="primary"
+              size="small"
+              className="order-2 sm:order-1"
             >
               Show translation info
-            </button>
-            <span className="text-sm px-2 py-1 bg-green-100 text-green-700 rounded whitespace-nowrap order-1 sm:order-2">
+            </InfoButton>
+            
+            <InfoLabel 
+              variant="success"
+              className="order-1 sm:order-2"
+            >
               {translationData.difficulty} Level
-            </span>
+            </InfoLabel>
           </>
         )}
         
-        <button
+        <InfoButton
           onClick={onToggleView}
-          className={`px-3 py-1.5 sm:px-3 sm:py-1 text-sm font-medium rounded transition-all duration-200 whitespace-nowrap order-3 ${
+          variant="secondary"
+          size="medium"
+          className={`order-3 ${
             showOriginal
               ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300'
               : 'bg-green-200 text-green-800 hover:bg-green-300'
           }`}
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
-        </button>
+        </InfoButton>
 
         {/* Translation Info Modal */}
         <TranslationInfoModal
