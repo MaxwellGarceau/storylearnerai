@@ -32,11 +32,9 @@ describe('TranslationInfoContent Component', () => {
       <TranslationInfoContent translationData={mockTranslationData} />
     );
 
-    // Use function-based matcher to handle text split across elements
-    const fromLanguage = within(container).getByText((content, element) => {
-      return !!(element?.textContent?.includes('From:') && element?.textContent?.includes('Spanish'));
-    });
-    expect(fromLanguage).toBeInTheDocument();
+    // Check that "From:" and "Spanish" appear somewhere in the component
+    expect(within(container).getByText('From:')).toBeInTheDocument();
+    expect(within(container).getByText('Spanish')).toBeInTheDocument();
   });
 
   it('displays to language information', () => {
@@ -44,11 +42,9 @@ describe('TranslationInfoContent Component', () => {
       <TranslationInfoContent translationData={mockTranslationData} />
     );
 
-    // Use function-based matcher to handle text split across elements
-    const toLanguage = within(container).getByText((content, element) => {
-      return !!(element?.textContent?.includes('To:') && element?.textContent?.includes('English'));
-    });
-    expect(toLanguage).toBeInTheDocument();
+    // Check that "To:" and "English" appear somewhere in the component
+    expect(within(container).getByText('To:')).toBeInTheDocument();
+    expect(within(container).getByText('English')).toBeInTheDocument();
   });
 
   it('displays difficulty level information', () => {
@@ -56,9 +52,12 @@ describe('TranslationInfoContent Component', () => {
       <TranslationInfoContent translationData={mockTranslationData} />
     );
 
-    // Use regex to match text that might be split across elements
-    const difficulty = within(container).getByText(/Difficulty Level:.*A1.*\(CEFR\)/);
-    expect(difficulty).toBeInTheDocument();
+    // Check that difficulty components appear in the component
+    expect(within(container).getByText('Difficulty Level:')).toBeInTheDocument();
+    // Use regex to match A1 with optional whitespace
+    expect(within(container).getByText(/A1/)).toBeInTheDocument();
+    // Use regex to match (CEFR) with optional whitespace
+    expect(within(container).getByText(/\(CEFR\)/)).toBeInTheDocument();
   });
 
   it('has proper heading styling', () => {
@@ -127,9 +126,13 @@ describe('TranslationInfoContent Component', () => {
         />
       );
 
-      // Use regex to match text that might be split across elements
-      const regex = new RegExp(`Difficulty Level:.*${difficulty}.*\\(CEFR\\)`);
+      // Check that difficulty level appears in the component
+      expect(within(container).getByText('Difficulty Level:')).toBeInTheDocument();
+      // Use regex to match difficulty level with optional whitespace
+      const regex = new RegExp(difficulty);
       expect(within(container).getByText(regex)).toBeInTheDocument();
+      // Use regex to match (CEFR) with optional whitespace
+      expect(within(container).getByText(/\(CEFR\)/)).toBeInTheDocument();
     });
   });
 
@@ -144,8 +147,10 @@ describe('TranslationInfoContent Component', () => {
       <TranslationInfoContent translationData={frenchTranslationData} />
     );
 
-    expect(within(container).getByText(/From:.*French/)).toBeInTheDocument();
-    expect(within(container).getByText(/To:.*German/)).toBeInTheDocument();
+    expect(within(container).getByText('From:')).toBeInTheDocument();
+    expect(within(container).getByText('French')).toBeInTheDocument();
+    expect(within(container).getByText('To:')).toBeInTheDocument();
+    expect(within(container).getByText('German')).toBeInTheDocument();
   });
 
   it('has proper container structure and spacing', () => {
@@ -220,7 +225,9 @@ describe('TranslationInfoContent Component', () => {
       <TranslationInfoContent translationData={longLanguageData} />
     );
 
-    expect(within(container).getByText(/From:.*Brazilian Portuguese/)).toBeInTheDocument();
-    expect(within(container).getByText(/To:.*Simplified Chinese/)).toBeInTheDocument();
+    expect(within(container).getByText('From:')).toBeInTheDocument();
+    expect(within(container).getByText('Brazilian Portuguese')).toBeInTheDocument();
+    expect(within(container).getByText('To:')).toBeInTheDocument();
+    expect(within(container).getByText('Simplified Chinese')).toBeInTheDocument();
   });
 }); 

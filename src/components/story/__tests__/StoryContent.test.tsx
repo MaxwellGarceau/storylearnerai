@@ -75,8 +75,12 @@ describe('StoryContent Component', () => {
       />
     );
 
-    const textElement = within(container).getByText('First line.\n\nSecond line.');
-    expect(textElement).toHaveClass('whitespace-pre-wrap');
+    // Check that the paragraph element exists and has the correct class
+    const paragraph = container.querySelector('p');
+    expect(paragraph).toBeInTheDocument();
+    expect(paragraph).toHaveClass('whitespace-pre-wrap');
+    expect(paragraph?.textContent).toContain('First line.');
+    expect(paragraph?.textContent).toContain('Second line.');
   });
 
   it('handles empty content gracefully', () => {
@@ -120,9 +124,11 @@ describe('StoryContent Component', () => {
       />
     );
 
-    const textElement = within(container).getByText(longText);
-    expect(textElement).toBeInTheDocument();
-    expect(textElement).toHaveClass('whitespace-pre-wrap'); // Ensures proper wrapping
+    // Check that the paragraph element exists and contains the long text
+    const paragraph = container.querySelector('p');
+    expect(paragraph).toBeInTheDocument();
+    expect(paragraph).toHaveClass('whitespace-pre-wrap'); // Ensures proper wrapping
+    expect(paragraph?.textContent).toBe(longText);
   });
 
   it('handles special characters and unicode content', () => {

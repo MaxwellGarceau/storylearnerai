@@ -36,8 +36,9 @@ describe('StoryContainer Component', () => {
     };
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
+    const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(<StoryContainer />);
+    const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
     // Find the textarea by its label (more specific than just role) - scoped to this container
     const textArea = within(container).getByLabelText('Spanish Story');
@@ -50,34 +51,31 @@ describe('StoryContainer Component', () => {
     // Check for loading state within this container
     expect(within(container).getByText('Translating your story...')).toBeInTheDocument();
 
-    // Wait for translation to complete - look for the results sections
+    // Wait for translation to complete - check that the callback was called
     await waitFor(() => {
-      // Look for the yellow container (original story) and green container (translated story)
-      const originalStoryContainer = within(container).getByText('Original Story (Spanish):').closest('.bg-yellow-50');
-      const translatedStoryContainer = within(container).getByText('Translated Story (English):').closest('.bg-green-50');
-      
-      expect(originalStoryContainer).toBeInTheDocument();
-      expect(translatedStoryContainer).toBeInTheDocument();
+      expect(mockOnStoryTranslated).toHaveBeenCalledWith(mockTranslationResponse);
     });
 
-    // Check for specific content in the translation sections
-    const originalStorySection = within(container).getByText('Original Story (Spanish):').closest('div');
-    expect(originalStorySection).toHaveTextContent('Esta es una historia de prueba.');
-
-    // For the translated story, look for the actual translated text content
-    const translatedStoryText = within(container).getByText('This is a test story.');
-    expect(translatedStoryText).toBeInTheDocument();
+    // Verify the translation service was called with correct parameters
+    expect(mockTranslationService.translate).toHaveBeenCalledWith({
+      text: 'Esta es una historia de prueba.',
+      fromLanguage: 'Spanish',
+      toLanguage: 'English',
+      difficulty: 'A1',
+    });
     
-    // Verify the difficulty badge is displayed - look in the green container
-    const translatedSection = within(container).getByText('Translated Story (English):').closest('div');
-    const difficultyBadge = within(translatedSection!).getByText('A1 Level');
-    expect(difficultyBadge).toBeInTheDocument();
+    // Verify the callback was called with the correct translation data
+    expect(mockOnStoryTranslated).toHaveBeenCalledTimes(1);
+    
+    // Verify translation service was called
+    expect(mockTranslationService.translate).toHaveBeenCalledTimes(1);
   });
 
   it('displays error message when translation fails', async () => {
     mockTranslationService.translate.mockRejectedValue(new Error('Translation service error'));
+    const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(<StoryContainer />);
+    const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
     const textArea = within(container).getByLabelText('Spanish Story');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
@@ -96,8 +94,9 @@ describe('StoryContainer Component', () => {
     mockTranslationService.translate.mockImplementation(
       () => new Promise(resolve => setTimeout(resolve, 100))
     );
+    const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(<StoryContainer />);
+    const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
     const textArea = within(container).getByLabelText('Spanish Story');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
@@ -122,8 +121,9 @@ describe('StoryContainer Component', () => {
     };
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
+    const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(<StoryContainer />);
+    const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
     const textArea = within(container).getByLabelText('Spanish Story');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
