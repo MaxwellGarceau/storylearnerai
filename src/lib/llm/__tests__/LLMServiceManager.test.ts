@@ -28,16 +28,19 @@ describe('LLMServiceManager', () => {
     
     vi.mocked(EnvironmentConfig.isDevelopment).mockReturnValue(true);
     
-    // Clear module cache and re-import
-    vi.resetModules();
+    // Import the module fresh for each test
     const module = await import('../LLMServiceManager');
     LLMServiceManager = module.LLMServiceManager;
   });
 
   afterEach(() => {
-    // Reset singleton instance
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (LLMServiceManager as any).instance = undefined;
+    // Reset singleton instance safely
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (LLMServiceManager as any).instance = undefined;
+    } catch (error) {
+      // Ignore errors during cleanup
+    }
   });
 
   describe('getInstance', () => {

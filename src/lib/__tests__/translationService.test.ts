@@ -10,12 +10,11 @@ vi.mock('../config/env', () => ({
   },
 }));
 
+// Mock the LLM service manager
 vi.mock('../llm/LLMServiceManager', () => ({
   llmServiceManager: {
     generateCompletion: vi.fn(),
     healthCheck: vi.fn(),
-    getProvider: vi.fn().mockReturnValue('openai'),
-    getModel: vi.fn().mockReturnValue('gpt-4o-mini'),
   },
 }));
 
