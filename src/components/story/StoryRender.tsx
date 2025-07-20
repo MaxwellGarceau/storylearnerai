@@ -8,6 +8,7 @@ interface StoryRenderProps {
 const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [showTranslationInfo, setShowTranslationInfo] = useState(false);
+  const [arrowPosition, setArrowPosition] = useState(24); // Default position
   const modalRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -15,12 +16,50 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
     return null;
   }
 
+  const calculateArrowPosition = () => {
+    if (buttonRef.current) {
+      // Get button position relative to the container
+      const container = buttonRef.current.closest('.relative');
+      if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const buttonRect = buttonRef.current.getBoundingClientRect();
+        
+        // Calculate button center relative to container's right edge
+        const buttonCenterFromRight = containerRect.right - (buttonRect.left + buttonRect.width / 2);
+        
+        // Account for modal's right offset (16px) and arrow width (8px for center)
+        const arrowOffset = buttonCenterFromRight - 16 - 8;
+        
+        // Modal width is 288px (w-72), arrow is 16px wide
+        // Arrow should be at least 8px from edges to be fully within modal
+        const modalWidth = 288;
+        const arrowWidth = 16;
+        const minOffset = arrowWidth / 2; // 8px from right edge
+        // For left edge: arrow's left boundary should be 8px from modal's left edge
+        // Right position = modalWidth - 8px (left margin) - 16px (arrow width) = 264px
+        const maxOffset = modalWidth - 8 - arrowWidth; // 264px from right edge
+        
+        // Clamp arrow position to stay within modal bounds
+        const clampedOffset = Math.max(minOffset, Math.min(arrowOffset, maxOffset));
+        setArrowPosition(clampedOffset);
+      }
+    }
+  };
+
   const toggleStoryView = () => {
     setShowOriginal(!showOriginal);
   };
 
   const toggleTranslationInfo = () => {
     setShowTranslationInfo(!showTranslationInfo);
+    
+    // Calculate arrow position when modal opens
+    if (!showTranslationInfo) {
+      // Use setTimeout to ensure DOM is updated before calculation
+      setTimeout(() => {
+        calculateArrowPosition();
+      }, 0);
+    }
   };
 
   // Close modal when clicking outside
@@ -42,6 +81,23 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTranslationInfo]);
+
+  // Handle window resize to update arrow position
+  useEffect(() => {
+    const handleResize = () => {
+      if (showTranslationInfo) {
+        calculateArrowPosition();
+      }
+    };
+
+    if (showTranslationInfo) {
+      window.addEventListener('resize', handleResize);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
     };
   }, [showTranslationInfo]);
 
@@ -119,8 +175,11 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
                 </li>
               </ul>
             </div>
-            {/* Small arrow pointing up to button */}
-            <div className="absolute -top-2 right-6 w-4 h-4 bg-white border-l border-t border-gray-200 transform rotate-45"></div>
+            {/* Dynamically positioned arrow pointing up to button */}
+            <div 
+              className="absolute -top-2 w-4 h-4 bg-white border-l border-t border-gray-200 transform rotate-45"
+              style={{ right: `${arrowPosition}px` }}
+            ></div>
           </div>
         )}
       </div>
