@@ -1,15 +1,20 @@
 name: CI/CD
 
 on:
+  push:
+    branches:
+      - 'sprint-*/**'
+      - 'feature/**'
+      - 'main'
   pull_request:
-    types: [labeled]
+    types: [opened, synchronize, labeled]
   workflow_dispatch:
 
 jobs:
   test:
     name: 🧪 Tests & Linting
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     timeout-minutes: 15
     strategy:
       matrix:
