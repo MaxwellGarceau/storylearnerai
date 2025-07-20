@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import StoryUploadForm from './StoryUploadForm';
-import StoryRender from './StoryRender';
 import { translationService, TranslationResponse } from '../../lib/translationService';
 
-const StoryContainer: React.FC = () => {
-  const [translatedStory, setTranslatedStory] = useState<TranslationResponse | null>(null);
+interface StoryContainerProps {
+  onStoryTranslated: (data: TranslationResponse) => void;
+}
+
+const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
 
   const handleStorySubmit = async (storyData: { story: string; language: string; difficulty: string }) => {
     setIsTranslating(true);
     setTranslationError(null);
-    setTranslatedStory(null);
 
     try {
       // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
@@ -22,7 +23,8 @@ const StoryContainer: React.FC = () => {
         difficulty: storyData.difficulty,
       });
 
-      setTranslatedStory(response);
+      // Trigger the view switch to story reader page
+      onStoryTranslated(response);
     } catch (error) {
       console.error('Translation failed:', error);
       setTranslationError(
@@ -54,8 +56,6 @@ const StoryContainer: React.FC = () => {
           </div>
         </div>
       )}
-
-      {translatedStory && <StoryRender translationData={translatedStory} />}
     </div>
   );
 };
