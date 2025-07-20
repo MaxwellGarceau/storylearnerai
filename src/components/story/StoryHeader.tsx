@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { TranslationResponse } from '../../lib/translationService';
 import TranslationInfoModal from './TranslationInfoModal';
-import InfoButton from './InfoButton';
-import InfoLabel from './InfoLabel';
+import { InfoButton } from '../ui/InfoButton';
+import { InfoLabel } from '../ui/InfoLabel';
 
 interface StoryHeaderProps {
   translationData: TranslationResponse;
@@ -44,7 +44,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
               ref={buttonRef}
               onClick={toggleTranslationInfo}
               variant="primary"
-              size="small"
+              size="sm"
               className="order-2 sm:order-1"
             >
               Show translation info
@@ -52,6 +52,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
             
             <InfoLabel 
               variant="success"
+              size="default"
               className="order-1 sm:order-2"
             >
               {translationData.difficulty} Level
@@ -62,11 +63,11 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
         <InfoButton
           onClick={onToggleView}
           variant="secondary"
-          size="medium"
+          size="default"
           className={`order-3 ${
             showOriginal
               ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300'
-              : 'bg-green-200 text-green-800 hover:bg-green-300'
+              : ''
           }`}
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
