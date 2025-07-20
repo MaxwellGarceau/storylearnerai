@@ -1,34 +1,39 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StoryUploadForm from '../StoryUploadForm';
-import { vi } from 'vitest';
+import { vi, afterEach } from 'vitest';
 
 describe('StoryUploadForm', () => {
-  it('renders the form with correct Spanish to English translation context', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+  // Cleanup after each test to prevent DOM pollution
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
-    // Check for Spanish to English translation info
-    expect(screen.getByText('Translation:')).toBeInTheDocument();
-    expect(screen.getByText('Spanish → English')).toBeInTheDocument();
-    expect(screen.getByText(/Enter your Spanish story below/)).toBeInTheDocument();
+  it('renders the form with correct Spanish to English translation context', () => {
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+
+    // Check for Spanish to English translation info within this container
+    expect(within(container).getByText('Translation:')).toBeInTheDocument();
+    expect(within(container).getByText('Spanish → English')).toBeInTheDocument();
+    expect(within(container).getByText(/Enter your Spanish story below/)).toBeInTheDocument();
 
     // Check form elements
-    expect(screen.getByRole('textbox', { name: /Spanish Story/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/Target Language/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Target Difficulty \(CEFR\)/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Translate Story/i })).toBeInTheDocument();
+    expect(within(container).getByRole('textbox', { name: /Spanish Story/i })).toBeInTheDocument();
+    expect(within(container).getByLabelText(/Target Language/i)).toBeInTheDocument();
+    expect(within(container).getByLabelText(/Target Difficulty \(CEFR\)/i)).toBeInTheDocument();
+    expect(within(container).getByRole('button', { name: /Translate Story/i })).toBeInTheDocument();
   });
 
   it('has correct placeholder text for Spanish input', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = screen.getByRole('textbox', { name: /Spanish Story/i });
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
 
     expect(textArea).toHaveAttribute('placeholder', 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)');
   });
 
   it('allows the user to type in the textarea', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = screen.getByRole('textbox', { name: /Spanish Story/i });
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Una historia de ejemplo' } });
 
@@ -37,9 +42,9 @@ describe('StoryUploadForm', () => {
 
   it('triggers onSubmitStory with complete form data when the form is submitted', () => {
     const onSubmitStoryMock = vi.fn();
-    render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
-    const textArea = screen.getByRole('textbox', { name: /Spanish Story/i });
-    const submitButton = screen.getByRole('button', { name: /Translate Story/i });
+    const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia de prueba' } });
     fireEvent.click(submitButton);
@@ -53,50 +58,50 @@ describe('StoryUploadForm', () => {
   });
 
   it('displays enhanced difficulty options with descriptions', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
     
-    const difficultySelectTrigger = screen.getByLabelText('Select difficulty level');
+    const difficultySelectTrigger = within(container).getByLabelText('Select difficulty level');
     fireEvent.click(difficultySelectTrigger);
 
-    // Check for enhanced difficulty options
-    expect(screen.getByRole('option', { name: 'A1 (Beginner)' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'A2 (Elementary)' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'B1 (Intermediate)' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'B2 (Upper Intermediate)' })).toBeInTheDocument();
+    // Check for enhanced difficulty options within this container
+    expect(within(container).getByRole('option', { name: 'A1 (Beginner)' })).toBeInTheDocument();
+    expect(within(container).getByRole('option', { name: 'A2 (Elementary)' })).toBeInTheDocument();
+    expect(within(container).getByRole('option', { name: 'B1 (Intermediate)' })).toBeInTheDocument();
+    expect(within(container).getByRole('option', { name: 'B2 (Upper Intermediate)' })).toBeInTheDocument();
   });
 
   it('handles select changes for difficulty', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
   
-    const difficultySelectTrigger = screen.getByLabelText('Select difficulty level');
+    const difficultySelectTrigger = within(container).getByLabelText('Select difficulty level');
     fireEvent.click(difficultySelectTrigger);
   
-    const difficultyOption = screen.getByRole('option', { name: 'B1 (Intermediate)' });
+    const difficultyOption = within(container).getByRole('option', { name: 'B1 (Intermediate)' });
     fireEvent.click(difficultyOption);
   
-    expect(screen.getByLabelText('Select difficulty level')).toHaveTextContent('B1');
+    expect(within(container).getByLabelText('Select difficulty level')).toHaveTextContent('B1');
   });
 
   it('displays helpful context information', () => {
-    render(<StoryUploadForm onSubmitStory={vi.fn()} />);
+    const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
 
-    // Check for helper text
-    expect(screen.getByText('Write or paste the Spanish story text you wish to translate to English.')).toBeInTheDocument();
-    expect(screen.getByText('Currently only English translation is supported.')).toBeInTheDocument();
-    expect(screen.getByText('The story will be adapted to this English proficiency level.')).toBeInTheDocument();
+    // Check for helper text within this container
+    expect(within(container).getByText('Write or paste the Spanish story text you wish to translate to English.')).toBeInTheDocument();
+    expect(within(container).getByText('Currently only English translation is supported.')).toBeInTheDocument();
+    expect(within(container).getByText('The story will be adapted to this English proficiency level.')).toBeInTheDocument();
   });
 
   it('submits with different difficulty levels', () => {
     const onSubmitStoryMock = vi.fn();
-    render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
+    const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = screen.getByRole('textbox', { name: /Spanish Story/i });
-    const difficultySelectTrigger = screen.getByLabelText('Select difficulty level');
-    const submitButton = screen.getByRole('button', { name: /Translate Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const difficultySelectTrigger = within(container).getByLabelText('Select difficulty level');
+    const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     // Change difficulty to B2
     fireEvent.click(difficultySelectTrigger);
-    fireEvent.click(screen.getByRole('option', { name: 'B2 (Upper Intermediate)' }));
+    fireEvent.click(within(container).getByRole('option', { name: 'B2 (Upper Intermediate)' }));
 
     fireEvent.change(textArea, { target: { value: 'Historia compleja' } });
     fireEvent.click(submitButton);
@@ -110,10 +115,10 @@ describe('StoryUploadForm', () => {
 
   it('defaults to English language and A1 difficulty', () => {
     const onSubmitStoryMock = vi.fn();
-    render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
+    const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = screen.getByRole('textbox', { name: /Spanish Story/i });
-    const submitButton = screen.getByRole('button', { name: /Translate Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia básica' } });
     fireEvent.click(submitButton);

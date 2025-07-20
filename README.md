@@ -4,20 +4,122 @@ Story Learner AI is an application that allows the user to translate their favor
 More detailed information is available in the [docs](/docs/table-of-contents.md) folder
 
 ## Getting Started
-`nvm use`
-`npm install`
-`npm run dev`
+
+### Prerequisites
+- Node.js (see `.nvmrc` for version)
+- npm
+- LLM API key (OpenAI, Anthropic, or custom provider)
+
+### Setup
+1. `nvm use`
+2. `npm install`
+3. Copy `env.example` to `.env` and configure your LLM settings:
+   ```bash
+   cp env.example .env
+   ```
+4. Edit `.env` with your LLM provider configuration
+5. `npm run dev`
 
 Access the FE on `http://localhost:5173/`
+
+## LLM Service Configuration
+
+### Overview
+Story Learner AI uses a flexible LLM service system that supports multiple providers through a unified interface. The system is designed to be provider-agnostic, allowing you to easily switch between OpenAI, Anthropic, Google Gemini, or custom API endpoints.
+
+### Supported Providers
+
+#### OpenAI GPT
+```bash
+VITE_LLM_PROVIDER=openai
+VITE_LLM_API_KEY=your-openai-api-key
+VITE_LLM_ENDPOINT=https://api.openai.com/v1
+VITE_LLM_MODEL=gpt-4o-mini
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Anthropic Claude
+```bash
+VITE_LLM_PROVIDER=anthropic
+VITE_LLM_API_KEY=your-anthropic-api-key
+VITE_LLM_ENDPOINT=https://api.anthropic.com/v1
+VITE_LLM_MODEL=claude-3-haiku-20240307
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Google Gemini
+```bash
+VITE_LLM_PROVIDER=google
+VITE_LLM_API_KEY=your-gemini-api-key
+VITE_LLM_ENDPOINT=https://generativelanguage.googleapis.com/v1
+VITE_LLM_MODEL=gemini-pro
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+#### Meta Llama
+```bash
+VITE_LLM_PROVIDER=llama
+VITE_LLM_API_KEY=your-llama-api-key-or-none-for-ollama
+VITE_LLM_ENDPOINT=http://localhost:11434
+VITE_LLM_MODEL=llama3.1:8b
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+VITE_LLAMA_PROVIDER=ollama
+VITE_LLAMA_SYSTEM_PROMPT=You are a helpful assistant.
+VITE_LLAMA_STOP_SEQUENCES=["<|end|>", "<|stop|>"]
+```
+
+##### Llama Provider Options:
+- **ollama**: Local Ollama deployment (default endpoint: http://localhost:11434)
+- **groq**: Groq cloud API (fast Llama inference)
+- **together**: Together AI API
+- **replicate**: Replicate API
+- **custom**: Custom Llama-compatible endpoint
+
+#### Custom API
+```bash
+VITE_LLM_PROVIDER=custom
+VITE_LLM_API_KEY=your-custom-api-key
+VITE_LLM_ENDPOINT=https://your-custom-endpoint.com/v1
+VITE_LLM_MODEL=your-custom-model
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+```
+
+### Architecture
+
+The LLM service system follows a modular architecture:
+
+- **LLMService (Abstract Base Class)**: Defines the contract for all LLM providers
+- **Provider Implementations**: Concrete classes for OpenAI, Anthropic, Llama, and Custom APIs
+- **LLMServiceFactory**: Creates service instances based on provider configuration
+- **LLMServiceManager**: Singleton that manages the active LLM service and configuration
+- **Environment Configuration**: Handles environment variable parsing and validation
+
+### Adding New Providers
+
+To add a new LLM provider:
+
+1. Create a new service class extending `LLMService`
+2. Implement the required methods (`generateCompletion`, `healthCheck`)
+3. Add provider-specific configuration types
+4. Update the `LLMServiceFactory` to handle the new provider
+
+### Development Mode
+
+In development mode, the translation service will use a mock implementation by default. To test with a real LLM provider, ensure your environment variables are properly configured and the service passes health checks.
 
 ## CI/CD Pipeline
 
 ### Overview
-This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **25+ automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
+This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast behavior** and **automated tests** including security audits, performance monitoring, SEO validation, and multi-Node compatibility testing. The pipeline is designed with **cost optimization** in mind, using label-based triggering to conserve CI minutes.
 
 ### 🏷️ Triggering the Pipeline
 
-#### **Method 1: Label-Based (Recommended)**
+#### **Label-Based Trigger**
 1. **Create or update a Pull Request**
 2. **Apply the `run-ci` label** to the PR:
    ```bash
@@ -29,69 +131,6 @@ This project uses a comprehensive GitHub Actions CI/CD pipeline with **fail-fast
    ```
 3. **Monitor execution** in the Actions tab
 4. **Remove label** when done to stop future CI runs and conserve minutes
-
-#### **Method 2: Manual Trigger**
-1. Go to **Actions tab** in GitHub
-2. Select **"CI/CD"** workflow
-3. Click **"Run workflow"** button
-4. Choose branch and click **"Run workflow"**
-
-### 🧪 What the Pipeline Tests
-
-#### **Job 1: Test & Lint (Node 18 & 20)**
-- ✅ **Security audit** with `npm audit` (high severity level)
-- ✅ **TypeScript type checking** with `tsc --noEmit`
-- ✅ **ESLint code quality** checks
-- ✅ **Unit & component tests** with Vitest
-- ✅ **Test coverage** reporting to Codecov
-
-#### **Job 2: Build & Bundle Analysis**
-- ✅ **Production build** with Vite v5.4.19 (Node.js 20.11.1 compatible)
-- ✅ **Bundle size analysis** with detailed reporting
-- ✅ **TypeScript compilation** validation
-- ✅ **Build artifacts** uploaded for deployment
-
-#### **Job 3: Lighthouse Performance Audit**
-- ✅ **Core Web Vitals** monitoring (LCP, CLS, FCP, TBT)
-- ✅ **SEO validation** (meta description, robots.txt, crawlability)
-- ✅ **Performance best practices** validation
-- ✅ **Accessibility audits** with ARIA compliance
-- ✅ **Lighthouse reports** uploaded as artifacts
-
-#### **Job 4: Performance Budget Validation (Fail-Fast)**
-- ✅ **Performance score** ≥ 80%
-- ✅ **Accessibility score** ≥ 95%
-- ✅ **Best Practices score** ≥ 90%
-- ✅ **SEO score** ≥ 90%
-- ⚠️ **Pipeline fails immediately** if any budget is not met
-
-### 📊 Reading Results
-
-#### **Success Indicators**
-- ✅ All jobs show green checkmarks
-- ✅ Performance budgets are met
-- ✅ No security vulnerabilities found
-- ✅ Tests pass on both Node 18 & 20
-
-#### **Downloading Reports**
-1. Go to **Actions tab** → Select workflow run
-2. Scroll to **Artifacts** section
-3. Download:
-   - **lighthouse-results** - Performance reports (7-day retention)
-   - **build-files** - Production build artifacts (1-day retention)
-
-### 💰 Cost Optimization
-
-#### **Why Label-Based?**
-- **70-80% cost reduction** - Only runs when explicitly triggered
-- **Selective execution** - Apply label when ready for comprehensive testing
-- **Free tier friendly** - Conserves GitHub Actions minutes
-
-#### **Best Practices**
-- ✅ Apply `run-ci` label before merging
-- ✅ Remove label after successful run
-- ✅ Use draft PRs for early development
-- ✅ Test locally first with `npm run test:once` and `npm run build`
 
 ### 🛠️ Local Testing (Before CI)
 
@@ -112,6 +151,30 @@ npm run test:coverage      # Tests with coverage
 
 # Build verification
 npm run build              # Production build
+
+# CI/CD check (runs all checks locally)
+npm run ci-check           # Run all CI checks locally
+```
+
+### 🔧 Development Workflow
+
+#### **Pre-Push Checks**
+Before pushing code, run all CI checks locally to catch errors early:
+
+```bash
+npm run ci-check
+```
+
+This script runs:
+- ✅ **ESLint** - Code style and quality checks
+- ✅ **TypeScript Build** - Type checking and compilation
+- ✅ **Tests** - Complete test suite with coverage
+
+You can also run individual checks:
+```bash
+npm run lint         # ESLint only
+npm run build        # TypeScript build only
+npm test -- --run    # Tests only
 ```
 
 ### 🚨 Troubleshooting
