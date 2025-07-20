@@ -1,20 +1,40 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - 'sprint-*/**'
-      - 'feature/**'
-      - 'main'
   pull_request:
     types: [opened, synchronize, labeled]
   workflow_dispatch:
 
 jobs:
-  test:
-    name: 🧪 Tests & Linting
+  # Always run basic checks to provide status
+  basic-checks:
+    name: 🔍 Basic Checks
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: TypeScript type checking
+        run: npx tsc --noEmit
+        
+      - name: Run ESLint
+        run: npm run lint
+
+  # Full test suite - only runs with label or manual dispatch
+  test:
+    name: 🧪 Full Tests & Coverage
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'run-ci') || github.event_name == 'workflow_dispatch'
     timeout-minutes: 15
     strategy:
       matrix:
