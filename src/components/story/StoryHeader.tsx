@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { TranslationResponse } from '../../lib/translationService';
-import TranslationInfoModal from './TranslationInfoModal';
+import { FloatingModal } from '../ui/FloatingModal';
+import TranslationInfoContent from './TranslationInfoContent';
 import { InfoButton } from '../ui/InfoButton';
 import { InfoLabel } from '../ui/InfoLabel';
 
@@ -74,12 +75,17 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
         </InfoButton>
 
         {/* Translation Info Modal */}
-        <TranslationInfoModal
-          translationData={translationData}
+        <FloatingModal
           isOpen={showTranslationInfo}
           onClose={closeTranslationInfo}
-          triggerButtonRef={buttonRef}
-        />
+          triggerRef={buttonRef}
+          side="bottom"
+          align="end"
+          size="default"
+          showArrow={true}
+        >
+          <TranslationInfoContent translationData={translationData} />
+        </FloatingModal>
       </div>
     </div>
   );
