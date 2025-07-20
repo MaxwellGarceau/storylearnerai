@@ -46,4 +46,4 @@ const InfoButton = React.forwardRef<HTMLButtonElement, InfoButtonProps>(
 )
 InfoButton.displayName = "InfoButton"
 
-export { InfoButton, infoButtonVariants } 
+export { InfoButton } 

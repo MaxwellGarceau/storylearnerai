@@ -6,7 +6,7 @@ import { TranslationResponse } from '../../../lib/translationService';
 
 // Mock child components to isolate StoryRender testing
 vi.mock('../StoryHeader', () => ({
-  default: ({ translationData, showOriginal, onToggleView }: any) => (
+  default: ({ showOriginal, onToggleView }: { showOriginal: boolean; onToggleView: () => void }) => (
     <div data-testid="story-header">
       <span>Header - showOriginal: {showOriginal.toString()}</span>
       <button onClick={onToggleView}>Toggle View</button>
@@ -15,7 +15,7 @@ vi.mock('../StoryHeader', () => ({
 }));
 
 vi.mock('../StoryContent', () => ({
-  default: ({ translationData, showOriginal }: any) => (
+  default: ({ translationData, showOriginal }: { translationData: TranslationResponse; showOriginal: boolean }) => (
     <div data-testid="story-content">
       <span>Content - showOriginal: {showOriginal.toString()}</span>
       <span>{showOriginal ? translationData.originalText : translationData.translatedText}</span>
@@ -50,7 +50,7 @@ describe('StoryRender Component', () => {
 
   it('returns null when translationData is not provided', () => {
     const { container } = render(
-      <StoryRender translationData={null as any} />
+      <StoryRender translationData={null as unknown as TranslationResponse} />
     );
 
     expect(container.firstChild).toBeNull();
@@ -58,7 +58,7 @@ describe('StoryRender Component', () => {
 
   it('returns null when translationData is undefined', () => {
     const { container } = render(
-      <StoryRender translationData={undefined as any} />
+      <StoryRender translationData={undefined as unknown as TranslationResponse} />
     );
 
     expect(container.firstChild).toBeNull();

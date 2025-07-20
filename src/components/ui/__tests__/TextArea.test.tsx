@@ -53,7 +53,7 @@ describe('TextArea Component', () => {
     expect(textarea.value).toBe('Test content');
   });
 
-    it('handles onChange events', () => {
+  it('handles onChange events', () => {
     const handleChange = vi.fn();
     const { container } = render(
       <TextArea {...defaultProps} onChange={handleChange} />

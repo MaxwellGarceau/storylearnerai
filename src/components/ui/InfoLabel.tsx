@@ -46,4 +46,4 @@ const InfoLabel = React.forwardRef<HTMLSpanElement, InfoLabelProps>(
 )
 InfoLabel.displayName = "InfoLabel"
 
-export { InfoLabel, infoLabelVariants } 
+export { InfoLabel } 
