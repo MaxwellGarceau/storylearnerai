@@ -11,7 +11,7 @@ interface TextAreaProps {
   helperText?: string;
 }
 
-const TextArea: React.FC<TextAreaProps> = ({ id, value, onChange, placeholder, required, label, helperText }) => {
+const TextArea: React.FC<TextAreaProps> = ({ id, name, value, onChange, placeholder, required, label, helperText }) => {
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-gray-700">
@@ -19,6 +19,7 @@ const TextArea: React.FC<TextAreaProps> = ({ id, value, onChange, placeholder, r
       </label>
       <textarea
         id={id}
+        name={name}
         className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
         value={value}
         onChange={onChange}

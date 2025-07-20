@@ -1,1 +1,9 @@
-// Setup tests here...
+import '@testing-library/jest-dom';
+
+// Mock ResizeObserver for Radix UI components
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
