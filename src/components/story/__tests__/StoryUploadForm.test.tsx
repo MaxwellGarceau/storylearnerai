@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StoryUploadForm from '../StoryUploadForm';
 import { vi, afterEach } from 'vitest';

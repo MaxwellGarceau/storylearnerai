@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import StoryContainer from '../StoryContainer';

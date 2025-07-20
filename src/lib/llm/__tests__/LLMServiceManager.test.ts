@@ -38,7 +38,7 @@ describe('LLMServiceManager', () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (LLMServiceManager as any).instance = undefined;
-    } catch (error) {
+    } catch {
       // Ignore errors during cleanup
     }
   });
