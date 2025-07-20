@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import StoryContainer from '../StoryContainer';
 import { translationService } from '../../../lib/translationService';
 import type { TranslationResponse } from '../../../lib/translationService';
@@ -21,6 +21,11 @@ describe('StoryContainer Component', () => {
     vi.clearAllMocks();
   });
 
+  // Cleanup after each test to prevent DOM pollution
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
   it('renders StoryRender with translation data when a story is submitted', async () => {
     const mockTranslationResponse: TranslationResponse = {
       originalText: 'Esta es una historia de prueba.',
@@ -32,51 +37,57 @@ describe('StoryContainer Component', () => {
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
 
-    render(<StoryContainer />);
+    const { container } = render(<StoryContainer />);
 
-    // Find the textarea and submit button
-    const textArea = screen.getByRole('textbox');
-    const submitButton = screen.getByRole('button', { name: /translate story/i });
+    // Find the textarea by its label (more specific than just role) - scoped to this container
+    const textArea = within(container).getByLabelText('Spanish Story');
+    const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     // Simulate entering a story and submitting
     fireEvent.change(textArea, { target: { value: 'Esta es una historia de prueba.' } });
     fireEvent.click(submitButton);
 
-    // Check for loading state
-    expect(screen.getByText('Translating your story...')).toBeInTheDocument();
+    // Check for loading state within this container
+    expect(within(container).getByText('Translating your story...')).toBeInTheDocument();
 
-    // Wait for translation to complete
+    // Wait for translation to complete - look for the results sections
     await waitFor(() => {
-      expect(screen.getByText('Original Story (Spanish):')).toBeInTheDocument();
-      expect(screen.getByText('Translated Story (English):')).toBeInTheDocument();
+      // Look for the yellow container (original story) and green container (translated story)
+      const originalStoryContainer = within(container).getByText('Original Story (Spanish):').closest('.bg-yellow-50');
+      const translatedStoryContainer = within(container).getByText('Translated Story (English):').closest('.bg-green-50');
+      
+      expect(originalStoryContainer).toBeInTheDocument();
+      expect(translatedStoryContainer).toBeInTheDocument();
     });
 
-    // Check for specific content in the translation sections using more specific selectors
-    const originalStorySection = screen.getByText('Original Story (Spanish):').closest('div');
+    // Check for specific content in the translation sections
+    const originalStorySection = within(container).getByText('Original Story (Spanish):').closest('div');
     expect(originalStorySection).toHaveTextContent('Esta es una historia de prueba.');
 
     // For the translated story, look for the actual translated text content
-    const translatedStoryText = screen.getByText('This is a test story.');
+    const translatedStoryText = within(container).getByText('This is a test story.');
     expect(translatedStoryText).toBeInTheDocument();
     
-    // Verify the difficulty badge is displayed
-    expect(screen.getByText('A1 Level')).toBeInTheDocument();
+    // Verify the difficulty badge is displayed - look in the green container
+    const translatedSection = within(container).getByText('Translated Story (English):').closest('div');
+    const difficultyBadge = within(translatedSection!).getByText('A1 Level');
+    expect(difficultyBadge).toBeInTheDocument();
   });
 
   it('displays error message when translation fails', async () => {
     mockTranslationService.translate.mockRejectedValue(new Error('Translation service error'));
 
-    render(<StoryContainer />);
+    const { container } = render(<StoryContainer />);
 
-    const textArea = screen.getByRole('textbox');
-    const submitButton = screen.getByRole('button', { name: /translate story/i });
+    const textArea = within(container).getByLabelText('Spanish Story');
+    const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('❌ Translation Error:')).toBeInTheDocument();
-      expect(screen.getByText('Translation service error')).toBeInTheDocument();
+      expect(within(container).getByText('❌ Translation Error:')).toBeInTheDocument();
+      expect(within(container).getByText('Translation service error')).toBeInTheDocument();
     });
   });
 
@@ -86,19 +97,19 @@ describe('StoryContainer Component', () => {
       () => new Promise(resolve => setTimeout(resolve, 100))
     );
 
-    render(<StoryContainer />);
+    const { container } = render(<StoryContainer />);
 
-    const textArea = screen.getByRole('textbox');
-    const submitButton = screen.getByRole('button', { name: /translate story/i });
+    const textArea = within(container).getByLabelText('Spanish Story');
+    const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
 
-    // Should show loading immediately
-    expect(screen.getByText('Translating your story...')).toBeInTheDocument();
+    // Should show loading immediately within this container
+    expect(within(container).getByText('Translating your story...')).toBeInTheDocument();
     
-    // Loading spinner should be present
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    // Loading spinner should be present within this container
+    expect(within(container).getByRole('status', { name: 'Loading' })).toBeInTheDocument();
   });
 
   it('calls translation service with correct parameters', async () => {
@@ -112,10 +123,10 @@ describe('StoryContainer Component', () => {
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
 
-    render(<StoryContainer />);
+    const { container } = render(<StoryContainer />);
 
-    const textArea = screen.getByRole('textbox');
-    const submitButton = screen.getByRole('button', { name: /translate story/i });
+    const textArea = within(container).getByLabelText('Spanish Story');
+    const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);

@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import StoryRender from '../StoryRender';
 import { TranslationResponse } from '../../../lib/translationService';
 
@@ -13,31 +13,36 @@ describe('StoryRender Component', () => {
     difficulty: 'A1',
   };
 
-  it('renders the component with translation data', () => {
-    render(<StoryRender translationData={mockTranslationData} />);
+  // Cleanup after each test to prevent DOM pollution
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
-    // Check if both original and translated content are present
-    expect(screen.getByText('Original Story (Spanish):')).toBeInTheDocument();
-    expect(screen.getByText('Translated Story (English):')).toBeInTheDocument();
-    expect(screen.getByText('Esta es una historia de prueba.')).toBeInTheDocument();
-    expect(screen.getByText('This is a test story.')).toBeInTheDocument();
+  it('renders the component with translation data', () => {
+    const { container } = render(<StoryRender translationData={mockTranslationData} />);
+
+    // Use container to scope queries to this specific render
+    expect(within(container).getByText('Original Story (Spanish):')).toBeInTheDocument();
+    expect(within(container).getByText('Translated Story (English):')).toBeInTheDocument();
+    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
   });
 
   it('displays translation information correctly', () => {
-    render(<StoryRender translationData={mockTranslationData} />);
+    const { container } = render(<StoryRender translationData={mockTranslationData} />);
 
-    // Check translation metadata
-    expect(screen.getByText('Translation:')).toBeInTheDocument();
-    expect(screen.getByText('Spanish → English')).toBeInTheDocument();
-    expect(screen.getByText('Difficulty Level:')).toBeInTheDocument();
-    expect(screen.getByText('A1 (CEFR)')).toBeInTheDocument();
+    // Check translation metadata within this specific container
+    expect(within(container).getByText('Translation:')).toBeInTheDocument();
+    expect(within(container).getByText('Spanish → English')).toBeInTheDocument();
+    expect(within(container).getByText('Difficulty Level:')).toBeInTheDocument();
+    expect(within(container).getByText('A1 (CEFR)')).toBeInTheDocument();
   });
 
   it('displays difficulty level badge', () => {
-    render(<StoryRender translationData={mockTranslationData} />);
+    const { container } = render(<StoryRender translationData={mockTranslationData} />);
 
-    // Check if the difficulty badge is present
-    expect(screen.getByText('A1 Level')).toBeInTheDocument();
+    // Check if the difficulty badge is present within this specific container
+    expect(within(container).getByText('A1 Level')).toBeInTheDocument();
   });
 
   it('does not render anything when translation data is null', () => {
@@ -48,15 +53,15 @@ describe('StoryRender Component', () => {
   });
 
   it('applies correct styling classes', () => {
-    render(<StoryRender translationData={mockTranslationData} />);
+    const { container } = render(<StoryRender translationData={mockTranslationData} />);
     
     // Check if the original story container has yellow styling
-    const originalStoryContainer = screen.getByText('Original Story (Spanish):').closest('div');
+    const originalStoryContainer = within(container).getByText('Original Story (Spanish):').closest('div');
     expect(originalStoryContainer).toHaveClass('bg-yellow-50', 'border-yellow-200');
 
     // Check if the translated story container has green styling
     // Need to get the parent div, not the inner flex div
-    const translatedStoryHeader = screen.getByText('Translated Story (English):');
+    const translatedStoryHeader = within(container).getByText('Translated Story (English):');
     const translatedStoryContainer = translatedStoryHeader.closest('div')?.parentElement;
     expect(translatedStoryContainer).toHaveClass('bg-green-50', 'border-green-200');
   });
@@ -67,10 +72,10 @@ describe('StoryRender Component', () => {
       difficulty: 'B2',
     };
 
-    render(<StoryRender translationData={b2TranslationData} />);
+    const { container } = render(<StoryRender translationData={b2TranslationData} />);
 
-    expect(screen.getByText('B2 Level')).toBeInTheDocument();
-    expect(screen.getByText('B2 (CEFR)')).toBeInTheDocument();
+    expect(within(container).getByText('B2 Level')).toBeInTheDocument();
+    expect(within(container).getByText('B2 (CEFR)')).toBeInTheDocument();
   });
 
   it('preserves whitespace in story content', () => {
@@ -80,16 +85,16 @@ describe('StoryRender Component', () => {
       translatedText: 'First line.\n\nSecond line.',
     };
 
-    render(<StoryRender translationData={multilineTranslationData} />);
+    const { container } = render(<StoryRender translationData={multilineTranslationData} />);
 
     // Check if the whitespace-pre-wrap class is applied to preserve formatting
     // Use a more flexible text matcher for multiline content
-    const originalTextElement = screen.getByText((_, element) => {
+    const originalTextElement = within(container).getByText((_, element) => {
       return element?.textContent === 'Primera línea.\n\nSegunda línea.';
     });
     expect(originalTextElement).toHaveClass('whitespace-pre-wrap');
 
-    const translatedTextElement = screen.getByText((_, element) => {
+    const translatedTextElement = within(container).getByText((_, element) => {
       return element?.textContent === 'First line.\n\nSecond line.';
     });
     expect(translatedTextElement).toHaveClass('whitespace-pre-wrap');
