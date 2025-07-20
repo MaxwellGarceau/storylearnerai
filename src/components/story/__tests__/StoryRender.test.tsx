@@ -1,8 +1,27 @@
-import { render, within } from '@testing-library/react';
+import { render, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import StoryRender from '../StoryRender';
 import { TranslationResponse } from '../../../lib/translationService';
+
+// Mock child components to isolate StoryRender testing
+vi.mock('../StoryHeader', () => ({
+  default: ({ showOriginal, onToggleView }: { showOriginal: boolean; onToggleView: () => void }) => (
+    <div data-testid="story-header">
+      <span>Header - showOriginal: {showOriginal.toString()}</span>
+      <button onClick={onToggleView}>Toggle View</button>
+    </div>
+  )
+}));
+
+vi.mock('../StoryContent', () => ({
+  default: ({ translationData, showOriginal }: { translationData: TranslationResponse; showOriginal: boolean }) => (
+    <div data-testid="story-content">
+      <span>Content - showOriginal: {showOriginal.toString()}</span>
+      <span>{showOriginal ? translationData.originalText : translationData.translatedText}</span>
+    </div>
+  )
+}));
 
 describe('StoryRender Component', () => {
   const mockTranslationData: TranslationResponse = {
@@ -13,90 +32,210 @@ describe('StoryRender Component', () => {
     difficulty: 'A1',
   };
 
-  // Cleanup after each test to prevent DOM pollution
   afterEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('renders the component with translation data', () => {
-    const { container } = render(<StoryRender translationData={mockTranslationData} />);
+  it('renders with translation data', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
 
-    // Use container to scope queries to this specific render
-    expect(within(container).getByText('Original Story (Spanish):')).toBeInTheDocument();
-    expect(within(container).getByText('Translated Story (English):')).toBeInTheDocument();
-    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
-    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
+    const storyHeader = within(container).getByTestId('story-header');
+    const storyContent = within(container).getByTestId('story-content');
+
+    expect(storyHeader).toBeInTheDocument();
+    expect(storyContent).toBeInTheDocument();
   });
 
-  it('displays translation information correctly', () => {
-    const { container } = render(<StoryRender translationData={mockTranslationData} />);
+  it('returns null when translationData is not provided', () => {
+    const { container } = render(
+      <StoryRender translationData={null as unknown as TranslationResponse} />
+    );
 
-    // Check translation metadata within this specific container
-    expect(within(container).getByText('Translation:')).toBeInTheDocument();
-    expect(within(container).getByText('Spanish → English')).toBeInTheDocument();
-    expect(within(container).getByText('Difficulty Level:')).toBeInTheDocument();
-    expect(within(container).getByText('A1 (CEFR)')).toBeInTheDocument();
-  });
-
-  it('displays difficulty level badge', () => {
-    const { container } = render(<StoryRender translationData={mockTranslationData} />);
-
-    // Check if the difficulty badge is present within this specific container
-    expect(within(container).getByText('A1 Level')).toBeInTheDocument();
-  });
-
-  it('does not render anything when translation data is null', () => {
-    const { container } = render(<StoryRender translationData={null as unknown as TranslationResponse} />);
-
-    // Check if the container is empty
     expect(container.firstChild).toBeNull();
   });
 
-  it('applies correct styling classes', () => {
-    const { container } = render(<StoryRender translationData={mockTranslationData} />);
+  it('returns null when translationData is undefined', () => {
+    const { container } = render(
+      <StoryRender translationData={undefined as unknown as TranslationResponse} />
+    );
+
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('initializes with showOriginal as false', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const header = within(container).getByTestId('story-header');
+    const content = within(container).getByTestId('story-content');
+
+    expect(within(header).getByText('Header - showOriginal: false')).toBeInTheDocument();
+    expect(within(content).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(within(content).getByText('This is a test story.')).toBeInTheDocument();
+  });
+
+  it('has correct styling when showing translated story (showOriginal=false)', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const storyContainer = container.querySelector('.bg-green-50');
+    expect(storyContainer).toBeInTheDocument();
+    expect(storyContainer).toHaveClass('bg-green-50', 'border-green-200');
+  });
+
+  it('toggles to original story when toggle button is clicked', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    // Initially showing translated
+    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
+
+    // Click toggle button
+    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    fireEvent.click(toggleButton);
+
+    // Now showing original
+    expect(within(container).getByText('Header - showOriginal: true')).toBeInTheDocument();
+    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
+    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+  });
+
+  it('has correct styling when showing original story (showOriginal=true)', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    // Click toggle to show original
+    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    fireEvent.click(toggleButton);
+
+    const storyContainer = container.querySelector('.bg-yellow-50');
+    expect(storyContainer).toBeInTheDocument();
+    expect(storyContainer).toHaveClass('bg-yellow-50', 'border-yellow-200');
+  });
+
+  it('can toggle back and forth between views', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+
+    // Start with translated (false)
+    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(container.querySelector('.bg-green-50')).toBeInTheDocument();
+
+    // Toggle to original (true)
+    fireEvent.click(toggleButton);
+    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
+    expect(container.querySelector('.bg-yellow-50')).toBeInTheDocument();
+
+    // Toggle back to translated (false)
+    fireEvent.click(toggleButton);
+    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(container.querySelector('.bg-green-50')).toBeInTheDocument();
+  });
+
+  it('passes correct props to StoryHeader', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const storyHeader = within(container).getByTestId('story-header');
     
-    // Check if the original story container has yellow styling
-    const originalStoryContainer = within(container).getByText('Original Story (Spanish):').closest('div');
-    expect(originalStoryContainer).toHaveClass('bg-yellow-50', 'border-yellow-200');
-
-    // Check if the translated story container has green styling
-    // Need to get the parent div, not the inner flex div
-    const translatedStoryHeader = within(container).getByText('Translated Story (English):');
-    const translatedStoryContainer = translatedStoryHeader.closest('div')?.parentElement;
-    expect(translatedStoryContainer).toHaveClass('bg-green-50', 'border-green-200');
+    // Should pass translationData, showOriginal, and onToggleView
+    expect(storyHeader).toBeInTheDocument();
+    expect(within(storyHeader).getByText('Header - showOriginal: false')).toBeInTheDocument();
+    expect(within(storyHeader).getByRole('button', { name: 'Toggle View' })).toBeInTheDocument();
   });
 
-  it('renders with different difficulty levels', () => {
-    const b2TranslationData: TranslationResponse = {
-      ...mockTranslationData,
-      difficulty: 'B2',
+  it('passes correct props to StoryContent', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const storyContent = within(container).getByTestId('story-content');
+    
+    // Should pass translationData and showOriginal
+    expect(storyContent).toBeInTheDocument();
+    expect(within(storyContent).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(within(storyContent).getByText('This is a test story.')).toBeInTheDocument();
+  });
+
+  it('has proper container structure and classes', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const outerContainer = container.firstChild as HTMLElement;
+    const storyContainer = container.querySelector('.p-4.border.rounded-md');
+
+    expect(outerContainer).toHaveClass('mt-4', 'space-y-4');
+    expect(storyContainer).toBeInTheDocument();
+    expect(storyContainer).toHaveClass(
+      'p-4',
+      'border',
+      'rounded-md',
+      'transition-all',
+      'duration-300',
+      'relative'
+    );
+  });
+
+  it('handles different translation data correctly', () => {
+    const germanTranslationData: TranslationResponse = {
+      originalText: 'Das ist eine deutsche Geschichte.',
+      translatedText: 'This is a German story.',
+      fromLanguage: 'German',
+      toLanguage: 'English',
+      difficulty: 'B1',
     };
 
-    const { container } = render(<StoryRender translationData={b2TranslationData} />);
+    const { container } = render(
+      <StoryRender translationData={germanTranslationData} />
+    );
 
-    expect(within(container).getByText('B2 Level')).toBeInTheDocument();
-    expect(within(container).getByText('B2 (CEFR)')).toBeInTheDocument();
+    // Check translated content is displayed initially
+    expect(within(container).getByText('This is a German story.')).toBeInTheDocument();
+
+    // Toggle to original
+    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    fireEvent.click(toggleButton);
+
+    // Check original content is displayed
+    expect(within(container).getByText('Das ist eine deutsche Geschichte.')).toBeInTheDocument();
   });
 
-  it('preserves whitespace in story content', () => {
-    const multilineTranslationData: TranslationResponse = {
-      ...mockTranslationData,
-      originalText: 'Primera línea.\n\nSegunda línea.',
-      translatedText: 'First line.\n\nSecond line.',
-    };
+  it('maintains state across multiple interactions', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
 
-    const { container } = render(<StoryRender translationData={multilineTranslationData} />);
+    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
 
-    // Check if the whitespace-pre-wrap class is applied to preserve formatting
-    // Use a more flexible text matcher for multiline content
-    const originalTextElement = within(container).getByText((_, element) => {
-      return element?.textContent === 'Primera línea.\n\nSegunda línea.';
-    });
-    expect(originalTextElement).toHaveClass('whitespace-pre-wrap');
+    // Perform multiple toggles
+    for (let i = 0; i < 5; i++) {
+      fireEvent.click(toggleButton);
+    }
 
-    const translatedTextElement = within(container).getByText((_, element) => {
-      return element?.textContent === 'First line.\n\nSecond line.';
-    });
-    expect(translatedTextElement).toHaveClass('whitespace-pre-wrap');
+    // Should end up in original view (odd number of clicks)
+    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
+    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+    expect(container.querySelector('.bg-yellow-50')).toBeInTheDocument();
   });
-});
+
+  it('has transition classes for smooth animations', () => {
+    const { container } = render(
+      <StoryRender translationData={mockTranslationData} />
+    );
+
+    const storyContainer = container.querySelector('.transition-all');
+    expect(storyContainer).toHaveClass('transition-all', 'duration-300');
+  });
+}); 

@@ -6,3 +6,6 @@
 - Re-enable Performance Budget Check
 - Re-enable Codecov
 - Add a bundle limit in the CI/CD checks
+
+## Testing
+- Enable ESLint type hint linting in production application to catch type errors in pipeline
