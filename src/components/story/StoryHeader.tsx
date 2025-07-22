@@ -34,7 +34,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
         {!showOriginal && (
           <>
             <Badge 
-              variant="success"
+              variant="info"
               className="order-1 sm:order-2"
             >
               {translationData.difficulty} Level
