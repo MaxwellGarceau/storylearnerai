@@ -32,7 +32,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   };
 
   return (
-    <div className="fixed top-20 right-4 z-50">
+    <div className="fixed top-28 right-4 z-50">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
