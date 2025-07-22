@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectIcon } from '@radix-ui/react-select';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
+import { ChevronDown } from 'lucide-react';
 import Label from '../ui/Label';
 
 interface TranslationOptionsSidebarProps {
@@ -78,7 +79,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                 className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.language}</span>
-                <SelectIcon className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-gray-400" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
                 <SelectItem 
@@ -110,7 +111,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                 className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.difficulty}</span>
-                <SelectIcon className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-gray-400" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
                 <SelectItem 
