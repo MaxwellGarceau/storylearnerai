@@ -81,7 +81,7 @@ describe('StoryContainer Component', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(within(container).getByText('❌ Translation Error:')).toBeInTheDocument();
+      expect(within(container).getByText('Translation Error:')).toBeInTheDocument();
       expect(within(container).getByText('Translation service error')).toBeInTheDocument();
     });
   });

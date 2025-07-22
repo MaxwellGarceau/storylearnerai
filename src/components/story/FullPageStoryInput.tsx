@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/Button';
+import { Card, CardContent } from '../ui/Card';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -32,21 +33,23 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
       {/* Full-page text area */}
       <div className="flex-1 min-h-0">
-        <div className="h-full bg-background border border-border rounded-lg shadow-sm">
-          <textarea
-            id="fullpage-story-input"
-            name="fullpage-story-input"
-            value={value}
-            onChange={handleInputChange}
-            placeholder={placeholder}
-            className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
-            style={{
-              minHeight: 'calc(100vh - 300px)',
-              fontFamily: 'Georgia, serif',
-              lineHeight: '1.8',
-            }}
-          />
-        </div>
+        <Card className="h-full">
+          <CardContent className="p-0 h-full">
+            <textarea
+              id="fullpage-story-input"
+              name="fullpage-story-input"
+              value={value}
+              onChange={handleInputChange}
+              placeholder={placeholder}
+              className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
+              style={{
+                minHeight: 'calc(100vh - 300px)',
+                fontFamily: 'Georgia, serif',
+                lineHeight: '1.8',
+              }}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Action area with button and tip */}
@@ -62,7 +65,11 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           >
             {isTranslating ? (
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" role="status" aria-label="Loading"></div>
+                <div 
+                  className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" 
+                  role="status" 
+                  aria-label="Loading"
+                />
                 <span>Translating...</span>
               </div>
             ) : (

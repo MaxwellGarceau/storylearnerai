@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Settings } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import Label from '../ui/Label';
 import { cn } from '../../lib/utils';
+import { Card, CardContent } from '../ui/Card';
 
 interface TranslationOptionsSidebarProps {
   formData: {
@@ -45,14 +46,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
             )}
             aria-label={isOpen ? 'Close translation options' : 'Open translation options'}
           >
-            <svg
-              className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <Settings className="w-5 h-5" />
             <span className="hidden sm:inline">Options</span>
           </button>
         </Popover.Trigger>
@@ -88,14 +82,16 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               </div>
 
               {/* Info Box */}
-              <div className="p-3 bg-accent border border-border rounded-md">
-                <p className="text-sm text-accent-foreground">
-                  <strong>Translation:</strong> Spanish → English
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-              Enter your Spanish story in the main text area, and it will be translated to English at your selected difficulty level.
-                </p>
-              </div>
+              <Card variant="outline" className="bg-accent/50">
+                <CardContent className="p-3">
+                  <p className="text-sm text-accent-foreground">
+                    <strong>Translation:</strong> Spanish → English
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Enter your Spanish story in the main text area, and it will be translated to English at your selected difficulty level.
+                  </p>
+                </CardContent>
+              </Card>
 
               {/* Language Selection */}
               <div className="space-y-2">

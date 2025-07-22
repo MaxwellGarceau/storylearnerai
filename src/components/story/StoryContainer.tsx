@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import TranslationOptionsSidebar from './TranslationOptionsSidebar';
 import { translationService, TranslationResponse } from '../../lib/translationService';
+import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -81,12 +82,12 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       {/* Error message */}
       {translationError && (
         <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-20 md:w-80 z-40">
-          <div className="p-4 border rounded-md bg-red-50 border-red-200 shadow-lg">
-            <div className="flex items-center space-x-2">
-              <span className="text-red-800">❌ Translation Error:</span>
-              <span className="text-red-700">{translationError}</span>
-            </div>
-          </div>
+          <Alert variant="destructive" className="shadow-lg">
+            <AlertIcon.destructive className="h-4 w-4" />
+            <AlertDescription>
+              <span className="font-medium">Translation Error:</span> {translationError}
+            </AlertDescription>
+          </Alert>
         </div>
       )}
     </div>
