@@ -16,9 +16,7 @@ const TranslatePage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-4">Translate Your Story</h2>
-        <p className="text-gray-600 mb-6">Enter a story in any language and we'll translate it to English</p>
+      <div className="h-full">
         <StoryContainer onStoryTranslated={handleStoryTranslated} />
       </div>
     </Layout>

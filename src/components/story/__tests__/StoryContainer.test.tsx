@@ -40,16 +40,13 @@ describe('StoryContainer Component', () => {
 
     const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
-    // Find the textarea by its label (more specific than just role) - scoped to this container
-    const textArea = within(container).getByLabelText('Spanish Story');
+    // Find the textarea by its id and the submit button in the sidebar
+    const textArea = within(container).getByDisplayValue('');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     // Simulate entering a story and submitting
     fireEvent.change(textArea, { target: { value: 'Esta es una historia de prueba.' } });
     fireEvent.click(submitButton);
-
-    // Check for loading state within this container
-    expect(within(container).getByText('Translating your story...')).toBeInTheDocument();
 
     // Wait for translation to complete - check that the callback was called
     await waitFor(() => {
@@ -77,7 +74,7 @@ describe('StoryContainer Component', () => {
 
     const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
-    const textArea = within(container).getByLabelText('Spanish Story');
+    const textArea = within(container).getByDisplayValue('');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
@@ -98,16 +95,16 @@ describe('StoryContainer Component', () => {
 
     const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
-    const textArea = within(container).getByLabelText('Spanish Story');
+    const textArea = within(container).getByDisplayValue('');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
 
-    // Should show loading immediately within this container
-    expect(within(container).getByText('Translating your story...')).toBeInTheDocument();
+    // Should show loading state in the button
+    expect(within(container).getByText('Translating...')).toBeInTheDocument();
     
-    // Loading spinner should be present within this container
+    // Loading spinner should be present in the button
     expect(within(container).getByRole('status', { name: 'Loading' })).toBeInTheDocument();
   });
 
@@ -125,7 +122,7 @@ describe('StoryContainer Component', () => {
 
     const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
 
-    const textArea = within(container).getByLabelText('Spanish Story');
+    const textArea = within(container).getByDisplayValue('');
     const submitButton = within(container).getByRole('button', { name: /translate story/i });
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
