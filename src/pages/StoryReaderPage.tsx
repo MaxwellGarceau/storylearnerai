@@ -178,7 +178,7 @@ const StoryReaderPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="current-level">Current Level</Label>
                     <div className="flex items-center gap-2">
-                      <Badge variant="success">
+                      <Badge variant="info">
                         {translationData.difficulty} Level
                       </Badge>
                     </div>
