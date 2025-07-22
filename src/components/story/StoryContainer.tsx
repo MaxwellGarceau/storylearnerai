@@ -67,6 +67,8 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
         <FullPageStoryInput
           value={formData.story}
           onChange={handleStoryChange}
+          onSubmit={handleSubmit}
+          isTranslating={isTranslating}
         />
       </div>
 
@@ -74,8 +76,6 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       <TranslationOptionsSidebar
         formData={formData}
         onFormDataChange={handleFormDataChange}
-        onSubmit={handleSubmit}
-        isTranslating={isTranslating}
       />
 
       {/* Error message */}

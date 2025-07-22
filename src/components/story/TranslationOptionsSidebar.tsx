@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
-import { Button } from '../ui/Button';
 import Label from '../ui/Label';
 
 interface TranslationOptionsSidebarProps {
@@ -9,15 +8,11 @@ interface TranslationOptionsSidebarProps {
     difficulty: string;
   };
   onFormDataChange: (field: 'language' | 'difficulty', value: string) => void;
-  onSubmit: () => void;
-  isTranslating: boolean;
 }
 
 const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   formData,
   onFormDataChange,
-  onSubmit,
-  isTranslating,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -118,22 +113,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
             </p>
           </div>
 
-          {/* Submit Button */}
-          <Button
-            type="button"
-            onClick={onSubmit}
-            disabled={isTranslating}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-md focus:ring focus:ring-indigo-300"
-          >
-            {isTranslating ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" role="status" aria-label="Loading"></div>
-                <span>Translating...</span>
-              </div>
-            ) : (
-              'Translate Story'
-            )}
-          </Button>
+
         </div>
       </div>
     </div>

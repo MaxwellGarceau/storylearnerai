@@ -10,8 +10,6 @@ describe('TranslationOptionsSidebar Component', () => {
       difficulty: 'A1',
     },
     onFormDataChange: vi.fn(),
-    onSubmit: vi.fn(),
-    isTranslating: false,
   };
 
   afterEach(() => {
@@ -49,37 +47,7 @@ describe('TranslationOptionsSidebar Component', () => {
     expect(screen.getByText('A1')).toBeInTheDocument();
   });
 
-  it('calls onSubmit when translate button is clicked', () => {
-    render(<TranslationOptionsSidebar {...defaultProps} />);
 
-    const toggleButton = screen.getByRole('button', { name: /open translation options/i });
-    fireEvent.click(toggleButton);
-
-    const translateButton = screen.getByText('Translate Story');
-    fireEvent.click(translateButton);
-
-    expect(defaultProps.onSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows loading state when isTranslating is true', () => {
-    render(<TranslationOptionsSidebar {...defaultProps} isTranslating={true} />);
-
-    const toggleButton = screen.getByRole('button', { name: /open translation options/i });
-    fireEvent.click(toggleButton);
-
-    expect(screen.getByText('Translating...')).toBeInTheDocument();
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
-  });
-
-  it('disables translate button when isTranslating is true', () => {
-    render(<TranslationOptionsSidebar {...defaultProps} isTranslating={true} />);
-
-    const toggleButton = screen.getByRole('button', { name: /open translation options/i });
-    fireEvent.click(toggleButton);
-
-    const translateButton = screen.getByText('Translating...').closest('button');
-    expect(translateButton).toBeDisabled();
-  });
 
   it('displays translation info box', () => {
     render(<TranslationOptionsSidebar {...defaultProps} />);
