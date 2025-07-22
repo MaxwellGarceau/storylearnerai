@@ -63,8 +63,10 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
           </div>
 
           {/* Language Selection */}
-          <div>
-            <Label htmlFor="sidebar-language">Target Language</Label>
+          <div className="space-y-2">
+            <Label htmlFor="sidebar-language">
+              Target Language
+            </Label>
             <Select
               name="sidebar-language"
               value={formData.language}
@@ -73,22 +75,37 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               <SelectTrigger
                 id="sidebar-language"
                 aria-label="Select target language"
-                className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
+                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200"
               >
-                {formData.language}
+                <span className="text-gray-900">{formData.language}</span>
+                <svg
+                  className="w-4 h-4 text-gray-400 ml-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="English">English</SelectItem>
+              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
+                <SelectItem 
+                  value="English"
+                  className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                >
+                  English
+                </SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500">
               Currently only English translation is supported.
             </p>
           </div>
 
           {/* Difficulty Selection */}
-          <div>
-            <Label htmlFor="sidebar-difficulty">Target Difficulty (CEFR)</Label>
+          <div className="space-y-2">
+            <Label htmlFor="sidebar-difficulty">
+              Target Difficulty (CEFR)
+            </Label>
             <Select
               name="sidebar-difficulty"
               value={formData.difficulty}
@@ -97,18 +114,46 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               <SelectTrigger
                 id="sidebar-difficulty"
                 aria-label="Select difficulty level"
-                className="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200"
+                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200"
               >
-                {formData.difficulty}
+                <span className="text-gray-900">{formData.difficulty}</span>
+                <svg
+                  className="w-4 h-4 text-gray-400 ml-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="A1">A1 (Beginner)</SelectItem>
-                <SelectItem value="A2">A2 (Elementary)</SelectItem>
-                <SelectItem value="B1">B1 (Intermediate)</SelectItem>
-                <SelectItem value="B2">B2 (Upper Intermediate)</SelectItem>
+              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
+                <SelectItem 
+                  value="A1"
+                  className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                >
+                  A1 (Beginner)
+                </SelectItem>
+                <SelectItem 
+                  value="A2"
+                  className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                >
+                  A2 (Elementary)
+                </SelectItem>
+                <SelectItem 
+                  value="B1"
+                  className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                >
+                  B1 (Intermediate)
+                </SelectItem>
+                <SelectItem 
+                  value="B2"
+                  className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                >
+                  B2 (Upper Intermediate)
+                </SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500">
               The story will be adapted to this English proficiency level.
             </p>
           </div>
