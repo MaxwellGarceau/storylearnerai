@@ -60,35 +60,32 @@ const StoryReaderPage: React.FC = () => {
   return (
     <Layout>
       <div className="h-full relative">
-        {/* Main content */}
-        <div className="h-full max-w-4xl mx-auto p-6">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Your Translated Story</h1>
-            <p className="text-muted-foreground text-lg">Enjoy reading your story in English!</p>
-          </div>
-          
-          {/* Story Container with transparent background */}
-          <div className="bg-transparent border border-border rounded-lg p-6 mb-8">
-            <StoryRender translationData={translationData} />
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={handleTranslateAnother}
-              size="lg"
-            >
-              Translate Another Story
-            </Button>
-            <Button 
-              onClick={handleGoHome}
-              variant="secondary"
-              size="lg"
-            >
-              Home
-            </Button>
-          </div>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Your Translated Story</h1>
+          <p className="text-muted-foreground text-lg">Enjoy reading your story in English!</p>
+        </div>
+
+        {/* Story Container with transparent background */}
+        <div className="bg-transparent border border-border rounded-lg p-6 mb-8">
+          <StoryRender translationData={translationData} />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button 
+            onClick={handleTranslateAnother}
+            size="lg"
+          >
+            Translate Another Story
+          </Button>
+          <Button 
+            onClick={handleGoHome}
+            variant="secondary"
+            size="lg"
+          >
+            Home
+          </Button>
         </div>
 
         {/* Options Sidebar */}
@@ -156,9 +153,9 @@ const StoryReaderPage: React.FC = () => {
                     <Label htmlFor="story-language">
                       Target Language
                     </Label>
-                                         <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                       <span className="text-foreground">{translationData.toLanguage || 'English'}</span>
-                     </div>
+                    <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
+                      <span className="text-foreground">{translationData.toLanguage || 'English'}</span>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Currently only English translation is supported.
                     </p>
