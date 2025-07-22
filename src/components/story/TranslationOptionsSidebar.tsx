@@ -52,7 +52,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
 
       {/* Sidebar Panel */}
       <div
-        className={`absolute right-0 top-12 w-80 bg-white shadow-xl rounded-lg border transition-all duration-200 ${
+        className={`absolute right-0 top-14 w-80 bg-white shadow-xl rounded-lg border transition-all duration-200 ${
           isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
         }`}
       >
