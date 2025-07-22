@@ -19,12 +19,12 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className="space-y-4">
       {/* Single Story Container - Toggleable */}
-      <div className={`p-4 border rounded-md transition-all duration-300 relative ${
+      <div className={`transition-all duration-300 relative ${
         showOriginal 
-          ? 'bg-yellow-50 border-yellow-200' 
-          : 'bg-green-50 border-green-200'
+          ? 'text-yellow-800' 
+          : 'text-green-800'
       }`}>
         <StoryHeader 
           translationData={translationData}
