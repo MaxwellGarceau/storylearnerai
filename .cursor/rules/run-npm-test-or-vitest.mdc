@@ -1,5 +1,4 @@
 ---
-description: npm test, vitest, vitest run, test FE changes
-alwaysApply: false
+alwaysApply: true
 ---
 When running npm tests use `npm test:once` so that the tests run and finish without creating a background process.

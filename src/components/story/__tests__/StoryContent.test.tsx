@@ -54,10 +54,11 @@ describe('StoryContent Component', () => {
 
     const textElement = within(container).getByText('This is a test story.');
     expect(textElement).toHaveClass(
-      'text-gray-700',
+      'text-foreground',
       'whitespace-pre-wrap',
       'transition-opacity',
-      'duration-300'
+      'duration-300',
+      'leading-relaxed'
     );
   });
 

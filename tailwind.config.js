@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import { sky } from 'tailwindcss/colors';
+import { blue } from 'tailwindcss/colors';
 
 export default {
   darkMode: ["class"],

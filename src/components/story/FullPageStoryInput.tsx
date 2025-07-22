@@ -25,7 +25,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Translate Your Story</h1>
+        <h2 className="text-3xl font-bold text-foreground mb-2">Translate Your Story</h2>
         <p className="text-muted-foreground text-lg">
           Enter a story in Spanish and we'll translate it to English
         </p>
