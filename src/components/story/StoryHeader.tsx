@@ -33,32 +33,6 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
       <div className="flex flex-col sm:flex-row lg:flex-row items-start sm:items-center lg:items-center gap-2 sm:gap-3 lg:gap-2 flex-wrap relative">
         {!showOriginal && (
           <>
-            <Popover.Root open={showTranslationInfo} onOpenChange={setShowTranslationInfo}>
-              <Popover.Trigger asChild>
-                <InfoButton
-                  variant="primary"
-                  size="sm"
-                  className="order-2 sm:order-1"
-                >
-                  Show translation info
-                </InfoButton>
-              </Popover.Trigger>
-              
-              <Popover.Portal>
-                <Popover.Content 
-                  className="z-50 w-72 max-w-[calc(100vw-32px)] rounded-md bg-popover p-4 text-popover-foreground shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-                  side="bottom"
-                  align="end"
-                  sideOffset={8}
-                  avoidCollisions={true}
-                  collisionPadding={16}
-                >
-                  <TranslationInfoContent translationData={translationData} />
-                  <Popover.Arrow className="fill-popover w-5 h-5 -mt-px" />
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-            
             <Badge 
               variant="success"
               className="order-1 sm:order-2"

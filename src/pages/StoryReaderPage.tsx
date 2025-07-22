@@ -102,7 +102,7 @@ const StoryReaderPage: React.FC = () => {
                 aria-label={showOptions ? 'Close story options' : 'Open story options'}
               >
                 <Settings className="w-4 h-4" />
-                <span className="hidden sm:inline">Options</span>
+                <span className="hidden sm:inline">Translation Info</span>
               </Button>
             </Popover.Trigger>
 
