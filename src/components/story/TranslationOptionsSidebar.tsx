@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/react-select';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectIcon } from '@radix-ui/react-select';
 import Label from '../ui/Label';
 
 interface TranslationOptionsSidebarProps {
@@ -75,17 +75,10 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               <SelectTrigger
                 id="sidebar-language"
                 aria-label="Select target language"
-                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200"
+                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.language}</span>
-                <svg
-                  className="w-4 h-4 text-gray-400 ml-auto"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <SelectIcon className="w-4 h-4 text-gray-400" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
                 <SelectItem 
@@ -114,17 +107,10 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               <SelectTrigger
                 id="sidebar-difficulty"
                 aria-label="Select difficulty level"
-                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200"
+                className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.difficulty}</span>
-                <svg
-                  className="w-4 h-4 text-gray-400 ml-auto"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <SelectIcon className="w-4 h-4 text-gray-400" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
                 <SelectItem 
