@@ -59,22 +59,22 @@ describe('StoryReaderPage', () => {
     expect(screen.getByText('No Story Found')).toBeInTheDocument();
     expect(screen.getByText('Please translate a story first to view it here.')).toBeInTheDocument();
     expect(screen.getByText('Translate a Story')).toBeInTheDocument();
-    expect(screen.getByText('Go Home')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
   });
 
   it('navigates to /translate when Translate a Story button is clicked', () => {
     renderWithRouter(<StoryReaderPage />);
     
-    const translateButton = screen.getAllByText('Translate a Story')[0];
+    const translateButton = screen.getByText('Translate a Story');
     fireEvent.click(translateButton);
     
     expect(mockNavigate).toHaveBeenCalledWith('/translate');
   });
 
-  it('navigates to / when Go Home button is clicked', () => {
+  it('navigates to / when Home button is clicked', () => {
     renderWithRouter(<StoryReaderPage />);
     
-    const homeButton = screen.getAllByText('Go Home')[0];
+    const homeButton = screen.getByRole('button', { name: 'Home' });
     fireEvent.click(homeButton);
     
     expect(mockNavigate).toHaveBeenCalledWith('/');
@@ -117,8 +117,8 @@ describe('StoryReaderPage', () => {
     
     renderWithRouter(<StoryReaderPage />);
     
-    expect(screen.getAllByText('Translate Another Story')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('Go Home')[0]).toBeInTheDocument();
+    expect(screen.getByText('Translate Another Story')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
   });
 
   it('navigates to /translate when Translate Another Story button is clicked', () => {
@@ -136,7 +136,7 @@ describe('StoryReaderPage', () => {
     
     renderWithRouter(<StoryReaderPage />);
     
-    const translateAnotherButton = screen.getAllByText('Translate Another Story')[0];
+    const translateAnotherButton = screen.getByText('Translate Another Story');
     fireEvent.click(translateAnotherButton);
     
     expect(mockNavigate).toHaveBeenCalledWith('/translate');

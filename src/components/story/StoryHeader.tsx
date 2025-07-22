@@ -3,7 +3,8 @@ import { TranslationResponse } from '../../lib/translationService';
 import * as Popover from '@radix-ui/react-popover';
 import TranslationInfoContent from './TranslationInfoContent';
 import { InfoButton } from '../ui/InfoButton';
-import { InfoLabel } from '../ui/InfoLabel';
+import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 
 interface StoryHeaderProps {
   translationData: TranslationResponse;
@@ -58,28 +59,27 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
               </Popover.Portal>
             </Popover.Root>
             
-            <InfoLabel 
+            <Badge 
               variant="success"
-              size="default"
               className="order-1 sm:order-2"
             >
               {translationData.difficulty} Level
-            </InfoLabel>
+            </Badge>
           </>
         )}
         
-        <InfoButton
+        <Button
           onClick={onToggleView}
-          variant="secondary"
+          variant="outline"
           size="default"
           className={`order-3 ${
             showOriginal
-              ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300'
-              : ''
+              ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-200'
+              : 'bg-green-100 text-green-800 hover:bg-green-200 border-green-200'
           }`}
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
-        </InfoButton>
+        </Button>
       </div>
     </div>
   );
