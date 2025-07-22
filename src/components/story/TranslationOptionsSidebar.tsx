@@ -66,7 +66,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
             avoidCollisions={true}
             collisionPadding={16}
           >
-            <div className="p-6 pb-8 space-y-6">
+            <div className="p-6 pb-12 space-y-6">
               {/* Header */}
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Translation Options</h3>
@@ -162,7 +162,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-500 mb-6">
               The story will be adapted to this English proficiency level.
                 </p>
               </div>
