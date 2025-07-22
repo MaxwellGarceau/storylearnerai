@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import StoryUploadForm from './StoryUploadForm';
+import FullPageStoryInput from './FullPageStoryInput';
+import TranslationOptionsSidebar from './TranslationOptionsSidebar';
 import { translationService, TranslationResponse } from '../../lib/translationService';
+import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -9,18 +11,42 @@ interface StoryContainerProps {
 const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    story: '',
+    language: 'English',
+    difficulty: 'A1',
+  });
 
-  const handleStorySubmit = async (storyData: { story: string; language: string; difficulty: string }) => {
+  const handleFormDataChange = (field: 'language' | 'difficulty', value: string) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [field]: value,
+    }));
+  };
+
+  const handleStoryChange = (story: string) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      story,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.story.trim()) {
+      setTranslationError('Please enter a story to translate.');
+      return;
+    }
+
     setIsTranslating(true);
     setTranslationError(null);
 
     try {
       // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
       const response = await translationService.translate({
-        text: storyData.story,
+        text: formData.story,
         fromLanguage: 'Spanish',
         toLanguage: 'English',
-        difficulty: storyData.difficulty,
+        difficulty: formData.difficulty,
       });
 
       // Trigger the view switch to story reader page
@@ -36,24 +62,32 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
   };
 
   return (
-    <div className="space-y-6">
-      <StoryUploadForm onSubmitStory={handleStorySubmit} />
-      
-      {isTranslating && (
-        <div className="mt-4 p-4 border rounded-md bg-blue-50 border-blue-200">
-          <div className="flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" role="status" aria-label="Loading"></div>
-            <span className="text-blue-800">Translating your story...</span>
-          </div>
-        </div>
-      )}
+    <div className="h-full relative">
+      {/* Main content */}
+      <div className="h-full">
+        <FullPageStoryInput
+          value={formData.story}
+          onChange={handleStoryChange}
+          onSubmit={handleSubmit}
+          isTranslating={isTranslating}
+        />
+      </div>
 
+      {/* Sidebar */}
+      <TranslationOptionsSidebar
+        formData={formData}
+        onFormDataChange={handleFormDataChange}
+      />
+
+      {/* Error message */}
       {translationError && (
-        <div className="mt-4 p-4 border rounded-md bg-red-50 border-red-200">
-          <div className="flex items-center space-x-2">
-            <span className="text-red-800">❌ Translation Error:</span>
-            <span className="text-red-700">{translationError}</span>
-          </div>
+        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-20 md:w-80 z-40">
+          <Alert variant="destructive" className="shadow-lg">
+            <AlertIcon.destructive className="h-4 w-4" />
+            <AlertDescription>
+              <span className="font-medium">Translation Error:</span> {translationError}
+            </AlertDescription>
+          </Alert>
         </div>
       )}
     </div>

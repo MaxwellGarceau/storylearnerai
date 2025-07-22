@@ -50,8 +50,9 @@ describe('TranslatePage', () => {
   it('renders the translate page with correct title and description', () => {
     renderWithRouter(<TranslatePage />);
     
-    expect(screen.getByText('Translate Your Story')).toBeInTheDocument();
-    expect(screen.getByText(/Enter a story in any language and we'll translate it to English/)).toBeInTheDocument();
+    // The title and description are now rendered by the StoryContainer component
+    // Since we're mocking StoryContainer, we just verify the page structure
+    expect(screen.getByTestId('story-container')).toBeInTheDocument();
   });
 
   it('renders the StoryContainer component', () => {

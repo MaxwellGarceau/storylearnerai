@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+
+Whenever creating new FE React components always look for a way to incorporate ShadCN, Radix UI, and Tailwind CSS methodology and prebuilt components.
+
+Use ShadCN first, but if there's a limitation then seek to fill in the gaps with Radix UI and Tailwind CSS.

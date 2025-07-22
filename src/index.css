@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 203 100% 96.1%;  /* Tailwind sky-50 */
+    --background: 0 0% 100%;       /* Tailwind white */
     --foreground: 203 89% 15%;     /* Tailwind sky-900 */
-    --card: 203 100% 96.1%;        /* Tailwind sky-50 */
+    --card: 0 0% 100%;             /* Tailwind white */
     --card-foreground: 203 89% 15%;/* Tailwind sky-900 */
-    --popover: 203 100% 96.1%;     /* Tailwind sky-50 */
+    --popover: 0 0% 100%;          /* Tailwind white */
     --popover-foreground: 203 89% 15%; /* Tailwind sky-900 */
     --primary: 203 100% 57.3%;     /* Tailwind sky-500 */
     --primary-foreground: 203 100% 96.1%; /* Tailwind sky-50 */
