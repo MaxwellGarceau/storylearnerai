@@ -16,9 +16,19 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   onFormDataChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [difficultyOpen, setDifficultyOpen] = useState(false);
 
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
     onFormDataChange(field, value);
+  };
+
+  const handleLanguageOpenChange = (open: boolean) => {
+    setLanguageOpen(open);
+  };
+
+  const handleDifficultyOpenChange = (open: boolean) => {
+    setDifficultyOpen(open);
   };
 
   return (
@@ -72,6 +82,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               name="sidebar-language"
               value={formData.language}
               onValueChange={(value) => handleSelectChange('language', value)}
+              onOpenChange={handleLanguageOpenChange}
             >
               <SelectTrigger
                 id="sidebar-language"
@@ -79,9 +90,9 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                 className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.language}</span>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${languageOpen ? 'rotate-180' : ''}`} />
               </SelectTrigger>
-              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
+              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
                 <SelectItem 
                   value="English"
                   className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
@@ -104,6 +115,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               name="sidebar-difficulty"
               value={formData.difficulty}
               onValueChange={(value) => handleSelectChange('difficulty', value)}
+              onOpenChange={handleDifficultyOpenChange}
             >
               <SelectTrigger
                 id="sidebar-difficulty"
@@ -111,9 +123,9 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                 className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
               >
                 <span className="text-gray-900">{formData.difficulty}</span>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${difficultyOpen ? 'rotate-180' : ''}`} />
               </SelectTrigger>
-              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px]">
+              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
                 <SelectItem 
                   value="A1"
                   className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
