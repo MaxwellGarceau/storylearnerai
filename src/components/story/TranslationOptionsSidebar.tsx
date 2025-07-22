@@ -3,6 +3,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/reac
 import { ChevronDown } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import Label from '../ui/Label';
+import { cn } from '../../lib/utils';
 
 interface TranslationOptionsSidebarProps {
   formData: {
@@ -37,7 +38,11 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
           <button
-            className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-lg shadow-lg transition-all duration-200 flex items-center space-x-2"
+            className={cn(
+              "inline-flex items-center gap-2 rounded-md p-3 text-sm font-medium transition-all duration-200 shadow-lg",
+              "bg-primary text-primary-foreground hover:bg-primary/90",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            )}
             aria-label={isOpen ? 'Close translation options' : 'Open translation options'}
           >
             <svg
@@ -54,10 +59,19 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
 
         <Popover.Portal>
           <Popover.Content
-            className="z-50 w-80 max-w-[calc(100vw-32px)] bg-white shadow-xl rounded-lg border outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 overflow-y-auto"
+            className={cn(
+              "z-50 w-80 max-w-[calc(100vw-32px)] overflow-y-auto",
+              "bg-popover text-popover-foreground",
+              "rounded-md border shadow-md",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out",
+              "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+              "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+              "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+              "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            )}
             style={{
               scrollbarWidth: 'thin',
-              scrollbarColor: '#d1d5db #f3f4f6',
+              scrollbarColor: 'hsl(var(--muted-foreground)) hsl(var(--muted))',
               maxHeight: 'calc(100vh - 140px)' // Account for top-28 (112px) + 16px collision padding + 12px sideOffset
             }}
             side="bottom"
@@ -69,16 +83,16 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
             <div className="p-6 pb-12 space-y-6">
               {/* Header */}
               <div className="border-b pb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Translation Options</h3>
-                <p className="text-sm text-gray-600 mt-1">Configure your translation settings</p>
+                <h3 className="text-lg font-semibold text-foreground">Translation Options</h3>
+                <p className="text-sm text-muted-foreground mt-1">Configure your translation settings</p>
               </div>
 
               {/* Info Box */}
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-sm text-blue-800">
+              <div className="p-3 bg-accent border border-border rounded-md">
+                <p className="text-sm text-accent-foreground">
                   <strong>Translation:</strong> Spanish → English
                 </p>
-                <p className="text-xs text-blue-600 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
               Enter your Spanish story in the main text area, and it will be translated to English at your selected difficulty level.
                 </p>
               </div>
@@ -97,21 +111,38 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                   <SelectTrigger
                     id="sidebar-language"
                     aria-label="Select target language"
-                    className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
+                    className={cn(
+                      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                      "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
                   >
-                    <span className="text-gray-900">{formData.language}</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${languageOpen ? 'rotate-180' : ''}`} />
+                    <span className="text-foreground">{formData.language}</span>
+                    <ChevronDown className={cn(
+                      "h-4 w-4 opacity-50 transition-transform duration-200",
+                      languageOpen && "rotate-180"
+                    )} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
+                  <SelectContent className={cn(
+                    "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
+                    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+                    "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                    "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+                    "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+                    "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                  )}>
                     <SelectItem 
                       value="English"
-                      className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className={cn(
+                        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                        "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      )}
                     >
                   English
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
               Currently only English translation is supported.
                 </p>
               </div>
@@ -130,39 +161,65 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                   <SelectTrigger
                     id="sidebar-difficulty"
                     aria-label="Select difficulty level"
-                    className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-offset-0 transition-colors duration-200 flex items-center justify-between"
+                    className={cn(
+                      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                      "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
                   >
-                    <span className="text-gray-900">{formData.difficulty}</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${difficultyOpen ? 'rotate-180' : ''}`} />
+                    <span className="text-foreground">{formData.difficulty}</span>
+                    <ChevronDown className={cn(
+                      "h-4 w-4 opacity-50 transition-transform duration-200",
+                      difficultyOpen && "rotate-180"
+                    )} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[200px] animate-in slide-in-from-top-2 duration-200">
+                  <SelectContent className={cn(
+                    "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
+                    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+                    "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                    "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+                    "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+                    "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                  )}>
                     <SelectItem 
                       value="A1"
-                      className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className={cn(
+                        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                        "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      )}
                     >
                   A1 (Beginner)
                     </SelectItem>
                     <SelectItem 
                       value="A2"
-                      className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className={cn(
+                        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                        "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      )}
                     >
                   A2 (Elementary)
                     </SelectItem>
                     <SelectItem 
                       value="B1"
-                      className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className={cn(
+                        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                        "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      )}
                     >
                   B1 (Intermediate)
                     </SelectItem>
                     <SelectItem 
                       value="B2"
-                      className="px-3 py-2 rounded-md hover:bg-gray-50 focus:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className={cn(
+                        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                        "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                      )}
                     >
                   B2 (Upper Intermediate)
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500 mb-6">
+                <p className="text-xs text-muted-foreground mb-6">
               The story will be adapted to this English proficiency level.
                 </p>
               </div>
