@@ -44,13 +44,9 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
         
         <Button
           onClick={onToggleView}
-          variant="outline"
+          variant={showOriginal ? "secondary" : "default"}
           size="default"
-          className={`order-3 ${
-            showOriginal
-              ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-200'
-              : 'bg-green-100 text-green-800 hover:bg-green-200 border-green-200'
-          }`}
+          className="order-3"
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
         </Button>
