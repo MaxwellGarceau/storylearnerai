@@ -22,7 +22,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4">
       <h3 className={`text-lg font-semibold transition-colors duration-300 lg:flex-shrink-0 ${
-        showOriginal ? 'text-yellow-800' : 'text-green-800'
+        showOriginal ? 'text-muted-foreground' : 'text-foreground'
       }`}>
         {showOriginal 
           ? 'Original Story (Spanish):' 
