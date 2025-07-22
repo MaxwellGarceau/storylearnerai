@@ -12,7 +12,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
 }) => {
   return (
     <div className="relative overflow-hidden">
-      <p className="text-gray-700 whitespace-pre-wrap transition-opacity duration-300">
+      <p className="text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed">
         {showOriginal ? translationData.originalText : translationData.translatedText}
       </p>
     </div>

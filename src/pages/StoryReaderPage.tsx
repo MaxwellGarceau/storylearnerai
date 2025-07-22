@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import PageContainer from '../components/PageContainer';
 import StoryRender from '../components/story/StoryRender';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -59,7 +60,7 @@ const StoryReaderPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="h-full relative">
+      <PageContainer className="relative">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Your Translated Story</h1>
@@ -188,7 +189,7 @@ const StoryReaderPage: React.FC = () => {
             </Popover.Portal>
           </Popover.Root>
         </div>
-      </div>
+      </PageContainer>
     </Layout>
   );
 };

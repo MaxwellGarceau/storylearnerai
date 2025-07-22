@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TranslationResponse } from '../../lib/translationService';
-import * as Popover from '@radix-ui/react-popover';
-import TranslationInfoContent from './TranslationInfoContent';
-import { InfoButton } from '../ui/InfoButton';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
@@ -17,8 +14,6 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
   showOriginal,
   onToggleView
 }) => {
-  const [showTranslationInfo, setShowTranslationInfo] = useState(false);
-
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4">
       <h3 className={`text-lg font-semibold transition-colors duration-300 lg:flex-shrink-0 ${

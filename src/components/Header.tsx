@@ -11,20 +11,20 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full py-4 bg-background border-b border-border">
-      <div className="mx-4 md:mx-8 lg:mx-16 xl:mx-24 p-4 flex items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
           Story Learner AI
         </Link>
         
-        <nav className="flex space-x-6">
+        <nav className="flex items-center space-x-6">
           <Link 
             to="/" 
             className={cn(
               "px-3 py-2 rounded-md text-sm font-medium transition-colors",
               isActive('/') 
                 ? "bg-accent text-accent-foreground" 
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
             )}
           >
             Home
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
               "px-3 py-2 rounded-md text-sm font-medium transition-colors",
               isActive('/translate') 
                 ? "bg-accent text-accent-foreground" 
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
             )}
           >
             Translate
