@@ -24,22 +24,22 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Translate Your Story</h1>
-        <p className="text-gray-600 text-lg">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Translate Your Story</h1>
+        <p className="text-muted-foreground text-lg">
           Enter a story in Spanish and we'll translate it to English
         </p>
       </div>
 
       {/* Full-page text area */}
       <div className="flex-1 min-h-0">
-        <div className="h-full bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="h-full bg-background border border-border rounded-lg shadow-sm">
           <textarea
             id="fullpage-story-input"
             name="fullpage-story-input"
             value={value}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent"
+            className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
             style={{
               minHeight: 'calc(100vh - 300px)',
               fontFamily: 'Georgia, serif',
@@ -57,7 +57,8 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             type="button"
             onClick={onSubmit}
             disabled={isTranslating || !value.trim()}
-            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-lg focus:ring focus:ring-indigo-300 text-lg font-medium"
+            size="lg"
+            className="px-8 py-3 text-lg font-medium"
           >
             {isTranslating ? (
               <div className="flex items-center space-x-2">
@@ -71,7 +72,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="text-sm text-gray-500 text-center">
+        <div className="text-sm text-muted-foreground text-center">
           <p>
             💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate
           </p>
