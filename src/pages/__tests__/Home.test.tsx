@@ -109,8 +109,9 @@ describe('Home', () => {
   it('has proper container structure', () => {
     renderWithRouter(<Home />);
     
-    const storyLearnerElements = screen.getAllByText('Story Learner AI');
-    const container = storyLearnerElements[0].closest('.container');
+    const mainHeadings = screen.getAllByRole('heading', { level: 1, name: 'Story Learner AI' });
+    const mainHeading = mainHeadings[0];
+    const container = mainHeading.closest('.container');
     expect(container).toHaveClass('container', 'mx-auto', 'px-4', 'py-8', 'max-w-6xl');
   });
 
