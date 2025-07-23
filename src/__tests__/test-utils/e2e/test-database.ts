@@ -25,12 +25,12 @@ export interface TestTranslation {
 export class TestDatabase {
   private adminClient: SupabaseClient<Database>
   private testData: {
-    stories: TestStory[]
-    translations: TestTranslation[]
-  } = {
-    stories: [],
-    translations: []
-  }
+      stories: TestStory[]
+      translations: TestTranslation[]
+    } = {
+      stories: [],
+      translations: []
+    }
 
   constructor(adminClient?: SupabaseClient<Database>) {
     this.adminClient = adminClient || createDefaultTestAdminClient()

@@ -17,7 +17,7 @@ async function startSupabaseTest(): Promise<void> {
     
     // Stop any existing test instance
     await execAsync('supabase stop')
-  } catch (error) {
+  } catch {
     // Ignore errors if no instance was running
   }
 

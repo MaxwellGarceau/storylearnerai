@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createDefaultTestClient } from '@/__tests__/test-utils/e2e/supabase-test-client'
 import { getTestDatabase } from '@/__tests__/test-utils/e2e/test-setup'
 import { StoryService } from '@/api/supabase/database/storyService'
 
@@ -8,11 +7,9 @@ import '@/__tests__/test-utils/e2e/test-setup'
 
 describe('Basic E2E Integration Test', () => {
   let testDb: ReturnType<typeof getTestDatabase>
-  let supabaseClient: ReturnType<typeof createDefaultTestClient>
 
   beforeEach(async () => {
     testDb = getTestDatabase()
-    supabaseClient = createDefaultTestClient()
     
     // Ensure clean state
     await testDb.clearAllData()
