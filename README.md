@@ -42,9 +42,9 @@ npm install
 ```
 
 3. Set up environment variables:
-```bash
-cp env.example .env
-```
+   ```bash
+   cp env.example .env
+   ```
 
 4. Configure your environment variables in `.env`:
 ```env
