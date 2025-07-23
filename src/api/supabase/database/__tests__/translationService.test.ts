@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { TranslationService, CreateTranslationData, UpdateTranslationData } from '../translationService'
 import type { PostgrestQueryBuilder } from '@supabase/postgrest-js'
@@ -38,7 +39,7 @@ describe('TranslationService', () => {
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
-        }
+      }
 
       mockedSupabase.from.mockReturnValue(mockQuery as unknown as PostgrestQueryBuilder<any, any, string, unknown>)
 
@@ -169,7 +170,7 @@ describe('TranslationService', () => {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockResolvedValue({ data: mockTranslations, error: null }),
-        }
+      }
 
       mockedSupabase.from.mockReturnValue(mockQuery as unknown as PostgrestQueryBuilder<any, any, string, unknown>)
 
