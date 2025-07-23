@@ -24,17 +24,7 @@ CREATE TABLE IF NOT EXISTS translations (
     UNIQUE(story_id, target_language)
 );
 
--- Create user_progress table
-CREATE TABLE IF NOT EXISTS user_progress (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL,
-    story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
-    progress_percentage INTEGER NOT NULL DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, story_id)
-);
+
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_stories_language ON stories(language);
@@ -45,9 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_stories_created_at ON stories(created_at);
 CREATE INDEX IF NOT EXISTS idx_translations_story_id ON translations(story_id);
 CREATE INDEX IF NOT EXISTS idx_translations_target_language ON translations(target_language);
 
-CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON user_progress(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_progress_story_id ON user_progress(story_id);
-CREATE INDEX IF NOT EXISTS idx_user_progress_completed ON user_progress(completed);
+
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -65,8 +53,7 @@ CREATE TRIGGER update_stories_updated_at BEFORE UPDATE ON stories
 CREATE TRIGGER update_translations_updated_at BEFORE UPDATE ON translations
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_user_progress_updated_at BEFORE UPDATE ON user_progress
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 
 -- Insert some sample data
 INSERT INTO stories (title, content, language, difficulty_level) VALUES

@@ -71,35 +71,7 @@ export interface Database {
           updated_at?: string
         }
       }
-      user_progress: {
-        Row: {
-          id: string
-          user_id: string
-          story_id: string
-          progress_percentage: number
-          completed: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          story_id: string
-          progress_percentage: number
-          completed: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          story_id?: string
-          progress_percentage?: number
-          completed?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-      }
+      
     }
     Views: {
       [_ in never]: never
