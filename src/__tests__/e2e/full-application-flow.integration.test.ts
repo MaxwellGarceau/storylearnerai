@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createDefaultTestClient } from '@/test-utils/supabase-test-client'
-import { getTestDatabase } from '@/test-utils/test-setup'
+import { createDefaultTestClient } from '@/__tests__/test-utils/supabase-test-client'
+import { getTestDatabase } from '@/__tests__/test-utils/test-setup'
 import { StoryService } from '@/api/supabase/database/storyService'
 
 // Import the test setup to ensure Supabase test instance is running
-import '@/test-utils/test-setup'
+import '@/__tests__/test-utils/test-setup'
 
 describe('Basic E2E Integration Test', () => {
   let testDb: ReturnType<typeof getTestDatabase>

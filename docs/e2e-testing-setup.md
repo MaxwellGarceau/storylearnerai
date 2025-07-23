@@ -25,7 +25,7 @@ The test setup uses a separate Supabase configuration (`supabase/config.test.tom
 ### Test Utilities Structure
 
 ```
-src/test-utils/
+src/__tests__/test-utils/
 ├── supabase-test-client.ts    # Test-specific Supabase client
 ├── test-database.ts           # Database management utilities
 └── test-setup.ts              # Global test configuration
@@ -135,7 +135,7 @@ You can also use the test database script directly:
 The `TestDatabase` class provides utilities for managing test data:
 
 ```typescript
-import { createTestDatabase } from '@/test-utils/test-database'
+import { createTestDatabase } from '@/__tests__/test-utils/test-database'
 
 const testDb = createTestDatabase()
 
@@ -157,7 +157,7 @@ await testDb.teardown()
 Create test-specific Supabase clients:
 
 ```typescript
-import { createDefaultTestClient } from '@/test-utils/supabase-test-client'
+import { createDefaultTestClient } from '@/__tests__/test-utils/supabase-test-client'
 
 const supabaseClient = createDefaultTestClient()
 ```
@@ -167,7 +167,7 @@ const supabaseClient = createDefaultTestClient()
 Create test data with default values:
 
 ```typescript
-import { createTestDatabase } from '@/test-utils/test-database'
+import { createTestDatabase } from '@/__tests__/test-utils/test-database'
 
 const testDb = createTestDatabase()
 
@@ -190,12 +190,12 @@ const translation = testDb.createTestTranslation(storyId, {
 
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createDefaultTestClient } from '@/test-utils/supabase-test-client'
-import { getTestDatabase } from '@/test-utils/test-database'
+import { createDefaultTestClient } from '@/__tests__/test-utils/supabase-test-client'
+import { getTestDatabase } from '@/__tests__/test-utils/test-setup'
 import { storyService } from '@/api/supabase/database/storyService'
 
 // Import test setup to ensure Supabase is running
-import '@/test-utils/test-setup'
+import '@/__tests__/test-utils/test-setup'
 
 describe('My Service E2E Tests', () => {
   let testDb: ReturnType<typeof getTestDatabase>
@@ -342,7 +342,7 @@ npm run test:db:start
 
 #### 4. Data Persistence Between Tests
 - Ensure `beforeEach` clears data: `await testDb.clearAllData()`
-- Check that test setup is imported: `import '@/test-utils/test-setup'`
+- Check that test setup is imported: `import '@/__tests__/test-utils/test-setup'`
 - Verify no global state is being shared
 
 ### Debug Mode
@@ -410,7 +410,7 @@ jobs:
 You can create custom test configurations for different scenarios:
 
 ```typescript
-import { createTestSupabaseClient } from '@/test-utils/supabase-test-client'
+import { createTestSupabaseClient } from '@/__tests__/test-utils/supabase-test-client'
 
 const customConfig = {
   url: 'http://localhost:54331',
