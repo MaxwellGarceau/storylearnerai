@@ -9,6 +9,16 @@ vi.mock('../../components/Layout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+// Mock the useSupabase hook
+vi.mock('../../hooks/useSupabase', () => ({
+  useSupabase: () => ({
+    user: null,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+  }),
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
     <BrowserRouter>
@@ -53,11 +63,11 @@ describe('Home', () => {
     expect(startButtons.length).toBeGreaterThan(0);
   });
 
-  it('renders the learn more button', () => {
+  it('renders the sign up free button when user is not authenticated', () => {
     renderWithRouter(<Home />);
     
-    const learnMoreButtons = screen.getAllByText('Learn More');
-    expect(learnMoreButtons.length).toBeGreaterThan(0);
+    const signUpButtons = screen.getAllByText('Sign Up Free');
+    expect(signUpButtons.length).toBeGreaterThan(0);
   });
 
   it('renders the badge with AI-Powered Language Learning text', () => {
@@ -102,8 +112,8 @@ describe('Home', () => {
     const ctaElements = screen.getAllByText('Ready to Start Your Language Learning Journey?');
     expect(ctaElements[0]).toBeInTheDocument();
     
-    const getStartedElements = screen.getAllByText('Get Started Now');
-    expect(getStartedElements[0]).toBeInTheDocument();
+    const createAccountElements = screen.getAllByText('Create Free Account');
+    expect(createAccountElements[0]).toBeInTheDocument();
   });
 
   it('has proper container structure', () => {
