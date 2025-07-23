@@ -43,11 +43,12 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### Tables Overview
 
-The application uses three main tables:
+The application uses two main tables:
 
 1. **`stories`** - Stores story content and metadata
 2. **`translations`** - Stores translated versions of stories
-3. **`user_progress`** - Tracks user learning progress
+
+> **Note**: The `user_progress` table has been removed from the current implementation to simplify the database schema. User progress tracking can be added back in future iterations as needed.
 
 ### Schema Details
 
@@ -96,28 +97,32 @@ CREATE TABLE translations (
 - `created_at`: Creation timestamp
 - `updated_at`: Last modification timestamp
 
-#### User Progress Table
-```sql
-CREATE TABLE user_progress (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL,
-    story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
-    progress_percentage INTEGER NOT NULL DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, story_id)
-);
+> **Note**: The `user_progress` table schema has been removed from the current implementation. The schema can be added back when user progress tracking is needed.
+
+## Project Structure
+
+### File Organization
+
+The Supabase integration follows this structure:
+
+```
+src/
+├── api/supabase/
+│   ├── client.ts                    # Supabase client configuration & types
+│   ├── index.ts                     # Centralized exports
+│   └── database/
+│       ├── story.api.ts             # Story database operations
+│       └── translation.api.ts       # Translation database operations
+├── hooks/
+│   └── useSupabase.ts               # React hooks for auth & real-time
+└── [other folders...]
 ```
 
-**Fields:**
-- `id`: Unique identifier (UUID)
-- `user_id`: User identifier
-- `story_id`: Reference to the story
-- `progress_percentage`: Learning progress (0-100)
-- `completed`: Whether the story is completed
-- `created_at`: Creation timestamp
-- `updated_at`: Last modification timestamp
+### Import Patterns
+
+- **Database Services**: Import from `@/api/supabase`
+- **React Hooks**: Import from `@/hooks/useSupabase`
+- **Client & Types**: Import from `@/api/supabase/client`
 
 ## Database Services
 
@@ -167,26 +172,7 @@ const translation = await TranslationService.getTranslationByStoryAndLanguage(
 )
 ```
 
-### UserProgressService
-
-Tracks user learning progress:
-
-```typescript
-import { UserProgressService } from '@/api/supabase'
-
-// Update user progress
-const progress = await UserProgressService.updateProgressPercentage(
-  'user-uuid',
-  'story-uuid',
-  75
-)
-
-// Mark story as completed
-await UserProgressService.markStoryAsCompleted('user-uuid', 'story-uuid')
-
-// Get user statistics
-const stats = await UserProgressService.getUserStatistics('user-uuid')
-```
+> **Note**: The `UserProgressService` has been removed from the current implementation to simplify the API layer. User progress tracking can be added back in future iterations as needed.
 
 ## Authentication
 
@@ -201,7 +187,7 @@ const stats = await UserProgressService.getUserStatistics('user-uuid')
 ### Usage
 
 ```typescript
-import { useSupabase } from '@/api/supabase'
+import { useSupabase } from '@/hooks/useSupabase'
 
 function AuthComponent() {
   const { user, loading, signIn, signUp, signOut } = useSupabase()
@@ -237,7 +223,7 @@ Real-time subscriptions are automatically enabled in Supabase. No additional set
 ### Usage
 
 ```typescript
-import { useRealtimeSubscription } from '@/api/supabase'
+import { useRealtimeSubscription } from '@/hooks/useSupabase'
 
 function StoryList() {
   const [stories, setStories] = useState([])
@@ -261,7 +247,6 @@ function StoryList() {
 -- Enable RLS on all tables
 ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE translations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 ```
 
 ### Policies
@@ -300,24 +285,7 @@ CREATE POLICY "Users can update translations" ON translations
   FOR UPDATE USING (true);
 ```
 
-#### User Progress Table
-```sql
--- Allow users to view their own progress
-CREATE POLICY "Users can view own progress" ON user_progress
-  FOR SELECT USING (auth.uid()::text = user_id::text);
-
--- Allow users to create their own progress
-CREATE POLICY "Users can create own progress" ON user_progress
-  FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
-
--- Allow users to update their own progress
-CREATE POLICY "Users can update own progress" ON user_progress
-  FOR UPDATE USING (auth.uid()::text = user_id::text);
-
--- Allow users to delete their own progress
-CREATE POLICY "Users can delete own progress" ON user_progress
-  FOR DELETE USING (auth.uid()::text = user_id::text);
-```
+> **Note**: The `user_progress` table and its RLS policies have been removed from the current implementation. These can be added back when user progress tracking is needed.
 
 ## Local Development
 
