@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSupabase } from '../hooks/useSupabase'
+import { useLanguages } from '../hooks/useLanguages'
 import { UserService } from '../api/supabase'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
@@ -13,12 +14,11 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import type { Database } from '../api/supabase/client'
-
-type User = Database['public']['Tables']['users']['Row']
+import type { User } from '../lib/types/database'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useSupabase()
+  const { getLanguageName } = useLanguages()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -49,21 +49,7 @@ export const DashboardPage: React.FC = () => {
     }
   }, [user, loadDashboardData])
 
-  const getLanguageName = (code: string) => {
-    const languages: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese'
-    }
-    return languages[code] || code
-  }
+
 
   if (loading) {
     return (
