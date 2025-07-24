@@ -18,7 +18,7 @@ const StoryReaderPage: React.FC = () => {
   const navigate = useNavigate();
   const translationData = location.state?.translationData as TranslationResponse | undefined;
   const isSavedStory = location.state?.isSavedStory as boolean | undefined;
-  const savedTranslationId = location.state?.savedTranslationId as string | undefined;
+  // const savedTranslationId = location.state?.savedTranslationId as string | undefined;
   const [showOptions, setShowOptions] = useState(false);
 
   const handleTranslateAnother = () => {

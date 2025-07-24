@@ -14,10 +14,10 @@ vi.mock('../../client', () => ({
   },
 }));
 
-const mockSupabase = supabase as any;
+const mockSupabase = supabase as jest.Mocked<typeof supabase>;
 
 // Helper function to create a mock Supabase query builder
-const createMockQueryBuilder = (returnValue: any) => {
+const createMockQueryBuilder = (returnValue: unknown) => {
   const mockBuilder = {
     select: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),

@@ -14,7 +14,7 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<User | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

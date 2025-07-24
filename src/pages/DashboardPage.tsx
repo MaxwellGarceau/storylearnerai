@@ -19,7 +19,7 @@ export const DashboardPage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<User | null>(null)
 
   useEffect(() => {
     if (user) {

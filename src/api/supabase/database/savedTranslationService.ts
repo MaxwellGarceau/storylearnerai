@@ -1,6 +1,5 @@
 import { supabase } from '../client';
 import {
-  SavedTranslation,
   SavedTranslationWithDetails,
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,

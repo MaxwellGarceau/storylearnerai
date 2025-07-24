@@ -41,7 +41,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getUser('user-1')
 
@@ -62,7 +62,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getUser('user-1')
 
@@ -79,7 +79,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       await expect(UserService.getUser('user-1')).rejects.toThrow('Failed to fetch user: Database error')
     })
@@ -106,7 +106,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.createUser({
         id: 'user-1',
@@ -138,7 +138,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       await expect(UserService.createUser({
         id: 'user-1',
@@ -169,7 +169,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.updateUser('user-1', {
         username: 'updateduser',
@@ -200,7 +200,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.isUsernameAvailable('newuser')
 
@@ -220,7 +220,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.isUsernameAvailable('existinguser')
 
@@ -249,7 +249,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getOrCreateUser('user-1')
 
@@ -289,8 +289,8 @@ describe('UserService', () => {
       }
 
       mockedSupabase.from
-        .mockReturnValueOnce(mockGetQuery as any)
-        .mockReturnValueOnce(mockCreateQuery as any)
+        .mockReturnValueOnce(mockGetQuery as jest.Mocked<typeof mockQuery>)
+        .mockReturnValueOnce(mockCreateQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getOrCreateUser('user-1', {
         username: 'testuser',

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
-import Label from '../ui/Label';
 import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
@@ -212,8 +211,8 @@ export default function SaveTranslationButton({
               {!user 
                 ? 'Sign in to Save' 
                 : isSavedStory 
-                ? 'Already Saved' 
-                : 'Save Translation'
+                  ? 'Already Saved' 
+                  : 'Save Translation'
               }
             </Button>
           </div>
@@ -222,8 +221,8 @@ export default function SaveTranslationButton({
           {!user 
             ? 'Sign in to save translations' 
             : isSavedStory 
-            ? 'The ability to edit and resave already translated stories is under construction =)' 
-            : 'Save this translation'
+              ? 'The ability to edit and resave already translated stories is under construction =)' 
+              : 'Save this translation'
           }
         </TooltipContent>
       </Tooltip>
