@@ -5,6 +5,7 @@ import Label from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
 import { useSupabase } from '../../hooks/useSupabase'
+import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase'
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
@@ -14,6 +15,7 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
+  const { languages, getLanguageName } = useLanguages()
   const [profile, setProfile] = useState<User | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -96,21 +98,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     }
   }
 
-  const getLanguageName = (code: string) => {
-    const languages: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese'
-    }
-    return languages[code] || code
-  }
+
 
   if (loading) {
     return (
@@ -248,16 +236,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               onChange={(e) => handleInputChange('preferred_language', e.target.value)}
               className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
             >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
-              <option value="pt">Portuguese</option>
-              <option value="ru">Russian</option>
-              <option value="ja">Japanese</option>
-              <option value="ko">Korean</option>
-              <option value="zh">Chinese</option>
+              {languages.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.name}
+                </option>
+              ))}
             </select>
           ) : (
             <Badge variant="secondary">
