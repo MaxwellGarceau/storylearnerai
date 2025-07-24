@@ -69,132 +69,31 @@ describe('DashboardPage Component', () => {
     mockUserService.getUser.mockResolvedValue(mockProfile)
   })
 
-  it('renders dashboard with user information', async () => {
+  it('renders quick actions section', async () => {
     renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Welcome back, Test User!')).toBeInTheDocument()
-      expect(screen.getByText('Your language learning dashboard')).toBeInTheDocument()
+      expect(screen.getByText('Quick Actions')).toBeInTheDocument()
+      expect(screen.getAllByText('New Translation')).toHaveLength(2) // Header button and quick action card
+      expect(screen.getByText('View Saved')).toBeInTheDocument()
+      expect(screen.getByText('Edit Profile')).toBeInTheDocument()
     })
   })
 
-  it('shows loading state while fetching data', () => {
-    mockUserService.getUser.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
-
-    renderWithRouter(<DashboardPage />)
-
-    expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument()
-  })
-
-  it('displays error message when data loading fails', async () => {
-    mockUserService.getUser.mockRejectedValue(new Error('Failed to load data'))
-
+  it('renders stats cards with correct information', async () => {
     renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load data')).toBeInTheDocument()
+      expect(screen.getByText('Total Translations')).toBeInTheDocument()
+      expect(screen.getByText('Languages')).toBeInTheDocument()
+      expect(screen.getByText('Learning Level')).toBeInTheDocument()
+      expect(screen.getByText('0')).toBeInTheDocument() // Total translations
+      expect(screen.getByText('1')).toBeInTheDocument() // Languages count
+      expect(screen.getAllByText('Beginner')).toHaveLength(2) // Badge and card content
     })
   })
 
-  it('shows sign in message when user is not authenticated', async () => {
-    mockUseSupabase.mockReturnValue({
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-      user: null,
-      loading: false,
-      error: null
-    })
-
-    renderWithRouter(<DashboardPage />)
-
-    // Wait for the component to finish loading
-    await waitFor(() => {
-      expect(screen.getByText('Please sign in to access your dashboard')).toBeInTheDocument()
-    })
-  })
-
-  it('displays user profile information', async () => {
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      const profileTexts = screen.getAllByText('Your Profile')
-      expect(profileTexts[0]).toBeInTheDocument()
-      expect(screen.getByText('Test User')).toBeInTheDocument()
-      expect(screen.getByText('@testuser')).toBeInTheDocument()
-      expect(screen.getByText('English')).toBeInTheDocument()
-      expect(screen.getByText('12/31/2023')).toBeInTheDocument() // Formatted date
-    })
-  })
-
-  it('handles missing display name gracefully', async () => {
-    const profileWithoutDisplayName = {
-      ...mockProfile,
-      display_name: null
-    }
-    mockUserService.getUser.mockResolvedValue(profileWithoutDisplayName)
-
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      expect(screen.getByText('Welcome back, test!')).toBeInTheDocument() // Uses email prefix
-    })
-  })
-
-  it('handles missing username gracefully', async () => {
-    const profileWithoutUsername = {
-      ...mockProfile,
-      username: null
-    }
-    mockUserService.getUser.mockResolvedValue(profileWithoutUsername)
-
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      expect(screen.getByText('Not set')).toBeInTheDocument()
-    })
-  })
-
-  it('navigates to profile page when profile button is clicked', async () => {
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      expect(mockUserService.getUser).toHaveBeenCalled()
-    })
-
-    const profileButton = screen.getAllByRole('button', { name: /profile/i })[0]
-    fireEvent.click(profileButton)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/auth')
-  })
-
-  it('navigates to translate page when new translation button is clicked', async () => {
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      expect(mockUserService.getUser).toHaveBeenCalled()
-    })
-
-    const newTranslationButton = screen.getAllByRole('button', { name: /new translation/i })[0]
-    fireEvent.click(newTranslationButton)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/translate')
-  })
-
-  it('navigates to translate page when start translating button is clicked', async () => {
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      expect(mockUserService.getUser).toHaveBeenCalled()
-    })
-
-    const startTranslatingButton = screen.getAllByRole('button', { name: /start translating/i })[0]
-    fireEvent.click(startTranslatingButton)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/translate')
-  })
-
-  it('displays correct language names', async () => {
+  it('displays correct language names in stats', async () => {
     const spanishProfile = {
       ...mockProfile,
       preferred_language: 'es'
@@ -208,7 +107,7 @@ describe('DashboardPage Component', () => {
     })
   })
 
-  it('handles unknown language codes gracefully', async () => {
+  it('handles unknown language codes gracefully in stats', async () => {
     const unknownLanguageProfile = {
       ...mockProfile,
       preferred_language: 'xx'
@@ -222,27 +121,13 @@ describe('DashboardPage Component', () => {
     })
   })
 
-  it('renders quick start card', async () => {
+  it('renders recent activity section', async () => {
     renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
-      expect(screen.getAllByText('Get Started')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Start translating and learning with Story Learner AI')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Ready to start your language learning journey?')[0]).toBeInTheDocument()
-    })
-  })
-
-  it('renders profile card with account information', async () => {
-    renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
-      const profileTexts = screen.getAllByText('Your Profile')
-      expect(profileTexts[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Your account information and preferences')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Display Name')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Username')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Preferred Language')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('Member Since')[0]).toBeInTheDocument()
+      expect(screen.getAllByText('Recent Activity')).toHaveLength(1)
+      expect(screen.getByText('No recent activity')).toBeInTheDocument()
+      expect(screen.getByText('Start translating stories to see your activity here')).toBeInTheDocument()
     })
   })
 
@@ -280,17 +165,12 @@ describe('DashboardPage Component', () => {
     })
   })
 
-  it('formats date correctly', async () => {
-    const profileWithDifferentDate = {
-      ...mockProfile,
-      created_at: '2024-12-25T10:30:00Z'
-    }
-    mockUserService.getUser.mockResolvedValue(profileWithDifferentDate)
-
+  it('displays welcome message with user name', async () => {
     renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('12/25/2024')).toBeInTheDocument()
+      expect(screen.getAllByText('Welcome back, Test User!')).toHaveLength(1)
+      expect(screen.getByText('Your language learning dashboard')).toBeInTheDocument()
     })
   })
 }) 

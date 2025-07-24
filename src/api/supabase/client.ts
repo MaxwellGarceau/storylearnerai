@@ -71,6 +71,35 @@ export interface Database {
           updated_at?: string
         }
       }
+      users: {
+        Row: {
+          id: string
+          username?: string
+          display_name?: string
+          avatar_url?: string
+          preferred_language: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          username?: string
+          display_name?: string
+          avatar_url?: string
+          preferred_language?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          username?: string
+          display_name?: string
+          avatar_url?: string
+          preferred_language?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
       
     }
     Views: {
