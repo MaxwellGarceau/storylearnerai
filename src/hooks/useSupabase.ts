@@ -7,10 +7,10 @@ export interface UseSupabaseReturn {
   user: User | null
   loading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<boolean>
+  signUp: (email: string, password: string) => Promise<boolean>
   signOut: () => Promise<void>
-  resetPassword: (email: string) => Promise<void>
+  resetPassword: (email: string) => Promise<boolean>
 }
 
 export function useSupabase(): UseSupabaseReturn {
@@ -54,7 +54,7 @@ export function useSupabase(): UseSupabaseReturn {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true)
       setError(null)
@@ -69,16 +69,19 @@ export function useSupabase(): UseSupabaseReturn {
           status: error.status
         }
         setError(getAuthErrorMessage(authError))
+        return false
       }
+      return true
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       setError(getAuthErrorMessage({ message: errorMessage }))
+      return false
     } finally {
       setLoading(false)
     }
   }, [])
 
-  const signUp = useCallback(async (email: string, password: string) => {
+  const signUp = useCallback(async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true)
       setError(null)
@@ -93,10 +96,13 @@ export function useSupabase(): UseSupabaseReturn {
           status: error.status
         }
         setError(getAuthErrorMessage(authError))
+        return false
       }
+      return true
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       setError(getAuthErrorMessage({ message: errorMessage }))
+      return false
     } finally {
       setLoading(false)
     }
@@ -117,7 +123,7 @@ export function useSupabase(): UseSupabaseReturn {
     }
   }, [])
 
-  const resetPassword = useCallback(async (email: string) => {
+  const resetPassword = useCallback(async (email: string): Promise<boolean> => {
     try {
       setLoading(true)
       setError(null)
@@ -129,10 +135,13 @@ export function useSupabase(): UseSupabaseReturn {
           status: error.status
         }
         setError(getAuthErrorMessage(authError))
+        return false
       }
+      return true
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       setError(getAuthErrorMessage({ message: errorMessage }))
+      return false
     } finally {
       setLoading(false)
     }

@@ -100,7 +100,7 @@ describe('SignUpForm Component', () => {
   })
 
   it('submits form with valid data', async () => {
-    mockSignUp.mockResolvedValue(undefined)
+    mockSignUp.mockResolvedValue(true)
 
     render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />)
 
