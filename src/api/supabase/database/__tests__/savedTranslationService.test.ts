@@ -4,7 +4,8 @@ import { supabase } from '../../client';
 import {
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
-} from '../../../../lib/types/savedTranslations';
+} from '../../../../lib/types/database';
+import { dummyLanguages, dummyDifficultyLevels, createDummySavedTranslationWithDetails } from '../../../../__tests__/utils/testData';
 
 // Mock the Supabase client
 vi.mock('../../client', () => ({
@@ -58,17 +59,12 @@ describe('SavedTranslationService', () => {
 
   describe('getLanguages', () => {
     it('should fetch languages successfully', async () => {
-      const mockLanguages = [
-        { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2024-01-01' },
-        { id: '2', code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2024-01-01' },
-      ];
-
-      const mockBuilder = createMockQueryBuilder({ data: mockLanguages, error: null });
+      const mockBuilder = createMockQueryBuilder({ data: dummyLanguages, error: null });
       mockSupabase.from.mockReturnValue(mockBuilder);
 
       const result = await service.getLanguages();
 
-      expect(result).toEqual(mockLanguages);
+      expect(result).toEqual(dummyLanguages);
       expect(mockSupabase.from).toHaveBeenCalledWith('languages');
     });
 
@@ -82,17 +78,12 @@ describe('SavedTranslationService', () => {
 
   describe('getDifficultyLevels', () => {
     it('should fetch difficulty levels successfully', async () => {
-      const mockDifficultyLevels = [
-        { id: '1', code: 'beginner', name: 'Beginner', description: 'Simple vocabulary', created_at: '2024-01-01' },
-        { id: '2', code: 'intermediate', name: 'Intermediate', description: 'Moderate complexity', created_at: '2024-01-01' },
-      ];
-
-      const mockBuilder = createMockQueryBuilder({ data: mockDifficultyLevels, error: null });
+      const mockBuilder = createMockQueryBuilder({ data: dummyDifficultyLevels, error: null });
       mockSupabase.from.mockReturnValue(mockBuilder);
 
       const result = await service.getDifficultyLevels();
 
-      expect(result).toEqual(mockDifficultyLevels);
+      expect(result).toEqual(dummyDifficultyLevels);
       expect(mockSupabase.from).toHaveBeenCalledWith('difficulty_levels');
     });
   });
