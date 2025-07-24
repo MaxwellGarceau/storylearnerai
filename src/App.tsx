@@ -6,6 +6,7 @@ import StoryReaderPage from './pages/StoryReaderPage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import SavedTranslationsPage from './pages/SavedTranslationsPage';
+import { Toaster } from './components/ui/Toaster';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/saved-translations" element={<SavedTranslationsPage />} />
       </Routes>
+      <Toaster />
     </Router>
   );
 }

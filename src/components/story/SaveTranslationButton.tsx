@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
+import { useToast } from '../../hooks/useToast';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
@@ -31,6 +32,7 @@ export default function SaveTranslationButton({
   
   const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useSupabase();
+  const { toast } = useToast();
 
   // Map language names to ISO codes
   const getLanguageCode = (languageName: string): string => {
@@ -153,6 +155,13 @@ export default function SaveTranslationButton({
         difficulty_level_code: getDifficultyCode(difficultyLevel),
         title: title.trim() || undefined,
         notes: notes.trim() || undefined,
+      });
+
+      // Show success toast
+      toast({
+        variant: "success",
+        title: "Translation Saved!",
+        description: "Your translation has been saved to your library.",
       });
 
       // Close the modal and reset form
