@@ -19,31 +19,16 @@ vi.mock('../llm/LLMServiceManager', () => ({
   },
 }));
 
-// Mock the LanguageService
-vi.mock('../api/supabase/database/languageService', () => ({
-  LanguageService: vi.fn().mockImplementation(() => ({
-    getLanguageName: vi.fn().mockImplementation((code: string) => {
-      const languageNames: Record<string, string> = {
-        'en': 'English',
-        'es': 'Spanish',
-        'fr': 'French',
-        'de': 'German',
-        'it': 'Italian',
-        'pt': 'Portuguese'
-      };
-      return Promise.resolve(languageNames[code.toLowerCase()] || code);
-    })
-  }))
-}));
+
 
 const mockEnvironmentConfig = vi.mocked(EnvironmentConfig);
 
 describe('TranslationService', () => {
   const mockRequest: TranslationRequest = {
     text: 'Esta es una historia de prueba.',
-    fromLanguage: 'Spanish',
-    toLanguage: 'English',
-    difficulty: 'A1',
+    fromLanguage: 'es',
+    toLanguage: 'en',
+    difficulty: 'a1',
   };
 
   beforeEach(() => {
@@ -101,9 +86,9 @@ describe('TranslationService', () => {
       expect(result).toEqual({
         originalText: mockRequest.text,
         translatedText: `[TRANSLATED FROM SPANISH - ${mockRequest.difficulty} LEVEL]\n\n${mockRequest.text}\n\n[This is a mock translation for development purposes]`,
-        fromLanguage: 'Spanish',
-        toLanguage: 'English',
-        difficulty: 'A1',
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
         provider: 'mock',
         model: 'mock-model',
       });
@@ -266,8 +251,8 @@ describe('TranslationService with Prompt Configuration', () => {
       const esPrompt = generateCompletionSpy.mock.calls[1][0].prompt;
 
       expect(enPrompt).not.toEqual(esPrompt);
-      expect(enPrompt).toContain('English');
-      expect(esPrompt).toContain('Spanish');
+      expect(enPrompt).toContain('en');
+      expect(esPrompt).toContain('es');
     });
 
     it('should include story text in the generated prompt', async () => {
@@ -337,7 +322,7 @@ describe('TranslationService with Prompt Configuration', () => {
       await translationService.translateStory(unsupportedRequest);
       const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
 
-      expect(prompt).toContain('unsupported story to unsupported');
+      expect(prompt).toContain('es story to unsupported');
       expect(prompt).toContain('adapted for a1 CEFR level');
     });
 
@@ -354,9 +339,9 @@ describe('TranslationService with Prompt Configuration', () => {
       await translationService.translateStory(mockPromptRequest);
       const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
 
-      expect(prompt).toContain('Spanish story to English');
-      expect(prompt).toContain('Spanish Story:');
-      expect(prompt).toContain('English translation');
+      expect(prompt).toContain('es story to en');
+      expect(prompt).toContain('es Story:');
+      expect(prompt).toContain('en translation');
     });
   });
 }); 

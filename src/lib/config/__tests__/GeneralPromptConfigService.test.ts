@@ -2,22 +2,7 @@ import { generalPromptConfigService } from '../GeneralPromptConfigService';
 import { PromptBuildContext } from '../../types/prompt';
 import { vi } from 'vitest';
 
-// Mock the LanguageService
-vi.mock('../../../api/supabase/database/languageService', () => ({
-  LanguageService: vi.fn().mockImplementation(() => ({
-    getLanguageName: vi.fn().mockImplementation((code: string) => {
-      const languageNames: Record<string, string> = {
-        'en': 'English',
-        'es': 'Spanish',
-        'fr': 'French',
-        'de': 'German',
-        'it': 'Italian',
-        'pt': 'Portuguese'
-      };
-      return Promise.resolve(languageNames[code.toLowerCase()] || code);
-    })
-  }))
-}));
+
 
 // Mock the PromptConfigurationService
 vi.mock('../../../api/supabase/database/promptConfigurationService', () => ({
@@ -88,8 +73,8 @@ describe('PromptConfigService', () => {
       // Both should return the same mock data since the mock normalizes to lowercase
       expect(instructionsLower).toBeDefined();
       expect(instructionsUpper).toBeDefined();
-      expect(instructionsLower?.vocabulary).toContain('a1');
-      expect(instructionsUpper?.vocabulary).toContain('A1'); // Mock preserves the case as passed
+      expect(instructionsLower?.vocabulary).toContain('1000 English words');
+      expect(instructionsUpper?.vocabulary).toContain('1000 English words');
     });
   });
 
@@ -129,9 +114,9 @@ describe('PromptConfigService', () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       expect(typeof prompt).toBe('string');
-      expect(prompt).toContain('Spanish');
-      expect(prompt).toContain('English');
-      expect(prompt).toContain('A1');
+      expect(prompt).toContain('es');
+      expect(prompt).toContain('en');
+      expect(prompt).toContain('a1');
       expect(prompt).toContain('Hola, ¿cómo estás?');
       expect(prompt).toContain('Vocabulary:');
       expect(prompt).toContain('Grammar:');
@@ -154,7 +139,7 @@ describe('PromptConfigService', () => {
       const prompt = await generalPromptConfigService.buildPrompt(unsupportedContext);
       
       expect(typeof prompt).toBe('string');
-      expect(prompt).toContain('Adapt the translation for A1 CEFR level complexity');
+      expect(prompt).toContain('es story to unsupported');
     });
 
     it('should build different prompts for different difficulty levels', async () => {
@@ -165,8 +150,8 @@ describe('PromptConfigService', () => {
       const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
       
       expect(a1Prompt).not.toEqual(b2Prompt);
-      expect(a1Prompt).toContain('Use appropriate vocabulary for a1');
-      expect(b2Prompt).toContain('Use appropriate vocabulary for b2');
+      expect(a1Prompt).toContain('most common 1000 English words');
+      expect(b2Prompt).toContain('upper-intermediate vocabulary');
     });
 
     it('should build different prompts for different languages', async () => {

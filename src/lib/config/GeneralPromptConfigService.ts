@@ -103,12 +103,12 @@ class GeneralPromptConfigService {
 
     // Build the complete prompt
     let prompt = this.getTemplate()
-      .replace('{fromLanguage}', fromLanguage)
-      .replace('{toLanguage}', toLanguage)
-      .replace('{difficulty}', difficulty)
-      .replace('{instructions}', generalInstructions)
-      .replace('{languageInstructions}', languageInstructionsText)
-      .replace('{text}', text);
+      .replaceAll('{fromLanguage}', fromLanguage)
+      .replaceAll('{toLanguage}', toLanguage)
+      .replaceAll('{difficulty}', difficulty)
+      .replaceAll('{instructions}', generalInstructions)
+      .replaceAll('{languageInstructions}', languageInstructionsText)
+      .replaceAll('{text}', text);
 
     return prompt;
   }
