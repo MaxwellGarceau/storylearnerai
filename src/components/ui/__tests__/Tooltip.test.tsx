@@ -1,13 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../Tooltip';
 
 describe('Tooltip Component', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders tooltip with content', () => {
     render(
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip open={true}>
           <TooltipTrigger asChild>
             <button>Hover me</button>
           </TooltipTrigger>
@@ -19,13 +23,15 @@ describe('Tooltip Component', () => {
     );
 
     expect(screen.getByText('Hover me')).toBeInTheDocument();
-    expect(screen.getByText('This is a tooltip')).toBeInTheDocument();
+    // Use getAllByText to handle multiple elements (visible + hidden for accessibility)
+    const tooltipElements = screen.getAllByText('This is a tooltip');
+    expect(tooltipElements.length).toBeGreaterThan(0);
   });
 
   it('renders tooltip with custom styling', () => {
     render(
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip open={true}>
           <TooltipTrigger asChild>
             <button>Trigger</button>
           </TooltipTrigger>
@@ -36,14 +42,16 @@ describe('Tooltip Component', () => {
       </TooltipProvider>
     );
 
-    const tooltipContent = screen.getByText('Custom styled tooltip');
-    expect(tooltipContent).toHaveClass('custom-class');
+    // Find the visible tooltip content (not the hidden accessibility one)
+    const tooltipElements = screen.getAllByText('Custom styled tooltip');
+    const visibleTooltip = tooltipElements.find(el => !el.style.clip && !el.style.overflow?.includes('hidden'));
+    expect(visibleTooltip).toHaveClass('custom-class');
   });
 
   it('renders tooltip with side offset', () => {
     render(
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip open={true}>
           <TooltipTrigger asChild>
             <button>Trigger</button>
           </TooltipTrigger>
@@ -54,7 +62,8 @@ describe('Tooltip Component', () => {
       </TooltipProvider>
     );
 
-    const tooltipContent = screen.getByText('Tooltip with offset');
-    expect(tooltipContent).toBeInTheDocument();
+    // Use getAllByText to handle multiple elements
+    const tooltipElements = screen.getAllByText('Tooltip with offset');
+    expect(tooltipElements.length).toBeGreaterThan(0);
   });
 }); 
