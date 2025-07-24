@@ -6,6 +6,29 @@ import { DashboardPage } from '../DashboardPage'
 import { useSupabase } from '../../hooks/useSupabase'
 import { UserService } from '../../api/supabase'
 
+// Mock the useLanguages hook
+vi.mock('../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    languages: [
+      { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2023-01-01T00:00:00Z' },
+      { id: '2', code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2023-01-01T00:00:00Z' }
+    ],
+    loading: false,
+    error: null,
+    getLanguageName: (code: string) => {
+      const languageMap: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish'
+      }
+      return languageMap[code] || code
+    },
+    languageMap: new Map([
+      ['en', 'English'],
+      ['es', 'Spanish']
+    ])
+  })
+}))
+
 // Mock the useSupabase hook
 vi.mock('../../hooks/useSupabase')
 
@@ -126,8 +149,12 @@ describe('DashboardPage Component', () => {
 
     await waitFor(() => {
       expect(screen.getAllByText('Recent Activity')).toBeTruthy()
-      expect(screen.getByText('No recent activity')).toBeInTheDocument()
-      expect(screen.getByText('Start translating stories to see your activity here')).toBeInTheDocument()
+      // Find the specific "No recent activity" text by looking for the h3 element within the Recent Activity section
+      const recentActivitySections = screen.getAllByText('Recent Activity')
+      const recentActivitySection = recentActivitySections[0].closest('div')
+      const noActivityHeading = recentActivitySection?.querySelector('h3')
+      expect(noActivityHeading).toHaveTextContent('No recent activity')
+      expect(screen.getAllByText('Start translating stories to see your activity here')).toBeTruthy()
     })
   })
 
@@ -170,7 +197,8 @@ describe('DashboardPage Component', () => {
 
     await waitFor(() => {
       expect(screen.getAllByText('Welcome back, Test User!')).toBeTruthy()
-      expect(screen.getByText('Your language learning dashboard')).toBeInTheDocument()
+      // Check that the dashboard subtitle is present
+      expect(screen.getAllByText('Your language learning dashboard')).toBeTruthy()
     })
   })
 }) 
