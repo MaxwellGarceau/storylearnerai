@@ -11,9 +11,14 @@ import dotenv from 'dotenv'
 // Load environment variables
 dotenv.config()
 
-// Supabase configuration for local development
-const supabaseUrl = 'http://127.0.0.1:54321'
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+// Supabase configuration from environment variables
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321'
+const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+
+// Validate required environment variables
+if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn('⚠️  Warning: Using fallback values. For production, set VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY in your .env file.')
+}
 
 // Create Supabase client with service role key
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
