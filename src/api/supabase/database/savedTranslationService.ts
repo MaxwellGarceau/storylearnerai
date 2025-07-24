@@ -6,7 +6,7 @@ import {
   SavedTranslationFilters,
   Language,
   DifficultyLevel,
-} from '../../../lib/types/savedTranslations';
+} from '../../../lib/types/database';
 
 export class SavedTranslationService {
   /**
