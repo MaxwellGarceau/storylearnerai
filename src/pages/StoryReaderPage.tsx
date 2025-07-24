@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import PageContainer from '../components/PageContainer';
 import StoryRender from '../components/story/StoryRender';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -32,38 +30,35 @@ const StoryReaderPage: React.FC = () => {
   // If no translation data is available, show a message
   if (!translationData) {
     return (
-      <Layout>
-        <div className="h-full flex items-center justify-center">
-          <div className="max-w-2xl mx-auto text-center p-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold mb-4">No Story Found</h2>
-              <p className="text-muted-foreground text-lg">Please translate a story first to view it here.</p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={handleTranslateAnother}
-                size="lg"
-              >
-                Translate a Story
-              </Button>
-              <Button 
-                onClick={handleGoHome}
-                variant="secondary"
-                size="lg"
-              >
-                Home
-              </Button>
-            </div>
+      <div className="h-full flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center p-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-4">No Story Found</h2>
+            <p className="text-muted-foreground text-lg">Please translate a story first to view it here.</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              onClick={handleTranslateAnother}
+              size="lg"
+            >
+              Translate a Story
+            </Button>
+            <Button 
+              onClick={handleGoHome}
+              variant="secondary"
+              size="lg"
+            >
+              Home
+            </Button>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <PageContainer className="relative">
+    <div className="relative">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
@@ -212,8 +207,7 @@ const StoryReaderPage: React.FC = () => {
             </Popover.Portal>
           </Popover.Root>
         </div>
-      </PageContainer>
-    </Layout>
+      </div>
   );
 };
 

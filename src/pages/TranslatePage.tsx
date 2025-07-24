@@ -1,7 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import PageContainer from '../components/PageContainer';
 import StoryContainer from '../components/story/StoryContainer';
 import { TranslationResponse } from '../lib/translationService';
 
@@ -16,11 +14,7 @@ const TranslatePage: React.FC = () => {
   };
 
   return (
-    <Layout>
-      <PageContainer>
-        <StoryContainer onStoryTranslated={handleStoryTranslated} />
-      </PageContainer>
-    </Layout>
+    <StoryContainer onStoryTranslated={handleStoryTranslated} />
   );
 };
 
