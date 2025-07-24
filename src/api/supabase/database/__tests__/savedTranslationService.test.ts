@@ -8,9 +8,7 @@ import {
 import { 
   dummyLanguages, 
   dummyDifficultyLevels, 
-  createDummySavedTranslationWithDetails,
-  createDummyLanguage,
-  createDummyDifficultyLevel
+  createDummyLanguage
 } from '../../../../__tests__/utils/testData';
 
 // Mock the Supabase client
