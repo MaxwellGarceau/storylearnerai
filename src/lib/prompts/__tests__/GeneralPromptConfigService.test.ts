@@ -16,7 +16,7 @@ vi.mock('../config/native-to-target/en/es.json', () => ({
       }
     }
   }
-}), { virtual: true });
+}));
 
 vi.mock('../config/native-to-target/es/en.json', () => ({
   default: {
@@ -31,7 +31,7 @@ vi.mock('../config/native-to-target/es/en.json', () => ({
       }
     }
   }
-}), { virtual: true });
+}));
 
 
 
@@ -314,6 +314,9 @@ describe('PromptConfigService', () => {
       expect(prompt).toMatch(/Please provide only the en translation\.$/);
     });
 
+  });
+
+  describe('User Input Handling', () => {
     it('should handle special characters in text properly', () => {
       const contextWithSpecialChars: PromptBuildContext = {
         fromLanguage: 'es',
@@ -343,6 +346,38 @@ describe('PromptConfigService', () => {
       
       // Should preserve line breaks in the story text
       expect(prompt).toContain('Hola, ¿cómo estás?\nMe llamo María.\nTengo veinte años.');
+    });
+
+    it('should handle empty text gracefully', () => {
+      const contextWithEmptyText: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: '',
+        nativeLanguage: 'es'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(contextWithEmptyText);
+      
+      // Should handle empty text without errors
+      expect(prompt).toContain('es Story:');
+      expect(prompt).toContain('Please provide only the en translation');
+    });
+
+    it('should handle text with quotes and apostrophes', () => {
+      const contextWithQuotes: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'She said "Hello, how are you?" and he replied "I\'m fine, thanks!"',
+        nativeLanguage: 'es'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(contextWithQuotes);
+      
+      // Should preserve quotes and apostrophes
+      expect(prompt).toContain('"Hello, how are you?"');
+      expect(prompt).toContain('"I\'m fine, thanks!"');
     });
   });
 
