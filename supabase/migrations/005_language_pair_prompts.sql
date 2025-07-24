@@ -1,9 +1,9 @@
 -- Create language_pair_prompts table for from->to language specific configurations
 CREATE TABLE IF NOT EXISTS language_pair_prompts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    from_language_id UUID NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
-    to_language_id UUID NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
-    difficulty_level_id UUID NOT NULL REFERENCES difficulty_levels(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    from_language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+    to_language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id) ON DELETE CASCADE,
     
     -- Core prompt instructions
     vocabulary TEXT,

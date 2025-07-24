@@ -1,8 +1,8 @@
 -- Create prompt_configurations table to store language-specific prompt instructions
 CREATE TABLE IF NOT EXISTS prompt_configurations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    language_id UUID NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
-    difficulty_level_id UUID NOT NULL REFERENCES difficulty_levels(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id) ON DELETE CASCADE,
     vocabulary TEXT,
     grammar TEXT,
     cultural TEXT,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS prompt_configurations (
 
 -- Create prompt_templates table to store general prompt templates
 CREATE TABLE IF NOT EXISTS prompt_templates (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'translation', 'story_generation', etc.
     template TEXT NOT NULL,
     general_instructions TEXT[], -- Array of general instructions

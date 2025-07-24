@@ -1,6 +1,6 @@
 -- Create languages lookup table
 CREATE TABLE IF NOT EXISTS languages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     code VARCHAR(10) UNIQUE NOT NULL, -- ISO 639-1 language codes (e.g., 'en', 'es', 'fr')
     name VARCHAR(100) NOT NULL, -- Full language name (e.g., 'English', 'Spanish', 'French')
     native_name VARCHAR(100), -- Name in the native language
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS languages (
 
 -- Create difficulty_levels lookup table
 CREATE TABLE IF NOT EXISTS difficulty_levels (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    code VARCHAR(20) UNIQUE NOT NULL, -- Internal code (e.g., 'beginner', 'intermediate', 'advanced')
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL, -- Internal code (e.g., 'a1', 'a2', 'b1', 'b2')
     name VARCHAR(50) NOT NULL, -- Display name (e.g., 'Beginner', 'Intermediate', 'Advanced')
     description TEXT, -- Optional description
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -18,13 +18,13 @@ CREATE TABLE IF NOT EXISTS difficulty_levels (
 
 -- Create saved_translations table
 CREATE TABLE IF NOT EXISTS saved_translations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     original_story TEXT NOT NULL,
     translated_story TEXT NOT NULL,
-    original_language_id UUID NOT NULL REFERENCES languages(id),
-    translated_language_id UUID NOT NULL REFERENCES languages(id),
-    difficulty_level_id UUID NOT NULL REFERENCES difficulty_levels(id),
+    original_language_id INTEGER NOT NULL REFERENCES languages(id),
+    translated_language_id INTEGER NOT NULL REFERENCES languages(id),
+    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id),
     title VARCHAR(255), -- Optional title for the saved translation
     notes TEXT, -- Optional user notes
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

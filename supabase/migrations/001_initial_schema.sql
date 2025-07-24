@@ -1,9 +1,6 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create stories table
 CREATE TABLE IF NOT EXISTS stories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     language VARCHAR(10) NOT NULL,
@@ -15,8 +12,8 @@ CREATE TABLE IF NOT EXISTS stories (
 
 -- Create translations table
 CREATE TABLE IF NOT EXISTS translations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    story_id INTEGER NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
     target_language VARCHAR(10) NOT NULL,
     translated_content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
