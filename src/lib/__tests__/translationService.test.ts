@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { translationService } from '../translationService';
 import { EnvironmentConfig } from '../config/env';
 import type { TranslationRequest } from '../translationService';
-import { promptConfigService } from '../config/PromptConfigService';
+import { generalPromptConfigService } from '../config/GeneralPromptConfigService';
 
 // Mock the dependencies
 vi.mock('../config/env', () => ({
@@ -171,9 +171,9 @@ describe('TranslationService with Prompt Configuration', () => {
   describe('buildTranslationPrompt integration', () => {
     it('should use prompt configuration service for supported language/difficulty', async () => {
       // Verify the configuration supports the language/difficulty combination
-      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
       
-      const buildPromptSpy = vi.spyOn(promptConfigService, 'buildPrompt');
+      const buildPromptSpy = vi.spyOn(generalPromptConfigService, 'buildPrompt');
 
       // Mock the LLM service for this test
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
@@ -194,7 +194,7 @@ describe('TranslationService with Prompt Configuration', () => {
     });
 
     it('should fall back to basic prompt for unsupported language/difficulty', async () => {
-      const isSupportedSpy = vi.spyOn(promptConfigService, 'isSupported').mockReturnValue(false);
+      const isSupportedSpy = vi.spyOn(generalPromptConfigService, 'isSupported').mockReturnValue(false);
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Mock the LLM service for this test
@@ -217,8 +217,8 @@ describe('TranslationService with Prompt Configuration', () => {
 
     it('should generate different prompts for different difficulty levels', async () => {
       // Verify both configurations are supported
-      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
-      expect(promptConfigService.isSupported('en', 'b2')).toBe(true);
+      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('en', 'b2')).toBe(true);
 
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
@@ -242,8 +242,8 @@ describe('TranslationService with Prompt Configuration', () => {
 
     it('should generate different prompts for different target languages', async () => {
       // Verify both configurations are supported
-      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
-      expect(promptConfigService.isSupported('es', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('es', 'a1')).toBe(true);
 
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
@@ -301,7 +301,7 @@ describe('TranslationService with Prompt Configuration', () => {
 
     it('should include language-specific instructions in the prompt', async () => {
       // Verify the configuration is supported
-      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
 
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
@@ -349,7 +349,7 @@ describe('TranslationService with Prompt Configuration', () => {
         model: 'test-model'
       });
 
-      vi.spyOn(promptConfigService, 'isSupported').mockReturnValue(false);
+      vi.spyOn(generalPromptConfigService, 'isSupported').mockReturnValue(false);
 
       await translationService.translateStory(mockPromptRequest);
       const prompt = generateCompletionSpy.mock.calls[0][0].prompt;

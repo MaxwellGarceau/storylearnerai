@@ -1,3 +1,3 @@
 // Export configuration services
-export { promptConfigService } from './PromptConfigService';
+export { generalPromptConfigService } from './GeneralPromptConfigService';
 export { EnvironmentConfig } from './env'; 

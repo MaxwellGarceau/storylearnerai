@@ -1,4 +1,4 @@
-import { promptConfigService } from '../PromptConfigService';
+import { generalPromptConfigService } from '../GeneralPromptConfigService';
 import { PromptBuildContext } from '../../types/prompt';
 import { vi } from 'vitest';
 
@@ -61,7 +61,7 @@ vi.mock('../../../api/supabase/database/promptConfigurationService', () => ({
 describe('PromptConfigService', () => {
   describe('getLanguageInstructions', () => {
     it('should return instructions for supported language and difficulty', async () => {
-      const instructions = await promptConfigService.getLanguageInstructions('en', 'a1');
+      const instructions = await generalPromptConfigService.getLanguageInstructions('en', 'a1');
       
       expect(instructions).toBeDefined();
       expect(instructions?.vocabulary).toBeDefined();
@@ -72,18 +72,18 @@ describe('PromptConfigService', () => {
     });
 
     it('should return null for unsupported language', async () => {
-      const instructions = await promptConfigService.getLanguageInstructions('unsupported', 'a1');
+      const instructions = await generalPromptConfigService.getLanguageInstructions('unsupported', 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', async () => {
-      const instructions = await promptConfigService.getLanguageInstructions('en', 'unsupported');
+      const instructions = await generalPromptConfigService.getLanguageInstructions('en', 'unsupported');
       expect(instructions).toBeNull();
     });
 
     it('should handle case insensitive language codes', async () => {
-      const instructionsLower = await promptConfigService.getLanguageInstructions('en', 'a1');
-      const instructionsUpper = await promptConfigService.getLanguageInstructions('EN', 'A1');
+      const instructionsLower = await generalPromptConfigService.getLanguageInstructions('en', 'a1');
+      const instructionsUpper = await generalPromptConfigService.getLanguageInstructions('EN', 'A1');
       
       // Both should return the same mock data since the mock normalizes to lowercase
       expect(instructionsLower).toBeDefined();
@@ -95,7 +95,7 @@ describe('PromptConfigService', () => {
 
   describe('getGeneralInstructions', () => {
     it('should return array of general instructions', () => {
-      const instructions = promptConfigService.getGeneralInstructions();
+      const instructions = generalPromptConfigService.getGeneralInstructions();
       
       expect(Array.isArray(instructions)).toBe(true);
       expect(instructions.length).toBeGreaterThan(0);
@@ -105,7 +105,7 @@ describe('PromptConfigService', () => {
 
   describe('getTemplate', () => {
     it('should return the prompt template', () => {
-      const template = promptConfigService.getTemplate();
+      const template = generalPromptConfigService.getTemplate();
       
       expect(typeof template).toBe('string');
       expect(template).toContain('{fromLanguage}');
@@ -126,7 +126,7 @@ describe('PromptConfigService', () => {
     };
 
     it('should build a complete prompt with all placeholders replaced', async () => {
-      const prompt = await promptConfigService.buildPrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('Spanish');
@@ -151,7 +151,7 @@ describe('PromptConfigService', () => {
         toLanguage: 'unsupported'
       };
       
-      const prompt = await promptConfigService.buildPrompt(unsupportedContext);
+      const prompt = await generalPromptConfigService.buildPrompt(unsupportedContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('Adapt the translation for A1 CEFR level complexity');
@@ -161,8 +161,8 @@ describe('PromptConfigService', () => {
       const a1Context = { ...mockContext, difficulty: 'a1' };
       const b2Context = { ...mockContext, difficulty: 'b2' };
       
-      const a1Prompt = await promptConfigService.buildPrompt(a1Context);
-      const b2Prompt = await promptConfigService.buildPrompt(b2Context);
+      const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
+      const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
       
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('Use appropriate vocabulary for a1');
@@ -173,8 +173,8 @@ describe('PromptConfigService', () => {
       const enContext = { ...mockContext, toLanguage: 'en' };
       const esContext = { ...mockContext, fromLanguage: 'en', toLanguage: 'es', text: 'Hello, how are you?' };
       
-      const enPrompt = await promptConfigService.buildPrompt(enContext);
-      const esPrompt = await promptConfigService.buildPrompt(esContext);
+      const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
+      const esPrompt = await generalPromptConfigService.buildPrompt(esContext);
       
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');
@@ -184,7 +184,7 @@ describe('PromptConfigService', () => {
 
   describe('getAvailableLanguages', () => {
     it('should return array of available language codes', async () => {
-      const languages = await promptConfigService.getAvailableLanguages();
+      const languages = await generalPromptConfigService.getAvailableLanguages();
       
       expect(Array.isArray(languages)).toBe(true);
       expect(languages).toContain('en');
@@ -194,7 +194,7 @@ describe('PromptConfigService', () => {
 
   describe('getAvailableDifficulties', () => {
     it('should return difficulties for supported language', async () => {
-      const difficulties = await promptConfigService.getAvailableDifficulties('en');
+      const difficulties = await generalPromptConfigService.getAvailableDifficulties('en');
       
       expect(Array.isArray(difficulties)).toBe(true);
       expect(difficulties).toContain('a1');
@@ -204,28 +204,28 @@ describe('PromptConfigService', () => {
     });
 
     it('should return empty array for unsupported language', async () => {
-      const difficulties = await promptConfigService.getAvailableDifficulties('unsupported');
+      const difficulties = await generalPromptConfigService.getAvailableDifficulties('unsupported');
       expect(difficulties).toEqual([]);
     });
   });
 
   describe('isSupported', () => {
     it('should return true for supported combinations', async () => {
-      expect(await promptConfigService.isSupported('en', 'a1')).toBe(true);
-      expect(await promptConfigService.isSupported('es', 'b2')).toBe(true);
+      expect(await generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(await generalPromptConfigService.isSupported('es', 'b2')).toBe(true);
     });
 
     it('should return false for unsupported language', async () => {
-      expect(await promptConfigService.isSupported('unsupported', 'a1')).toBe(false);
+      expect(await generalPromptConfigService.isSupported('unsupported', 'a1')).toBe(false);
     });
 
     it('should return false for unsupported difficulty', async () => {
-      expect(await promptConfigService.isSupported('en', 'unsupported')).toBe(false);
+      expect(await generalPromptConfigService.isSupported('en', 'unsupported')).toBe(false);
     });
 
     it('should be case insensitive', async () => {
-      expect(await promptConfigService.isSupported('EN', 'A1')).toBe(true);
-      expect(await promptConfigService.isSupported('Es', 'B2')).toBe(true);
+      expect(await generalPromptConfigService.isSupported('EN', 'A1')).toBe(true);
+      expect(await generalPromptConfigService.isSupported('Es', 'B2')).toBe(true);
     });
   });
 }); 
