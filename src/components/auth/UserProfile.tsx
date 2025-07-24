@@ -25,12 +25,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     preferred_language: 'en'
   })
 
-  useEffect(() => {
-    if (user) {
-      loadProfile()
-    }
-  }, [user, loadProfile])
-
   const loadProfile = useCallback(async () => {
     if (!user) return
 
@@ -52,6 +46,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       setLoading(false)
     }
   }, [user])
+
+  useEffect(() => {
+    if (user) {
+      loadProfile()
+    }
+  }, [user, loadProfile])
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({
