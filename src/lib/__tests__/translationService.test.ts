@@ -19,6 +19,23 @@ vi.mock('../llm/LLMServiceManager', () => ({
   },
 }));
 
+// Mock the LanguageService
+vi.mock('../api/supabase/database/languageService', () => ({
+  LanguageService: vi.fn().mockImplementation(() => ({
+    getLanguageName: vi.fn().mockImplementation((code: string) => {
+      const languageNames: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'it': 'Italian',
+        'pt': 'Portuguese'
+      };
+      return Promise.resolve(languageNames[code.toLowerCase()] || code);
+    })
+  }))
+}));
+
 const mockEnvironmentConfig = vi.mocked(EnvironmentConfig);
 
 describe('TranslationService', () => {
@@ -162,7 +179,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -184,7 +201,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -206,7 +223,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -231,7 +248,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -257,7 +274,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -271,7 +288,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -289,7 +306,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -308,7 +325,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 
@@ -328,7 +345,7 @@ describe('TranslationService with Prompt Configuration', () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
       const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
         content: 'Mocked translation result',
-        provider: 'test-provider',
+        provider: 'openai',
         model: 'test-model'
       });
 

@@ -1,5 +1,23 @@
 import { promptConfigService } from '../PromptConfigService';
 import { PromptBuildContext } from '../../types/prompt';
+import { vi } from 'vitest';
+
+// Mock the LanguageService
+vi.mock('../../../api/supabase/database/languageService', () => ({
+  LanguageService: vi.fn().mockImplementation(() => ({
+    getLanguageName: vi.fn().mockImplementation((code: string) => {
+      const languageNames: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'it': 'Italian',
+        'pt': 'Portuguese'
+      };
+      return Promise.resolve(languageNames[code.toLowerCase()] || code);
+    })
+  }))
+}));
 
 describe('PromptConfigService', () => {
   describe('getLanguageInstructions', () => {
@@ -64,8 +82,8 @@ describe('PromptConfigService', () => {
       text: 'Hola, ¿cómo estás?'
     };
 
-    it('should build a complete prompt with all placeholders replaced', () => {
-      const prompt = promptConfigService.buildPrompt(mockContext);
+    it('should build a complete prompt with all placeholders replaced', async () => {
+      const prompt = await promptConfigService.buildPrompt(mockContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('Spanish');
@@ -84,36 +102,36 @@ describe('PromptConfigService', () => {
       expect(prompt).not.toContain('{text}');
     });
 
-    it('should handle unsupported language gracefully', () => {
+    it('should handle unsupported language gracefully', async () => {
       const unsupportedContext: PromptBuildContext = {
         ...mockContext,
         toLanguage: 'unsupported'
       };
       
-      const prompt = promptConfigService.buildPrompt(unsupportedContext);
+      const prompt = await promptConfigService.buildPrompt(unsupportedContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('Adapt the translation for A1 CEFR level complexity');
     });
 
-    it('should build different prompts for different difficulty levels', () => {
+    it('should build different prompts for different difficulty levels', async () => {
       const a1Context = { ...mockContext, difficulty: 'a1' };
       const b2Context = { ...mockContext, difficulty: 'b2' };
       
-      const a1Prompt = promptConfigService.buildPrompt(a1Context);
-      const b2Prompt = promptConfigService.buildPrompt(b2Context);
+      const a1Prompt = await promptConfigService.buildPrompt(a1Context);
+      const b2Prompt = await promptConfigService.buildPrompt(b2Context);
       
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('most common 1000 English words');
       expect(b2Prompt).toContain('upper-intermediate vocabulary');
     });
 
-    it('should build different prompts for different languages', () => {
+    it('should build different prompts for different languages', async () => {
       const enContext = { ...mockContext, toLanguage: 'en' };
       const esContext = { ...mockContext, fromLanguage: 'en', toLanguage: 'es', text: 'Hello, how are you?' };
       
-      const enPrompt = promptConfigService.buildPrompt(enContext);
-      const esPrompt = promptConfigService.buildPrompt(esContext);
+      const enPrompt = await promptConfigService.buildPrompt(enContext);
+      const esPrompt = await promptConfigService.buildPrompt(esContext);
       
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');

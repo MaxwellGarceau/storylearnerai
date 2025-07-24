@@ -1,11 +1,14 @@
 import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
 import promptConfigData from './prompts.json';
+import { LanguageService } from '../../api/supabase/database/languageService';
 
 class PromptConfigService {
   private config: PromptConfig;
+  private languageService: LanguageService;
 
   constructor() {
     this.config = promptConfigData as PromptConfig;
+    this.languageService = new LanguageService();
   }
 
   /**
@@ -44,7 +47,7 @@ class PromptConfigService {
   /**
    * Build the complete prompt using the template and context
    */
-  buildPrompt(context: PromptBuildContext): string {
+  async buildPrompt(context: PromptBuildContext): Promise<string> {
     const { fromLanguage, toLanguage, difficulty, text } = context;
     
     // Get general instructions
@@ -72,18 +75,22 @@ class PromptConfigService {
       languageInstructionsText = `Adapt the translation for ${difficulty.toUpperCase()} CEFR level complexity.`;
     }
 
+    // Get language names asynchronously
+    const fromLanguageName = await this.getLanguageName(fromLanguage);
+    const toLanguageName = await this.getLanguageName(toLanguage);
+
     // Build the complete prompt using the template
     let prompt = this.getTemplate()
-      .replace('{fromLanguage}', this.getLanguageName(fromLanguage))
-      .replace('{toLanguage}', this.getLanguageName(toLanguage))
+      .replace('{fromLanguage}', fromLanguageName)
+      .replace('{toLanguage}', toLanguageName)
       .replace('{difficulty}', difficulty.toUpperCase())
       .replace('{instructions}', instructionsText)
       .replace('{languageInstructions}', languageInstructionsText)
       .replace('{text}', text);
 
     // Replace any remaining placeholders
-    prompt = prompt.replace(/{fromLanguage}/g, this.getLanguageName(fromLanguage));
-    prompt = prompt.replace(/{toLanguage}/g, this.getLanguageName(toLanguage));
+    prompt = prompt.replace(/{fromLanguage}/g, fromLanguageName);
+    prompt = prompt.replace(/{toLanguage}/g, toLanguageName);
 
     return prompt;
   }
@@ -91,17 +98,13 @@ class PromptConfigService {
   /**
    * Get full language name from language code
    */
-  private getLanguageName(languageCode: string): string {
-    const languageNames: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese'
-    };
-
-    return languageNames[languageCode.toLowerCase()] || languageCode;
+  private async getLanguageName(languageCode: string): Promise<string> {
+    try {
+      return await this.languageService.getLanguageName(languageCode);
+    } catch (error) {
+      console.warn(`Failed to fetch language name for code: ${languageCode}`, error);
+      return languageCode; // Fallback to code if fetch fails
+    }
   }
 
   /**

@@ -31,7 +31,7 @@ class TranslationService {
 
   async translateStory(request: TranslationRequest): Promise<TranslationResponse> {
     try {
-      const prompt = this.buildTranslationPrompt(request);
+      const prompt = await this.buildTranslationPrompt(request);
       
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -59,7 +59,7 @@ class TranslationService {
   /**
    * Build a customized translation prompt based on language and difficulty level
    */
-  private buildTranslationPrompt(request: TranslationRequest): string {
+  private async buildTranslationPrompt(request: TranslationRequest): Promise<string> {
     const context = {
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
@@ -67,9 +67,6 @@ class TranslationService {
       text: request.text
     };
 
-    // Use the prompt configuration service to build a customized prompt
-    const customPrompt = promptConfigService.buildPrompt(context);
-    
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
     if (!promptConfigService.isSupported(request.toLanguage, request.difficulty)) {
@@ -77,15 +74,16 @@ class TranslationService {
       return this.buildFallbackPrompt(request);
     }
 
-    return customPrompt;
+    // Use the prompt configuration service to build a customized prompt
+    return await promptConfigService.buildPrompt(context);
   }
 
   /**
    * Fallback prompt for unsupported language/difficulty combinations
    */
-  private buildFallbackPrompt(request: TranslationRequest): string {
-    const fromLanguageName = this.getLanguageName(request.fromLanguage);
-    const toLanguageName = this.getLanguageName(request.toLanguage);
+  private async buildFallbackPrompt(request: TranslationRequest): Promise<string> {
+    const fromLanguageName = await this.getLanguageName(request.fromLanguage);
+    const toLanguageName = await this.getLanguageName(request.toLanguage);
     
     return `
       Translate the following ${fromLanguageName} story to ${toLanguageName}, adapted for ${request.difficulty} CEFR level:
@@ -104,19 +102,17 @@ class TranslationService {
   }
 
   /**
-   * Helper method to get language names
+   * Helper method to get language names from database
    */
-  private getLanguageName(languageCode: string): string {
-    const languageNames: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese'
-    };
-
-    return languageNames[languageCode.toLowerCase()] || languageCode;
+  private async getLanguageName(languageCode: string): Promise<string> {
+    try {
+      const { LanguageService } = await import('../api/supabase/database/languageService');
+      const languageService = new LanguageService();
+      return await languageService.getLanguageName(languageCode);
+    } catch (error) {
+      console.warn(`Failed to fetch language name for code: ${languageCode}`, error);
+      return languageCode; // Fallback to code if fetch fails
+    }
   }
 
   // Mock translation for development/testing
