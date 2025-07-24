@@ -5,7 +5,7 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { SavedTranslationWithDetails } from '../../lib/types/savedTranslations';
+import { SavedTranslationWithDetails } from '../../lib/types/database';
 import { TranslationResponse } from '../../lib/translationService';
 
 export default function SavedTranslationsList() {

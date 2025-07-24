@@ -8,7 +8,7 @@ import {
   SavedTranslationFilters,
   Language,
   DifficultyLevel,
-} from '../lib/types/savedTranslations';
+} from '../lib/types/database';
 
 interface UseSavedTranslationsReturn {
   // Data
