@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import SaveTranslationButton from '../SaveTranslationButton';
 import { TranslationResponse } from '../../../lib/translationService';
 import { TooltipProvider } from '../../ui/Tooltip';
@@ -38,6 +38,10 @@ describe('SaveTranslationButton Component', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders save button for new translations', () => {
     render(
       <TooltipProvider>
@@ -52,8 +56,9 @@ describe('SaveTranslationButton Component', () => {
       </TooltipProvider>
     );
 
-    expect(screen.getByText('Save Translation')).toBeInTheDocument();
-    expect(screen.getByRole('button')).not.toBeDisabled();
+    const saveButton = screen.getByText('Save Translation');
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).not.toBeDisabled();
   });
 
   it('renders disabled button for saved stories', () => {
@@ -70,8 +75,9 @@ describe('SaveTranslationButton Component', () => {
       </TooltipProvider>
     );
 
-    expect(screen.getByText('Already Saved')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeDisabled();
+    const alreadySavedButton = screen.getByText('Already Saved');
+    expect(alreadySavedButton).toBeInTheDocument();
+    expect(alreadySavedButton).toBeDisabled();
   });
 
   it('shows correct tooltip for saved stories', () => {
@@ -90,7 +96,7 @@ describe('SaveTranslationButton Component', () => {
 
     // For Radix UI tooltips, we can't easily test the content without triggering hover
     // Instead, we test that the tooltip trigger exists and is disabled
-    const button = screen.getByRole('button');
+    const button = screen.getByText('Already Saved');
     expect(button).toBeDisabled();
     expect(button).toHaveTextContent('Already Saved');
   });
@@ -111,7 +117,7 @@ describe('SaveTranslationButton Component', () => {
 
     // For Radix UI tooltips, we can't easily test the content without triggering hover
     // Instead, we test that the tooltip trigger exists and is enabled
-    const button = screen.getByRole('button');
+    const button = screen.getByText('Save Translation');
     expect(button).not.toBeDisabled();
     expect(button).toHaveTextContent('Save Translation');
   });
@@ -130,9 +136,12 @@ describe('SaveTranslationButton Component', () => {
       </TooltipProvider>
     );
 
-    // Use getAllByText to handle multiple elements with same text
-    const saveButtons = screen.getAllByText('Save Translation');
-    fireEvent.click(saveButtons[0]); // Click the first Save Translation button (the trigger)
+    // Click the Save Translation button (the trigger button, not the modal button)
+    // Use getAllByText to handle potential multiple elements and click the first one
+    const triggerButtons = screen.getAllByText('Save Translation');
+    const triggerButton = triggerButtons.find(button => !button.disabled);
+    expect(triggerButton).toBeDefined();
+    fireEvent.click(triggerButton!);
     
     expect(screen.getByText('Save this translation to your library for future reference')).toBeInTheDocument();
   });
@@ -151,7 +160,8 @@ describe('SaveTranslationButton Component', () => {
       </TooltipProvider>
     );
 
-    fireEvent.click(screen.getByText('Already Saved'));
+    const alreadySavedButton = screen.getByText('Already Saved');
+    fireEvent.click(alreadySavedButton);
     
     // Modal should not appear
     expect(screen.queryByText('Save this translation to your library for future reference')).not.toBeInTheDocument();
