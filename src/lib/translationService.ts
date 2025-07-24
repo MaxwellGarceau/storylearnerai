@@ -1,5 +1,6 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
+import { promptConfigService } from './config/PromptConfigService';
 
 export interface TranslationRequest {
   text: string;
@@ -55,12 +56,39 @@ class TranslationService {
     }
   }
 
-  // TODO: Refine the prompt to deliver better results
-  // TODO: Refine the prompt specifically for the difficulty level
-  // TODO: Refine the prompt specifically for the story
+  /**
+   * Build a customized translation prompt based on language and difficulty level
+   */
   private buildTranslationPrompt(request: TranslationRequest): string {
+    const context = {
+      fromLanguage: request.fromLanguage,
+      toLanguage: request.toLanguage,
+      difficulty: request.difficulty,
+      text: request.text
+    };
+
+    // Use the prompt configuration service to build a customized prompt
+    const customPrompt = promptConfigService.buildPrompt(context);
+    
+    // If the configuration doesn't support this language/difficulty combination,
+    // fall back to a basic prompt
+    if (!promptConfigService.isSupported(request.toLanguage, request.difficulty)) {
+      console.warn(`Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
+      return this.buildFallbackPrompt(request);
+    }
+
+    return customPrompt;
+  }
+
+  /**
+   * Fallback prompt for unsupported language/difficulty combinations
+   */
+  private buildFallbackPrompt(request: TranslationRequest): string {
+    const fromLanguageName = this.getLanguageName(request.fromLanguage);
+    const toLanguageName = this.getLanguageName(request.toLanguage);
+    
     return `
-      Translate the following Spanish story to English, adapted for ${request.difficulty} CEFR level:
+      Translate the following ${fromLanguageName} story to ${toLanguageName}, adapted for ${request.difficulty} CEFR level:
       
       Instructions:
       - Maintain the story's meaning and narrative flow
@@ -68,11 +96,27 @@ class TranslationService {
       - Preserve cultural context where appropriate
       - Keep the story engaging and readable
       
-      Spanish Story:
+      ${fromLanguageName} Story:
       ${request.text}
       
-      Please provide only the English translation.
+      Please provide only the ${toLanguageName} translation.
     `;
+  }
+
+  /**
+   * Helper method to get language names
+   */
+  private getLanguageName(languageCode: string): string {
+    const languageNames: Record<string, string> = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese'
+    };
+
+    return languageNames[languageCode.toLowerCase()] || languageCode;
   }
 
   // Mock translation for development/testing

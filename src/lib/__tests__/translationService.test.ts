@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { translationService } from '../translationService';
 import { EnvironmentConfig } from '../config/env';
 import type { TranslationRequest } from '../translationService';
+import { promptConfigService } from '../config/PromptConfigService';
 
 // Mock the dependencies
 vi.mock('../config/env', () => ({
@@ -132,6 +133,213 @@ describe('TranslationService', () => {
 
       mockEnvironmentConfig.isMockTranslationEnabled.mockReturnValue(false);
       expect(translationService.isMockTranslationEnabled()).toBe(false);
+    });
+  });
+}); 
+
+describe('TranslationService with Prompt Configuration', () => {
+  const mockPromptRequest: TranslationRequest = {
+    text: 'Hola, ¿cómo estás? Me llamo María y tengo veinte años.',
+    fromLanguage: 'es',
+    toLanguage: 'en',
+    difficulty: 'a1'
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Ensure mock translation is disabled for these tests
+    mockEnvironmentConfig.isMockTranslationEnabled.mockReturnValue(false);
+  });
+
+  describe('buildTranslationPrompt integration', () => {
+    it('should use prompt configuration service for supported language/difficulty', async () => {
+      // Verify the configuration supports the language/difficulty combination
+      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+      
+      const buildPromptSpy = vi.spyOn(promptConfigService, 'buildPrompt');
+
+      // Mock the LLM service for this test
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      await translationService.translateStory(mockPromptRequest);
+
+      expect(buildPromptSpy).toHaveBeenCalledWith({
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: mockPromptRequest.text
+      });
+    });
+
+    it('should fall back to basic prompt for unsupported language/difficulty', async () => {
+      const isSupportedSpy = vi.spyOn(promptConfigService, 'isSupported').mockReturnValue(false);
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Mock the LLM service for this test
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      await translationService.translateStory(mockPromptRequest);
+
+      expect(isSupportedSpy).toHaveBeenCalledWith('en', 'a1');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Unsupported language/difficulty combination: en/a1. Using fallback prompt.'
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should generate different prompts for different difficulty levels', async () => {
+      // Verify both configurations are supported
+      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(promptConfigService.isSupported('en', 'b2')).toBe(true);
+
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      // Test A1 level
+      await translationService.translateStory({ ...mockPromptRequest, difficulty: 'a1' });
+      const a1Prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      // Test B2 level
+      await translationService.translateStory({ ...mockPromptRequest, difficulty: 'b2' });
+      const b2Prompt = generateCompletionSpy.mock.calls[1][0].prompt;
+
+      expect(a1Prompt).not.toEqual(b2Prompt);
+      expect(a1Prompt).toContain('most common 1000 English words');
+      expect(b2Prompt).toContain('upper-intermediate vocabulary');
+    });
+
+    it('should generate different prompts for different target languages', async () => {
+      // Verify both configurations are supported
+      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(promptConfigService.isSupported('es', 'a1')).toBe(true);
+
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      // Test English target
+      await translationService.translateStory(mockPromptRequest);
+      const enPrompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      // Test Spanish target
+      await translationService.translateStory({
+        ...mockPromptRequest,
+        fromLanguage: 'en',
+        toLanguage: 'es',
+        text: 'Hello, how are you? My name is Mary and I am twenty years old.'
+      });
+      const esPrompt = generateCompletionSpy.mock.calls[1][0].prompt;
+
+      expect(enPrompt).not.toEqual(esPrompt);
+      expect(enPrompt).toContain('English');
+      expect(esPrompt).toContain('Spanish');
+    });
+
+    it('should include story text in the generated prompt', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      await translationService.translateStory(mockPromptRequest);
+      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      expect(prompt).toContain(mockPromptRequest.text);
+    });
+
+    it('should include general instructions in the prompt', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      await translationService.translateStory(mockPromptRequest);
+      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      expect(prompt).toContain('Maintain the story\'s meaning and narrative flow');
+      expect(prompt).toContain('Keep the story engaging and readable');
+    });
+
+    it('should include language-specific instructions in the prompt', async () => {
+      // Verify the configuration is supported
+      expect(promptConfigService.isSupported('en', 'a1')).toBe(true);
+
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      await translationService.translateStory(mockPromptRequest);
+      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      expect(prompt).toContain('Vocabulary:');
+      expect(prompt).toContain('Grammar:');
+      expect(prompt).toContain('Cultural:');
+      expect(prompt).toContain('Style:');
+    });
+  });
+
+  describe('fallback prompt functionality', () => {
+    it('should use fallback prompt for completely unsupported language', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      const unsupportedRequest: TranslationRequest = {
+        ...mockPromptRequest,
+        toLanguage: 'unsupported'
+      };
+
+      await translationService.translateStory(unsupportedRequest);
+      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      expect(prompt).toContain('unsupported story to unsupported');
+      expect(prompt).toContain('adapted for a1 CEFR level');
+    });
+
+    it('should use language names in fallback prompt', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'Mocked translation result',
+        provider: 'test-provider',
+        model: 'test-model'
+      });
+
+      vi.spyOn(promptConfigService, 'isSupported').mockReturnValue(false);
+
+      await translationService.translateStory(mockPromptRequest);
+      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
+
+      expect(prompt).toContain('Spanish story to English');
+      expect(prompt).toContain('Spanish Story:');
+      expect(prompt).toContain('English translation');
     });
   });
 }); 

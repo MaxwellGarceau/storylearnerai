@@ -1,0 +1,41 @@
+// Types for the LLM prompt configuration system
+
+export type LanguageCode = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt';
+export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2';
+
+export interface PromptInstructions {
+  // Language-specific instructions for translation
+  vocabulary?: string;
+  grammar?: string;
+  cultural?: string;
+  style?: string;
+  examples?: string;
+}
+
+export interface DifficultyPrompts {
+  a1: PromptInstructions;
+  a2: PromptInstructions;
+  b1: PromptInstructions;
+  b2: PromptInstructions;
+  c1?: PromptInstructions; // Optional for future expansion
+  c2?: PromptInstructions; // Optional for future expansion
+}
+
+export interface LanguagePrompts {
+  [languageCode: string]: DifficultyPrompts;
+}
+
+export interface PromptConfig {
+  general: {
+    instructions: string[];
+    template: string;
+  };
+  languages: LanguagePrompts;
+}
+
+export interface PromptBuildContext {
+  fromLanguage: string;
+  toLanguage: string;
+  difficulty: string;
+  text: string;
+} 
