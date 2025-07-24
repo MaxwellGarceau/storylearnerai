@@ -69,7 +69,7 @@ class TranslationService {
 
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
-    if (!promptConfigService.isSupported(request.toLanguage, request.difficulty)) {
+    if (!(await promptConfigService.isSupported(request.toLanguage, request.difficulty))) {
       console.warn(`Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
       return this.buildFallbackPrompt(request);
     }

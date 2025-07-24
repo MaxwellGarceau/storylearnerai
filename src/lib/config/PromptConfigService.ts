@@ -1,20 +1,43 @@
 import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
 import promptConfigData from './prompts.json';
 import { LanguageService } from '../../api/supabase/database/languageService';
+import { PromptConfigurationService } from '../../api/supabase/database/promptConfigurationService';
 
 class PromptConfigService {
   private config: PromptConfig;
   private languageService: LanguageService;
+  private promptConfigurationService: PromptConfigurationService;
+  private useDatabase: boolean = true;
 
   constructor() {
     this.config = promptConfigData as PromptConfig;
     this.languageService = new LanguageService();
+    this.promptConfigurationService = new PromptConfigurationService();
   }
 
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
-  getLanguageInstructions(languageCode: string, difficulty: string): PromptInstructions | null {
+  async getLanguageInstructions(languageCode: string, difficulty: string): Promise<PromptInstructions | null> {
+    if (this.useDatabase) {
+      try {
+        const dbConfig = await this.promptConfigurationService.getPromptConfiguration(languageCode, difficulty);
+        if (dbConfig) {
+          return {
+            vocabulary: dbConfig.vocabulary,
+            grammar: dbConfig.grammar,
+            cultural: dbConfig.cultural,
+            style: dbConfig.style,
+            examples: dbConfig.examples
+          };
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch prompt configuration from database for ${languageCode}/${difficulty}:`, error);
+        // Fall back to JSON configuration
+      }
+    }
+
+    // Fallback to JSON configuration
     const language = this.config.languages[languageCode.toLowerCase()];
     if (!language) {
       console.warn(`No prompt configuration found for language: ${languageCode}`);
@@ -54,7 +77,7 @@ class PromptConfigService {
     const generalInstructions = this.getGeneralInstructions();
     
     // Get language-specific instructions for the target language
-    const languageInstructions = this.getLanguageInstructions(toLanguage, difficulty);
+    const languageInstructions = await this.getLanguageInstructions(toLanguage, difficulty);
     
     // Build the instructions string
     const instructionsText = generalInstructions.map(inst => `- ${inst}`).join('\n');
@@ -110,14 +133,30 @@ class PromptConfigService {
   /**
    * Get all available languages in the config
    */
-  getAvailableLanguages(): string[] {
+  async getAvailableLanguages(): Promise<string[]> {
+    if (this.useDatabase) {
+      try {
+        return await this.promptConfigurationService.getAvailableLanguageCodes();
+      } catch (error) {
+        console.warn('Failed to fetch available languages from database, falling back to JSON:', error);
+      }
+    }
+    
     return Object.keys(this.config.languages);
   }
 
   /**
    * Get all available difficulty levels for a language
    */
-  getAvailableDifficulties(languageCode: string): string[] {
+  async getAvailableDifficulties(languageCode: string): Promise<string[]> {
+    if (this.useDatabase) {
+      try {
+        return await this.promptConfigurationService.getAvailableDifficultyCodes(languageCode);
+      } catch (error) {
+        console.warn(`Failed to fetch available difficulties for ${languageCode} from database, falling back to JSON:`, error);
+      }
+    }
+    
     const language = this.config.languages[languageCode.toLowerCase()];
     if (!language) return [];
     
@@ -127,7 +166,15 @@ class PromptConfigService {
   /**
    * Check if a language and difficulty combination is supported
    */
-  isSupported(languageCode: string, difficulty: string): boolean {
+  async isSupported(languageCode: string, difficulty: string): Promise<boolean> {
+    if (this.useDatabase) {
+      try {
+        return await this.promptConfigurationService.hasPromptConfiguration(languageCode, difficulty);
+      } catch (error) {
+        console.warn(`Failed to check support for ${languageCode}/${difficulty} in database, falling back to JSON:`, error);
+      }
+    }
+    
     const language = this.config.languages[languageCode.toLowerCase()];
     if (!language) return false;
     
