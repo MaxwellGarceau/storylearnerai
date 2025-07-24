@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSupabase } from './useSupabase';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
 import {
@@ -62,7 +62,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
   // Error state
   const [error, setError] = useState<string | null>(null);
   
-  const service = new SavedTranslationService();
+  const service = useMemo(() => new SavedTranslationService(), []);
   
   // Load languages and difficulty levels on mount
   useEffect(() => {
@@ -89,7 +89,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     };
     
     loadLookupData();
-  }, [user]);
+  }, [user, service]);
   
   // Load saved translations when user or filters change
   useEffect(() => {
@@ -116,7 +116,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     };
     
     loadSavedTranslations();
-  }, [user, filters]);
+  }, [user, filters, service]);
   
   const createSavedTranslation = useCallback(async (request: CreateSavedTranslationRequest) => {
     if (!user) throw new Error('User not authenticated');

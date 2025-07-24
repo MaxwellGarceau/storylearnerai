@@ -175,7 +175,7 @@ export function useSupabaseQuery<T>(
 
   useEffect(() => {
     executeQuery()
-  }, [executeQuery, ...dependencies])
+  }, [executeQuery, dependencies])
 
   const refetch = useCallback(() => {
     executeQuery()

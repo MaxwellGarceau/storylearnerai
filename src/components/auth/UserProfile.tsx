@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '../ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card'
 import Label from '../ui/Label'
@@ -29,9 +29,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     if (user) {
       loadProfile()
     }
-  }, [user])
+  }, [user, loadProfile])
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user) return
 
     try {
@@ -51,7 +51,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSupabase } from '../hooks/useSupabase'
 import { UserService } from '../api/supabase'
@@ -21,15 +21,7 @@ export const DashboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [profile, setProfile] = useState<User | null>(null)
 
-  useEffect(() => {
-    if (user) {
-      loadDashboardData()
-    } else {
-      setLoading(false)
-    }
-  }, [user])
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!user) return
 
     try {
@@ -44,7 +36,15 @@ export const DashboardPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      loadDashboardData()
+    } else {
+      setLoading(false)
+    }
+  }, [user, loadDashboardData])
 
   const getLanguageName = (code: string) => {
     const languages: Record<string, string> = {

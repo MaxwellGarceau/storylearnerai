@@ -4,7 +4,6 @@ import { supabase } from '../../client';
 import {
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
-  SavedTranslationFilters,
 } from '../../../../lib/types/savedTranslations';
 
 // Mock the Supabase client
