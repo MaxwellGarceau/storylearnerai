@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { SavedTranslationWithDetails } from '../../lib/types/savedTranslations';
+import { TranslationResponse } from '../../lib/translationService';
 
 export default function SavedTranslationsList() {
+  const navigate = useNavigate();
   const {
     savedTranslations,
     languages,
@@ -41,6 +44,29 @@ export default function SavedTranslationsList() {
         console.error('Failed to delete translation:', err);
       }
     }
+  };
+
+  const convertToTranslationResponse = (savedTranslation: SavedTranslationWithDetails): TranslationResponse => {
+    return {
+      originalText: savedTranslation.original_story,
+      translatedText: savedTranslation.translated_story,
+      fromLanguage: savedTranslation.original_language.name,
+      toLanguage: savedTranslation.translated_language.name,
+      difficulty: savedTranslation.difficulty_level.name,
+      provider: 'saved',
+      model: 'saved-translation',
+    };
+  };
+
+  const handleViewStory = (savedTranslation: SavedTranslationWithDetails) => {
+    const translationData = convertToTranslationResponse(savedTranslation);
+    navigate('/story', { 
+      state: { 
+        translationData,
+        isSavedStory: true,
+        savedTranslationId: savedTranslation.id 
+      } 
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -156,6 +182,13 @@ export default function SavedTranslationsList() {
                 </div>
                 <div className="flex gap-2">
                   <Badge variant="secondary">{translation.difficulty_level.name}</Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewStory(translation)}
+                  >
+                    View Story
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"

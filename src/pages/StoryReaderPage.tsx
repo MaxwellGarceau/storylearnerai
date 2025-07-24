@@ -17,6 +17,8 @@ const StoryReaderPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const translationData = location.state?.translationData as TranslationResponse | undefined;
+  const isSavedStory = location.state?.isSavedStory as boolean | undefined;
+  const savedTranslationId = location.state?.savedTranslationId as string | undefined;
   const [showOptions, setShowOptions] = useState(false);
 
   const handleTranslateAnother = () => {
@@ -64,8 +66,20 @@ const StoryReaderPage: React.FC = () => {
       <PageContainer className="relative">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Your Translated Story</h1>
-          <p className="text-muted-foreground text-lg">Enjoy reading your story in English!</p>
+          <h1 className="text-3xl font-bold mb-2">
+            {isSavedStory ? 'Your Saved Story' : 'Your Translated Story'}
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            {isSavedStory 
+              ? 'Reading your saved translation from your library' 
+              : 'Enjoy reading your story in English!'
+            }
+          </p>
+          {isSavedStory && (
+            <div className="mt-2">
+              <Badge variant="secondary">Saved Story</Badge>
+            </div>
+          )}
         </div>
 
         {/* Story Container with transparent background */}
@@ -81,6 +95,7 @@ const StoryReaderPage: React.FC = () => {
             originalLanguage="Spanish"
             translatedLanguage="English"
             difficultyLevel={translationData.difficulty}
+            isSavedStory={isSavedStory}
           />
           <Button 
             onClick={handleTranslateAnother}

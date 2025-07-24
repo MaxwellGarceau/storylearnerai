@@ -15,6 +15,7 @@ interface SaveTranslationButtonProps {
   originalLanguage: string;
   translatedLanguage: string;
   difficultyLevel: string;
+  isSavedStory?: boolean;
 }
 
 export default function SaveTranslationButton({
@@ -23,6 +24,7 @@ export default function SaveTranslationButton({
   originalLanguage,
   translatedLanguage,
   difficultyLevel,
+  isSavedStory = false,
 }: SaveTranslationButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -188,8 +190,14 @@ export default function SaveTranslationButton({
         onClick={() => setIsOpen(true)}
         variant="outline"
         className="gap-2"
-        disabled={!user}
-        title={!user ? 'Sign in to save translations' : 'Save this translation'}
+        disabled={!user || isSavedStory}
+        title={
+          !user 
+            ? 'Sign in to save translations' 
+            : isSavedStory 
+            ? 'The ability to edit and resave already translated stories is under construction =)' 
+            : 'Save this translation'
+        }
       >
         <svg
           className="h-4 w-4"
@@ -204,7 +212,12 @@ export default function SaveTranslationButton({
             d="M5 13l4 4L19 7"
           />
         </svg>
-        {user ? 'Save Translation' : 'Sign in to Save'}
+        {!user 
+          ? 'Sign in to Save' 
+          : isSavedStory 
+          ? 'Already Saved' 
+          : 'Save Translation'
+        }
       </Button>
 
       {isOpen && (
