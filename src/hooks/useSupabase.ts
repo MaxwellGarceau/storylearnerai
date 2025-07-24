@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { getAuthErrorMessage, type AuthError } from '../lib/utils/authErrors'
 
 export interface UseSupabaseReturn {
   user: User | null
@@ -23,12 +24,18 @@ export function useSupabase(): UseSupabaseReturn {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
-          setError(error.message)
+          const authError: AuthError = {
+            message: error.message,
+            code: error.name,
+            status: error.status
+          }
+          setError(getAuthErrorMessage(authError))
         } else {
           setUser(session?.user ?? null)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+        setError(getAuthErrorMessage({ message: errorMessage }))
       } finally {
         setLoading(false)
       }
@@ -56,10 +63,16 @@ export function useSupabase(): UseSupabaseReturn {
         password,
       })
       if (error) {
-        setError(error.message)
+        const authError: AuthError = {
+          message: error.message,
+          code: error.name,
+          status: error.status
+        }
+        setError(getAuthErrorMessage(authError))
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(getAuthErrorMessage({ message: errorMessage }))
     } finally {
       setLoading(false)
     }
@@ -74,10 +87,16 @@ export function useSupabase(): UseSupabaseReturn {
         password,
       })
       if (error) {
-        setError(error.message)
+        const authError: AuthError = {
+          message: error.message,
+          code: error.name,
+          status: error.status
+        }
+        setError(getAuthErrorMessage(authError))
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(getAuthErrorMessage({ message: errorMessage }))
     } finally {
       setLoading(false)
     }
@@ -104,10 +123,16 @@ export function useSupabase(): UseSupabaseReturn {
       setError(null)
       const { error } = await supabase.auth.resetPasswordForEmail(email)
       if (error) {
-        setError(error.message)
+        const authError: AuthError = {
+          message: error.message,
+          code: error.name,
+          status: error.status
+        }
+        setError(getAuthErrorMessage(authError))
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(getAuthErrorMessage({ message: errorMessage }))
     } finally {
       setLoading(false)
     }
