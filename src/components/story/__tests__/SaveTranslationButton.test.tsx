@@ -81,11 +81,8 @@ describe('SaveTranslationButton Component', () => {
       />
     );
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute(
-      'title',
-      'The ability to edit and resave already translated stories is under construction =)'
-    );
+    // The tooltip content should be in the DOM
+    expect(screen.getByText('The ability to edit and resave already translated stories is under construction =)')).toBeInTheDocument();
   });
 
   it('shows correct tooltip for new translations', () => {
@@ -100,8 +97,8 @@ describe('SaveTranslationButton Component', () => {
       />
     );
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('title', 'Save this translation');
+    // The tooltip content should be in the DOM
+    expect(screen.getByText('Save this translation')).toBeInTheDocument();
   });
 
   it('opens modal when save button is clicked for new translations', () => {

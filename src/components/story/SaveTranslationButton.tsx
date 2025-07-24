@@ -8,6 +8,7 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
@@ -186,39 +187,44 @@ export default function SaveTranslationButton({
 
   return (
     <>
-      <Button
-        onClick={() => setIsOpen(true)}
-        variant="outline"
-        className="gap-2"
-        disabled={!user || isSavedStory}
-        title={
-          !user 
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={() => setIsOpen(true)}
+            variant="outline"
+            className="gap-2"
+            disabled={!user || isSavedStory}
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            {!user 
+              ? 'Sign in to Save' 
+              : isSavedStory 
+              ? 'Already Saved' 
+              : 'Save Translation'
+            }
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {!user 
             ? 'Sign in to save translations' 
             : isSavedStory 
             ? 'The ability to edit and resave already translated stories is under construction =)' 
             : 'Save this translation'
-        }
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-        {!user 
-          ? 'Sign in to Save' 
-          : isSavedStory 
-          ? 'Already Saved' 
-          : 'Save Translation'
-        }
-      </Button>
+          }
+        </TooltipContent>
+      </Tooltip>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

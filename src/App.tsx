@@ -7,20 +7,23 @@ import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import SavedTranslationsPage from './pages/SavedTranslationsPage';
 import { Toaster } from './components/ui/Toaster';
+import { TooltipProvider } from './components/ui/Tooltip';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/translate" element={<TranslatePage />} />
-        <Route path="/story" element={<StoryReaderPage />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/saved-translations" element={<SavedTranslationsPage />} />
-      </Routes>
-      <Toaster />
-    </Router>
+    <TooltipProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/translate" element={<TranslatePage />} />
+          <Route path="/story" element={<StoryReaderPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/saved-translations" element={<SavedTranslationsPage />} />
+        </Routes>
+        <Toaster />
+      </Router>
+    </TooltipProvider>
   );
 }
 
