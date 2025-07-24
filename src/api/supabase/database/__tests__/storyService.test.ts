@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { StoryService, CreateStoryData, UpdateStoryData } from '../storyService'
+import { createDummyStory } from '../../../../__tests__/utils/testData'
 
 
 // Mock the entire supabase client module
@@ -26,16 +27,14 @@ describe('StoryService', () => {
 
   describe('createStory', () => {
     it('should create a story successfully', async () => {
-      const mockStory = {
+      const mockStory = createDummyStory({
         id: '1',
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner' as const,
-        user_id: 'user-1',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      }
+        difficulty_level: 'beginner',
+        user_id: 'user-1'
+      })
 
       const mockQuery = {
         insert: vi.fn().mockReturnThis(),
@@ -95,16 +94,14 @@ describe('StoryService', () => {
 
   describe('getStoryById', () => {
     it('should return a story when found', async () => {
-      const mockStory = {
+      const mockStory = createDummyStory({
         id: '1',
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner' as const,
-        user_id: 'user-1',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      }
+        difficulty_level: 'beginner',
+        user_id: 'user-1'
+      })
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -157,26 +154,22 @@ describe('StoryService', () => {
   describe('getStories', () => {
     it('should return all stories when no filters provided', async () => {
       const mockStories = [
-        {
+        createDummyStory({
           id: '1',
           title: 'Story 1',
           content: 'Content 1',
           language: 'en',
-          difficulty_level: 'beginner' as const,
-          user_id: 'user-1',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
-        {
+          difficulty_level: 'beginner',
+          user_id: 'user-1'
+        }),
+        createDummyStory({
           id: '2',
           title: 'Story 2',
           content: 'Content 2',
           language: 'es',
-          difficulty_level: 'intermediate' as const,
-          user_id: 'user-2',
-          created_at: '2024-01-02T00:00:00Z',
-          updated_at: '2024-01-02T00:00:00Z',
-        },
+          difficulty_level: 'intermediate',
+          user_id: 'user-2'
+        }),
       ]
 
       const mockQuery = {
@@ -197,16 +190,14 @@ describe('StoryService', () => {
 
     it('should apply language filter', async () => {
       const mockStories = [
-        {
+        createDummyStory({
           id: '1',
           title: 'English Story',
           content: 'English content',
           language: 'en',
-          difficulty_level: 'beginner' as const,
-          user_id: 'user-1',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          difficulty_level: 'beginner',
+          user_id: 'user-1'
+        }),
       ]
 
       const mockQuery = {
@@ -276,16 +267,14 @@ describe('StoryService', () => {
 
   describe('updateStory', () => {
     it('should update a story successfully', async () => {
-      const mockUpdatedStory = {
+      const mockUpdatedStory = createDummyStory({
         id: '1',
         title: 'Updated Story',
         content: 'Updated content',
         language: 'en',
-        difficulty_level: 'intermediate' as const,
-        user_id: 'user-1',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-02T00:00:00Z',
-      }
+        difficulty_level: 'intermediate',
+        user_id: 'user-1'
+      })
 
       const mockQuery = {
         update: vi.fn().mockReturnThis(),
@@ -370,16 +359,14 @@ describe('StoryService', () => {
   describe('searchStories', () => {
     it('should search stories by title or content', async () => {
       const mockStories = [
-        {
+        createDummyStory({
           id: '1',
           title: 'Test Story',
           content: 'Test content',
           language: 'en',
-          difficulty_level: 'beginner' as const,
-          user_id: 'user-1',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          difficulty_level: 'beginner',
+          user_id: 'user-1'
+        }),
       ]
 
       const mockQuery = {
@@ -432,16 +419,14 @@ describe('StoryService', () => {
   describe('getStoriesByDifficulty', () => {
     it('should return stories filtered by difficulty level', async () => {
       const mockStories = [
-        {
+        createDummyStory({
           id: '1',
           title: 'Beginner Story',
           content: 'Simple content',
           language: 'en',
-          difficulty_level: 'beginner' as const,
-          user_id: 'user-1',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          difficulty_level: 'beginner',
+          user_id: 'user-1'
+        }),
       ]
 
       const mockQuery = {
@@ -480,16 +465,14 @@ describe('StoryService', () => {
   describe('getStoriesByLanguage', () => {
     it('should return stories filtered by language', async () => {
       const mockStories = [
-        {
+        createDummyStory({
           id: '1',
           title: 'Spanish Story',
           content: 'Contenido en español',
           language: 'es',
-          difficulty_level: 'intermediate' as const,
-          user_id: 'user-1',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          difficulty_level: 'intermediate',
+          user_id: 'user-1'
+        }),
       ]
 
       const mockQuery = {

@@ -5,7 +5,13 @@ import {
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
 } from '../../../../lib/types/database';
-import { dummyLanguages, dummyDifficultyLevels, createDummySavedTranslationWithDetails } from '../../../../__tests__/utils/testData';
+import { 
+  dummyLanguages, 
+  dummyDifficultyLevels, 
+  createDummySavedTranslationWithDetails,
+  createDummyLanguage,
+  createDummyDifficultyLevel
+} from '../../../../__tests__/utils/testData';
 
 // Mock the Supabase client
 vi.mock('../../client', () => ({
@@ -14,7 +20,7 @@ vi.mock('../../client', () => ({
   },
 }));
 
-const mockSupabase = supabase as jest.Mocked<typeof supabase>;
+const mockSupabase = vi.mocked(supabase);
 
 // Helper function to create a mock Supabase query builder
 const createMockQueryBuilder = (returnValue: unknown) => {
@@ -90,7 +96,7 @@ describe('SavedTranslationService', () => {
 
   describe('getLanguageByCode', () => {
     it('should fetch language by code successfully', async () => {
-      const mockLanguage = { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2024-01-01' };
+      const mockLanguage = createDummyLanguage({ code: 'en', name: 'English', native_name: 'English' });
 
       const mockBuilder = createMockQueryBuilder({ data: mockLanguage, error: null });
       mockSupabase.from.mockReturnValue(mockBuilder);
