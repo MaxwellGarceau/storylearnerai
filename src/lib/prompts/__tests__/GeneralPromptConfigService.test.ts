@@ -1,5 +1,37 @@
 import { generalPromptConfigService } from '../GeneralPromptConfigService';
 import { PromptBuildContext } from '../../types/prompt';
+import { vi } from 'vitest';
+
+// Mock the dynamic imports for native-to-target configurations
+vi.mock('../config/native-to-target/en/es.json', () => ({
+  default: {
+    a1: {
+      description: 'Maximum scaffolding for absolute beginners',
+      grammar_focus: {
+        noun_gender: 'STRICTLY ADHERE to noun-article pairing',
+        verb_conjugation: 'Use only the Present Tense'
+      },
+      vocabulary_focus: {
+        word_choice: 'Use high-frequency vocabulary'
+      }
+    }
+  }
+}), { virtual: true });
+
+vi.mock('../config/native-to-target/es/en.json', () => ({
+  default: {
+    a1: {
+      description: 'Maximum scaffolding for absolute beginners',
+      grammar_focus: {
+        subject_pronouns: 'STRICTLY ENFORCE subject pronouns',
+        adjective_placement: 'STRICTLY ENFORCE adjective-before-noun word order'
+      },
+      vocabulary_focus: {
+        false_friends: 'STRICTLY AVOID common English-Spanish false friends'
+      }
+    }
+  }
+}), { virtual: true });
 
 
 
