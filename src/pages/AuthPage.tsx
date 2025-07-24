@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { SignInForm } from '../components/auth/SignInForm'
 import { SignUpForm } from '../components/auth/SignUpForm'
@@ -14,19 +14,22 @@ export const AuthPage: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [mode, setMode] = useState<AuthMode>('signin')
+  const hasSetProfileMode = useRef(false)
 
-  // Set initial mode based on URL parameter
+  // Set initial mode based on URL parameter and user state
   useEffect(() => {
     const urlMode = searchParams.get('mode') as AuthMode
-    if (urlMode && ['signin', 'signup', 'profile'].includes(urlMode)) {
+    
+    // If user is already authenticated and we haven't set profile mode yet, show profile
+    if (user && !hasSetProfileMode.current) {
+      setMode('profile')
+      hasSetProfileMode.current = true
+    }
+    // Otherwise, use URL parameter if valid
+    else if (urlMode && ['signin', 'signup', 'profile'].includes(urlMode)) {
       setMode(urlMode)
     }
-  }, [searchParams])
-
-  // If user is already authenticated, show profile
-  if (user && mode !== 'profile') {
-    setMode('profile')
-  }
+  }, [searchParams, user])
 
   const handleAuthSuccess = () => {
     navigate('/dashboard')
