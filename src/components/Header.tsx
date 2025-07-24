@@ -4,12 +4,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { useSupabase } from '../hooks/useSupabase';
 import { Button } from './ui/Button';
-import { Badge } from './ui/Badge';
 import { 
   User, 
   LogIn, 
   BookOpen, 
-  Bookmark, 
   Settings,
   ChevronDown
 } from 'lucide-react';

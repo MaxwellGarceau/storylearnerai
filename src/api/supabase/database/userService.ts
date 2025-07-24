@@ -106,7 +106,7 @@ export class UserService {
    * Check if username is available
    */
   static async isUsernameAvailable(username: string): Promise<boolean> {
-    const { data, error } = await supabase
+    const { data: user, error } = await supabase
       .from('users')
       .select('id')
       .eq('username', username)

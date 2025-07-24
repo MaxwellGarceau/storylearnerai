@@ -66,7 +66,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     try {
       await signUp(formData.email, formData.password)
       onSuccess?.()
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     }
   }
