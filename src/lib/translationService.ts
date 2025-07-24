@@ -67,6 +67,8 @@ class TranslationService {
       text: request.text
     };
 
+
+
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
     if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {

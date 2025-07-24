@@ -1,0 +1,68 @@
+{
+  "a1": {
+    "description": "Maximum scaffolding for absolute beginners, focusing on core differences and avoiding common pitfalls like false friends and complex question structures.",
+    "grammar_focus": {
+      "subject_pronouns": "STRICTLY ENFORCE subject pronouns in all sentences (I, you, he, she, it, we, they). Spanish is a pro-drop language, so this must be explicit. Example: Generate 'It is raining,' not 'Is raining.'",
+      "adjective_placement": "STRICTLY ENFORCE adjective-before-noun word order. Example: 'the red car,' not 'the car red.'",
+      "question_formation": "Use only the most basic question structures with the auxiliary verb 'do/does'. AVOID forming questions with intonation alone. Example: Generate 'Do you like pizza?' instead of a statement-like 'You like pizza?'.",
+      "negation": "Use only simple negation with 'do not' or 'does not'. STRICTLY AVOID double negatives. Example: 'He does not want anything,' not 'He doesn't want nothing.'"
+    },
+    "vocabulary_focus": {
+      "false_friends": "STRICTLY AVOID common English-Spanish false friends. Replace them with unambiguous words. For example, instead of a story about someone being 'embarrassed', describe them as 'shy' or 'feeling silly'. Avoid: 'actual', 'exit' (noun), 'library', 'embarrassed', 'soap'.",
+      "phrasal_verbs": "AVOID all phrasal verbs. Use single-word Latinate equivalents that are often cognates or easier to understand. Example: Use 'discover' instead of 'find out'; 'continue' instead of 'go on'."
+    },
+    "phonetics_support_in_text": {
+      "th_sound": "Minimize use of words with the 'th' sound ('think', 'three', 'clothes'). If unavoidable, use high-frequency examples like 'the', 'that', 'this'.",
+      "b_v_distinction": "Use words where the 'b' and 'v' distinction is not critical for basic comprehension (e.g., 'big', 'very', 'have')."
+    }
+  },
+  "a2": {
+    "description": "Gently introduce slightly more complex structures while reinforcing core rules. Begin to expose the learner to phrasal verbs and controlled use of false friends as a teaching tool.",
+    "grammar_focus": {
+      "subject_pronouns": "Continue to enforce subject pronouns consistently.",
+      "adjective_placement": "Reinforce adjective-before-noun order. Can introduce sentences with two simple adjectives: 'the big, red car'.",
+      "question_formation": "Continue to use auxiliary verbs 'do/does/did'. Introduce simple 'Wh-' questions (Who, What, Where, When) that require auxiliaries. Example: 'Where did she go?'.",
+      "negation": "Reinforce single negatives. Introduce contractions like 'don't', 'can't', 'didn't'."
+    },
+    "vocabulary_focus": {
+      "false_friends": "Introduce ONE common false friend per story, but ALWAYS provide immediate clarification. This serves as an explicit teaching moment. Example: 'He went to the bookstore to buy a book, not the library (biblioteca) where you borrow them.'",
+      "phrasal_verbs": "Introduce 1-2 of the most frequent and separable phrasal verbs. The context must make the meaning obvious. Example: 'She needs to **wake up** at 7 AM.' or 'Please **turn on** the light.'"
+    },
+    "phonetics_support_in_text": {
+      "past_tense_ed": "When using regular past tense verbs, favor those where the '-ed' is pronounced as /t/ or /d/ and doesn't add a syllable. Example: 'walked', 'played', 'lived'. Avoid words like 'needed' or 'wanted' initially, or use them sparingly.",
+      "th_sound": "Begin to use common words with the 'th' sound more frequently ('the', 'this', 'that', 'with', 'three')."
+    }
+  },
+  "b1": {
+    "description": "Focus on developing fluency and tackling more nuanced grammar. Phrasal verbs and false friends are used more naturally, but with strong contextual support.",
+    "grammar_focus": {
+      "auxiliary_verbs": "Assume proficiency with basic auxiliaries. Introduce their use in more complex forms like the present perfect ('Have you ever...?') and tag questions ('It's cold, isn't it?').",
+      "conditionals": "Introduce the first and second conditional forms, as these are often challenging. Example: 'If it rains, we will stay.' and 'If I had more money, I would travel.'",
+      "relative_clauses": "Begin using simple relative clauses with 'who', 'which', and 'that'. Example: 'The man who lives next door is a doctor.'",
+      "passive_voice": "Introduce the simple passive voice, especially when the agent is unknown or unimportant. Example: 'The window was broken.'"
+    },
+    "vocabulary_focus": {
+      "false_friends": "Use false friends more naturally, but ensure the surrounding context provides strong clues to the correct meaning. Explicit clarification is no longer needed. Example: 'His greatest success was winning the championship.'",
+      "phrasal_verbs": "Introduce a wider range of common, inseparable phrasal verbs. It's helpful to theme them (e.g., focus on verbs with 'look' like 'look for', 'look after', 'look forward to')."
+    },
+    "phonetics_support_in_text": {
+      "minimal_pairs": "Can begin to include minimal pairs to challenge the learner, especially those difficult for Spanish speakers. Example: 'He put the cat in the cart.' or 'She hurt her ankle.'"
+    }
+  },
+  "b2": {
+    "description": "Aim for sophisticated and natural language use. The focus is on mastering advanced structures, idiomatic language, and nuances that separate proficient speakers from fluent ones.",
+    "grammar_focus": {
+      "advanced_tenses": "Use a full range of tenses, including past perfect continuous and future perfect. Focus on the nuances of when to use each.",
+      "conditionals": "Introduce the third and mixed conditionals. Example: 'If I had studied harder, I would have passed the exam.'",
+      "subjunctive_mood": "Introduce the subjunctive mood for formal suggestions or hypothetical situations. Example: 'I suggest that he be on time.' or 'If I were you...'",
+      "inversion": "Introduce inversion for emphasis or in conditional sentences without 'if'. Example: 'Never have I seen such a sight.' or 'Had I known, I would have told you.'"
+    },
+    "vocabulary_focus": {
+      "false_friends": "Use all false friends naturally without any special support. Mastery is expected from context.",
+      "phrasal_verbs": "Use a wide and varied range of phrasal verbs, including less common ones and those with three parts. Example: 'He needs to **cut down on** sugar.' or 'She can't **put up with** the noise anymore.'"
+    },
+    "phonetics_support_in_text": {
+      "natural_language": "No specific phonetic restrictions. The text should reflect natural English, including complex consonant clusters at the end of words ('world', 'texts', 'sixths') to challenge the learner."
+    }
+  }
+}

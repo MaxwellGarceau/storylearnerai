@@ -102,13 +102,13 @@ class GeneralPromptConfigService {
     const generalInstructions = this.getGeneralInstructions().join('\n');
 
     // Build the complete prompt
-    let prompt = this.getTemplate()
-      .replaceAll('{fromLanguage}', fromLanguage)
-      .replaceAll('{toLanguage}', toLanguage)
-      .replaceAll('{difficulty}', difficulty)
-      .replaceAll('{instructions}', generalInstructions)
-      .replaceAll('{languageInstructions}', languageInstructionsText)
-      .replaceAll('{text}', text);
+    const prompt = this.getTemplate()
+      .replace(/{fromLanguage}/g, fromLanguage)
+      .replace(/{toLanguage}/g, toLanguage)
+      .replace(/{difficulty}/g, difficulty)
+      .replace(/{instructions}/g, generalInstructions)
+      .replace(/{languageInstructions}/g, languageInstructionsText)
+      .replace(/{text}/g, text);
 
     return prompt;
   }
@@ -157,5 +157,12 @@ Please provide only the ${toLanguage} translation.`;
   }
 }
 
-// Export a singleton instance
-export const generalPromptConfigService = new GeneralPromptConfigService(); 
+// Create a singleton instance
+let _instance: GeneralPromptConfigService | null = null;
+
+export const generalPromptConfigService = (() => {
+  if (!_instance) {
+    _instance = new GeneralPromptConfigService();
+  }
+  return _instance;
+})(); 

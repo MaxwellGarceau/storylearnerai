@@ -1,62 +1,62 @@
 {
-    "en": {
-      "a1": {
-        "vocabulary": "Use only the most common 1000 English words. Replace complex words with simple alternatives (e.g., 'big' instead of 'enormous')",
-        "grammar": "Use only present simple, past simple, and present continuous tenses. Keep sentences short and simple with basic subject-verb-object structure",
-        "cultural": "Explain cultural references in simple terms or replace with more universal concepts",
-        "style": "Use very short sentences (5-10 words). Avoid compound and complex sentences",
-        "examples": "Replace 'The magnificent castle stood proudly' with 'The big castle was very tall'"
-      },
-      "a2": {
-        "vocabulary": "Use common vocabulary (top 2000 words). Introduce some descriptive adjectives and adverbs but keep them simple",
-        "grammar": "Include past simple, present perfect, and future with 'will'. Use some compound sentences with 'and', 'but', 'because'",
-        "cultural": "Include basic cultural references with brief explanations when needed",
-        "style": "Mix short and medium-length sentences. Use some basic connecting words",
-        "examples": "Replace 'He was utterly devastated' with 'He was very sad and upset'"
-      },
-      "b1": {
-        "vocabulary": "Use intermediate vocabulary (top 3000 words). Include more varied adjectives, adverbs, and some phrasal verbs",
-        "grammar": "Use all basic tenses plus conditionals and passive voice. Include relative clauses and more complex sentence structures",
-        "cultural": "Include cultural references with context. Maintain idiomatic expressions where appropriate for learning",
-        "style": "Use varied sentence lengths and structures. Include some complex sentences with multiple clauses",
-        "examples": "Can use 'He was devastated by the news' or 'The ancient castle dominated the landscape'"
-      },
-      "b2": {
-        "vocabulary": "Use upper-intermediate vocabulary (top 5000 words). Include advanced adjectives, abstract nouns, and idiomatic expressions",
-        "grammar": "Use advanced tenses, subjunctive mood, and complex conditional structures. Include sophisticated connecting devices",
-        "cultural": "Preserve cultural nuances and idiomatic expressions. Include subtle cultural references",
-        "style": "Use sophisticated sentence structures with embedded clauses. Vary sentence length for rhythm and emphasis",
-        "examples": "Can use 'He was utterly devastated' or 'The magnificent fortress commanded the entire valley'"
-      }
+  "en": {
+    "a1": {
+      "vocabulary": "Use only the most common 1000 English words. Replace complex words with simple alternatives (e.g., 'big' instead of 'enormous')",
+      "grammar": "Use only present simple, past simple, and present continuous tenses. Keep sentences short and simple with basic subject-verb-object structure",
+      "cultural": "Explain cultural references in simple terms or replace with more universal concepts",
+      "style": "Use very short sentences (5-10 words). Avoid compound and complex sentences",
+      "examples": "Replace 'The magnificent castle stood proudly' with 'The big castle was very tall'"
     },
-    "es": {
-      "a1": {
-        "vocabulary": "Use only the most common 1000 Spanish words. Replace complex words with simple alternatives",
-        "grammar": "Use only present tense, simple past, and present continuous. Keep sentences short and simple",
-        "cultural": "Explain cultural references in simple terms or replace with more universal concepts",
-        "style": "Use very short sentences (5-10 words). Avoid compound and complex sentences",
-        "examples": "Replace 'El magnífico castillo se alzaba orgulloso' with 'El castillo grande era muy alto'"
-      },
-      "a2": {
-        "vocabulary": "Use common vocabulary (top 2000 words). Introduce some descriptive adjectives and adverbs but keep them simple",
-        "grammar": "Include simple past, present perfect, and future with 'ir a' or simple future. Use compound sentences with 'y', 'pero', 'porque'",
-        "cultural": "Include basic cultural references with brief explanations when needed",
-        "style": "Mix short and medium-length sentences. Use some basic connecting words",
-        "examples": "Replace 'Estaba completamente devastado' with 'Estaba muy triste y molesto'"
-      },
-      "b1": {
-        "vocabulary": "Use intermediate vocabulary (top 3000 words). Include more varied adjectives, adverbs, and some phrasal verbs",
-        "grammar": "Use all basic tenses plus conditionals and passive voice. Include relative clauses and more complex sentence structures",
-        "cultural": "Include cultural references with context. Maintain idiomatic expressions where appropriate for learning",
-        "style": "Use varied sentence lengths and structures. Include some complex sentences with multiple clauses",
-        "examples": "Can use 'Estaba devastado por la noticia' or 'El castillo antiguo dominaba el paisaje'"
-      },
-      "b2": {
-        "vocabulary": "Use upper-intermediate vocabulary (top 5000 words). Include advanced adjectives, abstract nouns, and idiomatic expressions",
-        "grammar": "Use advanced tenses, subjunctive mood, and complex conditional structures. Include sophisticated connecting devices",
-        "cultural": "Preserve cultural nuances and idiomatic expressions. Include subtle cultural references",
-        "style": "Use sophisticated sentence structures with embedded clauses. Vary sentence length for rhythm and emphasis",
-        "examples": "Can use 'Estaba completamente devastado' or 'La magnífica fortaleza dominaba todo el valle'"
-      }
+    "a2": {
+      "vocabulary": "Use common vocabulary (top 2000 words). Introduce some descriptive adjectives and adverbs but keep them simple",
+      "grammar": "Include past simple, present perfect, and future with 'will'. Use some compound sentences with 'and', 'but', 'because'",
+      "cultural": "Include basic cultural references with brief explanations when needed",
+      "style": "Mix short and medium-length sentences. Use some basic connecting words",
+      "examples": "Replace 'He was utterly devastated' with 'He was very sad and upset'"
+    },
+    "b1": {
+      "vocabulary": "Use intermediate vocabulary (top 3000 words). Include more varied adjectives, adverbs, and some phrasal verbs",
+      "grammar": "Use all basic tenses plus conditionals and passive voice. Include relative clauses and more complex sentence structures",
+      "cultural": "Include cultural references with context. Maintain idiomatic expressions where appropriate for learning",
+      "style": "Use varied sentence lengths and structures. Include some complex sentences with multiple clauses",
+      "examples": "Can use 'He was devastated by the news' or 'The ancient castle dominated the landscape'"
+    },
+    "b2": {
+      "vocabulary": "Use upper-intermediate vocabulary (top 5000 words). Include advanced adjectives, abstract nouns, and idiomatic expressions",
+      "grammar": "Use advanced tenses, subjunctive mood, and complex conditional structures. Include sophisticated connecting devices",
+      "cultural": "Preserve cultural nuances and idiomatic expressions. Include subtle cultural references",
+      "style": "Use sophisticated sentence structures with embedded clauses. Vary sentence length for rhythm and emphasis",
+      "examples": "Can use 'He was utterly devastated' or 'The magnificent fortress commanded the entire valley'"
     }
-  } 
+  },
+  "es": {
+    "a1": {
+      "vocabulary": "Use only the most common 1000 Spanish words. Replace complex words with simple alternatives",
+      "grammar": "Use only present tense, simple past, and present continuous. Keep sentences short and simple",
+      "cultural": "Explain cultural references in simple terms or replace with more universal concepts",
+      "style": "Use very short sentences (5-10 words). Avoid compound and complex sentences",
+      "examples": "Replace 'El magnífico castillo se alzaba orgulloso' with 'El castillo grande era muy alto'"
+    },
+    "a2": {
+      "vocabulary": "Use common vocabulary (top 2000 words). Introduce some descriptive adjectives and adverbs but keep them simple",
+      "grammar": "Include simple past, present perfect, and future with 'ir a' or simple future. Use compound sentences with 'y', 'pero', 'porque'",
+      "cultural": "Include basic cultural references with brief explanations when needed",
+      "style": "Mix short and medium-length sentences. Use some basic connecting words",
+      "examples": "Replace 'Estaba completamente devastado' with 'Estaba muy triste y molesto'"
+    },
+    "b1": {
+      "vocabulary": "Use intermediate vocabulary (top 3000 words). Include more varied adjectives, adverbs, and some phrasal verbs",
+      "grammar": "Use all basic tenses plus conditionals and passive voice. Include relative clauses and more complex sentence structures",
+      "cultural": "Include cultural references with context. Maintain idiomatic expressions where appropriate for learning",
+      "style": "Use varied sentence lengths and structures. Include some complex sentences with multiple clauses",
+      "examples": "Can use 'Estaba devastado por la noticia' or 'El castillo antiguo dominaba el paisaje'"
+    },
+    "b2": {
+      "vocabulary": "Use upper-intermediate vocabulary (top 5000 words). Include advanced adjectives, abstract nouns, and idiomatic expressions",
+      "grammar": "Use advanced tenses, subjunctive mood, and complex conditional structures. Include sophisticated connecting devices",
+      "cultural": "Preserve cultural nuances and idiomatic expressions. Include subtle cultural references",
+      "style": "Use sophisticated sentence structures with embedded clauses. Vary sentence length for rhythm and emphasis",
+      "examples": "Can use 'Estaba completamente devastado' or 'La magnífica fortaleza dominaba todo el valle'"
+    }
+  }
+}
