@@ -1,6 +1,7 @@
 import { 
   LanguagePromptConfig, 
   GeneralPromptConfig, 
+  TemplateConfig,
   PromptInstructions, 
   PromptBuildContext,
   NativeToTargetLanguageConfig,
@@ -8,6 +9,7 @@ import {
 } from '../types/prompt';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
+import templateConfigData from './config/template.json';
 
 /**
  * General Prompt Configuration Service
@@ -28,11 +30,13 @@ import generalConfigData from './config/general.json';
 class GeneralPromptConfigService {
   private languageConfig: LanguagePromptConfig;
   private generalConfig: GeneralPromptConfig;
+  private templateConfig: TemplateConfig;
   private nativeToTargetConfig: NativeToTargetLanguageConfig = {};
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
     this.generalConfig = generalConfigData as GeneralPromptConfig;
+    this.templateConfig = templateConfigData as TemplateConfig;
     this.loadNativeToTargetConfigs();
   }
 
@@ -160,7 +164,7 @@ class GeneralPromptConfigService {
    * Get the prompt template
    */
   getTemplate(): string {
-    return this.generalConfig.template;
+    return this.templateConfig.template;
   }
 
   /**

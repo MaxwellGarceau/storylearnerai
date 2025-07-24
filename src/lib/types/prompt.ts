@@ -62,6 +62,9 @@ export interface LanguagePrompts {
 
 export interface GeneralPromptConfig {
   instructions: string[];
+}
+
+export interface TemplateConfig {
   template: string;
 }
 
