@@ -43,14 +43,38 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### Tables Overview
 
-The application uses two main tables:
+The application uses four main tables:
 
-1. **`stories`** - Stores story content and metadata
-2. **`translations`** - Stores translated versions of stories
+1. **`users`** - Stores user profiles and preferences
+2. **`stories`** - Stores story content and metadata
+3. **`translations`** - Stores translated versions of stories
+4. **`user_progress`** - Tracks user learning progress (optional)
 
-> **Note**: The `user_progress` table has been removed from the current implementation to simplify the database schema. User progress tracking can be added back in future iterations as needed.
+> **Note**: The `user_progress` table is available but not actively used in the current implementation. User progress tracking can be enabled as needed.
 
 ### Schema Details
+
+#### Users Table
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    username VARCHAR(50) UNIQUE,
+    display_name VARCHAR(100),
+    avatar_url TEXT,
+    preferred_language VARCHAR(10) DEFAULT 'en',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Fields:**
+- `id`: References Supabase auth.users (UUID)
+- `username`: Unique username for the user
+- `display_name`: User's display name
+- `avatar_url`: URL to user's avatar image
+- `preferred_language`: User's preferred language for translations
+- `created_at`: Creation timestamp
+- `updated_at`: Last modification timestamp
 
 #### Stories Table
 ```sql
@@ -111,8 +135,16 @@ src/
 │   ├── client.ts                    # Supabase client configuration & types
 │   ├── index.ts                     # Centralized exports
 │   └── database/
-│       ├── story.api.ts             # Story database operations
-│       └── translation.api.ts       # Translation database operations
+│       ├── userService.ts           # User database operations
+│       ├── storyService.ts          # Story database operations
+│       └── translationService.ts    # Translation database operations
+├── components/auth/
+│   ├── SignInForm.tsx               # User sign-in component
+│   ├── SignUpForm.tsx               # User sign-up component
+│   └── UserProfile.tsx              # User profile management
+├── pages/
+│   ├── AuthPage.tsx                 # Authentication page
+│   └── DashboardPage.tsx            # User dashboard
 ├── hooks/
 │   └── useSupabase.ts               # React hooks for auth & real-time
 └── [other folders...]
@@ -125,6 +157,34 @@ src/
 - **Client & Types**: Import from `@/api/supabase/client`
 
 ## Database Services
+
+### UserService
+
+Handles all user-related operations:
+
+```typescript
+import { UserService } from '@/api/supabase'
+
+// Get user by ID
+const user = await UserService.getUser('user-uuid')
+
+// Create a new user
+const user = await UserService.createUser({
+  id: 'user-uuid',
+  username: 'john_doe',
+  display_name: 'John Doe',
+  preferred_language: 'en'
+})
+
+// Update user profile
+const updatedUser = await UserService.updateUser('user-uuid', {
+  display_name: 'John Smith',
+  preferred_language: 'es'
+})
+
+// Check username availability
+const isAvailable = await UserService.isUsernameAvailable('john_doe')
+```
 
 ### StoryService
 
@@ -172,9 +232,9 @@ const translation = await TranslationService.getTranslationByStoryAndLanguage(
 )
 ```
 
-> **Note**: The `UserProgressService` has been removed from the current implementation to simplify the API layer. User progress tracking can be added back in future iterations as needed.
+> **Note**: The `UserProgressService` is available but not actively used in the current implementation. User progress tracking can be enabled as needed.
 
-## Authentication
+## Authentication & User Management
 
 ### Setup
 
@@ -184,7 +244,23 @@ const translation = await TranslationService.getTranslationByStoryAndLanguage(
    - **Redirect URLs**: Add your app URLs
    - **Email Templates**: Customize if needed
 
-### Usage
+### User Registration
+
+Users can register with email, password, username, and display name:
+
+```typescript
+import { useSupabase } from '@/hooks/useSupabase'
+
+function SignUpForm() {
+  const { signUp } = useSupabase()
+
+  const handleSignUp = async (email: string, password: string, username: string, displayName: string) => {
+    await signUp(email, password, { username, display_name: displayName })
+  }
+}
+```
+
+### User Authentication
 
 ```typescript
 import { useSupabase } from '@/hooks/useSupabase'
@@ -211,6 +287,25 @@ function AuthComponent() {
       )}
     </div>
   )
+}
+```
+
+### User Profile Management
+
+```typescript
+import { UserService } from '@/api/supabase'
+
+// Update user profile
+const updateProfile = async (userId: string, updates: any) => {
+  const updatedUser = await UserService.updateUser(userId, {
+    display_name: 'New Name',
+    preferred_language: 'es'
+  })
+}
+
+// Get user profile
+const getUserProfile = async (userId: string) => {
+  const user = await UserService.getUser(userId)
 }
 ```
 
@@ -251,6 +346,25 @@ ALTER TABLE translations ENABLE ROW LEVEL SECURITY;
 
 ### Policies
 
+#### Users Table
+```sql
+-- Users can view their own profile
+CREATE POLICY "Users can view their own profile" ON users
+  FOR SELECT USING (auth.uid() = id);
+
+-- Users can insert their own profile
+CREATE POLICY "Users can insert their own profile" ON users
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Users can update their own profile
+CREATE POLICY "Users can update their own profile" ON users
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Users can delete their own profile
+CREATE POLICY "Users can delete their own profile" ON users
+  FOR DELETE USING (auth.uid() = id);
+```
+
 #### Stories Table
 ```sql
 -- Allow public read access to stories
@@ -259,15 +373,15 @@ CREATE POLICY "Stories are viewable by everyone" ON stories
 
 -- Allow authenticated users to create stories
 CREATE POLICY "Users can create stories" ON stories
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
 -- Allow users to update their own stories
 CREATE POLICY "Users can update own stories" ON stories
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id OR user_id IS NULL);
 
 -- Allow users to delete their own stories
 CREATE POLICY "Users can delete own stories" ON stories
-  FOR DELETE USING (auth.uid() = user_id);
+  FOR DELETE USING (auth.uid() = user_id OR user_id IS NULL);
 ```
 
 #### Translations Table
@@ -285,7 +399,7 @@ CREATE POLICY "Users can update translations" ON translations
   FOR UPDATE USING (true);
 ```
 
-> **Note**: The `user_progress` table and its RLS policies have been removed from the current implementation. These can be added back when user progress tracking is needed.
+> **Note**: The `user_progress` table and its RLS policies are available but not actively used in the current implementation. These can be enabled when user progress tracking is needed.
 
 ## Local Development
 

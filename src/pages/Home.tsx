@@ -1,13 +1,16 @@
 // pages/Home.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Languages, Lightbulb, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Languages, Lightbulb, Sparkles, User } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
+import { useSupabase } from '../hooks/useSupabase';
 
 const Home: React.FC = () => {
+  const { user } = useSupabase();
+
   const features = [
     {
       icon: <Languages className="h-6 w-6" />,
@@ -71,9 +74,22 @@ const Home: React.FC = () => {
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-              Learn More
-            </Button>
+            {!user && (
+              <Link to="/auth?mode=signup">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                  <User className="h-5 w-5 mr-2" />
+                  Sign Up Free
+                </Button>
+              </Link>
+            )}
+            {user && (
+              <Link to="/dashboard">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  My Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -151,14 +167,35 @@ const Home: React.FC = () => {
               Ready to Start Your Language Learning Journey?
             </h3>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of learners who are already improving their language skills with Story Learner AI
+              {user 
+                ? "Continue your learning journey with personalized insights and progress tracking"
+                : "Join thousands of learners who are already improving their language skills with Story Learner AI"
+              }
             </p>
-            <Link to="/translate">
-              <Button size="lg" className="text-lg px-8 py-6">
-                Get Started Now
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/translate">
+                <Button size="lg" className="text-lg px-8 py-6">
+                  Start Translating
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              {!user && (
+                <Link to="/auth?mode=signup">
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                    <User className="h-5 w-5 mr-2" />
+                    Create Free Account
+                  </Button>
+                </Link>
+              )}
+              {user && (
+                <Link to="/dashboard">
+                  <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                    <BookOpen className="h-5 w-5 mr-2" />
+                    View Dashboard
+                  </Button>
+                </Link>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
