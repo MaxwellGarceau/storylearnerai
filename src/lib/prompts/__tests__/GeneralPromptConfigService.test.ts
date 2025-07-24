@@ -259,4 +259,244 @@ describe('PromptConfigService', () => {
       expect(prompt).not.toContain('Native Speaker Guidance');
     });
   });
+
+  describe('Complete Prompt Structure Validation', () => {
+    const mockContext: PromptBuildContext = {
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'a1',
+      text: 'Hola, ¿cómo estás?',
+      nativeLanguage: 'es'
+    };
+
+    it('should have correct section ordering in the prompt', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Split prompt into lines to check ordering
+      const lines = prompt.split('\n');
+      
+      // Find the main sections
+      const headerIndex = lines.findIndex(line => line.includes('Translate the following'));
+      const instructionsIndex = lines.findIndex(line => line === 'Instructions:');
+      const guidelinesIndex = lines.findIndex(line => line.includes('Specific en Guidelines:'));
+      const nativeGuidanceIndex = lines.findIndex(line => line.includes('Native Speaker Guidance:'));
+      const storyIndex = lines.findIndex(line => line === 'es Story:');
+      const footerIndex = lines.findIndex(line => line.includes('Please provide only the en translation'));
+      
+      // Verify correct ordering
+      expect(headerIndex).toBeLessThan(instructionsIndex);
+      expect(instructionsIndex).toBeLessThan(guidelinesIndex);
+      expect(guidelinesIndex).toBeLessThan(nativeGuidanceIndex);
+      expect(nativeGuidanceIndex).toBeLessThan(storyIndex);
+      expect(storyIndex).toBeLessThan(footerIndex);
+    });
+
+    it('should have proper formatting with line breaks between sections', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for proper spacing between major sections
+      expect(prompt).toMatch(/Instructions:\n/);
+      expect(prompt).toMatch(/Specific en Guidelines:\n/);
+      expect(prompt).toMatch(/es Story:\n/);
+    });
+
+    it('should have correct header format', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check header format
+      expect(prompt).toMatch(/^Translate the following es story to en, adapted for a1 CEFR level:/);
+    });
+
+    it('should have correct footer format', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check footer format
+      expect(prompt).toMatch(/Please provide only the en translation\.$/);
+    });
+
+    it('should handle special characters in text properly', () => {
+      const contextWithSpecialChars: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás? ¡Qué tal!',
+        nativeLanguage: 'es'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(contextWithSpecialChars);
+      
+      // Should preserve special characters
+      expect(prompt).toContain('¿cómo estás?');
+      expect(prompt).toContain('¡Qué tal!');
+    });
+
+    it('should handle multi-line text properly', () => {
+      const contextWithMultiLine: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?\nMe llamo María.\nTengo veinte años.',
+        nativeLanguage: 'es'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(contextWithMultiLine);
+      
+      // Should preserve line breaks in the story text
+      expect(prompt).toContain('Hola, ¿cómo estás?\nMe llamo María.\nTengo veinte años.');
+    });
+  });
+
+  describe('Comprehensive Content Validation', () => {
+    const mockContext: PromptBuildContext = {
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'a1',
+      text: 'Hola, ¿cómo estás?',
+      nativeLanguage: 'es'
+    };
+
+    it('should include all general instructions', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for all general instructions
+      expect(prompt).toContain('Maintain the story\'s meaning and narrative flow');
+      expect(prompt).toContain('Preserve cultural context where appropriate');
+      expect(prompt).toContain('Keep the story engaging and readable');
+      expect(prompt).toContain('Provide only the translation without additional commentary');
+    });
+
+    it('should include all language-specific instruction types', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for all instruction types
+      expect(prompt).toContain('Vocabulary:');
+      expect(prompt).toContain('Grammar:');
+      expect(prompt).toContain('Cultural:');
+      expect(prompt).toContain('Style:');
+      expect(prompt).toContain('Examples:');
+    });
+
+    it('should include native-to-target instruction sections when native language is provided', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for native-to-target sections
+      expect(prompt).toContain('Native Speaker Guidance:');
+      expect(prompt).toContain('Grammar Focus:');
+      expect(prompt).toContain('Vocabulary Focus:');
+    });
+
+    it('should not include native-to-target sections when native language is not provided', () => {
+      const contextWithoutNative: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(contextWithoutNative);
+      
+      // Should not contain native-to-target sections
+      expect(prompt).not.toContain('Native Speaker Guidance:');
+      expect(prompt).not.toContain('Grammar Focus:');
+      expect(prompt).not.toContain('Vocabulary Focus:');
+    });
+
+    it('should include specific vocabulary instructions for A1 level', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for A1-specific vocabulary instructions
+      expect(prompt).toContain('1000 English words');
+      expect(prompt).toContain('simple alternatives');
+    });
+
+    it('should include specific grammar instructions for A1 level', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for A1-specific grammar instructions
+      expect(prompt).toContain('present simple');
+      expect(prompt).toContain('past simple');
+      expect(prompt).toContain('present continuous');
+    });
+
+    it('should include specific style instructions for A1 level', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for A1-specific style instructions
+      expect(prompt).toContain('5-10 words');
+      expect(prompt).toContain('compound and complex sentences');
+    });
+
+    it('should include native-to-target grammar focus instructions', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for native-to-target grammar instructions
+      expect(prompt).toContain('SUBJECT PRONOUNS:');
+      expect(prompt).toContain('ADJECTIVE PLACEMENT:');
+    });
+
+    it('should include native-to-target vocabulary focus instructions', () => {
+      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+      
+      // Check for native-to-target vocabulary instructions
+      expect(prompt).toContain('FALSE FRIENDS:');
+    });
+
+    it('should generate different content for different difficulty levels', () => {
+      const a1Context: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?',
+        nativeLanguage: 'es'
+      };
+
+      const b2Context: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'b2',
+        text: 'Hola, ¿cómo estás?',
+        nativeLanguage: 'es'
+      };
+
+      const a1Prompt = generalPromptConfigService.buildPrompt(a1Context);
+      const b2Prompt = generalPromptConfigService.buildPrompt(b2Context);
+
+      // A1 should contain beginner-specific content
+      expect(a1Prompt).toContain('1000 English words');
+      expect(a1Prompt).toContain('present simple');
+
+      // B2 should contain intermediate-specific content
+      expect(b2Prompt).toContain('upper-intermediate vocabulary');
+      expect(b2Prompt).toContain('sophisticated sentence structures');
+    });
+
+    it('should generate different content for different target languages', () => {
+      const enContext: PromptBuildContext = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?',
+        nativeLanguage: 'es'
+      };
+
+      const esContext: PromptBuildContext = {
+        fromLanguage: 'en',
+        toLanguage: 'es',
+        difficulty: 'a1',
+        text: 'Hello, how are you?',
+        nativeLanguage: 'en'
+      };
+
+      const enPrompt = generalPromptConfigService.buildPrompt(enContext);
+      const esPrompt = generalPromptConfigService.buildPrompt(esContext);
+
+      // English target should contain English-specific instructions
+      expect(enPrompt).toContain('English words');
+      expect(enPrompt).toContain('en translation');
+
+      // Spanish target should contain Spanish-specific instructions
+      expect(esPrompt).toContain('Spanish words');
+      expect(esPrompt).toContain('es translation');
+    });
+  });
 }); 
