@@ -24,6 +24,8 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     if (user) {
       loadDashboardData()
+    } else {
+      setLoading(false)
     }
   }, [user])
 
