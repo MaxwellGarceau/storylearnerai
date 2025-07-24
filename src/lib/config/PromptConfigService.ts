@@ -1,5 +1,5 @@
 import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
-import promptConfigData from './prompts-general.json';
+import promptConfigData from './prompts/prompts-general.json';
 
 class GeneralPromptConfigService {
   private config: PromptConfig;

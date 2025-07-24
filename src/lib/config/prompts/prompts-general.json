@@ -41,32 +41,32 @@
     },
     "es": {
       "a1": {
-        "vocabulary": "Usa solo las 1000 palabras más comunes en español. Reemplaza palabras complejas con alternativas simples",
-        "grammar": "Usa solo presente, pretérito perfecto simple y presente continuo. Mantén oraciones cortas y simples",
-        "cultural": "Explica referencias culturales en términos simples o reemplázalas con conceptos más universales",
-        "style": "Usa oraciones muy cortas (5-10 palabras). Evita oraciones compuestas y complejas",
-        "examples": "Reemplaza 'El magnífico castillo se alzaba orgulloso' con 'El castillo grande era muy alto'"
+        "vocabulary": "Use only the most common 1000 Spanish words. Replace complex words with simple alternatives",
+        "grammar": "Use only present tense, simple past, and present continuous. Keep sentences short and simple",
+        "cultural": "Explain cultural references in simple terms or replace with more universal concepts",
+        "style": "Use very short sentences (5-10 words). Avoid compound and complex sentences",
+        "examples": "Replace 'El magnífico castillo se alzaba orgulloso' with 'El castillo grande era muy alto'"
       },
       "a2": {
-        "vocabulary": "Usa vocabulario común (top 2000 palabras). Introduce algunos adjetivos y adverbios descriptivos simples",
-        "grammar": "Incluye pretérito perfecto simple, presente perfecto y futuro con 'va a' o futuro simple. Usa oraciones compuestas con 'y', 'pero', 'porque'",
-        "cultural": "Incluye referencias culturales básicas con breves explicaciones cuando sea necesario",
-        "style": "Mezcla oraciones cortas y de longitud media. Usa algunas palabras conectoras básicas",
-        "examples": "Reemplaza 'Estaba completamente devastado' con 'Estaba muy triste y molesto'"
+        "vocabulary": "Use common vocabulary (top 2000 words). Introduce some descriptive adjectives and adverbs but keep them simple",
+        "grammar": "Include simple past, present perfect, and future with 'ir a' or simple future. Use compound sentences with 'y', 'pero', 'porque'",
+        "cultural": "Include basic cultural references with brief explanations when needed",
+        "style": "Mix short and medium-length sentences. Use some basic connecting words",
+        "examples": "Replace 'Estaba completamente devastado' with 'Estaba muy triste y molesto'"
       },
       "b1": {
-        "vocabulary": "Usa vocabulario intermedio (top 3000 palabras). Incluye adjetivos y adverbios más variados, y algunos verbos con preposición",
-        "grammar": "Usa todos los tiempos básicos más condicionales y voz pasiva. Incluye cláusulas relativas y estructuras oracionales más complejas",
-        "cultural": "Incluye referencias culturales con contexto. Mantén expresiones idiomáticas apropiadas para el aprendizaje",
-        "style": "Usa longitudes y estructuras de oración variadas. Incluye algunas oraciones complejas con múltiples cláusulas",
-        "examples": "Puede usar 'Estaba devastado por la noticia' o 'El castillo antiguo dominaba el paisaje'"
+        "vocabulary": "Use intermediate vocabulary (top 3000 words). Include more varied adjectives, adverbs, and some phrasal verbs",
+        "grammar": "Use all basic tenses plus conditionals and passive voice. Include relative clauses and more complex sentence structures",
+        "cultural": "Include cultural references with context. Maintain idiomatic expressions where appropriate for learning",
+        "style": "Use varied sentence lengths and structures. Include some complex sentences with multiple clauses",
+        "examples": "Can use 'Estaba devastado por la noticia' or 'El castillo antiguo dominaba el paisaje'"
       },
       "b2": {
-        "vocabulary": "Usa vocabulario intermedio-alto (top 5000 palabras). Incluye adjetivos avanzados, sustantivos abstractos y expresiones idiomáticas",
-        "grammar": "Usa tiempos avanzados, modo subjuntivo y estructuras condicionales complejas. Incluye conectores sofisticados",
-        "cultural": "Preserva matices culturales y expresiones idiomáticas. Incluye referencias culturales sutiles",
-        "style": "Usa estructuras oracionales sofisticadas con cláusulas incrustadas. Varía la longitud de las oraciones para ritmo y énfasis",
-        "examples": "Puede usar 'Estaba completamente devastado' o 'La magnífica fortaleza dominaba todo el valle'"
+        "vocabulary": "Use upper-intermediate vocabulary (top 5000 words). Include advanced adjectives, abstract nouns, and idiomatic expressions",
+        "grammar": "Use advanced tenses, subjunctive mood, and complex conditional structures. Include sophisticated connecting devices",
+        "cultural": "Preserve cultural nuances and idiomatic expressions. Include subtle cultural references",
+        "style": "Use sophisticated sentence structures with embedded clauses. Vary sentence length for rhythm and emphasis",
+        "examples": "Can use 'Estaba completamente devastado' or 'La magnífica fortaleza dominaba todo el valle'"
       }
     }
   }
