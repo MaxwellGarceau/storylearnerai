@@ -1,7 +1,22 @@
 import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
-import promptConfigData from './prompts.json';
+import promptConfigData from './prompts-general.json';
 
-class PromptConfigService {
+/**
+ * General Prompt Configuration Service
+ * 
+ * This service provides base prompt configurations based on language and difficulty level.
+ * It serves as the foundation for the prompt system.
+ * 
+ * Future Enhancement Plan:
+ * - Add user-specific prompt customizations (user background, learning preferences)
+ * - Add language pair-specific prompts (from->to language combinations)
+ * - Add A/B testing capabilities for different prompt variations
+ * - Add admin interface for non-technical prompt editing
+ * 
+ * The general prompts in prompts-general.json will serve as fallbacks when
+ * more specific customizations are not available.
+ */
+class GeneralPromptConfigService {
   private config: PromptConfig;
 
   constructor() {
@@ -139,4 +154,4 @@ Please provide only the ${toLanguage} translation.`;
 }
 
 // Export a singleton instance
-export const promptConfigService = new PromptConfigService(); 
+export const generalPromptConfigService = new GeneralPromptConfigService(); 

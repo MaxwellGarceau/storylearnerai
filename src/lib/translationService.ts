@@ -1,6 +1,6 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
-import { promptConfigService } from './config/PromptConfigService';
+import { generalPromptConfigService } from './config/GeneralPromptConfigService';
 
 export interface TranslationRequest {
   text: string;
@@ -69,13 +69,13 @@ class TranslationService {
 
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
-    if (!promptConfigService.isSupported(request.toLanguage, request.difficulty)) {
+    if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
       console.warn(`Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
       return this.buildFallbackPrompt(request);
     }
 
     // Use the prompt configuration service to build a customized prompt
-    return promptConfigService.buildPrompt(context);
+    return generalPromptConfigService.buildPrompt(context);
   }
 
   /**
