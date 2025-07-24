@@ -2,26 +2,63 @@ import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/p
 import promptConfigData from './prompts.json';
 import { LanguageService } from '../../api/supabase/database/languageService';
 import { PromptConfigurationService } from '../../api/supabase/database/promptConfigurationService';
+import { LanguagePairPromptService } from '../../api/supabase/database/languagePairPromptService';
 
 class PromptConfigService {
   private config: PromptConfig;
   private languageService: LanguageService;
   private promptConfigurationService: PromptConfigurationService;
+  private languagePairPromptService: LanguagePairPromptService;
   private useDatabase: boolean = true;
+  private useLanguagePairs: boolean = true;
 
   constructor() {
     this.config = promptConfigData as PromptConfig;
     this.languageService = new LanguageService();
     this.promptConfigurationService = new PromptConfigurationService();
+    this.languagePairPromptService = new LanguagePairPromptService();
   }
 
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
   async getLanguageInstructions(languageCode: string, difficulty: string): Promise<PromptInstructions | null> {
+    // This method is kept for backward compatibility but now delegates to the new language pair system
+    // In the future, this should be deprecated in favor of getLanguagePairInstructions
+    return this.getLanguagePairInstructions('en', languageCode, difficulty);
+  }
+
+  /**
+   * Get language pair-specific prompt instructions for a given from->to language combination
+   */
+  async getLanguagePairInstructions(fromLanguageCode: string, toLanguageCode: string, difficulty: string): Promise<PromptInstructions | null> {
+    if (this.useLanguagePairs && this.useDatabase) {
+      try {
+        const pairConfig = await this.languagePairPromptService.getLanguagePairPrompt(fromLanguageCode, toLanguageCode, difficulty);
+        if (pairConfig) {
+          return {
+            vocabulary: pairConfig.vocabulary,
+            grammar: pairConfig.grammar,
+            cultural: pairConfig.cultural,
+            style: pairConfig.style,
+            examples: pairConfig.examples,
+            // Additional language pair specific fields
+            grammar_focus: pairConfig.grammar_focus,
+            pronunciation_notes: pairConfig.pronunciation_notes,
+            common_mistakes: pairConfig.common_mistakes,
+            helpful_patterns: pairConfig.helpful_patterns
+          };
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch language pair prompt from database for ${fromLanguageCode}->${toLanguageCode}/${difficulty}:`, error);
+        // Fall back to single language configuration
+      }
+    }
+
+    // Fallback to single language configuration
     if (this.useDatabase) {
       try {
-        const dbConfig = await this.promptConfigurationService.getPromptConfiguration(languageCode, difficulty);
+        const dbConfig = await this.promptConfigurationService.getPromptConfiguration(toLanguageCode, difficulty);
         if (dbConfig) {
           return {
             vocabulary: dbConfig.vocabulary,
@@ -32,21 +69,21 @@ class PromptConfigService {
           };
         }
       } catch (error) {
-        console.warn(`Failed to fetch prompt configuration from database for ${languageCode}/${difficulty}:`, error);
+        console.warn(`Failed to fetch prompt configuration from database for ${toLanguageCode}/${difficulty}:`, error);
         // Fall back to JSON configuration
       }
     }
 
-    // Fallback to JSON configuration
-    const language = this.config.languages[languageCode.toLowerCase()];
+    // Final fallback to JSON configuration
+    const language = this.config.languages[toLanguageCode.toLowerCase()];
     if (!language) {
-      console.warn(`No prompt configuration found for language: ${languageCode}`);
+      console.warn(`No prompt configuration found for language: ${toLanguageCode}`);
       return null;
     }
 
     const difficultyLevel = language[difficulty.toLowerCase() as keyof typeof language];
     if (!difficultyLevel) {
-      console.warn(`No prompt configuration found for difficulty: ${difficulty} in language: ${languageCode}`);
+      console.warn(`No prompt configuration found for difficulty: ${difficulty} in language: ${toLanguageCode}`);
       return null;
     }
 
@@ -76,8 +113,8 @@ class PromptConfigService {
     // Get general instructions
     const generalInstructions = this.getGeneralInstructions();
     
-    // Get language-specific instructions for the target language
-    const languageInstructions = await this.getLanguageInstructions(toLanguage, difficulty);
+    // Get language pair-specific instructions
+    const languageInstructions = await this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
     
     // Build the instructions string
     const instructionsText = generalInstructions.map(inst => `- ${inst}`).join('\n');
@@ -91,6 +128,12 @@ class PromptConfigService {
       if (languageInstructions.cultural) langInstructions.push(`Cultural: ${languageInstructions.cultural}`);
       if (languageInstructions.style) langInstructions.push(`Style: ${languageInstructions.style}`);
       if (languageInstructions.examples) langInstructions.push(`Examples: ${languageInstructions.examples}`);
+      
+      // Add language pair specific instructions if available
+      if (languageInstructions.grammar_focus) langInstructions.push(`Grammar Focus: ${languageInstructions.grammar_focus}`);
+      if (languageInstructions.pronunciation_notes) langInstructions.push(`Pronunciation: ${languageInstructions.pronunciation_notes}`);
+      if (languageInstructions.common_mistakes) langInstructions.push(`Common Mistakes: ${languageInstructions.common_mistakes}`);
+      if (languageInstructions.helpful_patterns) langInstructions.push(`Helpful Patterns: ${languageInstructions.helpful_patterns}`);
       
       languageInstructionsText = langInstructions.join('\n');
     } else {

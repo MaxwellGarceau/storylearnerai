@@ -10,6 +10,11 @@ export interface PromptInstructions {
   cultural?: string;
   style?: string;
   examples?: string;
+  // Language pair specific fields
+  grammar_focus?: string;
+  pronunciation_notes?: string;
+  common_mistakes?: string;
+  helpful_patterns?: string;
 }
 
 export interface DifficultyPrompts {
