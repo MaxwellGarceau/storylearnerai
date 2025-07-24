@@ -165,10 +165,4 @@ FROM languages l1, languages l2, difficulty_levels dl
 WHERE l1.code = 'es' AND l2.code = 'en' AND dl.code IN ('a1', 'a2', 'b1', 'b2')
 ON CONFLICT (from_language_id, to_language_id, difficulty_level_id) DO NOTHING;
 
--- Add more languages to support future language pairs
-INSERT INTO languages (code, name, native_name) VALUES
-('fr', 'French', 'Français'),
-('de', 'German', 'Deutsch'),
-('it', 'Italian', 'Italiano'),
-('pt', 'Portuguese', 'Português')
-ON CONFLICT (code) DO NOTHING; 
+ 
