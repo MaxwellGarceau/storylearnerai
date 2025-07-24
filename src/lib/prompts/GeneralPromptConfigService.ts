@@ -1,4 +1,11 @@
-import { LanguagePromptConfig, GeneralPromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
+import { 
+  LanguagePromptConfig, 
+  GeneralPromptConfig, 
+  PromptInstructions, 
+  PromptBuildContext,
+  NativeToTargetLanguageConfig,
+  NativeToTargetInstructions
+} from '../types/prompt';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
 
@@ -21,10 +28,95 @@ import generalConfigData from './config/general.json';
 class GeneralPromptConfigService {
   private languageConfig: LanguagePromptConfig;
   private generalConfig: GeneralPromptConfig;
+  private nativeToTargetConfig: NativeToTargetLanguageConfig = {};
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
     this.generalConfig = generalConfigData as GeneralPromptConfig;
+    this.loadNativeToTargetConfigs();
+  }
+
+  /**
+   * Dynamically load native-to-target configurations
+   */
+  private loadNativeToTargetConfigs(): void {
+    try {
+      // Load English speaker configurations
+      import('./config/native-to-target/en/es.json').then(englishConfig => {
+        this.nativeToTargetConfig['en'] = {
+          'es': englishConfig.default
+        };
+      });
+
+      // Load Spanish speaker configurations
+      import('./config/native-to-target/es/en.json').then(spanishConfig => {
+        this.nativeToTargetConfig['es'] = {
+          'en': spanishConfig.default
+        };
+      });
+    } catch (error) {
+      console.warn('Failed to load native-to-target configurations:', error);
+    }
+  }
+
+  /**
+   * Get native-to-target specific instructions for a given native language and target language
+   */
+  getNativeToTargetInstructions(nativeLanguage: string, targetLanguage: string, difficulty: string): NativeToTargetInstructions | null {
+    const nativeConfig = this.nativeToTargetConfig[nativeLanguage.toLowerCase()];
+    if (!nativeConfig) {
+      return null;
+    }
+
+    const targetConfig = nativeConfig[targetLanguage.toLowerCase()];
+    if (!targetConfig) {
+      return null;
+    }
+
+    const difficultyConfig = targetConfig[difficulty.toLowerCase() as keyof typeof targetConfig];
+    if (!difficultyConfig) {
+      return null;
+    }
+
+    return difficultyConfig;
+  }
+
+  /**
+   * Build native-to-target instructions text from the configuration
+   */
+  private buildNativeToTargetInstructionsText(instructions: NativeToTargetInstructions): string {
+    const sections = [];
+
+    // Add description
+    if (instructions.description) {
+      sections.push(`Native Speaker Guidance: ${instructions.description}`);
+    }
+
+    // Add grammar focus
+    if (instructions.grammar_focus && Object.keys(instructions.grammar_focus).length > 0) {
+      const grammarRules = Object.entries(instructions.grammar_focus)
+        .map(([key, value]) => `${key.replace(/_/g, ' ').toUpperCase()}: ${value}`)
+        .join('\n');
+      sections.push(`Grammar Focus:\n${grammarRules}`);
+    }
+
+    // Add vocabulary focus
+    if (instructions.vocabulary_focus && Object.keys(instructions.vocabulary_focus).length > 0) {
+      const vocabularyRules = Object.entries(instructions.vocabulary_focus)
+        .map(([key, value]) => `${key.replace(/_/g, ' ').toUpperCase()}: ${value}`)
+        .join('\n');
+      sections.push(`Vocabulary Focus:\n${vocabularyRules}`);
+    }
+
+    // Add phonetics support
+    if (instructions.phonetics_support_in_text && Object.keys(instructions.phonetics_support_in_text).length > 0) {
+      const phoneticsRules = Object.entries(instructions.phonetics_support_in_text)
+        .map(([key, value]) => `${key.replace(/_/g, ' ').toUpperCase()}: ${value}`)
+        .join('\n');
+      sections.push(`Phonetics Support:\n${phoneticsRules}`);
+    }
+
+    return sections.join('\n\n');
   }
 
   /**
@@ -75,13 +167,22 @@ class GeneralPromptConfigService {
    * Build a complete prompt from the template and context
    */
   buildPrompt(context: PromptBuildContext): string {
-    const { fromLanguage, toLanguage, difficulty, text } = context;
+    const { fromLanguage, toLanguage, difficulty, text, nativeLanguage } = context;
 
     // Get language-specific instructions
     const languageInstructions = this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
     if (!languageInstructions) {
       console.warn(`No language instructions found for ${fromLanguage}->${toLanguage}/${difficulty}`);
       return this.buildFallbackPrompt(context);
+    }
+
+    // Get native-to-target specific instructions if native language is provided
+    let nativeToTargetInstructions = '';
+    if (nativeLanguage) {
+      const nativeInstructions = this.getNativeToTargetInstructions(nativeLanguage, toLanguage, difficulty);
+      if (nativeInstructions) {
+        nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
+      }
     }
 
     // Build the language instructions text
@@ -108,6 +209,7 @@ class GeneralPromptConfigService {
       .replace(/{difficulty}/g, difficulty)
       .replace(/{instructions}/g, generalInstructions)
       .replace(/{languageInstructions}/g, languageInstructionsText)
+      .replace(/{nativeToTargetInstructions}/g, nativeToTargetInstructions)
       .replace(/{text}/g, text);
 
     return prompt;

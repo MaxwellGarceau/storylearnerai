@@ -175,4 +175,56 @@ describe('PromptConfigService', () => {
       expect(await generalPromptConfigService.isSupported('Es', 'B2')).toBe(true);
     });
   });
+
+  describe('Native-to-Target Instructions', () => {
+    it('should return native-to-target instructions for supported combinations', () => {
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'a1');
+      expect(instructions).toBeTruthy();
+      expect(instructions?.description).toContain('Maximum scaffolding');
+      expect(instructions?.grammar_focus).toBeDefined();
+      expect(instructions?.vocabulary_focus).toBeDefined();
+    });
+
+    it('should return null for unsupported native language', () => {
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('fr', 'es', 'a1');
+      expect(instructions).toBeNull();
+    });
+
+    it('should return null for unsupported target language', () => {
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'fr', 'a1');
+      expect(instructions).toBeNull();
+    });
+
+    it('should return null for unsupported difficulty', () => {
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1');
+      expect(instructions).toBeNull();
+    });
+
+    it('should build prompt with native-to-target instructions when native language is provided', () => {
+      const context = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?',
+        nativeLanguage: 'es'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(context);
+      expect(prompt).toContain('Native Speaker Guidance');
+      expect(prompt).toContain('Grammar Focus');
+      expect(prompt).toContain('Vocabulary Focus');
+    });
+
+    it('should build prompt without native-to-target instructions when native language is not provided', () => {
+      const context = {
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1',
+        text: 'Hola, ¿cómo estás?'
+      };
+
+      const prompt = generalPromptConfigService.buildPrompt(context);
+      expect(prompt).not.toContain('Native Speaker Guidance');
+    });
+  });
 }); 

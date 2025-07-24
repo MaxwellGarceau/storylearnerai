@@ -7,6 +7,7 @@ export interface TranslationRequest {
   fromLanguage: string;
   toLanguage: string;
   difficulty: string;
+  nativeLanguage?: string; // Optional: user's native language for enhanced customization
 }
 
 export interface TranslationResponse {
@@ -64,7 +65,8 @@ class TranslationService {
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
-      text: request.text
+      text: request.text,
+      nativeLanguage: request.nativeLanguage
     };
 
 

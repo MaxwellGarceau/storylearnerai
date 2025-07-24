@@ -17,6 +17,36 @@ export interface PromptInstructions {
   helpful_patterns?: string;
 }
 
+export interface NativeToTargetInstructions {
+  description: string;
+  grammar_focus: {
+    [key: string]: string;
+  };
+  vocabulary_focus: {
+    [key: string]: string;
+  };
+  phonetics_support_in_text?: {
+    [key: string]: string;
+  };
+}
+
+export interface NativeToTargetDifficultyPrompts {
+  a1: NativeToTargetInstructions;
+  a2: NativeToTargetInstructions;
+  b1: NativeToTargetInstructions;
+  b2: NativeToTargetInstructions;
+  c1?: NativeToTargetInstructions; // Optional for future expansion
+  c2?: NativeToTargetInstructions; // Optional for future expansion
+}
+
+export interface NativeToTargetConfig {
+  [targetLanguage: string]: NativeToTargetDifficultyPrompts;
+}
+
+export interface NativeToTargetLanguageConfig {
+  [nativeLanguage: string]: NativeToTargetConfig;
+}
+
 export interface DifficultyPrompts {
   a1: PromptInstructions;
   a2: PromptInstructions;
@@ -49,4 +79,5 @@ export interface PromptBuildContext {
   toLanguage: string;
   difficulty: string;
   text: string;
+  nativeLanguage?: string; // Optional: user's native language for enhanced customization
 } 
