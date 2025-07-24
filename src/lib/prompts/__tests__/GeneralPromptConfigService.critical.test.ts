@@ -133,3 +133,59 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
     });
   });
 }); 
+
+describe('CRITICAL: Complete Prompt Structure Validation', () => {
+  const mockContext: PromptBuildContext = {
+    fromLanguage: 'es',
+    toLanguage: 'en',
+    difficulty: 'a1',
+    text: 'Hola, ¿cómo estás?',
+    nativeLanguage: 'es'
+  };
+
+  it('should have correct section ordering in the prompt', () => {
+    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    
+    // Split prompt into lines to check ordering
+    const lines = prompt.split('\n');
+    
+    // Find the main sections
+    const headerIndex = lines.findIndex(line => line.includes('Translate the following'));
+    const instructionsIndex = lines.findIndex(line => line === 'Instructions:');
+    const guidelinesIndex = lines.findIndex(line => line.includes('Specific en Guidelines:'));
+    const nativeGuidanceIndex = lines.findIndex(line => line.includes('Native Speaker Guidance:'));
+    const storyIndex = lines.findIndex(line => line === 'es Story:');
+    const footerIndex = lines.findIndex(line => line.includes('Please provide only the en translation'));
+    
+    // Verify correct ordering
+    expect(headerIndex).toBeLessThan(instructionsIndex);
+    expect(instructionsIndex).toBeLessThan(guidelinesIndex);
+    expect(guidelinesIndex).toBeLessThan(nativeGuidanceIndex);
+    expect(nativeGuidanceIndex).toBeLessThan(storyIndex);
+    expect(storyIndex).toBeLessThan(footerIndex);
+  });
+
+  it('should have proper formatting with line breaks between sections', () => {
+    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    
+    // Check for proper spacing between major sections
+    expect(prompt).toMatch(/Instructions:\n/);
+    expect(prompt).toMatch(/Specific en Guidelines:\n/);
+    expect(prompt).toMatch(/es Story:\n/);
+  });
+
+  it('should have correct header format', () => {
+    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    
+    // Check header format
+    expect(prompt).toMatch(/^Translate the following es story to en, adapted for a1 CEFR level:/);
+  });
+
+  it('should have correct footer format', () => {
+    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    
+    // Check footer format
+    expect(prompt).toMatch(/Please provide only the en translation\.$/);
+  });
+
+});
