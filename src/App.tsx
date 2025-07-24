@@ -6,7 +6,7 @@ import StoryReaderPage from './pages/StoryReaderPage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import SavedTranslationsPage from './pages/SavedTranslationsPage';
-import Layout from './components/Layout';
+import PageLayout from './components/PageLayout';
 import { Toaster } from './components/ui/Toaster';
 import { TooltipProvider } from './components/ui/Tooltip';
 
@@ -16,11 +16,11 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/translate" element={<TranslatePage />} />
-          <Route path="/story" element={<StoryReaderPage />} />
-          <Route path="/auth" element={<Layout><AuthPage /></Layout>} />
-          <Route path="/dashboard" element={<Layout><DashboardPage /></Layout>} />
-          <Route path="/saved-translations" element={<Layout><SavedTranslationsPage /></Layout>} />
+          <Route path="/translate" element={<PageLayout><TranslatePage /></PageLayout>} />
+          <Route path="/story" element={<PageLayout><StoryReaderPage /></PageLayout>} />
+          <Route path="/auth" element={<PageLayout><AuthPage /></PageLayout>} />
+          <Route path="/dashboard" element={<PageLayout><DashboardPage /></PageLayout>} />
+          <Route path="/saved-translations" element={<PageLayout><SavedTranslationsPage /></PageLayout>} />
         </Routes>
         <Toaster />
       </Router>
