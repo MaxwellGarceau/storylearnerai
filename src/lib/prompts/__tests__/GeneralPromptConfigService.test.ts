@@ -37,6 +37,12 @@ vi.mock('../config/native-to-target/es/en.json', () => ({
 
 
 
+/**
+ * Comprehensive Prompt System Tests
+ * 
+ * CRITICAL tests are in: GeneralPromptConfigService.critical.test.ts
+ * This file contains comprehensive validation and edge case testing
+ */
 describe('PromptConfigService', () => {
   describe('getLanguageInstructions', () => {
     it('should return instructions for supported language and difficulty', async () => {

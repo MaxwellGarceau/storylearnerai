@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "test": "vitest --exclude src/__tests__/e2e/**",
     "test:once": "vitest run --exclude src/__tests__/e2e/**",
+    "test:critical": "vitest run --exclude src/__tests__/e2e/** src/lib/prompts/__tests__/GeneralPromptConfigService.critical.test.ts",
+    "test:prompts": "vitest run --exclude src/__tests__/e2e/** src/lib/prompts/__tests__/",
     "test:coverage": "vitest run --coverage --exclude src/__tests__/e2e/**",
     "test:e2e": "vitest run --run src/__tests__/e2e/",
     "test:all": "vitest run",
