@@ -55,6 +55,9 @@ class TranslationService {
     }
   }
 
+  // TODO: Refine the prompt to deliver better results
+  // TODO: Refine the prompt specifically for the difficulty level
+  // TODO: Refine the prompt specifically for the story
   private buildTranslationPrompt(request: TranslationRequest): string {
     return `
       Translate the following Spanish story to English, adapted for ${request.difficulty} CEFR level:
