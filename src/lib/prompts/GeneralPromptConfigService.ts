@@ -1,6 +1,6 @@
 import { LanguagePromptConfig, GeneralPromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
-import languageConfigData from './prompts/to-language.json';
-import generalConfigData from './prompts/general.json';
+import languageConfigData from './config/to-language.json';
+import generalConfigData from './config/general.json';
 
 /**
  * General Prompt Configuration Service

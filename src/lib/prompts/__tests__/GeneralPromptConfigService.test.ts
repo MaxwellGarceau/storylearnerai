@@ -4,44 +4,7 @@ import { vi } from 'vitest';
 
 
 
-// Mock the PromptConfigurationService
-vi.mock('../../../api/supabase/database/promptConfigurationService', () => ({
-  PromptConfigurationService: vi.fn().mockImplementation(() => ({
-    getPromptConfiguration: vi.fn().mockImplementation((languageCode: string, difficultyCode: string) => {
-      // Return null for unsupported combinations to trigger JSON fallback
-      if (languageCode === 'unsupported' || difficultyCode === 'unsupported') {
-        return Promise.resolve(null);
-      }
-      
-      // Return mock configuration for supported combinations
-      const mockConfig = {
-        id: 'mock-id',
-        language_id: 'mock-language-id',
-        difficulty_level_id: 'mock-difficulty-id',
-        vocabulary: 'Use appropriate vocabulary for ' + difficultyCode,
-        grammar: 'Use appropriate grammar for ' + difficultyCode,
-        cultural: 'Handle cultural references appropriately',
-        style: 'Use appropriate style for ' + difficultyCode,
-        examples: 'Provide appropriate examples',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-        language: { code: languageCode, name: 'Mock Language' },
-        difficulty_level: { code: difficultyCode, name: 'Mock Difficulty' }
-      };
-      return Promise.resolve(mockConfig);
-    }),
-    hasPromptConfiguration: vi.fn().mockImplementation((languageCode: string, difficultyCode: string) => {
-      return Promise.resolve(languageCode !== 'unsupported' && difficultyCode !== 'unsupported');
-    }),
-    getAvailableLanguageCodes: vi.fn().mockResolvedValue(['en', 'es']),
-    getAvailableDifficultyCodes: vi.fn().mockImplementation((languageCode: string) => {
-      if (languageCode === 'unsupported') {
-        return Promise.resolve([]);
-      }
-      return Promise.resolve(['a1', 'a2', 'b1', 'b2']);
-    })
-  }))
-}));
+
 
 describe('PromptConfigService', () => {
   describe('getLanguageInstructions', () => {

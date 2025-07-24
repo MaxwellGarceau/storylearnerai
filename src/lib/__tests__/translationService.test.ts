@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { translationService } from '../translationService';
 import { EnvironmentConfig } from '../config/env';
 import type { TranslationRequest } from '../translationService';
-import { generalPromptConfigService } from '../config/GeneralPromptConfigService';
+import { generalPromptConfigService } from '../prompts';
 
 // Mock the dependencies
 vi.mock('../config/env', () => ({

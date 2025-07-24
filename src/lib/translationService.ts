@@ -1,6 +1,6 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
-import { generalPromptConfigService } from './config/GeneralPromptConfigService';
+import { generalPromptConfigService } from './prompts';
 
 export interface TranslationRequest {
   text: string;
