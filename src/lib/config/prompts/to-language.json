@@ -1,14 +1,4 @@
 {
-  "general": {
-    "instructions": [
-      "Maintain the story's meaning and narrative flow",
-      "Preserve cultural context where appropriate", 
-      "Keep the story engaging and readable",
-      "Provide only the translation without additional commentary"
-    ],
-    "template": "Translate the following {fromLanguage} story to {toLanguage}, adapted for {difficulty} CEFR level:\n\nInstructions:\n{instructions}\n\nSpecific {toLanguage} Guidelines:\n{languageInstructions}\n\n{fromLanguage} Story:\n{text}\n\nPlease provide only the {toLanguage} translation."
-  },
-  "languages": {
     "en": {
       "a1": {
         "vocabulary": "Use only the most common 1000 English words. Replace complex words with simple alternatives (e.g., 'big' instead of 'enormous')",
@@ -69,5 +59,4 @@
         "examples": "Can use 'Estaba completamente devastado' or 'La magnífica fortaleza dominaba todo el valle'"
       }
     }
-  }
-} 
+  } 

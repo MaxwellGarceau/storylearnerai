@@ -30,11 +30,17 @@ export interface LanguagePrompts {
   [languageCode: string]: DifficultyPrompts;
 }
 
+export interface GeneralPromptConfig {
+  instructions: string[];
+  template: string;
+}
+
+export interface LanguagePromptConfig {
+  [languageCode: string]: DifficultyPrompts;
+}
+
 export interface PromptConfig {
-  general: {
-    instructions: string[];
-    template: string;
-  };
+  general: GeneralPromptConfig;
   languages: LanguagePrompts;
 }
 

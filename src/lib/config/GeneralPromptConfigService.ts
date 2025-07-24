@@ -1,5 +1,6 @@
-import { PromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
-import promptConfigData from './prompts/prompts-general.json';
+import { LanguagePromptConfig, GeneralPromptConfig, PromptInstructions, PromptBuildContext } from '../types/prompt';
+import languageConfigData from './prompts/to-language.json';
+import generalConfigData from './prompts/general.json';
 
 /**
  * General Prompt Configuration Service
@@ -13,21 +14,24 @@ import promptConfigData from './prompts/prompts-general.json';
  * - Add A/B testing capabilities for different prompt variations
  * - Add admin interface for non-technical prompt editing
  * 
- * The general prompts in prompts/prompts-general.json will serve as fallbacks when
- * more specific customizations are not available.
+ * The general prompts in prompts/general.json and language-specific prompts in 
+ * prompts/to-language.json will serve as fallbacks when more specific customizations 
+ * are not available.
  */
 class GeneralPromptConfigService {
-  private config: PromptConfig;
+  private languageConfig: LanguagePromptConfig;
+  private generalConfig: GeneralPromptConfig;
 
   constructor() {
-    this.config = promptConfigData as PromptConfig;
+    this.languageConfig = languageConfigData as LanguagePromptConfig;
+    this.generalConfig = generalConfigData as GeneralPromptConfig;
   }
 
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
   getLanguageInstructions(languageCode: string, difficulty: string): PromptInstructions | null {
-    const language = this.config.languages[languageCode.toLowerCase()];
+    const language = this.languageConfig[languageCode.toLowerCase()];
     if (!language) {
       console.warn(`No prompt configuration found for language: ${languageCode}`);
       return null;
@@ -57,14 +61,14 @@ class GeneralPromptConfigService {
    * Get the general instructions that apply to all prompts
    */
   getGeneralInstructions(): string[] {
-    return this.config.general.instructions;
+    return this.generalConfig.instructions;
   }
 
   /**
    * Get the prompt template
    */
   getTemplate(): string {
-    return this.config.general.template;
+    return this.generalConfig.template;
   }
 
   /**
@@ -127,14 +131,14 @@ Please provide only the ${toLanguage} translation.`;
    * Get available language codes
    */
   getAvailableLanguages(): string[] {
-    return Object.keys(this.config.languages);
+    return Object.keys(this.languageConfig);
   }
 
   /**
    * Get available difficulty levels for a given language
    */
   getAvailableDifficulties(languageCode: string): string[] {
-    const language = this.config.languages[languageCode.toLowerCase()];
+    const language = this.languageConfig[languageCode.toLowerCase()];
     if (!language) {
       return [];
     }
@@ -145,7 +149,7 @@ Please provide only the ${toLanguage} translation.`;
    * Check if a language and difficulty combination is supported
    */
   isSupported(languageCode: string, difficulty: string): boolean {
-    const language = this.config.languages[languageCode.toLowerCase()];
+    const language = this.languageConfig[languageCode.toLowerCase()];
     if (!language) {
       return false;
     }
