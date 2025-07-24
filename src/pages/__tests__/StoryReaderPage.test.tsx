@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import StoryReaderPage from '../StoryReaderPage';
 import { TranslationResponse } from '../../lib/translationService';
+import { TooltipProvider } from '../../components/ui/Tooltip';
 
 // Mock the StoryRender component
 vi.mock('../../components/story/StoryRender', () => ({
@@ -40,9 +41,11 @@ vi.mock('react-router-dom', async () => {
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
+    <TooltipProvider>
+      <BrowserRouter>
+        {component}
+      </BrowserRouter>
+    </TooltipProvider>
   );
 };
 
