@@ -11,6 +11,7 @@ import { Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Card, CardContent } from '../components/ui/Card';
 import Label from '../components/ui/Label';
+import SaveTranslationButton from '../components/story/SaveTranslationButton';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
@@ -74,6 +75,13 @@ const StoryReaderPage: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <SaveTranslationButton
+            translationData={translationData}
+            originalStory={translationData.originalText || ''}
+            originalLanguage="Spanish"
+            translatedLanguage="English"
+            difficultyLevel={translationData.difficulty}
+          />
           <Button 
             onClick={handleTranslateAnother}
             size="lg"

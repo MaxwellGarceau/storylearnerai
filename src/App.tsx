@@ -5,6 +5,7 @@ import TranslatePage from './pages/TranslatePage';
 import StoryReaderPage from './pages/StoryReaderPage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
+import SavedTranslationsPage from './pages/SavedTranslationsPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/story" element={<StoryReaderPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/saved-translations" element={<SavedTranslationsPage />} />
       </Routes>
     </Router>
   );
