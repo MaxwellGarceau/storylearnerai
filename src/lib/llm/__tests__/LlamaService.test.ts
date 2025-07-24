@@ -7,7 +7,7 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Helper function to create proper Response mock
-const createMockResponse = (data: any, options: { ok?: boolean; status?: number; statusText?: string } = {}) => {
+const createMockResponse = (data: unknown, options: { ok?: boolean; status?: number; statusText?: string } = {}) => {
   const response = {
     ok: options.ok ?? true,
     status: options.status ?? 200,

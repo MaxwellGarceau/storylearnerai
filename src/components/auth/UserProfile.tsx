@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '../ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card'
 import Label from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
 import { useSupabase } from '../../hooks/useSupabase'
+import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase'
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
@@ -14,7 +15,8 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
-  const [profile, setProfile] = useState<any>(null)
+  const { languages, getLanguageName } = useLanguages()
+  const [profile, setProfile] = useState<User | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -25,13 +27,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     preferred_language: 'en'
   })
 
-  useEffect(() => {
-    if (user) {
-      loadProfile()
-    }
-  }, [user])
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user) return
 
     try {
@@ -51,7 +47,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      loadProfile()
+    }
+  }, [user, loadProfile])
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({
@@ -96,21 +98,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     }
   }
 
-  const getLanguageName = (code: string) => {
-    const languages: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese'
-    }
-    return languages[code] || code
-  }
+
 
   if (loading) {
     return (
@@ -248,16 +236,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               onChange={(e) => handleInputChange('preferred_language', e.target.value)}
               className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
             >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
-              <option value="pt">Portuguese</option>
-              <option value="ru">Russian</option>
-              <option value="ja">Japanese</option>
-              <option value="ko">Korean</option>
-              <option value="zh">Chinese</option>
+              {languages.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.name}
+                </option>
+              ))}
             </select>
           ) : (
             <Badge variant="secondary">

@@ -9,7 +9,8 @@ import {
   LogIn, 
   BookOpen, 
   Settings,
-  ChevronDown
+  ChevronDown,
+  Save
 } from 'lucide-react';
 
 const Header: React.FC = () => {
@@ -74,6 +75,17 @@ const Header: React.FC = () => {
               >
                 Dashboard
               </Link>
+              <Link 
+                to="/saved-translations" 
+                className={cn(
+                  "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  isActive('/saved-translations') 
+                    ? "bg-accent text-accent-foreground" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
+              >
+                Saved
+              </Link>
             </>
           )}
         </nav>
@@ -103,6 +115,14 @@ const Header: React.FC = () => {
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/saved-translations"
+                    className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent/50 transition-colors"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Saved Translations
                   </Link>
                   <Link
                     to="/auth?mode=profile"

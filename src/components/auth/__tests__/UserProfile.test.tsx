@@ -5,6 +5,29 @@ import { UserProfile } from '../UserProfile'
 import { setupSupabaseMocks, mockUseSupabase } from '../../../__tests__/mocks/supabaseMock'
 import type { User } from '@supabase/supabase-js'
 
+// Mock the useLanguages hook
+vi.mock('../../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    languages: [
+      { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2023-01-01T00:00:00Z' },
+      { id: '2', code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2023-01-01T00:00:00Z' }
+    ],
+    loading: false,
+    error: null,
+    getLanguageName: (code: string) => {
+      const languageMap: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish'
+      }
+      return languageMap[code] || code
+    },
+    languageMap: new Map([
+      ['en', 'English'],
+      ['es', 'Spanish']
+    ])
+  })
+}))
+
 // Setup Supabase mocks
 setupSupabaseMocks()
 

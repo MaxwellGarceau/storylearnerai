@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { TranslationService, CreateTranslationData, UpdateTranslationData } from '../translationService'
 import type { PostgrestQueryBuilder } from '@supabase/postgrest-js'
+import { createDummyTranslation } from '../../../../__tests__/utils/testData'
 
 // Mock the entire supabase client module
 vi.mock('../../client', () => {
@@ -26,14 +27,12 @@ describe('TranslationService', () => {
 
   describe('createTranslation', () => {
     it('should create a translation successfully', async () => {
-      const mockTranslation = {
+      const mockTranslation = createDummyTranslation({
         id: '1',
         story_id: 'story-1',
         target_language: 'es',
-        translated_content: 'Contenido traducido',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      }
+        translated_content: 'Contenido traducido'
+      })
 
       const mockQuery = {
         insert: vi.fn().mockReturnThis(),
@@ -88,14 +87,12 @@ describe('TranslationService', () => {
 
   describe('getTranslationById', () => {
     it('should return a translation when found', async () => {
-      const mockTranslation = {
+      const mockTranslation = createDummyTranslation({
         id: '1',
         story_id: 'story-1',
         target_language: 'es',
-        translated_content: 'Contenido traducido',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      }
+        translated_content: 'Contenido traducido'
+      })
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -148,22 +145,18 @@ describe('TranslationService', () => {
   describe('getTranslationsByStoryId', () => {
     it('should return translations for a specific story', async () => {
       const mockTranslations = [
-        {
+        createDummyTranslation({
           id: '1',
           story_id: 'story-1',
           target_language: 'es',
-          translated_content: 'Contenido en español',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
-        {
+          translated_content: 'Contenido en español'
+        }),
+        createDummyTranslation({
           id: '2',
           story_id: 'story-1',
           target_language: 'fr',
-          translated_content: 'Contenu en français',
-          created_at: '2024-01-02T00:00:00Z',
-          updated_at: '2024-01-02T00:00:00Z',
-        },
+          translated_content: 'Contenu en français'
+        }),
       ]
 
       const mockQuery = {
@@ -215,14 +208,12 @@ describe('TranslationService', () => {
 
   describe('getTranslationByStoryAndLanguage', () => {
     it('should return a translation when found', async () => {
-      const mockTranslation = {
+      const mockTranslation = createDummyTranslation({
         id: '1',
         story_id: 'story-1',
         target_language: 'es',
-        translated_content: 'Contenido traducido',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      }
+        translated_content: 'Contenido traducido'
+      })
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -275,14 +266,12 @@ describe('TranslationService', () => {
 
   describe('updateTranslation', () => {
     it('should update a translation successfully', async () => {
-      const mockUpdatedTranslation = {
+      const mockUpdatedTranslation = createDummyTranslation({
         id: '1',
         story_id: 'story-1',
         target_language: 'es',
-        translated_content: 'Contenido actualizado',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-02T00:00:00Z',
-      }
+        translated_content: 'Contenido actualizado'
+      })
 
       const mockQuery = {
         update: vi.fn().mockReturnThis(),
@@ -396,22 +385,18 @@ describe('TranslationService', () => {
   describe('getTranslations', () => {
     it('should return all translations when no filters provided', async () => {
       const mockTranslations = [
-        {
+        createDummyTranslation({
           id: '1',
           story_id: 'story-1',
           target_language: 'es',
-          translated_content: 'Contenido en español',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
-        {
+          translated_content: 'Contenido en español'
+        }),
+        createDummyTranslation({
           id: '2',
           story_id: 'story-2',
           target_language: 'fr',
-          translated_content: 'Contenu en français',
-          created_at: '2024-01-02T00:00:00Z',
-          updated_at: '2024-01-02T00:00:00Z',
-        },
+          translated_content: 'Contenu en français'
+        }),
       ]
 
       const mockQuery = {
@@ -432,14 +417,12 @@ describe('TranslationService', () => {
 
     it('should apply story_id filter', async () => {
       const mockTranslations = [
-        {
+        createDummyTranslation({
           id: '1',
           story_id: 'story-1',
           target_language: 'es',
-          translated_content: 'Contenido en español',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          translated_content: 'Contenido en español'
+        }),
       ]
 
       const mockQuery = {
@@ -458,14 +441,12 @@ describe('TranslationService', () => {
 
     it('should apply target_language filter', async () => {
       const mockTranslations = [
-        {
+        createDummyTranslation({
           id: '1',
           story_id: 'story-1',
           target_language: 'es',
-          translated_content: 'Contenido en español',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
+          translated_content: 'Contenido en español'
+        }),
       ]
 
       const mockQuery = {

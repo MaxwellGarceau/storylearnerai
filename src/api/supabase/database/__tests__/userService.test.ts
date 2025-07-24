@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { UserService } from '../userService'
 import { supabase } from '../../client'
+import { createDummyUser } from '../../../../__tests__/utils/testData'
 
 // Mock the supabase client
 vi.mock('../../client', () => ({
@@ -22,15 +23,12 @@ describe('UserService', () => {
 
   describe('getUser', () => {
     it('should return user when found', async () => {
-      const mockUser = {
+      const mockUser = createDummyUser({
         id: 'user-1',
         username: 'testuser',
         display_name: 'Test User',
-        avatar_url: null,
-        preferred_language: 'en',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      }
+        preferred_language: 'en'
+      })
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -41,7 +39,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getUser('user-1')
 
@@ -62,7 +60,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getUser('user-1')
 
@@ -79,7 +77,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       await expect(UserService.getUser('user-1')).rejects.toThrow('Failed to fetch user: Database error')
     })
@@ -87,15 +85,12 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should create user successfully', async () => {
-      const mockUser = {
+      const mockUser = createDummyUser({
         id: 'user-1',
         username: 'testuser',
         display_name: 'Test User',
-        avatar_url: null,
-        preferred_language: 'en',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      }
+        preferred_language: 'en'
+      })
 
       const mockQuery = {
         insert: vi.fn().mockReturnThis(),
@@ -106,7 +101,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.createUser({
         id: 'user-1',
@@ -138,7 +133,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       await expect(UserService.createUser({
         id: 'user-1',
@@ -149,15 +144,12 @@ describe('UserService', () => {
 
   describe('updateUser', () => {
     it('should update user successfully', async () => {
-      const mockUser = {
+      const mockUser = createDummyUser({
         id: 'user-1',
         username: 'updateduser',
         display_name: 'Updated User',
-        avatar_url: null,
-        preferred_language: 'es',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-02T00:00:00Z'
-      }
+        preferred_language: 'es'
+      })
 
       const mockQuery = {
         update: vi.fn().mockReturnThis(),
@@ -169,7 +161,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.updateUser('user-1', {
         username: 'updateduser',
@@ -200,7 +192,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.isUsernameAvailable('newuser')
 
@@ -220,7 +212,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.isUsernameAvailable('existinguser')
 
@@ -230,15 +222,12 @@ describe('UserService', () => {
 
   describe('getOrCreateUser', () => {
     it('should return existing user when found', async () => {
-      const mockUser = {
+      const mockUser = createDummyUser({
         id: 'user-1',
         username: 'testuser',
         display_name: 'Test User',
-        avatar_url: null,
-        preferred_language: 'en',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      }
+        preferred_language: 'en'
+      })
 
       const mockQuery = {
         select: vi.fn().mockReturnThis(),
@@ -249,7 +238,7 @@ describe('UserService', () => {
         })
       }
 
-      mockedSupabase.from.mockReturnValue(mockQuery as any)
+      mockedSupabase.from.mockReturnValue(mockQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getOrCreateUser('user-1')
 
@@ -258,15 +247,12 @@ describe('UserService', () => {
     })
 
     it('should create new user when not found', async () => {
-      const mockUser = {
+      const mockUser = createDummyUser({
         id: 'user-1',
         username: 'testuser',
         display_name: 'Test User',
-        avatar_url: null,
-        preferred_language: 'en',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
-      }
+        preferred_language: 'en'
+      })
 
       // First call returns null (user not found)
       const mockGetQuery = {
@@ -289,8 +275,8 @@ describe('UserService', () => {
       }
 
       mockedSupabase.from
-        .mockReturnValueOnce(mockGetQuery as any)
-        .mockReturnValueOnce(mockCreateQuery as any)
+        .mockReturnValueOnce(mockGetQuery as jest.Mocked<typeof mockQuery>)
+        .mockReturnValueOnce(mockCreateQuery as jest.Mocked<typeof mockQuery>)
 
       const result = await UserService.getOrCreateUser('user-1', {
         username: 'testuser',

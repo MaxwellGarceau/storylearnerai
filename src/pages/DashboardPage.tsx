@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSupabase } from '../hooks/useSupabase'
+import { useLanguages } from '../hooks/useLanguages'
 import { UserService } from '../api/supabase'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
@@ -9,27 +10,21 @@ import { Alert } from '../components/ui/Alert'
 import { 
   BookOpen, 
   Plus,
-  User,
+  User as UserIcon,
   Globe,
   Loader2
 } from 'lucide-react'
+import type { User } from '../lib/types/database'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useSupabase()
+  const { getLanguageName } = useLanguages()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<User | null>(null)
 
-  useEffect(() => {
-    if (user) {
-      loadDashboardData()
-    } else {
-      setLoading(false)
-    }
-  }, [user])
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!user) return
 
     try {
@@ -44,27 +39,21 @@ export const DashboardPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
-  const getLanguageName = (code: string) => {
-    const languages: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese'
+  useEffect(() => {
+    if (user) {
+      loadDashboardData()
+    } else {
+      setLoading(false)
     }
-    return languages[code] || code
-  }
+  }, [user, loadDashboardData])
+
+
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -79,7 +68,7 @@ export const DashboardPage: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <Alert variant="destructive">
             <p>Please sign in to access your dashboard</p>
@@ -90,7 +79,7 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {error && (
           <Alert variant="destructive">
@@ -107,10 +96,10 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/auth?mode=profile')}
               className="flex items-center gap-2"
             >
-              <User className="h-4 w-4" />
+              <UserIcon className="h-4 w-4" />
               Profile
             </Button>
             <Button
@@ -123,74 +112,102 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Start Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Get Started
-            </CardTitle>
-            <CardDescription>
-              Start translating and learning with Story Learner AI
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">Ready to start your language learning journey?</p>
-              <Button
-                onClick={() => navigate('/translate')}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Start Translating
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* User Profile Information */}
-        {profile && (
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                Your Profile
-              </CardTitle>
-              <CardDescription>
-                Your account information and preferences
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Translations</CardTitle>
+              <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-2">Display Name</h4>
-                  <p className="text-muted-foreground">
-                    {profile.display_name || 'Not set'}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Username</h4>
-                  <p className="text-muted-foreground">
-                    {profile.username ? `@${profile.username}` : 'Not set'}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Preferred Language</h4>
-                  <Badge variant="secondary">
-                    {getLanguageName(profile.preferred_language)}
-                  </Badge>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Member Since</h4>
-                  <p className="text-muted-foreground">
-                    {new Date(profile.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-muted-foreground">
+                Stories translated
+              </p>
             </CardContent>
           </Card>
-        )}
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Languages</CardTitle>
+              <Globe className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">1</div>
+              <p className="text-xs text-muted-foreground">
+                {getLanguageName(profile?.preferred_language || 'en')}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Learning Level</CardTitle>
+              <Badge variant="secondary">Beginner</Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Beginner</div>
+              <p className="text-xs text-muted-foreground">
+                Current difficulty level
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/translate')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus className="h-5 w-5" />
+                  New Translation
+                </CardTitle>
+                <CardDescription>
+                  Start translating a new story
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/saved-translations')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  View Saved
+                </CardTitle>
+                <CardDescription>
+                  Review your saved translations
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/auth?mode=profile')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UserIcon className="h-5 w-5" />
+                   Edit Profile
+                </CardTitle>
+                <CardDescription>
+                   Update your preferences
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Recent Activity</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle>No recent activity</CardTitle>
+              <CardDescription>
+                Start translating stories to see your activity here
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     </div>
   )
