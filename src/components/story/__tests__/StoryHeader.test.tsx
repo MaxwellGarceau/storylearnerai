@@ -14,9 +14,9 @@ vi.mock('../../ui/InfoButton', () => ({
 const mockTranslationData: TranslationResponse = {
   originalText: 'Esta es una historia de prueba.',
   translatedText: 'This is a test story.',
-  fromLanguage: 'Spanish',
-  toLanguage: 'English',
-  difficulty: 'A1',
+  fromLanguage: 'es',
+  toLanguage: 'en',
+  difficulty: 'a1',
   provider: 'test',
   model: 'test-model'
 };

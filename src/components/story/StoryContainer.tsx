@@ -3,6 +3,8 @@ import FullPageStoryInput from './FullPageStoryInput';
 import TranslationOptionsSidebar from './TranslationOptionsSidebar';
 import { translationService, TranslationResponse } from '../../lib/translationService';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
+import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import { StoryFormData } from '../types/story';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -11,13 +13,13 @@ interface StoryContainerProps {
 const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<StoryFormData>({
     story: '',
-    language: 'English',
-    difficulty: 'A1',
+    language: 'en', // Language code instead of name
+    difficulty: 'a1', // Difficulty code instead of name
   });
 
-  const handleFormDataChange = (field: 'language' | 'difficulty', value: string) => {
+  const handleFormDataChange = (field: 'language' | 'difficulty', value: LanguageCode | DifficultyLevel) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [field]: value,
@@ -44,8 +46,8 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
       const response = await translationService.translate({
         text: formData.story,
-        fromLanguage: 'Spanish',
-        toLanguage: 'English',
+        fromLanguage: 'es', // Spanish language code
+        toLanguage: formData.language,
         difficulty: formData.difficulty,
       });
 

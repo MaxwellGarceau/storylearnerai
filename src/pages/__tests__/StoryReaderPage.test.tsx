@@ -90,7 +90,7 @@ describe('StoryReaderPage', () => {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
       fromLanguage: 'Spanish',
-      toLanguage: 'English',
+      toLanguage: 'en',
       difficulty: 'Intermediate',
       provider: 'test',
       model: 'test-model'
@@ -110,7 +110,7 @@ describe('StoryReaderPage', () => {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
       fromLanguage: 'Spanish',
-      toLanguage: 'English',
+      toLanguage: 'en',
       difficulty: 'Intermediate',
       provider: 'test',
       model: 'test-model'
@@ -132,7 +132,7 @@ describe('StoryReaderPage', () => {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
       fromLanguage: 'Spanish',
-      toLanguage: 'English',
+      toLanguage: 'en',
       difficulty: 'Intermediate',
       provider: 'test',
       model: 'test-model'
