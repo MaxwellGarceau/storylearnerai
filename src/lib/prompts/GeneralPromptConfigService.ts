@@ -30,8 +30,6 @@ import templateConfigData from './config/template.json';
  * prompts/to-language.json will serve as fallbacks when more specific customizations 
  * are not available.
  */
-// Add a type for supported language codes
-export type SupportedLanguageCode = 'en' | 'es';
 
 class GeneralPromptConfigService {
   private languageConfig: LanguagePromptConfig;
@@ -85,24 +83,24 @@ class GeneralPromptConfigService {
   /**
    * Get native-to-target specific instructions for a given native language and target language
    */
-  getNativeToTargetInstructions(nativeLanguage: LanguageCode, targetLanguage: LanguageCode, difficulty: DifficultyLevel): NativeToTargetInstructions | null {
+  getNativeToTargetInstructions(fromLanguage: LanguageCode, targetLanguage: LanguageCode, difficulty: DifficultyLevel): NativeToTargetInstructions | null {
     logger.debug('prompts', 'Getting native-to-target instructions', { 
-      nativeLanguage, 
+      fromLanguage, 
       targetLanguage, 
       difficulty 
     });
 
     const config = this.nativeToTargetConfig as Record<string, unknown>;
-    const nativeConfig = config[nativeLanguage.toLowerCase()] as Record<string, unknown> | undefined;
+    const nativeConfig = config[fromLanguage] as Record<string, unknown> | undefined;
     if (!nativeConfig) {
-      logger.warn('prompts', 'No native-to-target configuration found for native language', { nativeLanguage });
+      logger.warn('prompts', 'No native-to-target configuration found for native language', { fromLanguage });
       return null;
     }
 
-    const targetConfig = nativeConfig[targetLanguage.toLowerCase()] as Record<string, unknown> | undefined;
+    const targetConfig = nativeConfig[targetLanguage] as Record<string, unknown> | undefined;
     if (!targetConfig) {
       logger.warn('prompts', 'No native-to-target configuration found for target language', { 
-        nativeLanguage, 
+        fromLanguage, 
         targetLanguage 
       });
       return null;
@@ -111,7 +109,7 @@ class GeneralPromptConfigService {
     const difficultyConfig = targetConfig[difficulty.toLowerCase()] as NativeToTargetInstructions | undefined;
     if (!difficultyConfig) {
       logger.warn('prompts', 'No native-to-target configuration found for difficulty', { 
-        nativeLanguage, 
+        fromLanguage, 
         targetLanguage, 
         difficulty 
       });
@@ -119,7 +117,7 @@ class GeneralPromptConfigService {
     }
 
     logger.debug('prompts', 'Found native-to-target instructions', { 
-      nativeLanguage, 
+      fromLanguage, 
       targetLanguage, 
       difficulty 
     });
@@ -217,13 +215,12 @@ class GeneralPromptConfigService {
     logger.time('prompts', 'build-prompt');
     
     try {
-      const { fromLanguage, toLanguage, difficulty, text, nativeLanguage } = context;
+      const { fromLanguage, toLanguage, difficulty, text } = context;
 
       logger.debug('prompts', 'Building prompt', { 
         fromLanguage, 
         toLanguage, 
-        difficulty, 
-        hasNativeLanguage: !!nativeLanguage,
+        difficulty,
         textLength: text.length 
       });
 
@@ -240,16 +237,14 @@ class GeneralPromptConfigService {
 
       // Get native-to-target specific instructions if native language is provided
       let nativeToTargetInstructions = '';
-      if (nativeLanguage) {
-        const nativeInstructions = this.getNativeToTargetInstructions(nativeLanguage, toLanguage, difficulty);
-        if (nativeInstructions) {
-          nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
-          logger.debug('prompts', 'Added native-to-target instructions', { 
-            nativeLanguage, 
-            toLanguage, 
-            difficulty 
-          });
-        }
+      const nativeInstructions = this.getNativeToTargetInstructions(fromLanguage, toLanguage, difficulty);
+      if (nativeInstructions) {
+        nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
+        logger.debug('prompts', 'Added native-to-target instructions', { 
+          fromLanguage, 
+          toLanguage, 
+          difficulty 
+        });
       }
 
       // Build the language instructions text
@@ -283,7 +278,6 @@ class GeneralPromptConfigService {
         fromLanguage, 
         toLanguage, 
         difficulty, 
-        hasNativeLanguage: !!nativeLanguage,
         promptLength: prompt.length,
         hasNativeInstructions: !!nativeToTargetInstructions
       });
