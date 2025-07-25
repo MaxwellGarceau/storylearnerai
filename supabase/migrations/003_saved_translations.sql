@@ -68,7 +68,8 @@ ON CONFLICT (code) DO NOTHING;
 
 -- Insert difficulty levels
 INSERT INTO difficulty_levels (code, name, description) VALUES
-('beginner', 'Beginner', 'Simple vocabulary and grammar, suitable for language learners'),
-('intermediate', 'Intermediate', 'Moderate complexity with varied sentence structures'),
-('advanced', 'Advanced', 'Complex vocabulary and grammar, suitable for fluent speakers')
+('a1', 'A1 (Beginner)', 'Basic level - Can understand and use familiar everyday expressions and very basic phrases'),
+('a2', 'A2 (Elementary)', 'Elementary level - Can communicate in simple and routine tasks requiring simple information exchange'),
+('b1', 'B1 (Intermediate)', 'Intermediate level - Can deal with most situations likely to arise while traveling'),
+('b2', 'B2 (Upper Intermediate)', 'Upper intermediate level - Can interact with a degree of fluency and spontaneity')
 ON CONFLICT (code) DO NOTHING; 
