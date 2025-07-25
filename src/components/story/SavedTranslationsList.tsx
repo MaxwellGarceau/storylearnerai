@@ -38,7 +38,7 @@ export default function SavedTranslationsList() {
 
   const handleFilterChange = () => {
     setFilters({
-      original_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
+      translated_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
       difficulty_level_code: (selectedDifficulty || undefined) as DifficultyLevel | undefined,
       search: searchTerm.trim() || undefined,
     });
@@ -103,13 +103,13 @@ export default function SavedTranslationsList() {
         <CardHeader>
           <CardTitle>Filters</CardTitle>
           <CardDescription>
-            Filter your saved translations by language, difficulty, or search terms
+            Filter your saved translations by target language, difficulty, or search terms
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Original Language</label>
+              <label className="text-sm font-medium mb-2 block">Target Language</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedLanguage}
