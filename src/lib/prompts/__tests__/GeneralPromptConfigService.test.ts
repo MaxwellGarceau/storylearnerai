@@ -53,17 +53,20 @@ describe('PromptConfigService', () => {
     });
 
     it('should return null for unsupported language', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructions = await generalPromptConfigService.getLanguageInstructions('unsupported' as any, 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructions = await generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as any);
       expect(instructions).toBeNull();
     });
 
     it('should handle case insensitive language codes', async () => {
       const instructionsLower = await generalPromptConfigService.getLanguageInstructions('en', 'a1');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructionsUpper = await generalPromptConfigService.getLanguageInstructions('EN' as any, 'a1');
       
       // Both should return the same mock data since the mock normalizes to lowercase
@@ -170,15 +173,19 @@ describe('PromptConfigService', () => {
     });
 
     it('should return false for unsupported language', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(await generalPromptConfigService.isSupported('unsupported' as any, 'a1')).toBe(false);
     });
 
     it('should return false for unsupported difficulty', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(await generalPromptConfigService.isSupported('en', 'unsupported' as any)).toBe(false);
     });
 
     it('should be case insensitive', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(await generalPromptConfigService.isSupported('EN' as any, 'a1')).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(await generalPromptConfigService.isSupported('Es' as any, 'b2')).toBe(true);
     });
   });
@@ -193,16 +200,19 @@ describe('PromptConfigService', () => {
     });
 
     it('should return null for unsupported native language', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructions = generalPromptConfigService.getNativeToTargetInstructions('fr' as any, 'es', 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported target language', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as any, 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as any);
       expect(instructions).toBeNull();
     });

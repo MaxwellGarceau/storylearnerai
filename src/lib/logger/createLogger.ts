@@ -54,7 +54,7 @@ class BrowserLogger {
         userId: userId as string,
         sessionId: sessionId as string,
         requestId: requestId as string,
-        performance: performance as any,
+        performance: performance as { duration?: number; memory?: number; } | undefined,
       };
 
       this.queue.push(logEntry);

@@ -161,7 +161,7 @@ class AppLogger implements Logger {
   // Memory usage logging
   logMemoryUsage(channel: LogChannel = 'performance'): void {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const memory = (performance as Performance & { memory: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
       this.info(channel, 'Memory usage', {
         used: Math.round(memory.usedJSHeapSize / 1024 / 1024) + 'MB',
         total: Math.round(memory.totalJSHeapSize / 1024 / 1024) + 'MB',

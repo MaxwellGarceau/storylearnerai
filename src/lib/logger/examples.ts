@@ -84,7 +84,7 @@ export function ReactComponentExample() {
 // ============================================================================
 
 export class ApiService {
-  private logger = useApiLogger();
+  private logger = createLogger({ channels: { api: true } });
 
   async fetchUsers() {
     this.logger.time('api', 'fetch-users');
@@ -108,7 +108,7 @@ export class ApiService {
 }
 
 export class AuthService {
-  private logger = useAuthLogger();
+  private logger = createLogger({ channels: { auth: true } });
 
   async login(email: string, password: string) {
     this.logger.time('auth', 'login-attempt');
@@ -144,9 +144,9 @@ export class AuthService {
 }
 
 export class PromptService {
-  private logger = usePromptLogger();
+  private logger = createLogger({ channels: { prompts: true } });
 
-  buildPrompt(context: any) {
+  buildPrompt(context: Record<string, unknown>) {
     this.logger.time('prompts', 'build-prompt');
     
     try {
