@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
 import type { Language } from '../lib/types/database'
+import type { LanguageCode } from '../lib/types/prompt'
 
 export const useLanguages = () => {
   const [languages, setLanguages] = useState<Language[]>([])
@@ -9,15 +10,15 @@ export const useLanguages = () => {
 
   // Create a memoized map for quick lookups
   const languageMap = useMemo(() => {
-    const map = new Map<string, string>()
+    const map = new Map<LanguageCode, string>()
     languages.forEach(lang => {
-      map.set(lang.code, lang.name)
+      map.set(lang.code as LanguageCode, lang.name)
     })
     return map
   }, [languages])
 
   // Get language name with fallback
-  const getLanguageName = (code: string): string => {
+  const getLanguageName = (code: LanguageCode): string => {
     return languageMap.get(code) || code
   }
 

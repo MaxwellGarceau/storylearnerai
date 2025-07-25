@@ -7,6 +7,7 @@ import {
   Language,
   DifficultyLevel,
 } from '../../../lib/types/database';
+import type { LanguageCode } from '../../../lib/types/prompt';
 
 export class SavedTranslationService {
   /**
@@ -44,7 +45,7 @@ export class SavedTranslationService {
   /**
    * Get a language by its code
    */
-  async getLanguageByCode(code: string): Promise<Language | null> {
+  async getLanguageByCode(code: LanguageCode): Promise<Language | null> {
     const { data, error } = await supabase
       .from('languages')
       .select('*')
@@ -137,7 +138,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslations(
     userId: string,
-    filters: SavedTranslationFilters = {}
+    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
   ): Promise<SavedTranslationWithDetails[]> {
     let query = supabase
       .from('saved_translations')
@@ -272,7 +273,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslationsCount(
     userId: string,
-    filters: SavedTranslationFilters = {}
+    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
   ): Promise<number> {
     let query = supabase
       .from('saved_translations')

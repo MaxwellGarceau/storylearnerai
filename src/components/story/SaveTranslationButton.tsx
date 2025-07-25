@@ -8,6 +8,7 @@ import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
+import type { LanguageCode } from '../../lib/types/prompt';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
@@ -37,87 +38,14 @@ export default function SaveTranslationButton({
   const { toast } = useToast();
 
   // Map language names to ISO codes
-  const getLanguageCode = (languageName: string): string => {
-    const languageMap: Record<string, string> = {
+  const getLanguageCode = (languageName: string): LanguageCode | undefined => {
+    const languageMap: Record<string, LanguageCode> = {
       'spanish': 'es',
       'english': 'en',
-      'french': 'fr',
-      'german': 'de',
-      'italian': 'it',
-      'portuguese': 'pt',
-      'russian': 'ru',
-      'japanese': 'ja',
-      'korean': 'ko',
-      'chinese': 'zh',
-      'arabic': 'ar',
-      'hindi': 'hi',
-      'dutch': 'nl',
-      'swedish': 'sv',
-      'norwegian': 'no',
-      'danish': 'da',
-      'finnish': 'fi',
-      'polish': 'pl',
-      'turkish': 'tr',
-      'hebrew': 'he',
-      'thai': 'th',
-      'vietnamese': 'vi',
-      'indonesian': 'id',
-      'malay': 'ms',
-      'persian': 'fa',
-      'urdu': 'ur',
-      'bengali': 'bn',
-      'tamil': 'ta',
-      'telugu': 'te',
-      'marathi': 'mr',
-      'gujarati': 'gu',
-      'kannada': 'kn',
-      'malayalam': 'ml',
-      'punjabi': 'pa',
-      'odia': 'or',
-      'assamese': 'as',
-      'nepali': 'ne',
-      'sinhala': 'si',
-      'burmese': 'my',
-      'khmer': 'km',
-      'lao': 'lo',
-      'georgian': 'ka',
-      'amharic': 'am',
-      'swahili': 'sw',
-      'zulu': 'zu',
-      'afrikaans': 'af',
-      'icelandic': 'is',
-      'maltese': 'mt',
-      'welsh': 'cy',
-      'irish': 'ga',
-      'basque': 'eu',
-      'catalan': 'ca',
-      'galician': 'gl',
-      'croatian': 'hr',
-      'slovak': 'sk',
-      'slovenian': 'sl',
-      'estonian': 'et',
-      'latvian': 'lv',
-      'lithuanian': 'lt',
-      'bulgarian': 'bg',
-      'romanian': 'ro',
-      'ukrainian': 'uk',
-      'belarusian': 'be',
-      'macedonian': 'mk',
-      'albanian': 'sq',
-      'bosnian': 'bs',
-      'serbian': 'sr',
-      'montenegrin': 'me',
-      'mongolian': 'mn',
-      'kyrgyz': 'ky',
-      'kazakh': 'kk',
-      'uzbek': 'uz',
-      'tajik': 'tg',
-      'turkmen': 'tk',
-      'azerbaijani': 'az',
-      'armenian': 'hy'
+      'es': 'es',
+      'en': 'en',
     };
-    
-    return languageMap[languageName.toLowerCase()] || languageName.toLowerCase();
+    return languageMap[languageName.toLowerCase()];
   };
 
   // Map CEFR levels to database difficulty codes
@@ -149,11 +77,19 @@ export default function SaveTranslationButton({
       setIsSaving(true);
       setError(null);
 
+      const originalLanguageCode = getLanguageCode(originalLanguage);
+      const translatedLanguageCode = getLanguageCode(translatedLanguage);
+
+      if (!originalLanguageCode || !translatedLanguageCode) {
+        setError('Unsupported language combination');
+        return;
+      }
+
       await createSavedTranslation({
         original_story: originalStory,
         translated_story: translationData.translatedText,
-        original_language_code: getLanguageCode(originalLanguage),
-        translated_language_code: getLanguageCode(translatedLanguage),
+        original_language_code: originalLanguageCode,
+        translated_language_code: translatedLanguageCode,
         difficulty_level_code: getDifficultyCode(difficultyLevel),
         title: title.trim() || undefined,
         notes: notes.trim() || undefined,
@@ -267,7 +203,7 @@ export default function SaveTranslationButton({
                   <span className="font-medium">Translated Language:</span> {translatedLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel}
+                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel.toUpperCase()}
                 </div>
               </div>
 

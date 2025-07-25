@@ -32,7 +32,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
               variant="info"
               className="order-1 sm:order-2"
             >
-              {translationData.difficulty} Level
+              {translationData.difficulty.toUpperCase()} Level
             </Badge>
           </>
         )}

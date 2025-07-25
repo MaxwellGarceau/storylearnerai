@@ -3,16 +3,17 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/reac
 import { Button } from '../ui/Button';
 import TextArea from '../ui/TextArea';
 import Label from '../ui/Label';
+import { StoryFormData } from '../types/story';
 
 interface StoryUploadFormProps {
   onSubmitStory: (storyData: { story: string; language: string; difficulty: string }) => void;
 }
 
 const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<StoryFormData>({
     story: '',
-    language: 'English', // Target language (always English for now)
-    difficulty: 'A1',
+    language: 'en', // Target language (always English for now)
+    difficulty: 'a1',
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -67,7 +68,7 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             {formData.language}
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="English">English</SelectItem>
+            <SelectItem value="en">English</SelectItem>
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">
@@ -86,10 +87,10 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             {formData.difficulty}
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="A1">A1 (Beginner)</SelectItem>
-            <SelectItem value="A2">A2 (Elementary)</SelectItem>
-            <SelectItem value="B1">B1 (Intermediate)</SelectItem>
-            <SelectItem value="B2">B2 (Upper Intermediate)</SelectItem>
+            <SelectItem value="a1">A1 (Beginner)</SelectItem>
+            <SelectItem value="a2">A2 (Elementary)</SelectItem>
+            <SelectItem value="b1">B1 (Intermediate)</SelectItem>
+            <SelectItem value="b2">B2 (Upper Intermediate)</SelectItem>
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">

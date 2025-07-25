@@ -1,19 +1,22 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
+import { generalPromptConfigService } from './prompts';
+import { LanguageCode, DifficultyLevel } from './types/prompt';
 
 export interface TranslationRequest {
   text: string;
-  fromLanguage: string;
-  toLanguage: string;
-  difficulty: string;
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
+  nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
 }
 
 export interface TranslationResponse {
   originalText: string;
   translatedText: string;
-  fromLanguage: string;
-  toLanguage: string;
-  difficulty: string;
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
   provider?: string;
   model?: string;
 }
@@ -55,12 +58,35 @@ class TranslationService {
     }
   }
 
-  // TODO: Refine the prompt to deliver better results
-  // TODO: Refine the prompt specifically for the difficulty level
-  // TODO: Refine the prompt specifically for the story
+  /**
+   * Build a customized translation prompt based on language and difficulty level
+   */
   private buildTranslationPrompt(request: TranslationRequest): string {
+    const context = {
+      fromLanguage: request.fromLanguage,
+      toLanguage: request.toLanguage,
+      difficulty: request.difficulty,
+      text: request.text,
+      nativeLanguage: request.nativeLanguage
+    };
+
+    // If the configuration doesn't support this language/difficulty combination,
+    // fall back to a basic prompt
+    if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
+      console.warn(`Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
+      return this.buildFallbackPrompt(request);
+    }
+
+    // Use the prompt configuration service to build a customized prompt
+    return generalPromptConfigService.buildPrompt(context);
+  }
+
+  /**
+   * Fallback prompt for unsupported language/difficulty combinations
+   */
+  private buildFallbackPrompt(request: TranslationRequest): string {
     return `
-      Translate the following Spanish story to English, adapted for ${request.difficulty} CEFR level:
+      Translate the following ${request.fromLanguage} story to ${request.toLanguage}, adapted for ${request.difficulty} CEFR level:
       
       Instructions:
       - Maintain the story's meaning and narrative flow
@@ -68,12 +94,14 @@ class TranslationService {
       - Preserve cultural context where appropriate
       - Keep the story engaging and readable
       
-      Spanish Story:
+      ${request.fromLanguage} Story:
       ${request.text}
       
-      Please provide only the English translation.
+      Please provide only the ${request.toLanguage} translation.
     `;
   }
+
+
 
   // Mock translation for development/testing
   async mockTranslateStory(request: TranslationRequest): Promise<TranslationResponse> {

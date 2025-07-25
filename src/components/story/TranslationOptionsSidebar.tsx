@@ -5,13 +5,14 @@ import * as Popover from '@radix-ui/react-popover';
 import Label from '../ui/Label';
 import { cn } from '../../lib/utils';
 import { Card, CardContent } from '../ui/Card';
+import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 
 interface TranslationOptionsSidebarProps {
   formData: {
-    language: string;
-    difficulty: string;
+    language: LanguageCode;
+    difficulty: DifficultyLevel;
   };
-  onFormDataChange: (field: 'language' | 'difficulty', value: string) => void;
+  onFormDataChange: (field: 'language' | 'difficulty', value: LanguageCode | DifficultyLevel) => void;
 }
 
 const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
@@ -23,7 +24,11 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   const [difficultyOpen, setDifficultyOpen] = useState(false);
 
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
-    onFormDataChange(field, value);
+    if (field === 'language') {
+      onFormDataChange(field, value as LanguageCode);
+    } else {
+      onFormDataChange(field, value as DifficultyLevel);
+    }
   };
 
   const handleLanguageOpenChange = (open: boolean) => {
@@ -96,7 +101,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               {/* Language Selection */}
               <div className="space-y-2">
                 <Label htmlFor="sidebar-language">
-              Target Language
+                  Target Language
                 </Label>
                 <Select
                   name="sidebar-language"
@@ -113,7 +118,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                       "disabled:cursor-not-allowed disabled:opacity-50"
                     )}
                   >
-                    <span className="text-foreground">{formData.language}</span>
+                    <span className="text-foreground">{formData.language === 'en' ? 'English' : 'Spanish'}</span>
                     <ChevronDown className={cn(
                       "h-4 w-4 opacity-50 transition-transform duration-200",
                       languageOpen && "rotate-180"
@@ -128,25 +133,25 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                     "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
                   )}>
                     <SelectItem 
-                      value="English"
+                      value="en"
                       className={cn(
                         "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  English
+                      English
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-              Currently only English translation is supported.
+                  Currently only English translation is supported.
                 </p>
               </div>
 
               {/* Difficulty Selection */}
               <div className="space-y-2">
                 <Label htmlFor="sidebar-difficulty">
-              Target Difficulty (CEFR)
+                  Target Difficulty (CEFR)
                 </Label>
                 <Select
                   name="sidebar-difficulty"
@@ -163,7 +168,12 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                       "disabled:cursor-not-allowed disabled:opacity-50"
                     )}
                   >
-                    <span className="text-foreground">{formData.difficulty}</span>
+                    <span className="text-foreground">
+                      {formData.difficulty === 'a1' ? 'A1 (Beginner)' :
+                        formData.difficulty === 'a2' ? 'A2 (Elementary)' :
+                          formData.difficulty === 'b1' ? 'B1 (Intermediate)' :
+                            formData.difficulty === 'b2' ? 'B2 (Upper Intermediate)' : formData.difficulty}
+                    </span>
                     <ChevronDown className={cn(
                       "h-4 w-4 opacity-50 transition-transform duration-200",
                       difficultyOpen && "rotate-180"
@@ -178,45 +188,45 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                     "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
                   )}>
                     <SelectItem 
-                      value="A1"
+                      value="a1"
                       className={cn(
                         "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  A1 (Beginner)
+                      A1 (Beginner)
                     </SelectItem>
                     <SelectItem 
-                      value="A2"
+                      value="a2"
                       className={cn(
                         "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  A2 (Elementary)
+                      A2 (Elementary)
                     </SelectItem>
                     <SelectItem 
-                      value="B1"
+                      value="b1"
                       className={cn(
                         "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  B1 (Intermediate)
+                      B1 (Intermediate)
                     </SelectItem>
                     <SelectItem 
-                      value="B2"
+                      value="b2"
                       className={cn(
                         "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  B2 (Upper Intermediate)
+                      B2 (Upper Intermediate)
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mb-6">
-              The story will be adapted to this English proficiency level.
+                  The story will be adapted to this English proficiency level.
                 </p>
               </div>
             </div>

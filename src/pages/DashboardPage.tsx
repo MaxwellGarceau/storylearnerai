@@ -66,17 +66,10 @@ export const DashboardPage: React.FC = () => {
     )
   }
 
-  if (!user) {
-    return (
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <Alert variant="destructive">
-            <p>Please sign in to access your dashboard</p>
-          </Alert>
-        </div>
-      </div>
-    )
-  }
+
+
+  // ProtectedRoute ensures user is not null, but TypeScript doesn't know this
+  if (!user) return null
 
   return (
     <div className="p-6">

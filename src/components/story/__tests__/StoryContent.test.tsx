@@ -6,11 +6,13 @@ import { TranslationResponse } from '../../../lib/translationService';
 
 describe('StoryContent Component', () => {
   const mockTranslationData: TranslationResponse = {
-    originalText: 'Esta es una historia de prueba.',
-    translatedText: 'This is a test story.',
-    fromLanguage: 'Spanish',
-    toLanguage: 'English',
-    difficulty: 'A1',
+    originalText: 'Hola mundo',
+    translatedText: 'Hello world',
+    fromLanguage: 'es',
+    toLanguage: 'en',
+    difficulty: 'a1',
+    provider: 'mock',
+    model: 'test-model'
   };
 
   afterEach(() => {
@@ -25,7 +27,7 @@ describe('StoryContent Component', () => {
       />
     );
 
-    const content = within(container).getByText('This is a test story.');
+    const content = within(container).getByText('Hello world');
     expect(content).toBeInTheDocument();
   });
 
@@ -37,7 +39,7 @@ describe('StoryContent Component', () => {
       />
     );
 
-    const content = within(container).getByText('Esta es una historia de prueba.');
+    const content = within(container).getByText('Hola mundo');
     expect(content).toBeInTheDocument();
   });
 
@@ -52,7 +54,7 @@ describe('StoryContent Component', () => {
     const contentContainer = container.firstChild as HTMLElement;
     expect(contentContainer).toHaveClass('relative', 'overflow-hidden');
 
-    const textElement = within(container).getByText('This is a test story.');
+    const textElement = within(container).getByText('Hello world');
     expect(textElement).toHaveClass(
       'text-foreground',
       'whitespace-pre-wrap',
@@ -166,8 +168,8 @@ describe('StoryContent Component', () => {
     );
 
     // Initially shows translated text
-    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
-    expect(within(container).queryByText('Esta es una historia de prueba.')).not.toBeInTheDocument();
+    expect(within(container).getByText('Hello world')).toBeInTheDocument();
+    expect(within(container).queryByText('Hola mundo')).not.toBeInTheDocument();
 
     // After rerender with showOriginal=true, shows original text
     rerender(
@@ -177,8 +179,8 @@ describe('StoryContent Component', () => {
       />
     );
 
-    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
-    expect(within(container).queryByText('This is a test story.')).not.toBeInTheDocument();
+    expect(within(container).getByText('Hola mundo')).toBeInTheDocument();
+    expect(within(container).queryByText('Hello world')).not.toBeInTheDocument();
   });
 
   it('has transition classes for smooth content switching', () => {
@@ -189,7 +191,7 @@ describe('StoryContent Component', () => {
       />
     );
 
-    const textElement = within(container).getByText('This is a test story.');
+    const textElement = within(container).getByText('Hello world');
     expect(textElement).toHaveClass('transition-opacity', 'duration-300');
   });
 

@@ -1,0 +1,61 @@
+{
+  "a1": {
+    "description": "Maximum scaffolding for absolute beginners, focusing on core concepts like noun gender and simple verb conjugations. The goal is to build foundational patterns and avoid overwhelming the learner.",
+    "grammar_focus": {
+      "noun_gender": "STRICTLY ADHERE to noun-article pairing. Every noun must be introduced with its definite ('el', 'la') or indefinite ('un', 'una') article to build gender association. Example: Generate 'el perro', 'una casa'.",
+      "verb_conjugation": "Use only the Present Tense ('Presente de Indicativo'). Focus on high-frequency regular -ar verbs. Limit conjugations to the most essential forms: first person ('yo'), second person informal ('tú'), and third person ('él/ella/usted').",
+      "ser_vs_estar": "AVOID using both 'ser' and 'estar' in the same story. Use 'ser' for permanent characteristics ('el coche es rojo') OR 'estar' for location ('el coche está en la calle'). Do not mix.",
+      "adjective_agreement": "Adjectives must follow the noun they modify. Only use adjectives that end in '-o' or '-e' to keep agreement simple. Example: 'El perro es blanco.' 'La casa es grande.' AVOID adjectives requiring more complex gender changes for now."
+    },
+    "vocabulary_focus": {
+      "word_choice": "Use high-frequency vocabulary. Prioritize words that are clear cognates where possible ('animal', 'idea', 'importante') to build confidence.",
+      "por_vs_para": "AVOID both. If a preposition for 'for' is needed, use only the most basic and unambiguous use of 'para' (for a recipient). Example: 'Una flor para mi madre.'"
+    },
+    "phonetics_support_in_text": {
+      "rolled_r": "AVOID words with the rolled 'rr' sound ('perro', 'carro', 'correr'). Use words with the single 'r' tap sound instead ('pero', 'caro', 'flor')."
+    }
+  },
+  "a2": {
+    "description": "Gently introduce more grammatical complexity, including the past tense and the fundamental contrast between 'ser' and 'estar'.",
+    "grammar_focus": {
+      "noun_gender_and_adjectives": "Continue to pair nouns with articles. Introduce full adjective agreement, including feminine forms. Example: 'el coche rojo', 'la casa roja'.",
+      "verb_conjugation": "Introduce the simple past tense ('Pretérito Indefinido') for key, completed actions. Introduce a few essential irregular verbs in the present tense ('ser', 'estar', 'ir', 'tener'). Expand to include 'nosotros' (we) form.",
+      "ser_vs_estar": "Begin to use 'ser' and 'estar' in the same text, but only for their most distinct uses: 'ser' for description/identity and 'estar' for location/temporary feelings. Example: 'Mi hermano es alto y está en el parque.'",
+      "object_pronouns": "Introduce direct object pronouns ('lo', 'la', 'los', 'las') in simple, separate sentences for clarification. Example: 'Veo el libro. Lo veo.'",
+      "personal_a": "Introduce the 'personal a' when a person is the direct object. Example: 'Veo a María.'"
+    },
+    "vocabulary_focus": {
+      "por_vs_para": "Introduce 'por' and 'para' separately, in highly distinct contexts. Example: use 'gracias por...' (for exchange/gratitude) in one story, and 'un regalo para...' (for a recipient) in another.",
+      "false_friends": "Begin to introduce common false friends with contextual clues. Example: 'Fue a la librería para comprar un libro, no a la biblioteca.' (Highlighting bookstore vs. library)."
+    },
+    "phonetics_support_in_text": {
+      "b_vs_v": "Use words with 'b' and 'v' naturally. The text can't teach the sound, but exposure is key. Spanish pronunciation of both is softer than in English and very similar to each other."
+    }
+  },
+  "b1": {
+    "description": "Focus on narrative tenses and introduce the subjunctive mood. The learner is challenged with more nuanced grammar and vocabulary.",
+    "grammar_focus": {
+      "verb_conjugation": "Introduce the Imperfect Past ('Pretérito Imperfecto') and contrast it with the simple past ('Pretérito') to describe ongoing vs. completed actions. Example: 'Cuando caminaba, vi un accidente.' (When I was walking, I saw an accident).",
+      "ser_vs_estar": "Introduce more nuanced uses that change meaning. Example: 'es aburrido' (is boring) vs. 'está aburrido' (is bored).",
+      "subjunctive_mood": "Introduce the Present Subjunctive ('Presente de Subjuntivo') in its most common contexts: after verbs of wishing/wanting ('quiero que...') and impersonal expressions ('es importante que...').",
+      "object_pronouns": "Introduce indirect object pronouns ('me', 'te', 'le') and begin to combine them with direct object pronouns (but avoid the 'se lo' replacement for now). Example: 'Te doy el libro.'"
+    },
+    "vocabulary_focus": {
+      "por_vs_para": "Use both 'por' and 'para' within the same text, highlighting their different functions (e.g., por-reason/duration, para-purpose/destination).",
+      "idiomatic_expressions": "Introduce a few very common idiomatic expressions where the meaning can be inferred. Example: 'cuesta un ojo de la cara' (it costs an arm and a leg)."
+    }
+  },
+  "b2": {
+    "description": "Aim for fluency by focusing on advanced grammar, particularly the full range of the subjunctive, and natural, idiomatic language.",
+    "grammar_focus": {
+      "subjunctive_mood": "Use the subjunctive mood extensively. Introduce the Imperfect Subjunctive ('Imperfecto de Subjuntivo') for past-tense situations and 'if' clauses. Example: 'Si yo fuera rico, viajaría por el mundo.' (If I were rich, I would travel the world).",
+      "object_pronouns": "Use complex object pronoun combinations naturally, including the 'se lo' construction. Example: 'Le di el libro a ella' -> 'Se lo di.'",
+      "adjective_placement": "Introduce the concept of adjectives that change meaning depending on their placement before or after the noun. Example: 'un gran hombre' (a great man) vs. 'un hombre grande' (a large man).",
+      "passive_and_impersonal_se": "Use the 'se' construction for passive and impersonal statements. Example: 'Se habla español aquí.' (Spanish is spoken here)."
+    },
+    "vocabulary_focus": {
+      "por_vs_para": "Use 'por' and 'para' in complex and idiomatic phrases, expecting the learner to understand from context.",
+      "colloquialisms": "Include more regional or colloquial terms (specifying a region like Spain or Mexico could be a further customization) and more abstract vocabulary."
+    }
+  }
+}

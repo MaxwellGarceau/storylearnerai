@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "test": "vitest --exclude src/__tests__/e2e/**",
     "test:once": "vitest run --exclude src/__tests__/e2e/**",
+    "test:critical": "vitest run --exclude src/__tests__/e2e/** src/lib/prompts/__tests__/GeneralPromptConfigService.critical.test.ts",
+    "test:prompts": "vitest run --exclude src/__tests__/e2e/** src/lib/prompts/__tests__/",
     "test:coverage": "vitest run --coverage --exclude src/__tests__/e2e/**",
     "test:e2e": "vitest run --run src/__tests__/e2e/",
     "test:all": "vitest run",
@@ -37,7 +39,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.7.0",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

@@ -30,9 +30,9 @@ describe('StoryContainer Component', () => {
     const mockTranslationResponse: TranslationResponse = {
       originalText: 'Esta es una historia de prueba.',
       translatedText: 'This is a test story.',
-      fromLanguage: 'Spanish',
-      toLanguage: 'English',
-      difficulty: 'A1',
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'a1',
     };
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
@@ -56,9 +56,9 @@ describe('StoryContainer Component', () => {
     // Verify the translation service was called with correct parameters
     expect(mockTranslationService.translate).toHaveBeenCalledWith({
       text: 'Esta es una historia de prueba.',
-      fromLanguage: 'Spanish',
-      toLanguage: 'English',
-      difficulty: 'A1',
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'a1',
     });
     
     // Verify the callback was called with the correct translation data
@@ -112,9 +112,9 @@ describe('StoryContainer Component', () => {
     const mockTranslationResponse: TranslationResponse = {
       originalText: 'Test story',
       translatedText: 'Translated story',
-      fromLanguage: 'Spanish',
-      toLanguage: 'English',
-      difficulty: 'B1',
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'b1',
     };
 
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
@@ -131,9 +131,9 @@ describe('StoryContainer Component', () => {
     await waitFor(() => {
       expect(mockTranslationService.translate).toHaveBeenCalledWith({
         text: 'Test story',
-        fromLanguage: 'Spanish',
-        toLanguage: 'English',
-        difficulty: 'A1', // Default difficulty
+        fromLanguage: 'es',
+        toLanguage: 'en',
+        difficulty: 'a1', // Default difficulty
       });
     });
   });

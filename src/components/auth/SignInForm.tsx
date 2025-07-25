@@ -33,11 +33,10 @@ export const SignInForm: React.FC<SignInFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    try {
-      await signIn(formData.email, formData.password)
+    const success = await signIn(formData.email, formData.password)
+    
+    if (success) {
       onSuccess?.()
-    } catch {
-      // Error is handled by the hook
     }
   }
 

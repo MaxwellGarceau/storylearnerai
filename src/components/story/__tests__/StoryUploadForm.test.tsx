@@ -51,8 +51,8 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia de prueba',
-      language: 'English',
-      difficulty: 'A1',
+      language: 'en',
+      difficulty: 'a1',
     });
     expect(onSubmitStoryMock).toHaveBeenCalledTimes(1);
   });
@@ -79,7 +79,7 @@ describe('StoryUploadForm', () => {
     const difficultyOption = within(container).getByRole('option', { name: 'B1 (Intermediate)' });
     fireEvent.click(difficultyOption);
   
-    expect(within(container).getByLabelText('Select difficulty level')).toHaveTextContent('B1');
+    expect(within(container).getByLabelText('Select difficulty level')).toHaveTextContent('b1');
   });
 
   it('displays helpful context information', () => {
@@ -108,8 +108,8 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia compleja',
-      language: 'English',
-      difficulty: 'B2',
+      language: 'en',
+      difficulty: 'b2',
     });
   });
 
@@ -125,8 +125,8 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia básica',
-      language: 'English',
-      difficulty: 'A1',
+      language: 'en',
+      difficulty: 'a1',
     });
   });
 });

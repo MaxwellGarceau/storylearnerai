@@ -5,15 +5,23 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { SavedTranslationWithDetails } from '../../lib/types/database';
+import { DatabaseSavedTranslationWithDetails } from '../../lib/types/database';
 import { TranslationResponse } from '../../lib/translationService';
+import { DifficultyLevel, LanguageCode } from '../../lib/types/prompt';
+
+// CEFR difficulty level options
+const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
+  { value: 'a1', label: 'A1 (Beginner)', description: 'Basic level - Can understand and use familiar everyday expressions' },
+  { value: 'a2', label: 'A2 (Elementary)', description: 'Elementary level - Can communicate in simple and routine tasks' },
+  { value: 'b1', label: 'B1 (Intermediate)', description: 'Intermediate level - Can deal with most situations while traveling' },
+  { value: 'b2', label: 'B2 (Upper Intermediate)', description: 'Upper intermediate level - Can interact with fluency and spontaneity' },
+];
 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const {
     savedTranslations,
     languages,
-    difficultyLevels,
     isLoading,
     isDeleting,
     error,
@@ -24,14 +32,14 @@ export default function SavedTranslationsList() {
     totalCount,
   } = useSavedTranslations();
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | ''>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleFilterChange = () => {
     setFilters({
-      original_language_code: selectedLanguage || undefined,
-      difficulty_level_code: selectedDifficulty || undefined,
+      translated_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
+      difficulty_level_code: (selectedDifficulty || undefined) as DifficultyLevel | undefined,
       search: searchTerm.trim() || undefined,
     });
   };
@@ -46,19 +54,19 @@ export default function SavedTranslationsList() {
     }
   };
 
-  const convertToTranslationResponse = (savedTranslation: SavedTranslationWithDetails): TranslationResponse => {
+  const convertToTranslationResponse = (savedTranslation: DatabaseSavedTranslationWithDetails): TranslationResponse => {
     return {
       originalText: savedTranslation.original_story,
       translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.name,
-      toLanguage: savedTranslation.translated_language.name,
-      difficulty: savedTranslation.difficulty_level.name,
+      fromLanguage: savedTranslation.original_language.code as LanguageCode,
+      toLanguage: savedTranslation.translated_language.code as LanguageCode,
+      difficulty: savedTranslation.difficulty_level.code as DifficultyLevel,
       provider: 'saved',
       model: 'saved-translation',
     };
   };
 
-  const handleViewStory = (savedTranslation: SavedTranslationWithDetails) => {
+  const handleViewStory = (savedTranslation: DatabaseSavedTranslationWithDetails) => {
     const translationData = convertToTranslationResponse(savedTranslation);
     navigate('/story', { 
       state: { 
@@ -95,17 +103,17 @@ export default function SavedTranslationsList() {
         <CardHeader>
           <CardTitle>Filters</CardTitle>
           <CardDescription>
-            Filter your saved translations by language, difficulty, or search terms
+            Filter your saved translations by target language, difficulty, or search terms
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Original Language</label>
+              <label className="text-sm font-medium mb-2 block">Target Language</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={(e) => setSelectedLanguage(e.target.value as LanguageCode | '')}
               >
                 <option value="">All Languages</option>
                 {languages.map((language) => (
@@ -117,16 +125,16 @@ export default function SavedTranslationsList() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Difficulty Level</label>
+              <label className="text-sm font-medium mb-2 block">Difficulty Level (CEFR)</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel | '')}
               >
                 <option value="">All Levels</option>
-                {difficultyLevels.map((level) => (
-                  <option key={level.id} value={level.code}>
-                    {level.name}
+                {CEFR_DIFFICULTY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value} title={option.description}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -168,7 +176,11 @@ export default function SavedTranslationsList() {
       {/* Translations List */}
       <div className="space-y-4">
         {savedTranslations.map((translation) => (
-          <Card key={translation.id} className="hover:shadow-md transition-shadow">
+          <Card 
+            key={translation.id} 
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleViewStory(translation)}
+          >
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -180,7 +192,7 @@ export default function SavedTranslationsList() {
                     {translation.original_language.name} → {translation.translated_language.name}
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <Badge variant="secondary">{translation.difficulty_level.name}</Badge>
                   <Button
                     variant="outline"

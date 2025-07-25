@@ -1,13 +1,10 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create stories table
 CREATE TABLE IF NOT EXISTS stories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     language VARCHAR(10) NOT NULL,
-    difficulty_level VARCHAR(20) NOT NULL CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    difficulty_level VARCHAR(20) NOT NULL CHECK (difficulty_level IN ('a1', 'a2', 'b1', 'b2')),
     user_id UUID,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -15,8 +12,8 @@ CREATE TABLE IF NOT EXISTS stories (
 
 -- Create translations table
 CREATE TABLE IF NOT EXISTS translations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    story_id INTEGER NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
     target_language VARCHAR(10) NOT NULL,
     translated_content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -57,7 +54,7 @@ CREATE TRIGGER update_translations_updated_at BEFORE UPDATE ON translations
 
 -- Insert some sample data
 INSERT INTO stories (title, content, language, difficulty_level) VALUES
-('The Little Red Hen', 'Once upon a time, there was a little red hen who lived on a farm. She found some wheat seeds and decided to plant them. She asked her friends, the cat, the dog, and the pig, "Who will help me plant these seeds?" But they all said, "Not I!" So the little red hen planted the seeds herself.', 'en', 'beginner'),
-('The Three Little Pigs', 'Once there were three little pigs who set out to seek their fortune. The first pig built his house of straw, the second built his house of sticks, and the third built his house of bricks. When the big bad wolf came, only the house of bricks stood strong.', 'en', 'beginner'),
-('The Tortoise and the Hare', 'A hare was boasting about how fast he could run. He laughed at the tortoise for being so slow. The tortoise challenged the hare to a race. The hare ran fast but stopped to rest, thinking he had plenty of time. The tortoise kept going slowly and steadily, and won the race.', 'en', 'intermediate')
+('The Little Red Hen', 'Once upon a time, there was a little red hen who lived on a farm. She found some wheat seeds and decided to plant them. She asked her friends, the cat, the dog, and the pig, "Who will help me plant these seeds?" But they all said, "Not I!" So the little red hen planted the seeds herself.', 'en', 'a1'),
+('The Three Little Pigs', 'Once there were three little pigs who set out to seek their fortune. The first pig built his house of straw, the second built his house of sticks, and the third built his house of bricks. When the big bad wolf came, only the house of bricks stood strong.', 'en', 'a1'),
+('The Tortoise and the Hare', 'A hare was boasting about how fast he could run. He laughed at the tortoise for being so slow. The tortoise challenged the hare to a race. The hare ran fast but stopped to rest, thinking he had plenty of time. The tortoise kept going slowly and steadily, and won the race.', 'en', 'a2')
 ON CONFLICT DO NOTHING; 

@@ -13,7 +13,7 @@ vi.mock('../../components/story/StoryContainer', () => ({
         originalText: 'Test story',
         translatedText: 'Translated test story',
         fromLanguage: 'Spanish',
-        toLanguage: 'English',
+        toLanguage: 'en',
         difficulty: 'Intermediate',
         provider: 'test',
         model: 'test-model'
@@ -74,7 +74,7 @@ describe('TranslatePage', () => {
             originalText: 'Test story',
             translatedText: 'Translated test story',
             fromLanguage: 'Spanish',
-            toLanguage: 'English',
+            toLanguage: 'en',
             difficulty: 'Intermediate',
             provider: 'test',
             model: 'test-model'
