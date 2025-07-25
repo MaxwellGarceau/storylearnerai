@@ -121,7 +121,7 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
       }
       setJoyrideSteps([]);
     }
-  }, [state.isActive, state.currentStepIndex]);
+  }, [state.isActive, state.currentStepIndex, state.isCompleted, state.isSkipped]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { action, status, type } = data;
