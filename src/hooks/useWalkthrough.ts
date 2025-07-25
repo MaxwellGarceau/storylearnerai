@@ -8,17 +8,22 @@ export const useWalkthrough = () => {
   const location = useLocation();
 
   const startWalkthrough = useCallback((config: WalkthroughConfig) => {
+    console.log(`🎯 Starting walkthrough: ${config.title} (${config.id})`);
     walkthroughService.startWalkthrough(config);
   }, []);
 
   const startWalkthroughById = useCallback((id: WalkthroughId) => {
     const config = walkthroughConfigs[id];
     if (config) {
+      console.log(`🎯 Starting walkthrough by ID: ${id}`);
       walkthroughService.startWalkthrough(config);
+    } else {
+      console.warn(`❌ Walkthrough config not found for ID: ${id}`);
     }
   }, []);
 
   const stopWalkthrough = useCallback(() => {
+    console.log('🛑 Stopping walkthrough');
     walkthroughService.stopWalkthrough();
   }, []);
 
@@ -31,6 +36,8 @@ export const useWalkthrough = () => {
   }, []);
 
   const skipWalkthrough = useCallback(() => {
+    const currentConfig = walkthroughService.getCurrentConfig();
+    console.log(`⏭️ Skipping walkthrough: ${currentConfig?.id}`);
     walkthroughService.skipWalkthrough();
   }, []);
 
@@ -43,48 +50,96 @@ export const useWalkthrough = () => {
   }, []);
 
   const resetWalkthrough = useCallback((id: WalkthroughId) => {
+    console.log(`🔄 Resetting walkthrough: ${id}`);
     walkthroughService.resetWalkthrough(id);
   }, []);
 
   const resetAllWalkthroughs = useCallback(() => {
+    console.log('🔄 Resetting all walkthroughs');
     walkthroughService.resetAllWalkthroughs();
   }, []);
 
   // Auto-start walkthroughs based on route
   useEffect(() => {
     const pathname = location.pathname;
+    console.log(`🗺️ Route changed to: ${pathname}`);
     
+    // Define route to walkthrough mapping
+    const routeWalkthroughMap: Record<string, WalkthroughId> = {
+      '/': 'home-walkthrough',
+      '/translate': 'translate-walkthrough',
+      '/story': 'story-walkthrough',
+    };
+
+    const walkthroughId = routeWalkthroughMap[pathname];
+    
+    if (!walkthroughId) {
+      console.log(`📍 No walkthrough defined for route: ${pathname}`);
+      return;
+    }
+
+    const config = walkthroughConfigs[walkthroughId];
+    if (!config) {
+      console.warn(`❌ Walkthrough config not found for: ${walkthroughId}`);
+      return;
+    }
+
+    const completed = isCompleted(walkthroughId);
+    const skipped = isSkipped(walkthroughId);
+    const shouldAutoStart = config.autoStart;
+
+    console.log(`📊 Walkthrough status for ${walkthroughId}:`, {
+      completed,
+      skipped,
+      shouldAutoStart,
+      pathname
+    });
+
     // Don't auto-start if user has already completed or skipped
-    if (pathname === '/' && !isCompleted('home-walkthrough') && !isSkipped('home-walkthrough')) {
-      const config = walkthroughConfigs['home-walkthrough'];
-      if (config?.autoStart) {
-        // Small delay to ensure page is fully loaded
-        const timer = setTimeout(() => {
-          startWalkthrough(config);
-        }, 1000);
-        return () => clearTimeout(timer);
-      }
+    if (completed) {
+      console.log(`✅ Walkthrough already completed: ${walkthroughId}`);
+      return;
     }
+
+    if (skipped) {
+      console.log(`⏭️ Walkthrough was skipped: ${walkthroughId}`);
+      return;
+    }
+
+    if (!shouldAutoStart) {
+      console.log(`🚫 Auto-start disabled for: ${walkthroughId}`);
+      return;
+    }
+
+    console.log(`⏰ Scheduling walkthrough start: ${walkthroughId}`);
     
-    if (pathname === '/translate' && !isCompleted('translate-walkthrough') && !isSkipped('translate-walkthrough')) {
-      const config = walkthroughConfigs['translate-walkthrough'];
-      if (config?.autoStart) {
-        const timer = setTimeout(() => {
+    // Small delay to ensure page is fully loaded and elements are available
+    const timer = setTimeout(() => {
+      // Double-check that elements exist before starting
+      const firstStep = config.steps[0];
+      if (firstStep) {
+        const targetElement = document.querySelector(firstStep.targetSelector);
+        if (targetElement) {
+          console.log(`🎬 Auto-starting walkthrough: ${walkthroughId}`);
           startWalkthrough(config);
-        }, 1000);
-        return () => clearTimeout(timer);
+        } else {
+          console.warn(`⚠️ Target element not found for first step: ${firstStep.targetSelector}`);
+          // Retry after a longer delay
+          const retryTimer = setTimeout(() => {
+            const retryElement = document.querySelector(firstStep.targetSelector);
+            if (retryElement) {
+              console.log(`🔄 Retrying walkthrough start: ${walkthroughId}`);
+              startWalkthrough(config);
+            } else {
+              console.error(`❌ Target element still not found after retry: ${firstStep.targetSelector}`);
+            }
+          }, 2000);
+          return () => clearTimeout(retryTimer);
+        }
       }
-    }
+    }, 1000);
     
-    if (pathname === '/story' && !isCompleted('story-walkthrough') && !isSkipped('story-walkthrough')) {
-      const config = walkthroughConfigs['story-walkthrough'];
-      if (config?.autoStart) {
-        const timer = setTimeout(() => {
-          startWalkthrough(config);
-        }, 1000);
-        return () => clearTimeout(timer);
-      }
-    }
+    return () => clearTimeout(timer);
   }, [location.pathname, startWalkthrough, isCompleted, isSkipped]);
 
   return {

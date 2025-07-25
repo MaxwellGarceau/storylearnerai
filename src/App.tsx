@@ -10,7 +10,8 @@ import PageLayout from './components/PageLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Toaster } from './components/ui/Toaster';
 import { TooltipProvider } from './components/ui/Tooltip';
-import { WalkthroughOverlay } from './components/walkthrough/WalkthroughOverlay';
+import { WalkthroughJoyride } from './components/walkthrough/WalkthroughJoyride';
+import { WalkthroughDebug } from './components/walkthrough/WalkthroughDebug';
 import { useWalkthrough } from './hooks/useWalkthrough';
 
 function App() {
@@ -26,6 +27,9 @@ function App() {
 function AppContent() {
   // Initialize walkthrough hook inside Router context
   useWalkthrough();
+
+  // Enable debug panel in development or when needed
+  const showDebug = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=walkthrough');
 
   return (
     <>
@@ -46,7 +50,8 @@ function AppContent() {
         } />
       </Routes>
       <Toaster />
-      <WalkthroughOverlay />
+      <WalkthroughJoyride />
+      <WalkthroughDebug show={showDebug} />
     </>
   );
 }

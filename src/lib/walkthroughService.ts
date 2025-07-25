@@ -124,12 +124,15 @@ class WalkthroughService {
   completeWalkthrough(): void {
     if (!this.currentWalkthrough || !this.state.isActive) return;
 
-    this.state.isCompleted = true;
-    this.state.isActive = false;
+    this.state = {
+      ...this.state,
+      isCompleted: true,
+      isActive: false,
+    };
     
     const storage = this.loadStorage();
     storage.completed.push(this.currentWalkthrough.id as WalkthroughId);
-    storage.lastCompleted = new Date().toISOString();
+    storage.lastCompleted = new Date();
     this.saveStorage(storage);
     
     this.notifyListeners();

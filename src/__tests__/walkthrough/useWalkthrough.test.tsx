@@ -178,12 +178,20 @@ describe('useWalkthrough', () => {
         useLocation: () => ({ pathname: '/' }),
       }));
 
+      // Add the required DOM element that the walkthrough targets
+      const startButton = document.createElement('button');
+      startButton.setAttribute('data-testid', 'start-translating-button');
+      document.body.appendChild(startButton);
+
       renderHook(() => useWalkthrough());
 
       // Wait for the auto-start delay
       await new Promise(resolve => setTimeout(resolve, 1100));
 
       expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(homeWalkthrough);
+
+      // Cleanup
+      document.body.removeChild(startButton);
     });
 
     it('should not auto-start if walkthrough is already completed', async () => {
