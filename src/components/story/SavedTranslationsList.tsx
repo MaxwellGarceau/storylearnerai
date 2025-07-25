@@ -32,8 +32,8 @@ export default function SavedTranslationsList() {
     totalCount,
   } = useSavedTranslations();
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | ''>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleFilterChange = () => {
@@ -58,9 +58,9 @@ export default function SavedTranslationsList() {
     return {
       originalText: savedTranslation.original_story,
       translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.name,
-      toLanguage: savedTranslation.translated_language.name,
-      difficulty: savedTranslation.difficulty_level.name,
+      fromLanguage: savedTranslation.original_language.code as LanguageCode,
+      toLanguage: savedTranslation.translated_language.code as LanguageCode,
+      difficulty: savedTranslation.difficulty_level.code as DifficultyLevel,
       provider: 'saved',
       model: 'saved-translation',
     };
@@ -113,11 +113,11 @@ export default function SavedTranslationsList() {
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={(e) => setSelectedLanguage(e.target.value as LanguageCode | '')}
               >
                 <option value="">All Languages</option>
                 {languages.map((language) => (
-                  <option key={language.id} value={language.code as LanguageCode}>
+                  <option key={language.id} value={language.code}>
                     {language.name}
                   </option>
                 ))}
@@ -129,11 +129,11 @@ export default function SavedTranslationsList() {
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel | '')}
               >
                 <option value="">All Levels</option>
                 {CEFR_DIFFICULTY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value as DifficultyLevel} title={option.description}>
+                  <option key={option.value} value={option.value} title={option.description}>
                     {option.label}
                   </option>
                 ))}
