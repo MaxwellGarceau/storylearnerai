@@ -2,6 +2,7 @@ import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
 import { generalPromptConfigService } from './prompts';
 import { LanguageCode, DifficultyLevel } from './types/prompt';
+import { LLMError } from './types/llm';
 
 export interface TranslationRequest {
   text: string;
@@ -24,6 +25,9 @@ export interface TranslationResponse {
 export interface TranslationError {
   message: string;
   code: string;
+  provider?: string;
+  statusCode?: number;
+  details?: string;
 }
 
 class TranslationService {
@@ -52,9 +56,28 @@ class TranslationService {
       };
     } catch (error) {
       console.error('Translation service error:', error);
-      throw new Error(
-        error instanceof Error ? error.message : 'Translation service unavailable'
-      );
+      
+      // Handle LLM-specific errors
+      if (error && typeof error === 'object' && 'provider' in error) {
+        const llmError = error as LLMError;
+        const translationError: TranslationError = {
+          message: this.getUserFriendlyErrorMessage(llmError),
+          code: llmError.code,
+          provider: llmError.provider,
+          statusCode: llmError.statusCode,
+          details: llmError.message,
+        };
+        throw translationError;
+      }
+      
+      // Handle other errors
+      const errorMessage = error instanceof Error ? error.message : 'Translation service unavailable';
+      const translationError: TranslationError = {
+        message: this.getUserFriendlyErrorMessage({ message: errorMessage, code: 'TRANSLATION_ERROR', provider: 'unknown' }),
+        code: 'TRANSLATION_ERROR',
+        details: errorMessage,
+      };
+      throw translationError;
     }
   }
 
@@ -101,6 +124,64 @@ class TranslationService {
     `;
   }
 
+  /**
+   * Convert technical error messages to user-friendly messages
+   */
+  private getUserFriendlyErrorMessage(error: { message: string; code: string; provider?: string; statusCode?: number }): string {
+    const { message, code, provider, statusCode } = error;
+    
+    // Handle specific error codes
+    switch (code) {
+      case 'API_ERROR':
+        if (statusCode === 401 || statusCode === 403) {
+          return `Authentication failed for ${provider || 'translation service'}. Please check your API key.`;
+        }
+        if (statusCode === 429) {
+          return `Rate limit exceeded for ${provider || 'translation service'}. Please wait a moment and try again.`;
+        }
+        if (statusCode === 500 || statusCode === 502 || statusCode === 503 || statusCode === 504) {
+          return `${provider || 'Translation service'} is temporarily unavailable. Please try again later.`;
+        }
+        if (statusCode === 400) {
+          return `Invalid request to ${provider || 'translation service'}. Please check your input and try again.`;
+        }
+        return `Service error (${statusCode}): ${message}`;
+      
+      case 'GEMINI_ERROR':
+        return `Google Gemini service error: ${message}`;
+      
+      case 'OPENAI_ERROR':
+        return `OpenAI service error: ${message}`;
+      
+      case 'ANTHROPIC_ERROR':
+        return `Anthropic service error: ${message}`;
+      
+      case 'LLAMA_ERROR':
+        return `Llama service error: ${message}`;
+      
+      case 'CUSTOM_ERROR':
+        return `Custom LLM service error: ${message}`;
+      
+      case 'PARSE_ERROR':
+        return `Failed to process response from ${provider || 'translation service'}. Please try again.`;
+      
+      case 'NETWORK_ERROR':
+        return `Network connection error. Please check your internet connection and try again.`;
+      
+      case 'TIMEOUT_ERROR':
+        return `Request timed out. Please try again with a shorter story or check your connection.`;
+      
+      case 'TRANSLATION_ERROR':
+        return `Translation failed: ${message}`;
+      
+      default:
+        // If it's a known provider, include it in the message
+        if (provider && provider !== 'unknown') {
+          return `${provider} service error: ${message}`;
+        }
+        return message || 'An unexpected error occurred during translation.';
+    }
+  }
 
 
   // Mock translation for development/testing

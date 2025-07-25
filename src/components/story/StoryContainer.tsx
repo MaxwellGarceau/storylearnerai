@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import TranslationOptionsSidebar from './TranslationOptionsSidebar';
-import { translationService, TranslationResponse } from '../../lib/translationService';
+import { translationService, TranslationResponse, TranslationError } from '../../lib/translationService';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 import { StoryFormData } from '../types/story';
@@ -12,7 +12,7 @@ interface StoryContainerProps {
 
 const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) => {
   const [isTranslating, setIsTranslating] = useState(false);
-  const [translationError, setTranslationError] = useState<string | null>(null);
+  const [translationError, setTranslationError] = useState<TranslationError | null>(null);
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
     language: 'en', // Language code instead of name
@@ -35,7 +35,10 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
 
   const handleSubmit = async () => {
     if (!formData.story.trim()) {
-      setTranslationError('Please enter a story to translate.');
+      setTranslationError({
+        message: 'Please enter a story to translate.',
+        code: 'VALIDATION_ERROR'
+      });
       return;
     }
 
@@ -55,12 +58,43 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       onStoryTranslated(response);
     } catch (error) {
       console.error('Translation failed:', error);
-      setTranslationError(
-        error instanceof Error ? error.message : 'Translation failed. Please try again.'
-      );
+      
+      // Handle TranslationError type
+      if (error && typeof error === 'object' && 'code' in error) {
+        setTranslationError(error as TranslationError);
+      } else {
+        // Fallback for other error types
+        setTranslationError({
+          message: error instanceof Error ? error.message : 'Translation failed. Please try again.',
+          code: 'UNKNOWN_ERROR'
+        });
+      }
     } finally {
       setIsTranslating(false);
     }
+  };
+
+  const renderErrorMessage = (error: TranslationError) => {
+    return (
+      <div className="space-y-2">
+        <div className="font-medium">Translation Error:</div>
+        <div className="text-sm">{error.message}</div>
+        
+        {(error.provider || error.statusCode || (error.code && error.code !== 'UNKNOWN_ERROR')) && (
+          <div className="text-xs text-muted-foreground space-y-1">
+            {error.provider && (
+              <div>Provider: {error.provider}</div>
+            )}
+            {error.statusCode && (
+              <div>Status: {error.statusCode}</div>
+            )}
+            {error.code && error.code !== 'UNKNOWN_ERROR' && (
+              <div>Error code: {error.code}</div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -87,7 +121,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
           <Alert variant="destructive" className="shadow-lg">
             <AlertIcon.destructive className="h-4 w-4" />
             <AlertDescription>
-              <span className="font-medium">Translation Error:</span> {translationError}
+              {renderErrorMessage(translationError)}
             </AlertDescription>
           </Alert>
         </div>

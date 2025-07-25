@@ -69,7 +69,13 @@ describe('StoryContainer Component', () => {
   });
 
   it('displays error message when translation fails', async () => {
-    mockTranslationService.translate.mockRejectedValue(new Error('Translation service error'));
+    const mockTranslationError = {
+      message: 'Translation service error',
+      code: 'API_ERROR',
+      provider: 'gemini',
+      statusCode: 500
+    };
+    mockTranslationService.translate.mockRejectedValue(mockTranslationError);
     const mockOnStoryTranslated = vi.fn();
 
     const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
@@ -83,6 +89,32 @@ describe('StoryContainer Component', () => {
     await waitFor(() => {
       expect(within(container).getByText('Translation Error:')).toBeInTheDocument();
       expect(within(container).getByText('Translation service error')).toBeInTheDocument();
+      expect(within(container).getByText('Provider: gemini')).toBeInTheDocument();
+      expect(within(container).getByText('Status: 500')).toBeInTheDocument();
+      expect(within(container).getByText('Error code: API_ERROR')).toBeInTheDocument();
+    });
+  });
+
+  it('displays error message with minimal details when error lacks provider info', async () => {
+    const mockTranslationError = {
+      message: 'Network connection error',
+      code: 'NETWORK_ERROR'
+    };
+    mockTranslationService.translate.mockRejectedValue(mockTranslationError);
+    const mockOnStoryTranslated = vi.fn();
+
+    const { container } = render(<StoryContainer onStoryTranslated={mockOnStoryTranslated} />);
+
+    const textArea = within(container).getByDisplayValue('');
+    const submitButton = within(container).getByRole('button', { name: /translate story/i });
+
+    fireEvent.change(textArea, { target: { value: 'Test story' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(within(container).getByText('Translation Error:')).toBeInTheDocument();
+      expect(within(container).getByText('Network connection error')).toBeInTheDocument();
+      expect(within(container).getByText('Error code: NETWORK_ERROR')).toBeInTheDocument();
     });
   });
 
