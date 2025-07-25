@@ -1,21 +1,22 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
 import { generalPromptConfigService } from './prompts';
+import { LanguageCode, DifficultyLevel } from './types/prompt';
 
 export interface TranslationRequest {
   text: string;
-  fromLanguage: string;
-  toLanguage: string;
-  difficulty: string;
-  nativeLanguage?: string; // Optional: user's native language for enhanced customization
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
+  nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
 }
 
 export interface TranslationResponse {
   originalText: string;
   translatedText: string;
-  fromLanguage: string;
-  toLanguage: string;
-  difficulty: string;
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
   provider?: string;
   model?: string;
 }
@@ -68,8 +69,6 @@ class TranslationService {
       text: request.text,
       nativeLanguage: request.nativeLanguage
     };
-
-
 
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt

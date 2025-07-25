@@ -1,7 +1,7 @@
 // Types for the LLM prompt configuration system
 
-export type LanguageCode = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt';
-export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2';
+export type LanguageCode = 'en' | 'es';
+export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2';
 
 export interface PromptInstructions {
   // Language-specific instructions for translation
@@ -35,30 +35,26 @@ export interface NativeToTargetDifficultyPrompts {
   a2: NativeToTargetInstructions;
   b1: NativeToTargetInstructions;
   b2: NativeToTargetInstructions;
-  c1?: NativeToTargetInstructions; // Optional for future expansion
-  c2?: NativeToTargetInstructions; // Optional for future expansion
 }
 
-export interface NativeToTargetConfig {
-  [targetLanguage: string]: NativeToTargetDifficultyPrompts;
-}
+export type NativeToTargetConfig = {
+  [K in LanguageCode]: NativeToTargetDifficultyPrompts;
+};
 
-export interface NativeToTargetLanguageConfig {
-  [nativeLanguage: string]: NativeToTargetConfig;
-}
+export type NativeToTargetLanguageConfig = {
+  [K in LanguageCode]: NativeToTargetConfig;
+};
 
 export interface DifficultyPrompts {
   a1: PromptInstructions;
   a2: PromptInstructions;
   b1: PromptInstructions;
   b2: PromptInstructions;
-  c1?: PromptInstructions; // Optional for future expansion
-  c2?: PromptInstructions; // Optional for future expansion
 }
 
-export interface LanguagePrompts {
-  [languageCode: string]: DifficultyPrompts;
-}
+export type LanguagePrompts = {
+  [K in LanguageCode]: DifficultyPrompts;
+};
 
 export interface GeneralPromptConfig {
   instructions: string[];
@@ -68,9 +64,9 @@ export interface TemplateConfig {
   template: string;
 }
 
-export interface LanguagePromptConfig {
-  [languageCode: string]: DifficultyPrompts;
-}
+export type LanguagePromptConfig = {
+  [K in LanguageCode]: DifficultyPrompts;
+};
 
 export interface PromptConfig {
   general: GeneralPromptConfig;
@@ -78,9 +74,9 @@ export interface PromptConfig {
 }
 
 export interface PromptBuildContext {
-  fromLanguage: string;
-  toLanguage: string;
-  difficulty: string;
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
   text: string;
-  nativeLanguage?: string; // Optional: user's native language for enhanced customization
+  nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
 } 

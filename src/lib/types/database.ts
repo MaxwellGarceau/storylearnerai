@@ -1,3 +1,5 @@
+import type { LanguageCode } from './prompt';
+import type { DifficultyLevel as PromptDifficultyLevel } from './prompt';
 // Database types for better TypeScript support
 // These types match our current Supabase schema
 
@@ -8,21 +10,21 @@ export interface Database {
       languages: {
         Row: {
           id: number
-          code: string // ISO 639-1 language codes (e.g., 'en', 'es', 'fr')
+          code: LanguageCode // ISO 639-1 language codes (e.g., 'en', 'es')
           name: string // Full language name (e.g., 'English', 'Spanish', 'French')
           native_name: string | null // Name in the native language
           created_at: string
         }
         Insert: {
           id?: number
-          code: string
+          code: LanguageCode
           name: string
           native_name?: string | null
           created_at?: string
         }
         Update: {
           id?: number
-          code?: string
+          code?: LanguageCode
           name?: string
           native_name?: string | null
           created_at?: string
@@ -31,21 +33,21 @@ export interface Database {
       difficulty_levels: {
         Row: {
           id: number
-          code: string // Internal code (e.g., 'a1', 'a2', 'b1', 'b2')
+          code: PromptDifficultyLevel // Internal code (e.g., 'a1', 'a2', 'b1', 'b2')
           name: string // Display name (e.g., 'Beginner', 'Intermediate', 'Advanced')
           description: string | null // Optional description
           created_at: string
         }
         Insert: {
           id?: number
-          code: string
+          code: PromptDifficultyLevel
           name: string
           description?: string | null
           created_at?: string
         }
         Update: {
           id?: number
-          code?: string
+          code?: PromptDifficultyLevel
           name?: string
           description?: string | null
           created_at?: string
@@ -88,7 +90,7 @@ export interface Database {
           title: string
           content: string
           language: string
-          difficulty_level: string
+          difficulty_level: PromptDifficultyLevel
           user_id: string | null
           created_at: string
           updated_at: string
@@ -98,7 +100,7 @@ export interface Database {
           title: string
           content: string
           language: string
-          difficulty_level: string
+          difficulty_level: PromptDifficultyLevel
           user_id?: string | null
           created_at?: string
           updated_at?: string
@@ -108,7 +110,7 @@ export interface Database {
           title?: string
           content?: string
           language?: string
-          difficulty_level?: string
+          difficulty_level?: PromptDifficultyLevel
           user_id?: string | null
           created_at?: string
           updated_at?: string
@@ -234,9 +236,9 @@ export interface StoryWithTranslations extends Story {
 export interface CreateSavedTranslationRequest {
   original_story: string
   translated_story: string
-  original_language_code: string // We'll use language codes for easier API usage
-  translated_language_code: string
-  difficulty_level_code: string
+  original_language_code: LanguageCode
+  translated_language_code: LanguageCode
+  difficulty_level_code: PromptDifficultyLevel
   title?: string
   notes?: string
 }
@@ -247,9 +249,9 @@ export interface UpdateSavedTranslationRequest {
 }
 
 export interface SavedTranslationFilters {
-  original_language_code?: string
-  translated_language_code?: string
-  difficulty_level_code?: string
+  original_language_code?: LanguageCode
+  translated_language_code?: LanguageCode
+  difficulty_level_code?: PromptDifficultyLevel
   search?: string // Search in title, notes, or story content
   limit?: number
   offset?: number

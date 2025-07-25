@@ -5,7 +5,9 @@ import {
   PromptInstructions, 
   PromptBuildContext,
   NativeToTargetLanguageConfig,
-  NativeToTargetInstructions
+  NativeToTargetInstructions,
+  LanguageCode,
+  DifficultyLevel
 } from '../types/prompt';
 import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
@@ -28,16 +30,20 @@ import templateConfigData from './config/template.json';
  * prompts/to-language.json will serve as fallbacks when more specific customizations 
  * are not available.
  */
+// Add a type for supported language codes
+export type SupportedLanguageCode = 'en' | 'es';
+
 class GeneralPromptConfigService {
   private languageConfig: LanguagePromptConfig;
   private generalConfig: GeneralPromptConfig;
   private templateConfig: TemplateConfig;
-  private nativeToTargetConfig: NativeToTargetLanguageConfig = {};
+  private nativeToTargetConfig: NativeToTargetLanguageConfig;
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
     this.generalConfig = generalConfigData as GeneralPromptConfig;
     this.templateConfig = templateConfigData as TemplateConfig;
+    this.nativeToTargetConfig = {} as NativeToTargetLanguageConfig;
     this.loadNativeToTargetConfigs();
   }
 
@@ -50,7 +56,8 @@ class GeneralPromptConfigService {
       
       // Load English speaker configurations
       import('./config/native-to-target/en/es.json').then(englishConfig => {
-        this.nativeToTargetConfig['en'] = {
+        const config = this.nativeToTargetConfig as Record<string, unknown>;
+        config['en'] = {
           'es': englishConfig.default
         };
         logger.debug('prompts', 'Loaded English speaker configurations');
@@ -60,7 +67,8 @@ class GeneralPromptConfigService {
 
       // Load Spanish speaker configurations
       import('./config/native-to-target/es/en.json').then(spanishConfig => {
-        this.nativeToTargetConfig['es'] = {
+        const config = this.nativeToTargetConfig as Record<string, unknown>;
+        config['es'] = {
           'en': spanishConfig.default
         };
         logger.debug('prompts', 'Loaded Spanish speaker configurations');
@@ -77,20 +85,21 @@ class GeneralPromptConfigService {
   /**
    * Get native-to-target specific instructions for a given native language and target language
    */
-  getNativeToTargetInstructions(nativeLanguage: string, targetLanguage: string, difficulty: string): NativeToTargetInstructions | null {
+  getNativeToTargetInstructions(nativeLanguage: LanguageCode, targetLanguage: LanguageCode, difficulty: DifficultyLevel): NativeToTargetInstructions | null {
     logger.debug('prompts', 'Getting native-to-target instructions', { 
       nativeLanguage, 
       targetLanguage, 
       difficulty 
     });
 
-    const nativeConfig = this.nativeToTargetConfig[nativeLanguage.toLowerCase()];
+    const config = this.nativeToTargetConfig as Record<string, unknown>;
+    const nativeConfig = config[nativeLanguage.toLowerCase()] as Record<string, unknown> | undefined;
     if (!nativeConfig) {
       logger.warn('prompts', 'No native-to-target configuration found for native language', { nativeLanguage });
       return null;
     }
 
-    const targetConfig = nativeConfig[targetLanguage.toLowerCase()];
+    const targetConfig = nativeConfig[targetLanguage.toLowerCase()] as Record<string, unknown> | undefined;
     if (!targetConfig) {
       logger.warn('prompts', 'No native-to-target configuration found for target language', { 
         nativeLanguage, 
@@ -99,7 +108,7 @@ class GeneralPromptConfigService {
       return null;
     }
 
-    const difficultyConfig = targetConfig[difficulty.toLowerCase() as keyof typeof targetConfig];
+    const difficultyConfig = targetConfig[difficulty.toLowerCase()] as NativeToTargetInstructions | undefined;
     if (!difficultyConfig) {
       logger.warn('prompts', 'No native-to-target configuration found for difficulty', { 
         nativeLanguage, 
@@ -159,14 +168,15 @@ class GeneralPromptConfigService {
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
-  getLanguageInstructions(languageCode: string, difficulty: string): PromptInstructions | null {
-    const language = this.languageConfig[languageCode.toLowerCase()];
+  getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions | null {
+    const config = this.languageConfig as Record<string, unknown>;
+    const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
     if (!language) {
       console.warn(`No prompt configuration found for language: ${languageCode}`);
       return null;
     }
 
-    const difficultyLevel = language[difficulty.toLowerCase() as keyof typeof language];
+    const difficultyLevel = language[difficulty.toLowerCase()] as PromptInstructions | undefined;
     if (!difficultyLevel) {
       logger.warn('prompts', 'No prompt configuration found for difficulty', { difficulty, languageCode });
       return null;
@@ -180,7 +190,7 @@ class GeneralPromptConfigService {
    * For now, this delegates to the single language configuration since we don't have
    * comprehensive user background customization yet
    */
-  getLanguagePairInstructions(fromLanguageCode: string, toLanguageCode: string, difficulty: string): PromptInstructions | null {
+  getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions | null {
     // For now, use the single language configuration
     // In the future, this can be enhanced with user background considerations
     return this.getLanguageInstructions(toLanguageCode, difficulty);
@@ -312,7 +322,8 @@ Please provide only the ${toLanguage} translation.`;
    * Get available difficulty levels for a given language
    */
   getAvailableDifficulties(languageCode: string): string[] {
-    const language = this.languageConfig[languageCode.toLowerCase()];
+    const config = this.languageConfig as Record<string, unknown>;
+    const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
     if (!language) {
       return [];
     }
@@ -322,8 +333,9 @@ Please provide only the ${toLanguage} translation.`;
   /**
    * Check if a language and difficulty combination is supported
    */
-  isSupported(languageCode: string, difficulty: string): boolean {
-    const language = this.languageConfig[languageCode.toLowerCase()];
+  isSupported(languageCode: LanguageCode, difficulty: DifficultyLevel): boolean {
+    const config = this.languageConfig as Record<string, unknown>;
+    const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
     if (!language) {
       return false;
     }

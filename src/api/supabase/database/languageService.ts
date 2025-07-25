@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { Language } from '../../../lib/types/database'
+import type { LanguageCode } from '../../../lib/types/prompt'
 
 export class LanguageService {
   /**
@@ -21,7 +22,7 @@ export class LanguageService {
   /**
    * Get a language by its code
    */
-  async getLanguageByCode(code: string): Promise<Language | null> {
+  async getLanguageByCode(code: LanguageCode): Promise<Language | null> {
     const { data, error } = await supabase
       .from('languages')
       .select('*')
@@ -41,7 +42,7 @@ export class LanguageService {
   /**
    * Get language name by code, with fallback to code if not found
    */
-  async getLanguageName(code: string): Promise<string> {
+  async getLanguageName(code: LanguageCode): Promise<string> {
     try {
       const language = await this.getLanguageByCode(code);
       return language?.name || code;
