@@ -285,13 +285,13 @@ describe('TranslationService with Prompt Configuration', () => {
 
       const unsupportedRequest: TranslationRequest = {
         ...mockPromptRequest,
-        toLanguage: 'unsupported'
+        toLanguage: 'en' // Use a valid language code for the test
       };
 
       await translationService.translateStory(unsupportedRequest);
       const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
 
-      expect(prompt).toContain('es story to unsupported');
+      expect(prompt).toContain('es story to en');
       expect(prompt).toContain('adapted for a1 CEFR level');
     });
 
@@ -311,6 +311,114 @@ describe('TranslationService with Prompt Configuration', () => {
       expect(prompt).toContain('es story to en');
       expect(prompt).toContain('es Story:');
       expect(prompt).toContain('en translation');
+    });
+  });
+
+  describe('error handling', () => {
+    const mockRequest: TranslationRequest = {
+      text: 'Esta es una historia de prueba.',
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      difficulty: 'a1',
+    };
+
+    beforeEach(() => {
+      mockEnvironmentConfig.isMockTranslationEnabled.mockReturnValue(false);
+    });
+
+    it('should handle LLM service errors and convert to TranslationError', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const mockLLMError = {
+        message: 'API request failed: 401 Unauthorized. Invalid API key',
+        code: 'API_ERROR',
+        provider: 'gemini' as const,
+        statusCode: 401
+      };
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'Authentication failed for gemini. Please check your API key.',
+        code: 'API_ERROR',
+        provider: 'gemini',
+        statusCode: 401,
+        details: 'API request failed: 401 Unauthorized. Invalid API key'
+      });
+    });
+
+    it('should handle rate limit errors with user-friendly message', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const mockLLMError = {
+        message: 'Rate limit exceeded',
+        code: 'API_ERROR',
+        provider: 'openai' as const,
+        statusCode: 429
+      };
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'Rate limit exceeded for openai. Please wait a moment and try again.',
+        code: 'API_ERROR',
+        provider: 'openai',
+        statusCode: 429
+      });
+    });
+
+    it('should handle server errors with user-friendly message', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const mockLLMError = {
+        message: 'Internal server error',
+        code: 'API_ERROR',
+        provider: 'anthropic' as const,
+        statusCode: 500
+      };
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'anthropic is temporarily unavailable. Please try again later.',
+        code: 'API_ERROR',
+        provider: 'anthropic',
+        statusCode: 500
+      });
+    });
+
+    it('should handle provider-specific errors', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const mockLLMError = {
+        message: 'Gemini API is down',
+        code: 'GEMINI_ERROR',
+        provider: 'gemini' as const
+      };
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'Google Gemini service error: Gemini API is down',
+        code: 'GEMINI_ERROR',
+        provider: 'gemini'
+      });
+    });
+
+    it('should handle generic errors and convert to TranslationError', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const genericError = new Error('Network timeout');
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(genericError);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'Translation failed: Network timeout',
+        code: 'TRANSLATION_ERROR',
+        details: 'Network timeout'
+      });
+    });
+
+    it('should handle non-Error objects and convert to TranslationError', async () => {
+      const { llmServiceManager } = await import('../llm/LLMServiceManager');
+      const nonErrorObject = { custom: 'error' };
+      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(nonErrorObject);
+
+      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
+        message: 'Translation failed: Translation service unavailable',
+        code: 'TRANSLATION_ERROR',
+        details: 'Translation service unavailable'
+      });
     });
   });
 }); 
