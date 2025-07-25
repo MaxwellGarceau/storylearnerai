@@ -72,19 +72,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Walkthrough styles */
-@layer components {
-  .walkthrough-highlight {
-    @apply relative z-30;
-    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3), 0 0 0 8px hsl(var(--primary) / 0.1);
-    border-radius: 0.5rem;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .walkthrough-highlight::before {
-    content: '';
-    @apply absolute inset-0 bg-primary/5 rounded-lg;
-    pointer-events: none;
-  }
-}
