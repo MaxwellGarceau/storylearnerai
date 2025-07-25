@@ -101,7 +101,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               {/* Language Selection */}
               <div className="space-y-2">
                 <Label htmlFor="sidebar-language">
-              Target Language
+                  Target Language
                 </Label>
                 <Select
                   name="sidebar-language"
@@ -139,19 +139,19 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  English
+                      English
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-              Currently only English translation is supported.
+                  Currently only English translation is supported.
                 </p>
               </div>
 
               {/* Difficulty Selection */}
               <div className="space-y-2">
                 <Label htmlFor="sidebar-difficulty">
-              Target Difficulty (CEFR)
+                  Target Difficulty (CEFR)
                 </Label>
                 <Select
                   name="sidebar-difficulty"
@@ -170,9 +170,9 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                   >
                     <span className="text-foreground">
                       {formData.difficulty === 'a1' ? 'A1 (Beginner)' :
-                       formData.difficulty === 'a2' ? 'A2 (Elementary)' :
-                       formData.difficulty === 'b1' ? 'B1 (Intermediate)' :
-                       formData.difficulty === 'b2' ? 'B2 (Upper Intermediate)' : formData.difficulty}
+                        formData.difficulty === 'a2' ? 'A2 (Elementary)' :
+                          formData.difficulty === 'b1' ? 'B1 (Intermediate)' :
+                            formData.difficulty === 'b2' ? 'B2 (Upper Intermediate)' : formData.difficulty}
                     </span>
                     <ChevronDown className={cn(
                       "h-4 w-4 opacity-50 transition-transform duration-200",
@@ -194,7 +194,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  A1 (Beginner)
+                      A1 (Beginner)
                     </SelectItem>
                     <SelectItem 
                       value="a2"
@@ -203,7 +203,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  A2 (Elementary)
+                      A2 (Elementary)
                     </SelectItem>
                     <SelectItem 
                       value="b1"
@@ -212,7 +212,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  B1 (Intermediate)
+                      B1 (Intermediate)
                     </SelectItem>
                     <SelectItem 
                       value="b2"
@@ -221,12 +221,12 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                  B2 (Upper Intermediate)
+                      B2 (Upper Intermediate)
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mb-6">
-              The story will be adapted to this English proficiency level.
+                  The story will be adapted to this English proficiency level.
                 </p>
               </div>
             </div>
