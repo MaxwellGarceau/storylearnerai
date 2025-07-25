@@ -5,15 +5,23 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { SavedTranslationWithDetails } from '../../lib/types/database';
+import { DatabaseSavedTranslationWithDetails } from '../../lib/types/database';
 import { TranslationResponse } from '../../lib/translationService';
+import { DifficultyLevel, LanguageCode } from '../../lib/types/prompt';
+
+// CEFR difficulty level options
+const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
+  { value: 'a1', label: 'A1 (Beginner)', description: 'Basic level - Can understand and use familiar everyday expressions' },
+  { value: 'a2', label: 'A2 (Elementary)', description: 'Elementary level - Can communicate in simple and routine tasks' },
+  { value: 'b1', label: 'B1 (Intermediate)', description: 'Intermediate level - Can deal with most situations while traveling' },
+  { value: 'b2', label: 'B2 (Upper Intermediate)', description: 'Upper intermediate level - Can interact with fluency and spontaneity' },
+];
 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const {
     savedTranslations,
     languages,
-    difficultyLevels,
     isLoading,
     isDeleting,
     error,
@@ -30,8 +38,8 @@ export default function SavedTranslationsList() {
 
   const handleFilterChange = () => {
     setFilters({
-      original_language_code: selectedLanguage || undefined,
-      difficulty_level_code: selectedDifficulty || undefined,
+      original_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
+      difficulty_level_code: (selectedDifficulty || undefined) as DifficultyLevel | undefined,
       search: searchTerm.trim() || undefined,
     });
   };
@@ -46,7 +54,7 @@ export default function SavedTranslationsList() {
     }
   };
 
-  const convertToTranslationResponse = (savedTranslation: SavedTranslationWithDetails): TranslationResponse => {
+  const convertToTranslationResponse = (savedTranslation: DatabaseSavedTranslationWithDetails): TranslationResponse => {
     return {
       originalText: savedTranslation.original_story,
       translatedText: savedTranslation.translated_story,
@@ -58,7 +66,7 @@ export default function SavedTranslationsList() {
     };
   };
 
-  const handleViewStory = (savedTranslation: SavedTranslationWithDetails) => {
+  const handleViewStory = (savedTranslation: DatabaseSavedTranslationWithDetails) => {
     const translationData = convertToTranslationResponse(savedTranslation);
     navigate('/story', { 
       state: { 
@@ -109,7 +117,7 @@ export default function SavedTranslationsList() {
               >
                 <option value="">All Languages</option>
                 {languages.map((language) => (
-                  <option key={language.id} value={language.code}>
+                  <option key={language.id} value={language.code as LanguageCode}>
                     {language.name}
                   </option>
                 ))}
@@ -117,16 +125,16 @@ export default function SavedTranslationsList() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Difficulty Level</label>
+              <label className="text-sm font-medium mb-2 block">Difficulty Level (CEFR)</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
               >
                 <option value="">All Levels</option>
-                {difficultyLevels.map((level) => (
-                  <option key={level.id} value={level.code}>
-                    {level.name}
+                {CEFR_DIFFICULTY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value as DifficultyLevel} title={option.description}>
+                    {option.label}
                   </option>
                 ))}
               </select>
