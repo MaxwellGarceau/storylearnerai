@@ -130,6 +130,7 @@ export default function SaveTranslationButton({
               variant="outline"
               className="gap-2"
               disabled={!user || isSavedStory}
+              data-testid="save-translation-button"
             >
               <svg
                 className="h-4 w-4"

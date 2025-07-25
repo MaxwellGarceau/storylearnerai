@@ -10,30 +10,44 @@ import PageLayout from './components/PageLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Toaster } from './components/ui/Toaster';
 import { TooltipProvider } from './components/ui/Tooltip';
+import { WalkthroughOverlay } from './components/walkthrough/WalkthroughOverlay';
+import { useWalkthrough } from './hooks/useWalkthrough';
 
 function App() {
   return (
     <TooltipProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/translate" element={<PageLayout><TranslatePage /></PageLayout>} />
-          <Route path="/story" element={<PageLayout><StoryReaderPage /></PageLayout>} />
-          <Route path="/auth" element={<PageLayout><AuthPage /></PageLayout>} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <PageLayout><DashboardPage /></PageLayout>
-            </ProtectedRoute>
-          } />
-          <Route path="/saved-translations" element={
-            <ProtectedRoute>
-              <PageLayout><SavedTranslationsPage /></PageLayout>
-            </ProtectedRoute>
-          } />
-        </Routes>
-        <Toaster />
+        <AppContent />
       </Router>
     </TooltipProvider>
+  );
+}
+
+function AppContent() {
+  // Initialize walkthrough hook inside Router context
+  useWalkthrough();
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/translate" element={<PageLayout><TranslatePage /></PageLayout>} />
+        <Route path="/story" element={<PageLayout><StoryReaderPage /></PageLayout>} />
+        <Route path="/auth" element={<PageLayout><AuthPage /></PageLayout>} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <PageLayout><DashboardPage /></PageLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/saved-translations" element={
+          <ProtectedRoute>
+            <PageLayout><SavedTranslationsPage /></PageLayout>
+          </ProtectedRoute>
+        } />
+      </Routes>
+      <Toaster />
+      <WalkthroughOverlay />
+    </>
   );
 }
 

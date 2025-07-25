@@ -149,7 +149,7 @@ const Header: React.FC = () => {
                 size="sm"
                 asChild
               >
-                <Link to="/auth?mode=signin">
+                <Link to="/auth?mode=signin" data-testid="sign-in-link">
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Link>
@@ -158,7 +158,7 @@ const Header: React.FC = () => {
                 size="sm"
                 asChild
               >
-                <Link to="/auth?mode=signup">
+                <Link to="/auth?mode=signup" data-testid="sign-up-link">
                   <User className="h-4 w-4 mr-2" />
                   Sign Up
                 </Link>
