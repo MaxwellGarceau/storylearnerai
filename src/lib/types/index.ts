@@ -1,4 +1,31 @@
 // Export all types from the types directory
-export * from './database';
+export type { 
+  DatabaseLanguage,
+  DatabaseDifficultyLevel,
+  DatabaseUser,
+  DatabaseStory,
+  DatabaseTranslation,
+  DatabaseSavedTranslation,
+  DatabaseSavedTranslationWithDetails,
+  DatabaseStoryWithTranslations,
+  CreateSavedTranslationRequest,
+  UpdateSavedTranslationRequest,
+  SavedTranslationFilters
+} from './database';
 export * from './llm';
-export * from './prompt'; 
+export type { 
+  LanguageCode, 
+  DifficultyLevel,
+  PromptInstructions,
+  NativeToTargetInstructions,
+  NativeToTargetDifficultyPrompts,
+  NativeToTargetConfig,
+  NativeToTargetLanguageConfig,
+  DifficultyPrompts,
+  LanguagePrompts,
+  GeneralPromptConfig,
+  TemplateConfig,
+  LanguagePromptConfig,
+  PromptConfig,
+  PromptBuildContext
+} from './prompt'; 

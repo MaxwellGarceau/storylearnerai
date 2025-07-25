@@ -198,38 +198,38 @@ export interface Database {
 }
 
 // Convenience types for easier usage
-export type Language = Database['public']['Tables']['languages']['Row']
-export type DifficultyLevel = Database['public']['Tables']['difficulty_levels']['Row']
-export type User = Database['public']['Tables']['users']['Row']
-export type Story = Database['public']['Tables']['stories']['Row']
-export type Translation = Database['public']['Tables']['translations']['Row']
-export type SavedTranslation = Database['public']['Tables']['saved_translations']['Row']
+export type DatabaseLanguage = Database['public']['Tables']['languages']['Row']
+export type DatabaseDifficultyLevel = Database['public']['Tables']['difficulty_levels']['Row']
+export type DatabaseUser = Database['public']['Tables']['users']['Row']
+export type DatabaseStory = Database['public']['Tables']['stories']['Row']
+export type DatabaseTranslation = Database['public']['Tables']['translations']['Row']
+export type DatabaseSavedTranslation = Database['public']['Tables']['saved_translations']['Row']
 
 // Insert types
-export type LanguageInsert = Database['public']['Tables']['languages']['Insert']
-export type DifficultyLevelInsert = Database['public']['Tables']['difficulty_levels']['Insert']
-export type UserInsert = Database['public']['Tables']['users']['Insert']
-export type StoryInsert = Database['public']['Tables']['stories']['Insert']
-export type TranslationInsert = Database['public']['Tables']['translations']['Insert']
-export type SavedTranslationInsert = Database['public']['Tables']['saved_translations']['Insert']
+export type DatabaseLanguageInsert = Database['public']['Tables']['languages']['Insert']
+export type DatabaseDifficultyLevelInsert = Database['public']['Tables']['difficulty_levels']['Insert']
+export type DatabaseUserInsert = Database['public']['Tables']['users']['Insert']
+export type DatabaseStoryInsert = Database['public']['Tables']['stories']['Insert']
+export type DatabaseTranslationInsert = Database['public']['Tables']['translations']['Insert']
+export type DatabaseSavedTranslationInsert = Database['public']['Tables']['saved_translations']['Insert']
 
 // Update types
-export type LanguageUpdate = Database['public']['Tables']['languages']['Update']
-export type DifficultyLevelUpdate = Database['public']['Tables']['difficulty_levels']['Update']
-export type UserUpdate = Database['public']['Tables']['users']['Update']
-export type StoryUpdate = Database['public']['Tables']['stories']['Update']
-export type TranslationUpdate = Database['public']['Tables']['translations']['Update']
-export type SavedTranslationUpdate = Database['public']['Tables']['saved_translations']['Update']
+export type DatabaseLanguageUpdate = Database['public']['Tables']['languages']['Update']
+export type DatabaseDifficultyLevelUpdate = Database['public']['Tables']['difficulty_levels']['Update']
+export type DatabaseUserUpdate = Database['public']['Tables']['users']['Update']
+export type DatabaseStoryUpdate = Database['public']['Tables']['stories']['Update']
+export type DatabaseTranslationUpdate = Database['public']['Tables']['translations']['Update']
+export type DatabaseSavedTranslationUpdate = Database['public']['Tables']['saved_translations']['Update']
 
 // Extended types for joins and relationships
-export interface SavedTranslationWithDetails extends SavedTranslation {
-  original_language: Language
-  translated_language: Language
-  difficulty_level: DifficultyLevel
+export interface DatabaseSavedTranslationWithDetails extends DatabaseSavedTranslation {
+  original_language: DatabaseLanguage
+  translated_language: DatabaseLanguage
+  difficulty_level: DatabaseDifficultyLevel
 }
 
-export interface StoryWithTranslations extends Story {
-  translations: Translation[]
+export interface DatabaseStoryWithTranslations extends DatabaseStory {
+  translations: DatabaseTranslation[]
 }
 
 // API request types for easier service usage
