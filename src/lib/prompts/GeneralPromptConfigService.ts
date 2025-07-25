@@ -7,6 +7,7 @@ import {
   NativeToTargetLanguageConfig,
   NativeToTargetInstructions
 } from '../types/prompt';
+import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
 import templateConfigData from './config/template.json';
@@ -45,11 +46,16 @@ class GeneralPromptConfigService {
    */
   private loadNativeToTargetConfigs(): void {
     try {
+      logger.time('prompts', 'load-native-to-target-configs');
+      
       // Load English speaker configurations
       import('./config/native-to-target/en/es.json').then(englishConfig => {
         this.nativeToTargetConfig['en'] = {
           'es': englishConfig.default
         };
+        logger.debug('prompts', 'Loaded English speaker configurations');
+      }).catch(error => {
+        logger.error('prompts', 'Failed to load English speaker configurations', { error });
       });
 
       // Load Spanish speaker configurations
@@ -57,9 +63,14 @@ class GeneralPromptConfigService {
         this.nativeToTargetConfig['es'] = {
           'en': spanishConfig.default
         };
+        logger.debug('prompts', 'Loaded Spanish speaker configurations');
+      }).catch(error => {
+        logger.error('prompts', 'Failed to load Spanish speaker configurations', { error });
       });
+      
+      logger.timeEnd('prompts', 'load-native-to-target-configs');
     } catch (error) {
-      console.warn('Failed to load native-to-target configurations:', error);
+      logger.error('prompts', 'Failed to load native-to-target configurations', { error });
     }
   }
 
@@ -67,20 +78,42 @@ class GeneralPromptConfigService {
    * Get native-to-target specific instructions for a given native language and target language
    */
   getNativeToTargetInstructions(nativeLanguage: string, targetLanguage: string, difficulty: string): NativeToTargetInstructions | null {
+    logger.debug('prompts', 'Getting native-to-target instructions', { 
+      nativeLanguage, 
+      targetLanguage, 
+      difficulty 
+    });
+
     const nativeConfig = this.nativeToTargetConfig[nativeLanguage.toLowerCase()];
     if (!nativeConfig) {
+      logger.warn('prompts', 'No native-to-target configuration found for native language', { nativeLanguage });
       return null;
     }
 
     const targetConfig = nativeConfig[targetLanguage.toLowerCase()];
     if (!targetConfig) {
+      logger.warn('prompts', 'No native-to-target configuration found for target language', { 
+        nativeLanguage, 
+        targetLanguage 
+      });
       return null;
     }
 
     const difficultyConfig = targetConfig[difficulty.toLowerCase() as keyof typeof targetConfig];
     if (!difficultyConfig) {
+      logger.warn('prompts', 'No native-to-target configuration found for difficulty', { 
+        nativeLanguage, 
+        targetLanguage, 
+        difficulty 
+      });
       return null;
     }
+
+    logger.debug('prompts', 'Found native-to-target instructions', { 
+      nativeLanguage, 
+      targetLanguage, 
+      difficulty 
+    });
 
     return difficultyConfig;
   }
@@ -135,7 +168,7 @@ class GeneralPromptConfigService {
 
     const difficultyLevel = language[difficulty.toLowerCase() as keyof typeof language];
     if (!difficultyLevel) {
-      console.warn(`No prompt configuration found for difficulty: ${difficulty} in language: ${languageCode}`);
+      logger.warn('prompts', 'No prompt configuration found for difficulty', { difficulty, languageCode });
       return null;
     }
 
@@ -171,52 +204,87 @@ class GeneralPromptConfigService {
    * Build a complete prompt from the template and context
    */
   buildPrompt(context: PromptBuildContext): string {
-    const { fromLanguage, toLanguage, difficulty, text, nativeLanguage } = context;
+    logger.time('prompts', 'build-prompt');
+    
+    try {
+      const { fromLanguage, toLanguage, difficulty, text, nativeLanguage } = context;
 
-    // Get language-specific instructions
-    const languageInstructions = this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
-    if (!languageInstructions) {
-      console.warn(`No language instructions found for ${fromLanguage}->${toLanguage}/${difficulty}`);
-      return this.buildFallbackPrompt(context);
-    }
+      logger.debug('prompts', 'Building prompt', { 
+        fromLanguage, 
+        toLanguage, 
+        difficulty, 
+        hasNativeLanguage: !!nativeLanguage,
+        textLength: text.length 
+      });
 
-    // Get native-to-target specific instructions if native language is provided
-    let nativeToTargetInstructions = '';
-    if (nativeLanguage) {
-      const nativeInstructions = this.getNativeToTargetInstructions(nativeLanguage, toLanguage, difficulty);
-      if (nativeInstructions) {
-        nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
+      // Get language-specific instructions
+      const languageInstructions = this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
+      if (!languageInstructions) {
+        logger.warn('prompts', 'No language instructions found', { 
+          fromLanguage, 
+          toLanguage, 
+          difficulty 
+        });
+        return this.buildFallbackPrompt(context);
       }
+
+      // Get native-to-target specific instructions if native language is provided
+      let nativeToTargetInstructions = '';
+      if (nativeLanguage) {
+        const nativeInstructions = this.getNativeToTargetInstructions(nativeLanguage, toLanguage, difficulty);
+        if (nativeInstructions) {
+          nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
+          logger.debug('prompts', 'Added native-to-target instructions', { 
+            nativeLanguage, 
+            toLanguage, 
+            difficulty 
+          });
+        }
+      }
+
+      // Build the language instructions text
+      const languageInstructionsText = [
+        languageInstructions.vocabulary && `Vocabulary: ${languageInstructions.vocabulary}`,
+        languageInstructions.grammar && `Grammar: ${languageInstructions.grammar}`,
+        languageInstructions.cultural && `Cultural: ${languageInstructions.cultural}`,
+        languageInstructions.style && `Style: ${languageInstructions.style}`,
+        languageInstructions.examples && `Examples: ${languageInstructions.examples}`,
+        // Language pair specific fields (for future use)
+        languageInstructions.grammar_focus && `Grammar Focus: ${languageInstructions.grammar_focus}`,
+        languageInstructions.pronunciation_notes && `Pronunciation: ${languageInstructions.pronunciation_notes}`,
+        languageInstructions.common_mistakes && `Common Mistakes: ${languageInstructions.common_mistakes}`,
+        languageInstructions.helpful_patterns && `Helpful Patterns: ${languageInstructions.helpful_patterns}`
+      ].filter(Boolean).join('\n');
+
+      // Get general instructions
+      const generalInstructions = this.getGeneralInstructions().join('\n');
+
+      // Build the complete prompt
+      const prompt = this.getTemplate()
+        .replace(/{fromLanguage}/g, fromLanguage)
+        .replace(/{toLanguage}/g, toLanguage)
+        .replace(/{difficulty}/g, difficulty)
+        .replace(/{instructions}/g, generalInstructions)
+        .replace(/{languageInstructions}/g, languageInstructionsText)
+        .replace(/{nativeToTargetInstructions}/g, nativeToTargetInstructions)
+        .replace(/{text}/g, text);
+
+      logger.info('prompts', 'Prompt built successfully', { 
+        fromLanguage, 
+        toLanguage, 
+        difficulty, 
+        hasNativeLanguage: !!nativeLanguage,
+        promptLength: prompt.length,
+        hasNativeInstructions: !!nativeToTargetInstructions
+      });
+
+      return prompt;
+    } catch (error) {
+      logger.error('prompts', 'Error building prompt', { error, context });
+      return this.buildFallbackPrompt(context);
+    } finally {
+      logger.timeEnd('prompts', 'build-prompt');
     }
-
-    // Build the language instructions text
-    const languageInstructionsText = [
-      languageInstructions.vocabulary && `Vocabulary: ${languageInstructions.vocabulary}`,
-      languageInstructions.grammar && `Grammar: ${languageInstructions.grammar}`,
-      languageInstructions.cultural && `Cultural: ${languageInstructions.cultural}`,
-      languageInstructions.style && `Style: ${languageInstructions.style}`,
-      languageInstructions.examples && `Examples: ${languageInstructions.examples}`,
-      // Language pair specific fields (for future use)
-      languageInstructions.grammar_focus && `Grammar Focus: ${languageInstructions.grammar_focus}`,
-      languageInstructions.pronunciation_notes && `Pronunciation: ${languageInstructions.pronunciation_notes}`,
-      languageInstructions.common_mistakes && `Common Mistakes: ${languageInstructions.common_mistakes}`,
-      languageInstructions.helpful_patterns && `Helpful Patterns: ${languageInstructions.helpful_patterns}`
-    ].filter(Boolean).join('\n');
-
-    // Get general instructions
-    const generalInstructions = this.getGeneralInstructions().join('\n');
-
-    // Build the complete prompt
-    const prompt = this.getTemplate()
-      .replace(/{fromLanguage}/g, fromLanguage)
-      .replace(/{toLanguage}/g, toLanguage)
-      .replace(/{difficulty}/g, difficulty)
-      .replace(/{instructions}/g, generalInstructions)
-      .replace(/{languageInstructions}/g, languageInstructionsText)
-      .replace(/{nativeToTargetInstructions}/g, nativeToTargetInstructions)
-      .replace(/{text}/g, text);
-
-    return prompt;
   }
 
   /**
