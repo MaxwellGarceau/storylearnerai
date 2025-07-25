@@ -203,7 +203,7 @@ export default function SaveTranslationButton({
                   <span className="font-medium">Translated Language:</span> {translatedLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel}
+                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel.toUpperCase()}
                 </div>
               </div>
 
