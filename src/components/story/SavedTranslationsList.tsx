@@ -176,7 +176,11 @@ export default function SavedTranslationsList() {
       {/* Translations List */}
       <div className="space-y-4">
         {savedTranslations.map((translation) => (
-          <Card key={translation.id} className="hover:shadow-md transition-shadow">
+          <Card 
+            key={translation.id} 
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleViewStory(translation)}
+          >
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -188,7 +192,7 @@ export default function SavedTranslationsList() {
                     {translation.original_language.name} → {translation.translated_language.name}
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <Badge variant="secondary">{translation.difficulty_level.name}</Badge>
                   <Button
                     variant="outline"
