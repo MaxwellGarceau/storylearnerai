@@ -306,6 +306,18 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           width: '100%',
           marginTop: '8px',
         },
+        // Force footer to use flexbox column layout so skip button goes on its own row
+        tooltipFooter: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+        },
+        // Container for Previous/Next buttons
+        tooltipFooterSpacer: {
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        },
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
           zIndex: 10000,
