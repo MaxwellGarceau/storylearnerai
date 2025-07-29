@@ -21,9 +21,6 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
     const currentConfig = walkthroughService.getCurrentConfig();
     
     if (currentConfig && state.isActive) {
-      console.log(`🚀 Loading walkthrough: ${currentConfig.title} (${currentConfig.id})`);
-      console.log(`📋 Steps: ${currentConfig.steps.length}`, currentConfig.steps.map(s => s.title));
-      
       const steps: Step[] = currentConfig.steps.map((step: WalkthroughStep, index: number) => {
         const isLastStep = index === currentConfig.steps.length - 1;
         
@@ -134,51 +131,47 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
     const { action, status, type } = data;
     const currentConfig = walkthroughService.getCurrentConfig();
 
-    console.log(`🎯 Joyride callback:`, { action, status, type, step: state.currentStepIndex });
-
     // Handle step completion actions
     if (type === EVENTS.STEP_AFTER) {
       const currentStep = walkthroughService.getCurrentStep();
       if (currentStep?.onComplete) {
-        console.log(`✅ Executing onComplete for step: ${currentStep.title}`);
         currentStep.onComplete();
       }
     }
 
-    // Handle different actions
+    // Handle completion FIRST (before action-based logic)
+    if (status === STATUS.FINISHED) {
+      walkthroughService.completeWalkthrough();
+      // Force immediate state update to make modal disappear
+      setState(walkthroughService.getState());
+      return; // Exit early to prevent other logic from running
+    }
+
+    // Handle close/skip actions  
+    if (action === ACTIONS.SKIP || action === ACTIONS.CLOSE) {
+      if (status === STATUS.SKIPPED) {
+        walkthroughService.skipWalkthrough();
+      } else {
+        walkthroughService.stopWalkthrough();
+      }
+      // Force immediate state update to make modal disappear
+      setState(walkthroughService.getState());
+      return; // Exit early to prevent other logic from running
+    }
+
+    // Handle navigation actions
     if (action === ACTIONS.NEXT) {
-      console.log('➡️ Next step');
       const isLastStep = currentConfig && state.currentStepIndex >= currentConfig.steps.length - 1;
       
       if (isLastStep) {
         // Let Joyride handle the completion naturally
-        console.log('🎉 On last step, letting Joyride complete');
         return;
       } else {
         // Only manually handle next step if not on last step
         walkthroughService.nextStep();
       }
     } else if (action === ACTIONS.PREV) {
-      console.log('⬅️ Previous step');
       walkthroughService.previousStep();
-    } else if (action === ACTIONS.SKIP || action === ACTIONS.CLOSE) {
-      if (status === STATUS.SKIPPED) {
-        console.log(`⏭️ Skipping walkthrough: ${currentConfig?.id}`);
-        walkthroughService.skipWalkthrough();
-      } else {
-        console.log(`❌ Closing walkthrough: ${currentConfig?.id}`);
-        walkthroughService.stopWalkthrough();
-      }
-      // Force immediate state update to make modal disappear
-      setState(walkthroughService.getState());
-    }
-
-    // Handle completion
-    if (status === STATUS.FINISHED) {
-      console.log(`🎉 Completed walkthrough: ${currentConfig?.id}`);
-      walkthroughService.completeWalkthrough();
-      // Force immediate state update to make modal disappear
-      setState(walkthroughService.getState());
     }
 
     // Handle errors (target not found)
@@ -194,7 +187,7 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
   if (!state.isActive || joyrideSteps.length === 0) {
     return null;
   }
-
+  
   const currentConfig = walkthroughService.getCurrentConfig();
   
   return (
