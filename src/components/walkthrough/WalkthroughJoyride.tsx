@@ -56,8 +56,12 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
               {step.actionText && isLastStep && (
                 <p className="text-sm text-blue-600 font-medium">Click "Finish" to complete the tour</p>
               )}
+              {/* Display step position and formatted walkthrough name */}
               <div className="text-xs text-gray-500 mt-2">
-                Step {index + 1} of {currentConfig.steps.length} • {currentConfig.id}
+                {`Step ${index + 1} of ${currentConfig.steps.length} • ${currentConfig.id
+                  .split('-')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')}`}
               </div>
             </div>
           ),
@@ -289,6 +293,7 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           color: '#6b7280',
           zIndex: 10002,
         },
+        // Skip button drops to its own row beneath Previous/Next for better spacing
         buttonSkip: {
           color: '#6b7280',
           fontSize: '13px',
@@ -297,6 +302,9 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           border: 'none',
           textDecoration: 'underline',
           padding: '4px 8px',
+          display: 'block',
+          width: '100%',
+          marginTop: '8px',
         },
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
