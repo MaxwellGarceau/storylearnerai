@@ -312,11 +312,12 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           flexDirection: 'column',
           gap: '8px',
         },
-        // Container for Previous/Next buttons
+        // Container for Previous/Next buttons - keep them on same row
         tooltipFooterSpacer: {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          width: '100%',
         },
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
