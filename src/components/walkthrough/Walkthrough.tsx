@@ -92,16 +92,16 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       {/* Backdrop overlay with spotlight effect */}
       <div
         ref={overlayRef}
-        className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none"
+        className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none touch-none"
         style={{
           // Create a "spotlight" effect by clipping around the target element
           clipPath: targetElement ? (() => {
             const rect = targetElement.getBoundingClientRect();
             const padding = 8;
-            const left = rect.left - padding;
-            const top = rect.top - padding;
-            const right = rect.right + padding;
-            const bottom = rect.bottom + padding;
+            const left = Math.max(0, rect.left - padding);
+            const top = Math.max(0, rect.top - padding);
+            const right = Math.min(window.innerWidth, rect.right + padding);
+            const bottom = Math.min(window.innerHeight, rect.bottom + padding);
             
             return `polygon(
               0% 0%, 
@@ -127,11 +127,15 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
               position: 'fixed',
               left: (() => {
                 const rect = targetElement.getBoundingClientRect();
-                return rect.left + rect.width / 2;
+                const centerX = rect.left + rect.width / 2;
+                // Ensure the anchor stays within viewport bounds
+                return Math.max(0, Math.min(window.innerWidth, centerX));
               })(),
               top: (() => {
                 const rect = targetElement.getBoundingClientRect();
-                return rect.top + rect.height / 2;
+                const centerY = rect.top + rect.height / 2;
+                // Ensure the anchor stays within viewport bounds
+                return Math.max(0, Math.min(window.innerHeight, centerY));
               })(),
               width: 1,
               height: 1,
@@ -142,7 +146,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
         <Popover.Portal>
           <Popover.Content
-            className="z-[10001] w-80 max-w-[90vw]"
+            className="z-[10001] w-80 max-w-[calc(100vw-2rem)] sm:max-w-[90vw] md:w-80"
             side={currentStep.position === 'center' ? 'bottom' : currentStep.position}
             align="center"
             sideOffset={16}
@@ -150,12 +154,12 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             avoidCollisions={true}
             collisionPadding={16}
           >
-            <Card className="p-6 shadow-xl border-2 border-primary/20" data-testid="walkthrough-modal">
+            <Card className="p-4 sm:p-6 shadow-xl border-2 border-primary/20" data-testid="walkthrough-modal">
               {/* Close button */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-2 top-2 h-6 w-6 p-0"
+                className="absolute right-2 top-2 h-8 w-8 sm:h-6 sm:w-6 p-0"
                 onClick={handleClose}
                 data-testid="walkthrough-close-button"
               >
@@ -163,9 +167,9 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
               </Button>
 
               {/* Content */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">
+                  <h3 className="text-base sm:text-lg font-semibold text-foreground">
                     {currentStep.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -183,7 +187,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                   <Badge variant="secondary" className="text-xs">
                     Step {state.currentStepIndex + 1} of {currentConfig.steps.length}
                   </Badge>
-                  <span className="capitalize">
+                  <span className="capitalize hidden sm:inline">
                     {currentConfig.id
                       .split('-')
                       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -194,28 +198,28 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                 {/* Navigation buttons */}
                 <div className="flex flex-col gap-3">
                   {/* Previous/Next row */}
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handlePrevious}
                       disabled={isFirstStep}
                       className={cn(
-                        "flex items-center gap-2",
+                        "flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-3 sm:px-2 text-sm",
                         isFirstStep && "invisible"
                       )}
                     >
                       <ChevronLeft className="h-4 w-4" />
-                      Back
+                      <span className="hidden sm:inline">Back</span>
                     </Button>
 
                     <Button
                       size="sm"
                       onClick={handleNext}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-4 sm:px-2 text-sm flex-1 sm:flex-none"
                       data-testid="walkthrough-next-button"
                     >
-                      {isLastStep ? 'Finish' : 'Next'}
+                      <span>{isLastStep ? 'Finish' : 'Next'}</span>
                       {!isLastStep && <ChevronRight className="h-4 w-4" />}
                     </Button>
                   </div>
@@ -226,10 +230,10 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                       variant="ghost"
                       size="sm"
                       onClick={handleSkip}
-                      className="flex items-center gap-2 justify-center text-muted-foreground hover:text-foreground"
+                      className="flex items-center gap-1 sm:gap-2 justify-center text-muted-foreground hover:text-foreground h-8 px-3 text-sm"
                     >
                       <SkipForward className="h-4 w-4" />
-                      Skip
+                      <span>Skip</span>
                     </Button>
                   )}
                 </div>
