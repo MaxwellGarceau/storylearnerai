@@ -1,8 +1,16 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import Home from '../Home';
+
+// Mock react-router-dom
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+  };
+});
 
 // Mock the Layout component
 vi.mock('../../components/Layout', () => ({
@@ -21,9 +29,9 @@ vi.mock('../../hooks/useSupabase', () => ({
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
-    <BrowserRouter>
+    <MemoryRouter>
       {component}
-    </BrowserRouter>
+    </MemoryRouter>
   );
 };
 
