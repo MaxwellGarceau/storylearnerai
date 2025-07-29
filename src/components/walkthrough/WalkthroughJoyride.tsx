@@ -163,12 +163,8 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
     if (action === ACTIONS.NEXT) {
       // Let the service handle step advancement and completion
       walkthroughService.nextStep();
-      // Force immediate state update to show next step or complete
-      setState(walkthroughService.getState());
     } else if (action === ACTIONS.PREV) {
       walkthroughService.previousStep();
-      // Force immediate state update to show previous step
-      setState(walkthroughService.getState());
     }
 
     // Handle errors (target not found)
@@ -177,8 +173,6 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
       console.warn(`❌ Joyride error: Target element not found for step "${currentStep?.title}" with selector "${currentStep?.targetSelector}"`);
       // Optionally skip to next step or stop walkthrough
       walkthroughService.nextStep();
-      // Force immediate state update after error recovery
-      setState(walkthroughService.getState());
     }
   };
 
