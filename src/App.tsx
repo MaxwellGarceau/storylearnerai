@@ -50,7 +50,7 @@ function AppContent() {
         } />
       </Routes>
       <Toaster />
-              <Walkthrough />
+      <Walkthrough />
       <WalkthroughDebug show={showDebug} />
     </>
   );

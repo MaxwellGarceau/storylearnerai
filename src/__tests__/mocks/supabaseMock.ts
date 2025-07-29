@@ -135,7 +135,7 @@ export const supabaseHandlers = [
 
 // MSW handlers for Llama service
 export const llamaHandlers = [
-  http.post('https://api.groq.com/openai/v1/chat/completions', (req) => {
+  http.post('https://api.groq.com/openai/v1/chat/completions', () => {
     return HttpResponse.json({
       choices: [
         {

@@ -1,10 +1,11 @@
 import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
-import { vi } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { DashboardPage } from '../DashboardPage'
 import { useSupabase } from '../../hooks/useSupabase'
 import { UserService } from '../../api/supabase'
+import type { RenderResult } from '@testing-library/react'
 
 // Mock the useLanguages hook
 vi.mock('../../hooks/useLanguages', () => ({
@@ -53,8 +54,8 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = async (component: React.ReactElement) => {
-  let result: any;
+const renderWithRouter = async (component: React.ReactElement): Promise<RenderResult> => {
+  let result: RenderResult;
   await act(async () => {
     result = render(
       <BrowserRouter>
@@ -62,7 +63,7 @@ const renderWithRouter = async (component: React.ReactElement) => {
       </BrowserRouter>
     )
   })
-  return result
+  return result!
 }
 
 describe('DashboardPage Component', () => {
@@ -172,8 +173,8 @@ describe('DashboardPage Component', () => {
 
   it('handles loading state correctly', async () => {
     // Create a promise that we can control
-    let resolveUserPromise: ((value: any) => void) | null = null
-    const userPromise = new Promise((resolve) => {
+    let resolveUserPromise: ((value: typeof mockProfile) => void) | null = null
+    const userPromise = new Promise<typeof mockProfile>((resolve) => {
       resolveUserPromise = resolve
     })
     

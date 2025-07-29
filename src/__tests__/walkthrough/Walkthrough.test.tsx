@@ -1,7 +1,9 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { Walkthrough } from '../../components/walkthrough/Walkthrough';
 import { walkthroughService } from '../../lib/walkthroughService';
+import type { WalkthroughState } from '../../lib/types/walkthrough';
 
 // Mock the walkthrough service
 vi.mock('../../lib/walkthroughService', () => ({
@@ -90,7 +92,7 @@ describe('Walkthrough Button Behavior', () => {
   };
 
   const mockUnsubscribe = vi.fn();
-  let mockStateChangeCallback: ((state: any) => void) | null = null;
+  let mockStateChangeCallback: ((state: WalkthroughState) => void) | null = null;
 
   beforeEach(() => {
     vi.clearAllMocks();
