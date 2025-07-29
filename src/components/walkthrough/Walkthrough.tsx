@@ -8,11 +8,11 @@ import { Badge } from '../ui/Badge';
 import { X, ChevronLeft, ChevronRight, SkipForward } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface CustomWalkthroughProps {
+interface WalkthroughProps {
   className?: string;
 }
 
-export const CustomWalkthrough: React.FC<CustomWalkthroughProps> = () => {
+export const Walkthrough: React.FC<WalkthroughProps> = () => {
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);

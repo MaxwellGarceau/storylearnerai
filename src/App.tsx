@@ -10,7 +10,7 @@ import PageLayout from './components/PageLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Toaster } from './components/ui/Toaster';
 import { TooltipProvider } from './components/ui/Tooltip';
-import { WalkthroughJoyride } from './components/walkthrough/WalkthroughJoyride';
+import { Walkthrough } from './components/walkthrough/Walkthrough';
 import { WalkthroughDebug } from './components/walkthrough/WalkthroughDebug';
 import { useWalkthrough } from './hooks/useWalkthrough';
 
@@ -50,7 +50,7 @@ function AppContent() {
         } />
       </Routes>
       <Toaster />
-      <WalkthroughJoyride />
+              <Walkthrough />
       <WalkthroughDebug show={showDebug} />
     </>
   );
