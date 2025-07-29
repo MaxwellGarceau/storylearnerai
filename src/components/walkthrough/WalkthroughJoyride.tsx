@@ -161,20 +161,10 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
 
     // Handle navigation actions
     if (action === ACTIONS.NEXT) {
-      const isLastStep = currentConfig && state.currentStepIndex >= currentConfig.steps.length - 1;
-      
-      if (isLastStep) {
-        // Manually complete the walkthrough on the last step
-        walkthroughService.completeWalkthrough();
-        // Force immediate state update to make modal disappear
-        setState(walkthroughService.getState());
-        return;
-      } else {
-        // Only manually handle next step if not on last step
-        walkthroughService.nextStep();
-        // Force immediate state update to show next step
-        setState(walkthroughService.getState());
-      }
+      // Let the service handle step advancement and completion
+      walkthroughService.nextStep();
+      // Force immediate state update to show next step or complete
+      setState(walkthroughService.getState());
     } else if (action === ACTIONS.PREV) {
       walkthroughService.previousStep();
       // Force immediate state update to show previous step
