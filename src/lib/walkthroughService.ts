@@ -53,12 +53,15 @@ class WalkthroughService {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this.state));
+    // Always pass a new object to ensure React detects state changes
+    // This prevents React from ignoring updates due to same object reference
+    this.listeners.forEach(listener => listener({ ...this.state }));
   }
 
   subscribe(listener: (state: WalkthroughState) => void): () => void {
     this.listeners.add(listener);
-    listener(this.state);
+    // Pass a new object to ensure React detects the initial state
+    listener({ ...this.state });
     
     return () => {
       this.listeners.delete(listener);
