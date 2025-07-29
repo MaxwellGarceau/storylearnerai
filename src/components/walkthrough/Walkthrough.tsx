@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { walkthroughService } from '../../lib/walkthroughService';
 import type { WalkthroughState } from '../../lib/types/walkthrough';
@@ -16,6 +16,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [anchorPosition, setAnchorPosition] = useState({ left: 0, top: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
 
   // Subscribe to walkthrough service state changes
@@ -23,6 +24,41 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     const unsubscribe = walkthroughService.subscribe(setState);
     return unsubscribe;
   }, []);
+
+  // Update spotlight effect when scrolling
+  const updateSpotlight = useCallback(() => {
+    if (!targetElement || !overlayRef.current) return;
+
+    const rect = targetElement.getBoundingClientRect();
+    const padding = 8;
+    const left = Math.max(0, rect.left - padding);
+    const top = Math.max(0, rect.top - padding);
+    const right = Math.min(window.innerWidth, rect.right + padding);
+    const bottom = Math.min(window.innerHeight, rect.bottom + padding);
+    
+    const clipPath = `polygon(
+      0% 0%, 
+      0% 100%, 
+      ${left}px 100%, 
+      ${left}px ${top}px, 
+      ${right}px ${top}px, 
+      ${right}px ${bottom}px, 
+      ${left}px ${bottom}px, 
+      ${left}px 100%, 
+      100% 100%, 
+      100% 0%
+    )`;
+    
+    overlayRef.current.style.clipPath = clipPath;
+
+    // Update anchor position
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    setAnchorPosition({
+      left: Math.max(0, Math.min(window.innerWidth, centerX)),
+      top: Math.max(0, Math.min(window.innerHeight, centerY))
+    });
+  }, [targetElement]);
 
   // Find target element and manage popover visibility
   useEffect(() => {
@@ -51,6 +87,9 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         block: 'center',
         inline: 'center'
       });
+
+      // Update spotlight immediately
+      setTimeout(updateSpotlight, 100);
     } else {
       console.warn(`Target element not found: ${currentStep.targetSelector}`);
       // Auto-advance if target not found (similar to Joyride behavior)
@@ -58,7 +97,44 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         walkthroughService.nextStep();
       }, 1000);
     }
-  }, [state.isActive, state.currentStepIndex]);
+  }, [state.isActive, state.currentStepIndex, updateSpotlight]);
+
+  // Add scroll and resize listeners to update spotlight
+  useEffect(() => {
+    if (!targetElement) return;
+
+    const handleScroll = () => {
+      updateSpotlight();
+    };
+
+    const handleResize = () => {
+      updateSpotlight();
+    };
+
+    // Listen for scroll events on window and all scrollable containers
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Also listen for scroll events on document body and html
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    document.documentElement.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Find and listen to scroll events on all scrollable containers
+    const scrollableElements = document.querySelectorAll('[data-scrollable], .overflow-auto, .overflow-scroll, .overflow-y-auto, .overflow-y-scroll');
+    scrollableElements.forEach(element => {
+      element.addEventListener('scroll', handleScroll, { passive: true });
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('scroll', handleScroll);
+      document.documentElement.removeEventListener('scroll', handleScroll);
+      scrollableElements.forEach(element => {
+        element.removeEventListener('scroll', handleScroll);
+      });
+    };
+  }, [targetElement, updateSpotlight]);
 
   const currentConfig = walkthroughService.getCurrentConfig();
   const currentStep = walkthroughService.getCurrentStep();
@@ -93,30 +169,6 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       <div
         ref={overlayRef}
         className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none touch-none"
-        style={{
-          // Create a "spotlight" effect by clipping around the target element
-          clipPath: targetElement ? (() => {
-            const rect = targetElement.getBoundingClientRect();
-            const padding = 8;
-            const left = Math.max(0, rect.left - padding);
-            const top = Math.max(0, rect.top - padding);
-            const right = Math.min(window.innerWidth, rect.right + padding);
-            const bottom = Math.min(window.innerHeight, rect.bottom + padding);
-            
-            return `polygon(
-              0% 0%, 
-              0% 100%, 
-              ${left}px 100%, 
-              ${left}px ${top}px, 
-              ${right}px ${top}px, 
-              ${right}px ${bottom}px, 
-              ${left}px ${bottom}px, 
-              ${left}px 100%, 
-              100% 100%, 
-              100% 0%
-            )`;
-          })() : undefined
-        }}
       />
 
       {/* Walkthrough popover */}
@@ -125,18 +177,8 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
           <div
             style={{
               position: 'fixed',
-              left: (() => {
-                const rect = targetElement.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                // Ensure the anchor stays within viewport bounds
-                return Math.max(0, Math.min(window.innerWidth, centerX));
-              })(),
-              top: (() => {
-                const rect = targetElement.getBoundingClientRect();
-                const centerY = rect.top + rect.height / 2;
-                // Ensure the anchor stays within viewport bounds
-                return Math.max(0, Math.min(window.innerHeight, centerY));
-              })(),
+              left: anchorPosition.left,
+              top: anchorPosition.top,
               width: 1,
               height: 1,
               zIndex: 10000,
