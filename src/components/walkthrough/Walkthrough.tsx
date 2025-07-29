@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as Popover from '@radix-ui/react-popover';
-import { walkthroughService } from '../../lib/walkthroughService';
-import type { WalkthroughState } from '../../lib/types/walkthrough';
-import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { X, ChevronLeft, ChevronRight, SkipForward } from 'lucide-react';
 import { cn } from '../../lib/utils';
+
+import { useViewport } from '../../hooks/useViewport';
+import { walkthroughService } from '../../lib/walkthroughService';
+import type { WalkthroughState } from '../../lib/types/walkthrough';
 
 interface WalkthroughProps {
   className?: string;
@@ -16,8 +18,10 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
   const [anchorPosition, setAnchorPosition] = useState({ left: 0, top: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
+  const { isLandscape, isMobile, height: viewportHeight } = useViewport();
 
   // Subscribe to walkthrough service state changes
   useEffect(() => {
@@ -195,8 +199,21 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             alignOffset={0}
             avoidCollisions={true}
             collisionPadding={16}
+            style={{
+              maxHeight: 'calc(100vh - 2rem)',
+              height: 'auto',
+              minHeight: 'min-content'
+            }}
           >
-            <Card className="p-4 sm:p-6 shadow-xl border-2 border-primary/20 max-h-[calc(100vh-4rem)] overflow-hidden" data-testid="walkthrough-modal">
+            <Card 
+              className="p-4 sm:p-6 shadow-xl border-2 border-primary/20 overflow-hidden" 
+              data-testid="walkthrough-modal"
+              style={{
+                maxHeight: 'calc(100vh - 4rem)',
+                height: 'auto',
+                minHeight: 'min-content'
+              }}
+            >
               {/* Close button */}
               <Button
                 variant="ghost"
@@ -209,7 +226,14 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
               </Button>
 
               {/* Scrollable content */}
-              <div className="overflow-y-auto max-h-[calc(100vh-8rem)] pr-2">
+              <div 
+                className="overflow-y-auto pr-2"
+                style={{
+                  maxHeight: isLandscape && isMobile ? `calc(${viewportHeight}px - 6rem)` : 'calc(100vh - 8rem)',
+                  height: 'auto',
+                  minHeight: 'min-content'
+                }}
+              >
                 <div className="space-y-3 sm:space-y-4">
                   <div className="space-y-2">
                     <h3 className="text-base sm:text-lg font-semibold text-foreground">
@@ -233,7 +257,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                     <span className="capitalize hidden sm:inline">
                       {currentConfig.id
                         .split('-')
-                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ')}
                     </span>
                   </div>
