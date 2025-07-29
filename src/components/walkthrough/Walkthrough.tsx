@@ -188,7 +188,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
         <Popover.Portal>
           <Popover.Content
-            className="z-[10001] w-80 max-w-[calc(100vw-2rem)] sm:max-w-[90vw] md:w-80"
+            className="z-[10001] w-80 max-w-[calc(100vw-2rem)] sm:max-w-[90vw] md:w-80 max-h-[calc(100vh-2rem)]"
             side={currentStep.position === 'center' ? 'bottom' : currentStep.position}
             align="center"
             sideOffset={16}
@@ -196,88 +196,90 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             avoidCollisions={true}
             collisionPadding={16}
           >
-            <Card className="p-4 sm:p-6 shadow-xl border-2 border-primary/20" data-testid="walkthrough-modal">
+            <Card className="p-4 sm:p-6 shadow-xl border-2 border-primary/20 max-h-[calc(100vh-4rem)] overflow-hidden" data-testid="walkthrough-modal">
               {/* Close button */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-2 top-2 h-8 w-8 sm:h-6 sm:w-6 p-0"
+                className="absolute right-2 top-2 h-8 w-8 sm:h-6 sm:w-6 p-0 z-10"
                 onClick={handleClose}
                 data-testid="walkthrough-close-button"
               >
                 <X className="h-4 w-4" />
               </Button>
 
-              {/* Content */}
-              <div className="space-y-3 sm:space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-base sm:text-lg font-semibold text-foreground">
-                    {currentStep.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {currentStep.description}
-                  </p>
-                  {currentStep.actionText && (
-                    <p className="text-sm text-primary font-medium">
-                      {isLastStep ? 'Click "Finish" to complete the tour' : currentStep.actionText}
+              {/* Scrollable content */}
+              <div className="overflow-y-auto max-h-[calc(100vh-8rem)] pr-2">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground">
+                      {currentStep.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {currentStep.description}
                     </p>
-                  )}
-                </div>
-
-                {/* Progress indicator */}
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <Badge variant="secondary" className="text-xs">
-                    Step {state.currentStepIndex + 1} of {currentConfig.steps.length}
-                  </Badge>
-                  <span className="capitalize hidden sm:inline">
-                    {currentConfig.id
-                      .split('-')
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')}
-                  </span>
-                </div>
-
-                {/* Navigation buttons */}
-                <div className="flex flex-col gap-3">
-                  {/* Previous/Next row */}
-                  <div className="flex justify-between items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePrevious}
-                      disabled={isFirstStep}
-                      className={cn(
-                        "flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-3 sm:px-2 text-sm",
-                        isFirstStep && "invisible"
-                      )}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      <span className="hidden sm:inline">Back</span>
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      onClick={handleNext}
-                      className="flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-4 sm:px-2 text-sm flex-1 sm:flex-none"
-                      data-testid="walkthrough-next-button"
-                    >
-                      <span>{isLastStep ? 'Finish' : 'Next'}</span>
-                      {!isLastStep && <ChevronRight className="h-4 w-4" />}
-                    </Button>
+                    {currentStep.actionText && (
+                      <p className="text-sm text-primary font-medium">
+                        {isLastStep ? 'Click "Finish" to complete the tour' : currentStep.actionText}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Skip button row */}
-                  {currentConfig.allowSkip && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSkip}
-                      className="flex items-center gap-1 sm:gap-2 justify-center text-muted-foreground hover:text-foreground h-8 px-3 text-sm"
-                    >
-                      <SkipForward className="h-4 w-4" />
-                      <span>Skip</span>
-                    </Button>
-                  )}
+                  {/* Progress indicator */}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <Badge variant="secondary" className="text-xs">
+                      Step {state.currentStepIndex + 1} of {currentConfig.steps.length}
+                    </Badge>
+                    <span className="capitalize hidden sm:inline">
+                      {currentConfig.id
+                        .split('-')
+                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')}
+                    </span>
+                  </div>
+
+                  {/* Navigation buttons */}
+                  <div className="flex flex-col gap-3">
+                    {/* Previous/Next row */}
+                    <div className="flex justify-between items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePrevious}
+                        disabled={isFirstStep}
+                        className={cn(
+                          "flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-3 sm:px-2 text-sm",
+                          isFirstStep && "invisible"
+                        )}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="hidden sm:inline">Back</span>
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={handleNext}
+                        className="flex items-center gap-1 sm:gap-2 h-9 sm:h-8 px-4 sm:px-2 text-sm flex-1 sm:flex-none"
+                        data-testid="walkthrough-next-button"
+                      >
+                        <span>{isLastStep ? 'Finish' : 'Next'}</span>
+                        {!isLastStep && <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </div>
+
+                    {/* Skip button row */}
+                    {currentConfig.allowSkip && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSkip}
+                        className="flex items-center gap-1 sm:gap-2 justify-center text-muted-foreground hover:text-foreground h-8 px-3 text-sm"
+                      >
+                        <SkipForward className="h-4 w-4" />
+                        <span>Skip</span>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </Card>
