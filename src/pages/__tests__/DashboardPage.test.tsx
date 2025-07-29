@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { DashboardPage } from '../DashboardPage'
@@ -53,12 +53,16 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  )
+const renderWithRouter = async (component: React.ReactElement) => {
+  let result: any;
+  await act(async () => {
+    result = render(
+      <BrowserRouter>
+        {component}
+      </BrowserRouter>
+    )
+  })
+  return result
 }
 
 describe('DashboardPage Component', () => {
@@ -93,7 +97,7 @@ describe('DashboardPage Component', () => {
   })
 
   it('renders quick actions section', async () => {
-    renderWithRouter(<DashboardPage />)
+    await await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Quick Actions')).toBeInTheDocument()
@@ -104,7 +108,7 @@ describe('DashboardPage Component', () => {
   })
 
   it('renders stats cards with correct information', async () => {
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Total Translations')).toBeInTheDocument()
@@ -123,7 +127,7 @@ describe('DashboardPage Component', () => {
     }
     mockUserService.getUser.mockResolvedValue(spanishProfile)
 
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Spanish')).toBeInTheDocument()
@@ -137,7 +141,7 @@ describe('DashboardPage Component', () => {
     }
     mockUserService.getUser.mockResolvedValue(unknownLanguageProfile)
 
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getByText('xx')).toBeInTheDocument() // Shows the code as-is
@@ -145,7 +149,7 @@ describe('DashboardPage Component', () => {
   })
 
   it('renders recent activity section', async () => {
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getAllByText('Recent Activity')).toBeTruthy()
@@ -159,33 +163,40 @@ describe('DashboardPage Component', () => {
   })
 
   it('calls getUser with correct user ID', async () => {
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(mockUserService.getUser).toHaveBeenCalledWith('user-123')
     })
   })
 
-  it('handles loading state correctly', () => {
-    mockUseSupabase.mockReturnValue({
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-      user: mockUser,
-      loading: true,
-      error: null
+  it('handles loading state correctly', async () => {
+    // Create a promise that we can control
+    let resolveUserPromise: (value: any) => void
+    const userPromise = new Promise((resolve) => {
+      resolveUserPromise = resolve
     })
+    
+    mockUserService.getUser.mockReturnValue(userPromise)
 
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
-    const loadingTexts = screen.getAllByText('Loading your dashboard...')
-    expect(loadingTexts[0]).toBeInTheDocument()
+    // Check that loading state is shown initially
+    expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument()
+    
+    // Now resolve the promise
+    resolveUserPromise(mockProfile)
+    
+    // Wait for the loading to finish
+    await waitFor(() => {
+      expect(screen.queryByText('Loading your dashboard...')).not.toBeInTheDocument()
+    })
   })
 
   it('displays error alert when there is an error', async () => {
     mockUserService.getUser.mockRejectedValue(new Error('Database error'))
 
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument()
@@ -193,7 +204,7 @@ describe('DashboardPage Component', () => {
   })
 
   it('displays welcome message with user name', async () => {
-    renderWithRouter(<DashboardPage />)
+    await renderWithRouter(<DashboardPage />)
 
     await waitFor(() => {
       expect(screen.getAllByText('Welcome back, Test User!')).toBeTruthy()
