@@ -10,17 +10,37 @@ interface WalkthroughJoyrideProps {
 export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [joyrideSteps, setJoyrideSteps] = useState<Step[]>([]);
+  const [lastProcessedStep, setLastProcessedStep] = useState<number>(-1);
+
+  console.log('state', state);
 
   useEffect(() => {
     const unsubscribe = walkthroughService.subscribe(setState);
     return unsubscribe;
   }, []);
 
+  // Reset step tracking when walkthrough starts/stops
   useEffect(() => {
+    if (state.isActive) {
+      console.log('🎬 Walkthrough started - Resetting step tracking');
+      setLastProcessedStep(-1);
+    }
+  }, [state.isActive]);
+
+  useEffect(() => {
+    // 🐛 DEBUG: Track useEffect execution
+    console.log('🔄 useEffect triggered - Converting walkthrough steps', {
+      isActive: state.isActive,
+      currentStepIndex: state.currentStepIndex,
+      isCompleted: state.isCompleted,
+      isSkipped: state.isSkipped
+    });
+
     // Convert walkthrough steps to Joyride steps format
     const currentConfig = walkthroughService.getCurrentConfig();
     
     if (currentConfig && state.isActive) {
+      console.log('📋 Creating Joyride steps for config:', currentConfig.id, 'with', currentConfig.steps.length, 'steps');
       const steps: Step[] = currentConfig.steps.map((step: WalkthroughStep, index: number) => {
         const isLastStep = index === currentConfig.steps.length - 1;
         
@@ -118,29 +138,45 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           },
         };
       });
+      console.log('✅ Created', steps.length, 'Joyride steps, setting joyrideSteps');
       setJoyrideSteps(steps);
     } else {
       if (state.isActive && !currentConfig) {
         console.warn('⚠️ Walkthrough is active but no config found');
       }
+      console.log('🚫 Clearing joyride steps');
       setJoyrideSteps([]);
     }
   }, [state.isActive, state.currentStepIndex, state.isCompleted, state.isSkipped]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { action, status, type } = data;
+    const { action, status, type, index } = data;
     const currentConfig = walkthroughService.getCurrentConfig();
+
+    // 🐛 DEBUG: Log every callback to trace the infinite loop
+    console.log('🔍 Joyride Callback:', { 
+      action, 
+      status, 
+      type, 
+      index, 
+      currentStepIndex: state.currentStepIndex,
+      stepCount: currentConfig?.steps.length 
+    });
 
     // Handle step completion actions
     if (type === EVENTS.STEP_AFTER) {
       const currentStep = walkthroughService.getCurrentStep();
+      console.log('📝 STEP_AFTER event for step:', currentStep?.title);
       if (currentStep?.onComplete) {
+        console.log('🎯 Running onComplete callback for step:', currentStep.title);
         currentStep.onComplete();
       }
+      // NOTE: Don't advance step here - let ACTIONS.NEXT handle it
     }
 
     // Handle completion FIRST (before action-based logic)
     if (status === STATUS.FINISHED) {
+      console.log('✅ STATUS.FINISHED - Completing walkthrough');
       walkthroughService.completeWalkthrough();
       // Force immediate state update to make modal disappear
       setState(walkthroughService.getState());
@@ -149,6 +185,7 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
 
     // Handle close/skip actions  
     if (action === ACTIONS.SKIP || action === ACTIONS.CLOSE) {
+      console.log('❌ SKIP/CLOSE action:', action, 'status:', status);
       if (status === STATUS.SKIPPED) {
         walkthroughService.skipWalkthrough();
       } else {
@@ -161,18 +198,59 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
 
     // Handle navigation actions
     if (action === ACTIONS.NEXT) {
-      // Let the service handle step advancement and completion
-      walkthroughService.nextStep();
+      console.log('➡️ NEXT action - Checking if should advance', {
+        type,
+        index,
+        lastProcessedStep,
+        currentStepIndex: state.currentStepIndex
+      });
+      
+      // Only process NEXT actions on step:after events to avoid duplicates
+      // OR if this is a different step than we last processed
+      if (type === EVENTS.STEP_AFTER && index !== lastProcessedStep) {
+        console.log('✅ Processing NEXT action - Advancing step');
+        setLastProcessedStep(index);
+        walkthroughService.nextStep();
+      } else {
+        console.log('⏭️ Skipping duplicate NEXT action for step:', index);
+      }
     } else if (action === ACTIONS.PREV) {
+      console.log('⬅️ PREV action - Going back');
       walkthroughService.previousStep();
+      setLastProcessedStep(index - 1); // Update tracking for previous step
     }
 
-    // Handle errors (target not found)
+    // Handle errors (target not found) - POTENTIAL INFINITE LOOP SOURCE
     if (status === STATUS.ERROR) {
       const currentStep = walkthroughService.getCurrentStep();
+      console.log('💥 STATUS.ERROR - Target not found!', {
+        stepTitle: currentStep?.title,
+        targetSelector: currentStep?.targetSelector,
+        currentIndex: state.currentStepIndex,
+        lastProcessedStep,
+      });
       console.warn(`❌ Joyride error: Target element not found for step "${currentStep?.title}" with selector "${currentStep?.targetSelector}"`);
-      // Optionally skip to next step or stop walkthrough
-      walkthroughService.nextStep();
+
+      /*
+        React-Joyride fires a STATUS.ERROR event repeatedly when the target
+        element for the current step cannot be found. If we blindly call
+        walkthroughService.nextStep() every time we receive that event we
+        very quickly race through every remaining step until the tour is
+        marked as finished – exactly the bug we are seeing.
+
+        To avoid this we only advance **once** per failing step. We track the
+        index of the last step we processed (lastProcessedStep). If the same
+        step fires another ERROR event we simply ignore it, letting Joyride
+        continue to look for the element or wait for user navigation.
+      */
+
+      if (index !== lastProcessedStep) {
+        console.log('🔄 Auto-advancing to next step due to missing target');
+        setLastProcessedStep(index);
+        walkthroughService.nextStep();
+      } else {
+        console.log('⏭️ Duplicate ERROR event ignored for step:', index);
+      }
     }
   };
 
