@@ -56,13 +56,6 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
               {step.actionText && isLastStep && (
                 <p className="text-sm text-blue-600 font-medium">Click "Finish" to complete the tour</p>
               )}
-              {/* Display step position and formatted walkthrough name */}
-              <div className="text-xs text-gray-500 mt-2">
-                {`Step ${index + 1} of ${currentConfig.steps.length} • ${currentConfig.id
-                  .split('-')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(' ')}`}
-              </div>
             </div>
           ),
           placement: step.position === 'center' ? 'center' : step.position,
@@ -78,7 +71,7 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
             tooltip: {
               fontSize: '14px',
               padding: '20px',
-              maxWidth: '320px',
+              maxWidth: '420px',
               zIndex: 10001,
             },
             tooltipContainer: {
@@ -303,13 +296,13 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
           textDecoration: 'underline',
           padding: '4px 8px',
           display: 'block',
-          width: '100%',
+          justifyContent: 'flex-end',
           marginTop: '8px',
         },
         // Force footer to use flexbox column layout so skip button goes on its own row
         tooltipFooter: {
           display: 'flex',
-          flexDirection: 'column',
+          // flexDirection: 'column',
           gap: '8px',
         },
         // Container for Previous/Next buttons - keep them on same row
@@ -325,11 +318,11 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
         },
       }}
       locale={{
-        back: 'Previous',
+        back: 'Back',
         close: 'Close',
         last: 'Finish',
         next: 'Next',
-        skip: 'Skip tour',
+        skip: 'Skip',
       }}
     />
   );
