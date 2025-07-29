@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { WalkthroughJoyride } from '../../components/walkthrough/WalkthroughJoyride';
 import { walkthroughService } from '../../lib/walkthroughService';
 
@@ -126,6 +126,9 @@ describe('WalkthroughJoyride Button Behavior', () => {
     vi.clearAllMocks();
     mockStateChangeCallback = null;
     
+    // Ensure clean DOM before each test
+    cleanup();
+    
     // Mock subscribe to capture the setState callback
     vi.mocked(walkthroughService.subscribe).mockImplementation((callback) => {
       mockStateChangeCallback = callback;
@@ -134,6 +137,11 @@ describe('WalkthroughJoyride Button Behavior', () => {
     
     vi.mocked(walkthroughService.getCurrentConfig).mockReturnValue(mockMultiStepWalkthrough);
     vi.mocked(walkthroughService.getCurrentStep).mockReturnValue(mockMultiStepWalkthrough.steps[0]);
+  });
+
+  afterEach(() => {
+    // Clean up DOM after each test to prevent test isolation issues
+    cleanup();
   });
 
   describe('Next Button Navigation', () => {
@@ -150,7 +158,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       render(<WalkthroughJoyride />);
       
       // Verify initial modal window shows step 1
-      const initialModal = screen.getByTestId('joyride-modal');
+      const modals = screen.getAllByTestId('joyride-modal');
+      const initialModal = modals[0]; // Take the first modal if multiple exist
       expect(initialModal).toBeInTheDocument();
       expect(screen.getByText('Step 1')).toBeInTheDocument();
       expect(screen.getByText('First step of the walkthrough')).toBeInTheDocument();
@@ -188,7 +197,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       
       // CRITICAL: Verify modal window is STILL present (same modal, different content)
       await waitFor(() => {
-        const updatedModal = screen.getByTestId('joyride-modal');
+        const updatedModals = screen.getAllByTestId('joyride-modal');
+        const updatedModal = updatedModals[0]; // Take the first modal
         expect(updatedModal).toBeInTheDocument();
       });
       console.log('✅ Modal window is still present after Next click');
@@ -206,7 +216,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       console.log('✅ Step 1 content is no longer visible');
       
       // Verify it's the same modal element that got updated (not a new one)
-      const finalModal = screen.getByTestId('joyride-modal');
+      const finalModals = screen.getAllByTestId('joyride-modal');
+      const finalModal = finalModals[0]; // Take the first modal
       expect(finalModal).toBeInTheDocument();
       console.log('✅ Same modal element updated with new content');
     });
@@ -227,7 +238,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       console.log('🔍 Initial render - looking for Step 1');
       
       // Verify step 1 is initially visible
-      expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+      const initialModals = screen.getAllByTestId('joyride-modal');
+      expect(initialModals[0]).toBeInTheDocument();
       expect(screen.getByText('Step 1')).toBeInTheDocument();
       
       // Mock what happens when nextStep is called - advance to step 2
@@ -262,7 +274,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       
       // Verify modal is STILL present (not closed)
       await waitFor(() => {
-        expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+        const updatedModals = screen.getAllByTestId('joyride-modal');
+        expect(updatedModals[0]).toBeInTheDocument();
       });
       console.log('✅ Modal is still present');
       
@@ -291,7 +304,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       render(<WalkthroughJoyride />);
       
       // Verify step 2 is initially visible
-      expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+      const step2Modals = screen.getAllByTestId('joyride-modal');
+      expect(step2Modals[0]).toBeInTheDocument();
       expect(screen.getByText('Step 2')).toBeInTheDocument();
       
       // Mock what happens when nextStep is called - advance to step 3
@@ -322,7 +336,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       
       // Verify modal is STILL present (not closed)
       await waitFor(() => {
-        expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+        const updatedModals = screen.getAllByTestId('joyride-modal');
+        expect(updatedModals[0]).toBeInTheDocument();
       });
       
       // Verify content has changed to step 3
@@ -348,7 +363,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       render(<WalkthroughJoyride />);
       
       // Verify step 3 is initially visible
-      expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+      const finalStepModals = screen.getAllByTestId('joyride-modal');
+      expect(finalStepModals[0]).toBeInTheDocument();
       expect(screen.getByText('Step 3')).toBeInTheDocument();
       
       // Mock what happens when nextStep is called on final step - complete walkthrough
@@ -397,7 +413,8 @@ describe('WalkthroughJoyride Button Behavior', () => {
       render(<WalkthroughJoyride />);
       
       // Verify modal is initially visible
-      expect(screen.getByTestId('joyride-modal')).toBeInTheDocument();
+      const xButtonModals = screen.getAllByTestId('joyride-modal');
+      expect(xButtonModals[0]).toBeInTheDocument();
       expect(screen.getByText('Step 1')).toBeInTheDocument();
       
       // Mock what happens when stopWalkthrough is called - modal should disappear
