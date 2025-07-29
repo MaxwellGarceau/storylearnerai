@@ -200,32 +200,18 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             avoidCollisions={true}
             collisionPadding={16}
             style={{
-              maxHeight: isLandscape && isMobile ? `${viewportHeight - 32}px` : 'calc(100vh - 2rem)',
+              maxHeight: 'calc(100vh - 2rem)',
               height: 'auto',
-              minHeight: 'min-content',
-              transformOrigin: 'center',
-              overflow: 'visible',
-              // Prevent transform clipping on small viewports
-              transform: isLandscape && isMobile ? 'none' : 'translate3d(0, 0, 0)',
-              willChange: 'transform',
-              // Ensure proper positioning on landscape phones
-              position: 'fixed',
-              top: isLandscape && isMobile ? '16px' : 'auto',
-              left: isLandscape && isMobile ? '16px' : 'auto',
-              right: isLandscape && isMobile ? '16px' : 'auto'
+              minHeight: 'min-content'
             }}
           >
             <Card 
               className="p-4 sm:p-6 shadow-xl border-2 border-primary/20 overflow-hidden" 
               data-testid="walkthrough-modal"
               style={{
-                maxHeight: isLandscape && isMobile ? `${viewportHeight - 64}px` : 'calc(100vh - 4rem)',
+                maxHeight: 'calc(100vh - 4rem)',
                 height: 'auto',
-                minHeight: 'min-content',
-                transform: 'none',
-                transformOrigin: 'center',
-                // Ensure the card doesn't get clipped
-                overflow: 'visible'
+                minHeight: 'min-content'
               }}
             >
               {/* Close button */}
