@@ -164,7 +164,10 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
       const isLastStep = currentConfig && state.currentStepIndex >= currentConfig.steps.length - 1;
       
       if (isLastStep) {
-        // Let Joyride handle the completion naturally
+        // Manually complete the walkthrough on the last step
+        walkthroughService.completeWalkthrough();
+        // Force immediate state update to make modal disappear
+        setState(walkthroughService.getState());
         return;
       } else {
         // Only manually handle next step if not on last step
