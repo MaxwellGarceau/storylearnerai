@@ -24,96 +24,103 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
       console.log(`🚀 Loading walkthrough: ${currentConfig.title} (${currentConfig.id})`);
       console.log(`📋 Steps: ${currentConfig.steps.length}`, currentConfig.steps.map(s => s.title));
       
-      const steps: Step[] = currentConfig.steps.map((step: WalkthroughStep, index: number) => ({
-        target: step.targetSelector,
-        content: (
-          <div className="space-y-3">
-            <h3 className="text-lg font-bold text-gray-900">{step.title}</h3>
-            <p className="text-gray-700">{step.description}</p>
-            {step.actionText && (
-              <p className="text-sm text-blue-600 font-medium">{step.actionText}</p>
-            )}
-            <div className="text-xs text-gray-500 mt-2">
-              Step {index + 1} of {currentConfig.steps.length} • {currentConfig.id}
+      const steps: Step[] = currentConfig.steps.map((step: WalkthroughStep, index: number) => {
+        const isLastStep = index === currentConfig.steps.length - 1;
+        
+        return {
+          target: step.targetSelector,
+          content: (
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-gray-900">{step.title}</h3>
+              <p className="text-gray-700">{step.description}</p>
+              {step.actionText && !isLastStep && (
+                <p className="text-sm text-blue-600 font-medium">{step.actionText}</p>
+              )}
+              {step.actionText && isLastStep && (
+                <p className="text-sm text-blue-600 font-medium">Click "Finish" to complete the tour</p>
+              )}
+              <div className="text-xs text-gray-500 mt-2">
+                Step {index + 1} of {currentConfig.steps.length} • {currentConfig.id}
+              </div>
             </div>
-          </div>
-        ),
-        placement: step.position === 'center' ? 'center' : step.position,
-        disableBeacon: true,
-        hideCloseButton: false,
-        hideFooter: false,
-        showSkipButton: currentConfig.allowSkip ?? true,
-        styles: {
-          options: {
-            primaryColor: '#3b82f6',
-            zIndex: 10001, // Higher than TranslationOptionsSidebar's z-50
+          ),
+          placement: step.position === 'center' ? 'center' : step.position,
+          disableBeacon: true,
+          hideCloseButton: false,
+          hideFooter: false,
+          showSkipButton: currentConfig.allowSkip ?? true,
+          styles: {
+            options: {
+              primaryColor: '#3b82f6',
+              zIndex: 10001, // Higher than TranslationOptionsSidebar's z-50
+            },
+            tooltip: {
+              fontSize: '14px',
+              padding: '20px',
+              maxWidth: '320px',
+              zIndex: 10001,
+            },
+            tooltipContainer: {
+              textAlign: 'left',
+            },
+            tooltipTitle: {
+              textAlign: 'left',
+            },
+            buttonClose: {
+              position: 'absolute',
+              right: '12px',
+              top: '12px',
+              width: '24px',
+              height: '24px',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              backgroundColor: 'transparent',
+              border: 'none',
+              fontSize: '18px',
+              color: '#6b7280',
+              zIndex: 10002,
+            },
+            buttonNext: {
+              backgroundColor: '#3b82f6', // Use consistent blue primary color
+              fontSize: '14px',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              border: 'none',
+              borderRadius: '6px',
+              color: 'white',
+            },
+            buttonBack: {
+              color: '#6b7280',
+              fontSize: '14px',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              backgroundColor: 'white',
+            },
+            buttonSkip: {
+              color: '#6b7280',
+              fontSize: '13px',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              backgroundColor: 'transparent',
+              border: 'none',
+              textDecoration: 'underline',
+              padding: '4px 8px',
+            },
+            overlay: {
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              zIndex: 10000,
+            },
+            spotlight: {
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 10000,
+            },
           },
-          tooltip: {
-            fontSize: '14px',
-            padding: '20px',
-            maxWidth: '320px',
-            zIndex: 10001,
-          },
-          tooltipContainer: {
-            textAlign: 'left',
-          },
-          tooltipTitle: {
-            textAlign: 'left',
-          },
-          buttonClose: {
-            position: 'absolute',
-            right: '12px',
-            top: '12px',
-            width: '24px',
-            height: '24px',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            backgroundColor: 'transparent',
-            border: 'none',
-            fontSize: '18px',
-            color: '#6b7280',
-            zIndex: 10002,
-          },
-          buttonNext: {
-            backgroundColor: '#3b82f6',
-            fontSize: '14px',
-            padding: '8px 16px',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            border: 'none',
-            borderRadius: '6px',
-            color: 'white',
-          },
-          buttonBack: {
-            color: '#6b7280',
-            fontSize: '14px',
-            padding: '8px 16px',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            backgroundColor: 'white',
-          },
-          buttonSkip: {
-            color: '#6b7280',
-            fontSize: '13px',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            backgroundColor: 'transparent',
-            border: 'none',
-            textDecoration: 'underline',
-            padding: '4px 8px',
-          },
-          overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-            zIndex: 10000,
-          },
-          spotlight: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 10000,
-          },
-        },
-      }));
+        };
+      });
       setJoyrideSteps(steps);
     } else {
       if (state.isActive && !currentConfig) {
@@ -141,7 +148,16 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
     // Handle different actions
     if (action === ACTIONS.NEXT) {
       console.log('➡️ Next step');
-      walkthroughService.nextStep();
+      const isLastStep = currentConfig && state.currentStepIndex >= currentConfig.steps.length - 1;
+      
+      if (isLastStep) {
+        // Let Joyride handle the completion naturally
+        console.log('🎉 On last step, letting Joyride complete');
+        return;
+      } else {
+        // Only manually handle next step if not on last step
+        walkthroughService.nextStep();
+      }
     } else if (action === ACTIONS.PREV) {
       console.log('⬅️ Previous step');
       walkthroughService.previousStep();
@@ -153,12 +169,16 @@ export const WalkthroughJoyride: React.FC<WalkthroughJoyrideProps> = () => {
         console.log(`❌ Closing walkthrough: ${currentConfig?.id}`);
         walkthroughService.stopWalkthrough();
       }
+      // Force immediate state update to make modal disappear
+      setState(walkthroughService.getState());
     }
 
     // Handle completion
     if (status === STATUS.FINISHED) {
       console.log(`🎉 Completed walkthrough: ${currentConfig?.id}`);
       walkthroughService.completeWalkthrough();
+      // Force immediate state update to make modal disappear
+      setState(walkthroughService.getState());
     }
 
     // Handle errors (target not found)
