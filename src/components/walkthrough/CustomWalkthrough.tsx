@@ -1,0 +1,246 @@
+import React, { useEffect, useState, useRef } from 'react';
+import * as Popover from '@radix-ui/react-popover';
+import { walkthroughService } from '../../lib/walkthroughService';
+import type { WalkthroughState } from '../../lib/types/walkthrough';
+import { Button } from '../ui/Button';
+import { Card } from '../ui/Card';
+import { Badge } from '../ui/Badge';
+import { X, ChevronLeft, ChevronRight, SkipForward } from 'lucide-react';
+import { cn } from '../../lib/utils';
+
+interface CustomWalkthroughProps {
+  className?: string;
+}
+
+export const CustomWalkthrough: React.FC<CustomWalkthroughProps> = () => {
+  const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
+  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Subscribe to walkthrough service state changes
+  useEffect(() => {
+    const unsubscribe = walkthroughService.subscribe(setState);
+    return unsubscribe;
+  }, []);
+
+  // Find target element and manage popover visibility
+  useEffect(() => {
+    if (!state.isActive) {
+      setIsOpen(false);
+      setTargetElement(null);
+      return;
+    }
+
+    const currentStep = walkthroughService.getCurrentStep();
+    if (!currentStep) {
+      setIsOpen(false);
+      setTargetElement(null);
+      return;
+    }
+
+    // Find the target element
+    const element = document.querySelector(currentStep.targetSelector) as HTMLElement;
+    if (element) {
+      setTargetElement(element);
+      setIsOpen(true);
+      
+      // Scroll element into view if needed
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'center'
+      });
+    } else {
+      console.warn(`Target element not found: ${currentStep.targetSelector}`);
+      // Auto-advance if target not found (similar to Joyride behavior)
+      setTimeout(() => {
+        walkthroughService.nextStep();
+      }, 1000);
+    }
+  }, [state.isActive, state.currentStepIndex]);
+
+  const currentConfig = walkthroughService.getCurrentConfig();
+  const currentStep = walkthroughService.getCurrentStep();
+
+  const handleNext = () => {
+    walkthroughService.nextStep();
+  };
+
+  const handlePrevious = () => {
+    walkthroughService.previousStep();
+  };
+
+  const handleSkip = () => {
+    walkthroughService.skipWalkthrough();
+  };
+
+  const handleClose = () => {
+    walkthroughService.stopWalkthrough();
+  };
+
+  // Don't render if not active or no current step
+  if (!state.isActive || !currentStep || !currentConfig || !targetElement) {
+    return null;
+  }
+
+  const isFirstStep = state.currentStepIndex === 0;
+  const isLastStep = state.currentStepIndex === currentConfig.steps.length - 1;
+
+  return (
+    <>
+      {/* Backdrop overlay with spotlight effect */}
+      <div
+        ref={overlayRef}
+        className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none"
+        style={{
+          // Create a "spotlight" effect by clipping around the target element
+          clipPath: targetElement ? (() => {
+            const rect = targetElement.getBoundingClientRect();
+            const padding = 8;
+            const left = rect.left - padding;
+            const top = rect.top - padding;
+            const right = rect.right + padding;
+            const bottom = rect.bottom + padding;
+            
+            return `polygon(
+              0% 0%, 
+              0% 100%, 
+              ${left}px 100%, 
+              ${left}px ${top}px, 
+              ${right}px ${top}px, 
+              ${right}px ${bottom}px, 
+              ${left}px ${bottom}px, 
+              ${left}px 100%, 
+              100% 100%, 
+              100% 0%
+            )`;
+          })() : undefined
+        }}
+      />
+
+      {/* Walkthrough popover */}
+      <Popover.Root open={isOpen}>
+        <Popover.Anchor asChild>
+          <div
+            style={{
+              position: 'fixed',
+              left: (() => {
+                const rect = targetElement.getBoundingClientRect();
+                return rect.left + rect.width / 2;
+              })(),
+              top: (() => {
+                const rect = targetElement.getBoundingClientRect();
+                return rect.top + rect.height / 2;
+              })(),
+              width: 1,
+              height: 1,
+              zIndex: 10000,
+            }}
+          />
+        </Popover.Anchor>
+
+        <Popover.Portal>
+          <Popover.Content
+            className="z-[10001] w-80 max-w-[90vw]"
+            side={currentStep.position === 'center' ? 'bottom' : currentStep.position}
+            align="center"
+            sideOffset={16}
+            alignOffset={0}
+            avoidCollisions={true}
+            collisionPadding={16}
+          >
+            <Card className="p-6 shadow-xl border-2 border-primary/20" data-testid="walkthrough-modal">
+              {/* Close button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-2 h-6 w-6 p-0"
+                onClick={handleClose}
+                data-testid="walkthrough-close-button"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+
+              {/* Content */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {currentStep.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {currentStep.description}
+                  </p>
+                  {currentStep.actionText && (
+                    <p className="text-sm text-primary font-medium">
+                      {isLastStep ? 'Click "Finish" to complete the tour' : currentStep.actionText}
+                    </p>
+                  )}
+                </div>
+
+                {/* Progress indicator */}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <Badge variant="secondary" className="text-xs">
+                    Step {state.currentStepIndex + 1} of {currentConfig.steps.length}
+                  </Badge>
+                  <span className="capitalize">
+                    {currentConfig.id
+                      .split('-')
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
+                  </span>
+                </div>
+
+                {/* Navigation buttons */}
+                <div className="flex flex-col gap-3">
+                  {/* Previous/Next row */}
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePrevious}
+                      disabled={isFirstStep}
+                      className={cn(
+                        "flex items-center gap-2",
+                        isFirstStep && "invisible"
+                      )}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Back
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      onClick={handleNext}
+                      className="flex items-center gap-2"
+                      data-testid="walkthrough-next-button"
+                    >
+                      {isLastStep ? 'Finish' : 'Next'}
+                      {!isLastStep && <ChevronRight className="h-4 w-4" />}
+                    </Button>
+                  </div>
+
+                  {/* Skip button row */}
+                  {currentConfig.allowSkip && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSkip}
+                      className="flex items-center gap-2 justify-center text-muted-foreground hover:text-foreground"
+                    >
+                      <SkipForward className="h-4 w-4" />
+                      Skip
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Popover arrow */}
+            <Popover.Arrow className="fill-background stroke-border stroke-2" />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    </>
+  );
+}; 
