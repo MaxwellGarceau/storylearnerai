@@ -64,6 +64,27 @@ export const useWalkthrough = () => {
     const pathname = location.pathname;
     console.log(`🗺️ Route changed to: ${pathname}`);
     
+    // Stop any active walkthrough when navigating away from its page
+    const currentState = walkthroughService.getState();
+    if (currentState.isActive) {
+      const currentConfig = walkthroughService.getCurrentConfig();
+      if (currentConfig) {
+        // Define which walkthrough belongs to which route
+        const walkthroughRouteMap: Record<WalkthroughId, string> = {
+          'home-walkthrough': '/',
+          'translate-walkthrough': '/translate',
+          'story-walkthrough': '/story',
+        };
+        
+        const expectedRoute = walkthroughRouteMap[currentConfig.id];
+        if (expectedRoute && pathname !== expectedRoute) {
+          console.log(`🚪 User navigated away from ${expectedRoute} to ${pathname}, stopping walkthrough`);
+          stopWalkthrough();
+          return; // Don't start a new walkthrough immediately
+        }
+      }
+    }
+    
     // Define route to walkthrough mapping
     const routeWalkthroughMap: Record<string, WalkthroughId> = {
       '/': 'home-walkthrough',
@@ -140,7 +161,7 @@ export const useWalkthrough = () => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [location.pathname, startWalkthrough, isCompleted, isSkipped]);
+  }, [location.pathname, startWalkthrough, isCompleted, isSkipped, stopWalkthrough]);
 
   return {
     startWalkthrough,
