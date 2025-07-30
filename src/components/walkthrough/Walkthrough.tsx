@@ -239,6 +239,18 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
 
 
+      <style>
+        {`
+          ${isSmallLandscape ? `
+            [data-radix-popper-content-wrapper] {
+              transform: translate3d(var(--radix-popper-content-transform-x), 10px, 0) !important;
+              margin: 1rem !important;
+              max-width: calc(100vw - 2rem) !important;
+            }
+          ` : ''}
+        `}
+      </style>
+
       {/* Walkthrough popover */}
       <Popover.Root open={isOpen}>
         <Popover.Anchor asChild>
