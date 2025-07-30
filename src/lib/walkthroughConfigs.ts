@@ -88,7 +88,7 @@ export const storyWalkthrough: WalkthroughConfig = {
       id: 'create-account',
       title: 'Make an Account',
       description: 'Create a free account to save translations and track your progress. Click the sign up button to get started.',
-      targetSelector: '[data-testid="sign-up-link"], [data-testid="sign-in-link"]',
+      targetSelector: '[data-testid="sign-up-link"]',
       position: 'top',
       highlight: true,
       action: 'click',
