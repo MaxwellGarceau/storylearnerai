@@ -222,8 +222,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     walkthroughService.stopWalkthrough();
   };
 
-  // Don't render if not active or no current step
-  if (!state.isActive || !currentStep || !currentConfig || !targetElement) {
+  if (!state.isActive || !currentStep || !currentConfig) {
     return null;
   }
 

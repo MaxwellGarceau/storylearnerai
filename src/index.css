@@ -74,6 +74,8 @@
   }
 }
 
-[data-radix-popper-content-wrapper] {
-  transition: transform 0.3s ease-in-out;
+@layer components {
+  [data-radix-popper-content-wrapper] {
+    transition: transform 0.3s ease-in-out;
+  }
 }
