@@ -73,6 +73,7 @@ class WalkthroughService {
     
     // Check if walkthrough is already completed
     const storage = this.loadStorage();
+    console.log(`📦 Current storage state:`, storage);
     if (storage.completed.includes(config.id as WalkthroughId)) {
       console.log(`✅ Walkthrough already completed: ${config.id}`);
       return;
@@ -235,4 +236,23 @@ class WalkthroughService {
   }
 }
 
-export const walkthroughService = WalkthroughService.getInstance(); 
+export const walkthroughService = WalkthroughService.getInstance();
+
+// Global function for debugging walkthroughs
+if (typeof window !== 'undefined') {
+  (window as any).resetWalkthrough = (id: string) => {
+    console.log(`🔄 Resetting walkthrough from console: ${id}`);
+    walkthroughService.resetWalkthrough(id as any);
+  };
+  
+  (window as any).startWalkthrough = (id: string) => {
+    console.log(`🎬 Starting walkthrough from console: ${id}`);
+    const { walkthroughConfigs } = require('./walkthroughConfigs');
+    const config = walkthroughConfigs[id];
+    if (config) {
+      walkthroughService.startWalkthrough(config);
+    } else {
+      console.error(`❌ Walkthrough config not found: ${id}`);
+    }
+  };
+} 

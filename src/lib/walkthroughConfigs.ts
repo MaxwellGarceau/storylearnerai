@@ -64,11 +64,19 @@ export const translateWalkthrough: WalkthroughConfig = {
 
 // Helper for walkthrough configs to check user sign-in
 function isUserSignedIn() {
-  // This should match the logic in your app for checking auth
-  // (ideally, refactor to a shared utility if possible)
-  const isSignedIn = !!localStorage.getItem('supabase.auth.token');
-  console.log(`🔐 isUserSignedIn check: ${isSignedIn}`);
-  return isSignedIn;
+  // Check for any Supabase auth-related localStorage keys
+  const supabaseKeys = Object.keys(localStorage).filter(key => 
+    key.includes('supabase') || key.includes('sb-')
+  );
+  const hasAuthData = supabaseKeys.length > 0;
+  
+  console.log(`🔐 isUserSignedIn check:`, {
+    supabaseKeys,
+    hasAuthData,
+    allLocalStorageKeys: Object.keys(localStorage).filter(key => key.includes('supabase'))
+  });
+  
+  return hasAuthData;
 }
 
 export const storyWalkthrough: WalkthroughConfig = {

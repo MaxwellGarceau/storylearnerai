@@ -63,9 +63,11 @@ export const useWalkthrough = () => {
   useEffect(() => {
     const pathname = location.pathname;
     console.log(`🗺️ Route changed to: ${pathname}`);
+    console.log(`🔍 Current location object:`, location);
     
     // Stop any active walkthrough when navigating away from its page
     const currentState = walkthroughService.getState();
+    console.log(`📊 Current walkthrough state:`, currentState);
     if (currentState.isActive) {
       const currentConfig = walkthroughService.getCurrentConfig();
       if (currentConfig) {
@@ -76,7 +78,7 @@ export const useWalkthrough = () => {
           'story-walkthrough': '/story',
         };
         
-        const expectedRoute = walkthroughRouteMap[currentConfig.id];
+        const expectedRoute = walkthroughRouteMap[currentConfig.id as WalkthroughId];
         if (expectedRoute && pathname !== expectedRoute) {
           console.log(`🚪 User navigated away from ${expectedRoute} to ${pathname}, stopping walkthrough`);
           stopWalkthrough();
@@ -93,6 +95,7 @@ export const useWalkthrough = () => {
     };
 
     const walkthroughId = routeWalkthroughMap[pathname];
+    console.log(`🎯 Route ${pathname} maps to walkthrough: ${walkthroughId}`);
     
     if (!walkthroughId) {
       console.log(`📍 No walkthrough defined for route: ${pathname}`);
@@ -100,6 +103,7 @@ export const useWalkthrough = () => {
     }
 
     const config = walkthroughConfigs[walkthroughId];
+    console.log(`📋 Walkthrough config lookup for ${walkthroughId}:`, config ? 'Found' : 'Not found');
     if (!config) {
       console.warn(`❌ Walkthrough config not found for: ${walkthroughId}`);
       return;
@@ -113,7 +117,9 @@ export const useWalkthrough = () => {
       completed,
       skipped,
       shouldAutoStart,
-      pathname
+      pathname,
+      configSteps: config.steps.length,
+      configAutoStart: config.autoStart
     });
 
     // Don't auto-start if user has already completed or skipped
@@ -133,6 +139,7 @@ export const useWalkthrough = () => {
     }
 
     console.log(`⏰ Scheduling walkthrough start: ${walkthroughId}`);
+    console.log(`🔍 Checking for target elements in ${config.steps.length} steps...`);
     
     // Small delay to ensure page is fully loaded and elements are available
     const timer = setTimeout(() => {
@@ -140,16 +147,23 @@ export const useWalkthrough = () => {
       let firstVisibleStep = null;
       let firstVisibleIndex = 0;
       
+      console.log(`🔍 Checking ${config.steps.length} steps for visibility...`);
       for (let i = 0; i < config.steps.length; i++) {
-        if (!config.steps[i]?.skipIf?.()) {
-          firstVisibleStep = config.steps[i];
+        const step = config.steps[i];
+        const shouldSkip = step?.skipIf?.();
+        console.log(`  Step ${i}: ${step?.id} - skipIf: ${shouldSkip}`);
+        if (!shouldSkip) {
+          firstVisibleStep = step;
           firstVisibleIndex = i;
+          console.log(`  ✅ Found first visible step: ${step?.id} at index ${i}`);
           break;
         }
       }
       
       if (firstVisibleStep) {
+        console.log(`🎯 Looking for target element: ${firstVisibleStep.targetSelector}`);
         const targetElement = document.querySelector(firstVisibleStep.targetSelector);
+        console.log(`🎯 Target element found: ${!!targetElement}`);
         if (targetElement) {
           console.log(`🎬 Auto-starting walkthrough: ${walkthroughId} at step ${firstVisibleIndex}`);
           startWalkthrough(config);
