@@ -8,18 +8,24 @@ interface ViewportDimensions {
   isMobile: boolean;
   isTablet: boolean;
   isDesktop: boolean;
+  isSmallLandscape: boolean;
 }
 
 export const useViewport = (): ViewportDimensions => {
-  const [viewport, setViewport] = useState<ViewportDimensions>(() => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    isLandscape: window.innerWidth > window.innerHeight,
-    isPortrait: window.innerHeight > window.innerWidth,
-    isMobile: window.innerWidth < 768,
-    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
-    isDesktop: window.innerWidth >= 1024,
-  }));
+  const [viewport, setViewport] = useState<ViewportDimensions>(() => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    return {
+      width,
+      height,
+      isLandscape: width > height,
+      isPortrait: height > width,
+      isMobile: width < 768,
+      isTablet: width >= 768 && width < 1024,
+      isDesktop: width >= 1024,
+      isSmallLandscape: width > height && height < 600,
+    };
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,6 +40,7 @@ export const useViewport = (): ViewportDimensions => {
         isMobile: width < 768,
         isTablet: width >= 768 && width < 1024,
         isDesktop: width >= 1024,
+        isSmallLandscape: width > height && height < 600,
       });
     };
 

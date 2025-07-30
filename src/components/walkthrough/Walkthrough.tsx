@@ -21,7 +21,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
   const [anchorPosition, setAnchorPosition] = useState({ left: 0, top: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
-  const { isLandscape, isMobile, height: viewportHeight } = useViewport();
+  const { isLandscape, isMobile, isSmallLandscape, height: viewportHeight } = useViewport();
 
   // Subscribe to walkthrough service state changes
   useEffect(() => {
@@ -175,6 +175,28 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none touch-none"
       />
 
+      {/* CSS to prevent negative vertical transforms on landscape */}
+      <style>
+        {`
+          ${isSmallLandscape ? `
+            [data-radix-popper-content-wrapper] {
+              transform: translate3d(var(--radix-popper-content-transform-x, 0px), 
+                max(var(--radix-popper-content-transform-y, 0px), 0px), 
+                var(--radix-popper-content-transform-z, 0px)) !important;
+              max-height: ${viewportHeight - 64}px !important;
+              max-width: calc(100vw - 2rem) !important;
+              margin: 1rem !important;
+              overflow: visible !important;
+              /* Ensure modal doesn't touch screen edges */
+              left: 1rem !important;
+              right: 1rem !important;
+              top: 1rem !important;
+              bottom: 1rem !important;
+            }
+          ` : ''}
+        `}
+      </style>
+
       {/* Walkthrough popover */}
       <Popover.Root open={isOpen}>
         <Popover.Anchor asChild>
@@ -200,18 +222,30 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             avoidCollisions={true}
             collisionPadding={16}
             style={{
-              maxHeight: 'calc(100vh - 2rem)',
               height: 'auto',
-              minHeight: 'min-content'
+              minHeight: 'min-content',
+              // Use calc() to ensure modal stays within viewport bounds
+              transform: `translate3d(0, 0, 0) scale(1)`,
+              transformOrigin: 'center',
+              // Ensure the modal doesn't get clipped by viewport edges
+              maxWidth: 'calc(100vw - 2rem)',
+              maxHeight: 'calc(100vh - 2rem)',
+              // Add overflow handling for edge cases
+              overflow: 'visible'
             }}
           >
             <Card 
               className="p-4 sm:p-6 shadow-xl border-2 border-primary/20 overflow-hidden" 
               data-testid="walkthrough-modal"
               style={{
-                maxHeight: 'calc(100vh - 4rem)',
                 height: 'auto',
-                minHeight: 'min-content'
+                minHeight: 'min-content',
+                // Ensure card content doesn't overflow
+                maxWidth: 'calc(100vw - 4rem)',
+                // Use calc() for responsive height based on viewport
+                maxHeight: isLandscape && isMobile 
+                  ? `calc(${viewportHeight}px - 4rem)` 
+                  : 'calc(100vh - 4rem)'
               }}
             >
               {/* Close button */}
