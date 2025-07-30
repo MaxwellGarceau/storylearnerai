@@ -117,14 +117,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
           inline: 'center'
         });
 
-        // Force immediate positioning for new target elements or step changes
         updateSpotlight(true, element);
-        
-        // Additional debounced update to handle any layout shifts
-        if (updateTimeoutRef.current) {
-          clearTimeout(updateTimeoutRef.current);
-        }
-        updateTimeoutRef.current = setTimeout(() => updateSpotlight(false, element), 200);
       }
     } else {
       console.warn(`Target element not found: ${currentStep.targetSelector}`);
@@ -245,27 +238,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         className="fixed inset-0 bg-black/40 z-[9999] pointer-events-none touch-none"
       />
 
-      {/* CSS to prevent negative vertical transforms on landscape */}
-      <style>
-        {`
-          ${isSmallLandscape ? `
-            [data-radix-popper-content-wrapper] {
-              transform: translate3d(var(--radix-popper-content-transform-x, 0px), 
-                max(var(--radix-popper-content-transform-y, 0px), 0px), 
-                var(--radix-popper-content-transform-z, 0px)) !important;
-              max-height: ${viewportHeight - 64}px !important;
-              max-width: calc(100vw - 2rem) !important;
-              margin: 1rem !important;
-              overflow: visible !important;
-              /* Ensure modal doesn't touch screen edges */
-              left: 1rem !important;
-              right: 1rem !important;
-              top: 1rem !important;
-              bottom: 1rem !important;
-            }
-          ` : ''}
-        `}
-      </style>
+
 
       {/* Walkthrough popover */}
       <Popover.Root open={isOpen}>
@@ -294,9 +267,6 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
             style={{
               height: 'auto',
               minHeight: 'min-content',
-              // Use calc() to ensure modal stays within viewport bounds
-              transform: `translate3d(0, 0, 0) scale(1)`,
-              transformOrigin: 'center',
               // Ensure the modal doesn't get clipped by viewport edges
               maxWidth: 'calc(100vw - 2rem)',
               maxHeight: 'calc(100vh - 2rem)',
