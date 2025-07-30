@@ -10,6 +10,7 @@ import { cn } from '../lib/utils';
 import { Card, CardContent } from '../components/ui/Card';
 import Label from '../components/ui/Label';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
+import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
@@ -18,6 +19,10 @@ const StoryReaderPage: React.FC = () => {
   const isSavedStory = location.state?.isSavedStory as boolean | undefined;
   // const savedTranslationId = location.state?.savedTranslationId as string | undefined;
   const [showOptions, setShowOptions] = useState(false);
+
+  // Use test data if in debug mode and no translation data
+  const isDebugMode = window.location.search.includes('debug=walkthrough');
+  const finalTranslationData = translationData || (isDebugMode ? testWalkthroughTranslationData : undefined);
 
   const handleTranslateAnother = () => {
     navigate('/translate');
@@ -28,7 +33,7 @@ const StoryReaderPage: React.FC = () => {
   };
 
   // If no translation data is available, show a message
-  if (!translationData) {
+  if (!finalTranslationData) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="max-w-2xl mx-auto text-center p-8">
@@ -75,21 +80,26 @@ const StoryReaderPage: React.FC = () => {
             <Badge variant="secondary">Saved Story</Badge>
           </div>
         )}
+        {isDebugMode && !translationData && (
+          <div className="mt-2">
+            <Badge variant="outline">Debug Mode - Test Story</Badge>
+          </div>
+        )}
       </div>
 
       {/* Story Container with transparent background */}
       <div className="bg-transparent border border-border rounded-lg p-6 mb-8">
-        <StoryRender translationData={translationData} />
+        <StoryRender translationData={finalTranslationData} />
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <SaveTranslationButton
-          translationData={translationData}
-          originalStory={translationData.originalText || ''}
+          translationData={finalTranslationData}
+          originalStory={finalTranslationData.originalText || ''}
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel={translationData.difficulty}
+          difficultyLevel={finalTranslationData.difficulty}
           isSavedStory={isSavedStory}
         />
         <Button 
@@ -173,7 +183,7 @@ const StoryReaderPage: React.FC = () => {
                       Target Language
                   </Label>
                   <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                    <span className="text-foreground">{translationData.toLanguage || 'English'}</span>
+                    <span className="text-foreground">{finalTranslationData.toLanguage || 'English'}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                       Currently only English translation is supported.
@@ -186,7 +196,7 @@ const StoryReaderPage: React.FC = () => {
                       Target Difficulty (CEFR)
                   </Label>
                   <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                    <span className="text-foreground">{translationData.difficulty}</span>
+                    <span className="text-foreground">{finalTranslationData.difficulty}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                       The story was adapted to this English proficiency level.
@@ -198,7 +208,7 @@ const StoryReaderPage: React.FC = () => {
                   <Label htmlFor="current-level">Current Level</Label>
                   <div className="flex items-center gap-2">
                     <Badge variant="info">
-                      {translationData.difficulty} Level
+                      {finalTranslationData.difficulty} Level
                     </Badge>
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { server } from './src/__tests__/mocks/supabaseMock';
+import 'vitest';
 
 // Mock ResizeObserver for Radix UI components
 global.ResizeObserver = class ResizeObserver {

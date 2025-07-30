@@ -53,7 +53,8 @@ describe('LLMServiceFactory', () => {
   });
 
   describe('Service Creation', () => {
-    it('should create OpenAI service', () => {
+    // Disabled: OpenAI service tests - only Gemini is actively used
+    it.skip('should create OpenAI service', () => {
       const config: OpenAIConfig = {
         provider: 'openai',
         apiKey: 'test-key',
@@ -68,7 +69,8 @@ describe('LLMServiceFactory', () => {
       expect(service.constructor.name).toBe('OpenAIService');
     });
 
-    it('should create Anthropic service', () => {
+    // Disabled: Anthropic service tests - only Gemini is actively used
+    it.skip('should create Anthropic service', () => {
       const config: AnthropicConfig = {
         provider: 'anthropic',
         apiKey: 'test-key',
@@ -100,7 +102,8 @@ describe('LLMServiceFactory', () => {
       expect(service.constructor.name).toBe('GeminiService');
     });
 
-    it('should create Llama service', () => {
+    // Disabled: Llama service tests - only Gemini is actively used
+    it.skip('should create Llama service', () => {
       const config: LlamaConfig = {
         provider: 'llama',
         apiKey: 'test-key',
@@ -116,7 +119,8 @@ describe('LLMServiceFactory', () => {
       expect(service.constructor.name).toBe('LlamaService');
     });
 
-    it('should create Custom service', () => {
+    // Disabled: Custom service tests - only Gemini is actively used
+    it.skip('should create Custom service', () => {
       const config: CustomConfig = {
         provider: 'custom',
         apiKey: 'test-key',

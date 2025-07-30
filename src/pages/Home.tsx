@@ -1,15 +1,17 @@
 // pages/Home.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Languages, Lightbulb, Sparkles, User } from 'lucide-react';
+import { ArrowRight, BookOpen, Languages, Lightbulb, Sparkles, User, HelpCircle } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { useSupabase } from '../hooks/useSupabase';
+import { useWalkthrough } from '../hooks/useWalkthrough';
 
 const Home: React.FC = () => {
   const { user } = useSupabase();
+  const { startWalkthroughById, resetWalkthrough } = useWalkthrough();
 
   const features = [
     {
@@ -68,12 +70,24 @@ const Home: React.FC = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/translate">
-              <Button size="lg" className="text-lg px-8 py-6">
+            <Link to="/translate" data-testid="start-translating-link">
+              <Button size="lg" className="text-lg px-8 py-6" data-testid="start-translating-button">
                 Start Translating
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                resetWalkthrough('home-walkthrough');
+                startWalkthroughById('home-walkthrough');
+              }}
+              className="text-lg px-8 py-6"
+            >
+              <HelpCircle className="h-5 w-5 mr-2" />
+              Restart Tutorial
+            </Button>
             {!user && (
               <Link to="/auth?mode=signup">
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6">

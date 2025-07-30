@@ -40,7 +40,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   };
 
   return (
-    <div className="fixed top-28 right-4 z-50">
+    <div className="fixed top-28 right-4 z-50" data-testid="translation-options">
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
           <button
@@ -50,6 +50,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             )}
             aria-label={isOpen ? 'Close translation options' : 'Open translation options'}
+            data-testid="translation-options-button"
           >
             <Settings className="w-5 h-5" />
             <span className="hidden sm:inline">Options</span>

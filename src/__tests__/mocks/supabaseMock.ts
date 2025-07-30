@@ -133,8 +133,71 @@ export const supabaseHandlers = [
   }),
 ]
 
+// MSW handlers for Llama service
+export const llamaHandlers = [
+  http.post('https://api.groq.com/openai/v1/chat/completions', () => {
+    return HttpResponse.json({
+      choices: [
+        {
+          message: {
+            content: 'Hello! How can I help you today?',
+          },
+        },
+      ],
+      usage: {
+        prompt_tokens: 10,
+        completion_tokens: 15,
+        total_tokens: 25,
+      },
+      model: 'llama3-8b-8192',
+    })
+  }),
+
+  http.post('http://localhost:11434/api/chat', () => {
+    return HttpResponse.json({
+      message: {
+        content: 'Hello! How can I help you today?',
+      },
+      model: 'llama3.1:8b',
+      prompt_eval_count: 10,
+      eval_count: 15,
+    })
+  }),
+
+  http.post('http://localhost:11434/api/tags', () => {
+    return HttpResponse.json({
+      models: [{ name: 'llama3.1:8b' }],
+    })
+  }),
+
+  http.post('https://api.together.xyz/v1/chat/completions', () => {
+    return HttpResponse.json({
+      choices: [
+        {
+          message: {
+            content: 'Hello! How can I help you today?',
+          },
+        },
+      ],
+      usage: {
+        prompt_tokens: 10,
+        completion_tokens: 15,
+        total_tokens: 25,
+      },
+      model: 'meta-llama/Llama-2-7b-chat-hf',
+    })
+  }),
+
+  http.post('https://api.replicate.com/v1/predictions', () => {
+    return HttpResponse.json({
+      output: ['Hello! How can I help you today?'],
+      status: 'succeeded',
+    })
+  }),
+]
+
 // Setup MSW server
-export const server = setupServer(...supabaseHandlers)
+export const server = setupServer(...supabaseHandlers, ...llamaHandlers)
 
 // Mock the useSupabase hook globally
 export const setupSupabaseMocks = () => {

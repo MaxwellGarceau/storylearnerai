@@ -38,6 +38,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             <textarea
               id="fullpage-story-input"
               name="fullpage-story-input"
+              data-testid="story-textarea"
               value={value}
               onChange={handleInputChange}
               placeholder={placeholder}
@@ -62,6 +63,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             disabled={isTranslating || !value.trim()}
             size="lg"
             className="px-8 py-3 text-lg font-medium"
+            data-testid="translate-button"
           >
             {isTranslating ? (
               <div className="flex items-center space-x-2">

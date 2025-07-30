@@ -61,6 +61,7 @@
     --chart-3: 222 84% 4.9%;       /* Tailwind blue-950 */
     --chart-4: 210 40% 96%;        /* Tailwind blue-100 */
     --chart-5: 210 40% 98%;        /* Tailwind blue-50 */
+    --radius: 0.5rem;
   }
 }
 
@@ -70,5 +71,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  [data-radix-popper-content-wrapper] {
+    transition: transform 0.3s ease-in-out;
   }
 }
