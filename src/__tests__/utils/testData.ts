@@ -7,6 +7,7 @@ import type {
   SavedTranslation,
   SavedTranslationWithDetails 
 } from '../../lib/types/database'
+import type { TranslationResponse } from '../../lib/translationService';
 
 // Dummy data for tests
 export const dummyLanguages: Language[] = [
@@ -177,3 +178,14 @@ export const createDummySavedTranslationWithDetails = (
   difficulty_level: createDummyDifficultyLevel(),
   ...overrides
 }) 
+
+// Test translation data for walkthrough testing
+export const testWalkthroughTranslationData: TranslationResponse = {
+  originalText: 'Esta es una historia de prueba para el walkthrough.',
+  translatedText: 'This is a test story for the walkthrough.',
+  fromLanguage: 'es',
+  toLanguage: 'en',
+  difficulty: 'a1',
+  provider: 'test',
+  model: 'test-model'
+}; 

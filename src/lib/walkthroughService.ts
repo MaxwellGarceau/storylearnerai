@@ -69,16 +69,39 @@ class WalkthroughService {
   }
 
   startWalkthrough(config: WalkthroughConfig): void {
+    console.log(`🎯 startWalkthrough called for: ${config.id}`);
+    
     // Check if walkthrough is already completed
     const storage = this.loadStorage();
     if (storage.completed.includes(config.id as WalkthroughId)) {
+      console.log(`✅ Walkthrough already completed: ${config.id}`);
       return;
     }
 
     this.currentWalkthrough = config;
+    
+    // Find the first visible step (not skipped)
+    let firstVisibleIndex = 0;
+    while (
+      firstVisibleIndex < config.steps.length &&
+      config.steps[firstVisibleIndex]?.skipIf?.()
+    ) {
+      console.log(`⏭️ Skipping step ${firstVisibleIndex}: ${config.steps[firstVisibleIndex]?.id}`);
+      firstVisibleIndex++;
+    }
+
+    // If all steps are skipped, complete the walkthrough immediately
+    if (firstVisibleIndex >= config.steps.length) {
+      console.log(`🎯 All steps skipped for walkthrough: ${config.id}, completing immediately`);
+      this.completeWalkthrough();
+      return;
+    }
+
+    console.log(`🎬 Starting walkthrough at step ${firstVisibleIndex}: ${config.steps[firstVisibleIndex]?.id}`);
+
     this.state = {
       isActive: true,
-      currentStepIndex: 0,
+      currentStepIndex: firstVisibleIndex,
       isCompleted: false,
       isSkipped: false,
     };
@@ -93,8 +116,17 @@ class WalkthroughService {
       currentStep.onComplete();
     }
 
-    if (this.state.currentStepIndex < this.currentWalkthrough.steps.length - 1) {
-      this.state.currentStepIndex++;
+    let nextIndex = this.state.currentStepIndex + 1;
+    // Skip steps with skipIf returning true
+    while (
+      nextIndex < this.currentWalkthrough.steps.length &&
+      this.currentWalkthrough.steps[nextIndex]?.skipIf?.()
+    ) {
+      nextIndex++;
+    }
+
+    if (nextIndex < this.currentWalkthrough.steps.length) {
+      this.state.currentStepIndex = nextIndex;
       this.notifyListeners();
     } else {
       this.completeWalkthrough();
@@ -104,8 +136,17 @@ class WalkthroughService {
   previousStep(): void {
     if (!this.currentWalkthrough || !this.state.isActive) return;
 
-    if (this.state.currentStepIndex > 0) {
-      this.state.currentStepIndex--;
+    let prevIndex = this.state.currentStepIndex - 1;
+    // Skip steps with skipIf returning true (going backwards)
+    while (
+      prevIndex >= 0 &&
+      this.currentWalkthrough.steps[prevIndex]?.skipIf?.()
+    ) {
+      prevIndex--;
+    }
+
+    if (prevIndex >= 0) {
+      this.state.currentStepIndex = prevIndex;
       this.notifyListeners();
     }
   }
@@ -150,7 +191,15 @@ class WalkthroughService {
 
   getCurrentStep(): WalkthroughStep | null {
     if (!this.currentWalkthrough || !this.state.isActive) return null;
-    return this.currentWalkthrough.steps[this.state.currentStepIndex] || null;
+    
+    const currentStep = this.currentWalkthrough.steps[this.state.currentStepIndex];
+    
+    // If the current step should be skipped, return null
+    if (currentStep?.skipIf?.()) {
+      return null;
+    }
+    
+    return currentStep || null;
   }
 
   getCurrentConfig(): WalkthroughConfig | null {
@@ -172,10 +221,12 @@ class WalkthroughService {
   }
 
   resetWalkthrough(walkthroughId: WalkthroughId): void {
+    console.log(`🔄 Resetting walkthrough: ${walkthroughId}`);
     const storage = this.loadStorage();
     storage.completed = storage.completed.filter(id => id !== walkthroughId);
     storage.skipped = storage.skipped.filter(id => id !== walkthroughId);
     this.saveStorage(storage);
+    console.log(`✅ Walkthrough reset: ${walkthroughId}`);
   }
 
   resetAllWalkthroughs(): void {

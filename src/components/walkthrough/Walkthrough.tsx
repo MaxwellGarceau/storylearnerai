@@ -9,12 +9,15 @@ import { cn } from '../../lib/utils';
 import { useViewport } from '../../hooks/useViewport';
 import { walkthroughService } from '../../lib/walkthroughService';
 import type { WalkthroughState } from '../../lib/types/walkthrough';
+import { useSupabase } from '../../hooks/useSupabase';
 
 interface WalkthroughProps {
   className?: string;
 }
 
 export const Walkthrough: React.FC<WalkthroughProps> = () => {
+  // Ensure user state is loaded so skipIf logic in walkthrough configs is accurate
+  useSupabase();
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +25,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   const [anchorPosition, setAnchorPosition] = useState({ left: 0, top: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
   const { isLandscape, isMobile, isSmallLandscape, height: viewportHeight } = useViewport();
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Subscribe to walkthrough service state changes
   useEffect(() => {
@@ -30,7 +34,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   }, []);
 
   // Update spotlight effect when scrolling
-  const updateSpotlight = useCallback(() => {
+  const updateSpotlight = useCallback((forceUpdate = false) => {
     if (!targetElement || !overlayRef.current) return;
 
     const rect = targetElement.getBoundingClientRect();
@@ -55,14 +59,24 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     
     overlayRef.current.style.clipPath = clipPath;
 
-    // Update anchor position
+    // Update anchor position with debouncing to prevent jumps
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    setAnchorPosition({
+    const newPosition = {
       left: Math.max(0, Math.min(window.innerWidth, centerX)),
       top: Math.max(0, Math.min(window.innerHeight, centerY))
-    });
-  }, [targetElement]);
+    };
+    
+    // Force update if target element changed, otherwise use threshold
+    const currentLeft = anchorPosition.left;
+    const currentTop = anchorPosition.top;
+    const threshold = forceUpdate ? 0 : 2; // Force update for new target elements
+    
+    if (forceUpdate || Math.abs(newPosition.left - currentLeft) > threshold || 
+        Math.abs(newPosition.top - currentTop) > threshold) {
+      setAnchorPosition(newPosition);
+    }
+  }, [targetElement, anchorPosition]);
 
   // Find target element and manage popover visibility
   useEffect(() => {
@@ -82,18 +96,27 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     // Find the target element
     const element = document.querySelector(currentStep.targetSelector) as HTMLElement;
     if (element) {
-      setTargetElement(element);
-      setIsOpen(true);
-      
-      // Scroll element into view if needed
-      element.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center',
-        inline: 'center'
-      });
+      // Only update if target element actually changed
+      if (targetElement !== element) {
+        setTargetElement(element);
+        setIsOpen(true);
+        
+        // Scroll element into view if needed
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'center'
+        });
 
-      // Update spotlight immediately
-      setTimeout(updateSpotlight, 100);
+        // Force immediate positioning for new target elements
+        updateSpotlight(true);
+        
+        // Additional debounced update to handle any layout shifts
+        if (updateTimeoutRef.current) {
+          clearTimeout(updateTimeoutRef.current);
+        }
+        updateTimeoutRef.current = setTimeout(() => updateSpotlight(false), 200);
+      }
     } else {
       console.warn(`Target element not found: ${currentStep.targetSelector}`);
       // Auto-advance if target not found (similar to Joyride behavior)
@@ -101,18 +124,26 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         walkthroughService.nextStep();
       }, 1000);
     }
-  }, [state.isActive, state.currentStepIndex, updateSpotlight]);
+  }, [state.isActive, state.currentStepIndex, updateSpotlight, targetElement]);
 
   // Add scroll and resize listeners to update spotlight
   useEffect(() => {
     if (!targetElement) return;
 
     const handleScroll = () => {
-      updateSpotlight();
+      // Debounce scroll updates to prevent excessive repositioning
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+      updateTimeoutRef.current = setTimeout(updateSpotlight, 50);
     };
 
     const handleResize = () => {
-      updateSpotlight();
+      // Debounce resize updates
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+      updateTimeoutRef.current = setTimeout(updateSpotlight, 100);
     };
 
     // Listen for scroll events on window and all scrollable containers
@@ -129,6 +160,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       element.addEventListener('scroll', handleScroll, { passive: true });
     });
 
+    // Cleanup function
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
@@ -137,11 +169,40 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       scrollableElements.forEach(element => {
         element.removeEventListener('scroll', handleScroll);
       });
+      // Clear any pending timeouts
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
     };
   }, [targetElement, updateSpotlight]);
 
   const currentConfig = walkthroughService.getCurrentConfig();
   const currentStep = walkthroughService.getCurrentStep();
+
+  // Helper functions to handle skipped steps
+  const getVisibleSteps = useCallback(() => {
+    if (!currentConfig) return [];
+    return currentConfig.steps.filter(step => !step.skipIf?.());
+  }, [currentConfig]);
+
+  const getCurrentVisibleStepIndex = useCallback(() => {
+    if (!currentConfig) return 0;
+    const visibleSteps = getVisibleSteps();
+    const currentStepIndex = state.currentStepIndex;
+    
+    // Find which visible step corresponds to the current step index
+    let visibleIndex = 0;
+    for (let i = 0; i <= currentStepIndex; i++) {
+      if (!currentConfig.steps[i]?.skipIf?.()) {
+        visibleIndex++;
+      }
+    }
+    return visibleIndex - 1; // -1 because we want 0-based index
+  }, [currentConfig, state.currentStepIndex, getVisibleSteps]);
+
+  const visibleSteps = getVisibleSteps();
+  const currentVisibleStepIndex = getCurrentVisibleStepIndex();
+  const isLastStep = currentVisibleStepIndex === visibleSteps.length - 1;
 
   const handleNext = () => {
     walkthroughService.nextStep();
@@ -164,8 +225,8 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     return null;
   }
 
-  const isFirstStep = state.currentStepIndex === 0;
-  const isLastStep = state.currentStepIndex === currentConfig.steps.length - 1;
+  const isFirstStep = currentVisibleStepIndex === 0;
+  // const isLastStep = state.currentStepIndex === currentConfig.steps.length - 1; // This line is now handled by getCurrentVisibleStepIndex
 
   return (
     <>
@@ -286,7 +347,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                   {/* Progress indicator */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <Badge variant="secondary" className="text-xs">
-                      Step {state.currentStepIndex + 1} of {currentConfig.steps.length}
+                      Step {currentVisibleStepIndex + 1} of {visibleSteps.length}
                     </Badge>
                     <span className="capitalize hidden sm:inline">
                       {currentConfig.id

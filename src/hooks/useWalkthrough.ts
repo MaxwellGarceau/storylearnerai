@@ -136,27 +136,40 @@ export const useWalkthrough = () => {
     
     // Small delay to ensure page is fully loaded and elements are available
     const timer = setTimeout(() => {
-      // Double-check that elements exist before starting
-      const firstStep = config.steps[0];
-      if (firstStep) {
-        const targetElement = document.querySelector(firstStep.targetSelector);
+      // Find the first visible step (not skipped)
+      let firstVisibleStep = null;
+      let firstVisibleIndex = 0;
+      
+      for (let i = 0; i < config.steps.length; i++) {
+        if (!config.steps[i]?.skipIf?.()) {
+          firstVisibleStep = config.steps[i];
+          firstVisibleIndex = i;
+          break;
+        }
+      }
+      
+      if (firstVisibleStep) {
+        const targetElement = document.querySelector(firstVisibleStep.targetSelector);
         if (targetElement) {
-          console.log(`🎬 Auto-starting walkthrough: ${walkthroughId}`);
+          console.log(`🎬 Auto-starting walkthrough: ${walkthroughId} at step ${firstVisibleIndex}`);
           startWalkthrough(config);
         } else {
-          console.warn(`⚠️ Target element not found for first step: ${firstStep.targetSelector}`);
+          console.warn(`⚠️ Target element not found for first visible step: ${firstVisibleStep.targetSelector}`);
           // Retry after a longer delay
           const retryTimer = setTimeout(() => {
-            const retryElement = document.querySelector(firstStep.targetSelector);
+            const retryElement = document.querySelector(firstVisibleStep.targetSelector);
             if (retryElement) {
               console.log(`🔄 Retrying walkthrough start: ${walkthroughId}`);
               startWalkthrough(config);
             } else {
-              console.error(`❌ Target element still not found after retry: ${firstStep.targetSelector}`);
+              console.error(`❌ Target element still not found after retry: ${firstVisibleStep.targetSelector}`);
             }
           }, 2000);
           return () => clearTimeout(retryTimer);
         }
+      } else {
+        console.log(`🎯 All steps are skipped for walkthrough: ${walkthroughId}, completing immediately`);
+        startWalkthrough(config); // This will complete immediately due to our logic in startWalkthrough
       }
     }, 1000);
     

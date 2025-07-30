@@ -62,11 +62,31 @@ export const translateWalkthrough: WalkthroughConfig = {
   allowSkip: true,
 };
 
+// Helper for walkthrough configs to check user sign-in
+function isUserSignedIn() {
+  // This should match the logic in your app for checking auth
+  // (ideally, refactor to a shared utility if possible)
+  const isSignedIn = !!localStorage.getItem('supabase.auth.token');
+  console.log(`🔐 isUserSignedIn check: ${isSignedIn}`);
+  return isSignedIn;
+}
+
 export const storyWalkthrough: WalkthroughConfig = {
   id: 'story-walkthrough',
   title: 'Save Your Translation',
   description: 'Learn how to save translations and create an account.',
   steps: [
+    {
+      id: 'create-account',
+      title: 'Make an Account',
+      description: 'Create a free account to save translations and track your progress. Click the sign up button to get started.',
+      targetSelector: '[data-testid="sign-up-link"], [data-testid="sign-in-link"]',
+      position: 'top',
+      highlight: true,
+      action: 'click',
+      actionText: 'Sign up for free',
+      skipIf: isUserSignedIn,
+    },
     {
       id: 'save-translation',
       title: 'Save Your Translation',
@@ -78,18 +98,15 @@ export const storyWalkthrough: WalkthroughConfig = {
       actionText: 'Save this translation',
     },
     {
-      id: 'create-account',
-      title: 'Make an Account',
-      description: 'Create a free account to save translations and track your progress. Click the sign up button to get started.',
-      targetSelector: '[data-testid="sign-up-link"], [data-testid="sign-in-link"]',
+      id: 'dashboard-link',
+      title: 'Go to Your Dashboard',
+      description: 'You are signed in! Click here to view your dashboard and see your saved translations.',
+      targetSelector: '[data-testid="dashboard-link"], a[href="/dashboard"]',
       position: 'top',
       highlight: true,
       action: 'click',
-      actionText: 'Sign up for free',
-      skipIf: () => {
-        // Skip if user is already logged in
-        return !!localStorage.getItem('supabase.auth.token');
-      },
+      actionText: 'Go to Dashboard',
+      skipIf: () => !isUserSignedIn(),
     },
   ],
   autoStart: true,
