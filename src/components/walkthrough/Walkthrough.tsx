@@ -26,6 +26,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { isLandscape, isMobile, isSmallLandscape, height: viewportHeight } = useViewport();
   const updateTimeoutRef = useRef<NodeJS.Timeout>();
+  const previousStepIndexRef = useRef<number>(-1);
 
   // Subscribe to walkthrough service state changes
   useEffect(() => {
@@ -34,10 +35,11 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
   }, []);
 
   // Update spotlight effect when scrolling
-  const updateSpotlight = useCallback((forceUpdate = false) => {
-    if (!targetElement || !overlayRef.current) return;
+  const updateSpotlight = useCallback((forceUpdate = false, elementOverride?: HTMLElement | null) => {
+    const element = elementOverride || targetElement;
+    if (!element || !overlayRef.current) return;
 
-    const rect = targetElement.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
     const padding = 8;
     const left = Math.max(0, rect.left - padding);
     const top = Math.max(0, rect.top - padding);
@@ -83,6 +85,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     if (!state.isActive) {
       setIsOpen(false);
       setTargetElement(null);
+      previousStepIndexRef.current = -1;
       return;
     }
 
@@ -96,10 +99,16 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
     // Find the target element
     const element = document.querySelector(currentStep.targetSelector) as HTMLElement;
     if (element) {
-      // Only update if target element actually changed
-      if (targetElement !== element) {
+      const isNewTarget = targetElement !== element;
+      const isNewStep = state.currentStepIndex !== previousStepIndexRef.current;
+      
+      // Update if target element changed OR if it's a new step (even with same target)
+      if (isNewTarget || isNewStep) {
         setTargetElement(element);
         setIsOpen(true);
+        
+        // Update the previous step index
+        previousStepIndexRef.current = state.currentStepIndex;
         
         // Scroll element into view if needed
         element.scrollIntoView({ 
@@ -108,14 +117,14 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
           inline: 'center'
         });
 
-        // Force immediate positioning for new target elements
-        updateSpotlight(true);
+        // Force immediate positioning for new target elements or step changes
+        updateSpotlight(true, element);
         
         // Additional debounced update to handle any layout shifts
         if (updateTimeoutRef.current) {
           clearTimeout(updateTimeoutRef.current);
         }
-        updateTimeoutRef.current = setTimeout(() => updateSpotlight(false), 200);
+        updateTimeoutRef.current = setTimeout(() => updateSpotlight(false, element), 200);
       }
     } else {
       console.warn(`Target element not found: ${currentStep.targetSelector}`);
@@ -135,7 +144,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
-      updateTimeoutRef.current = setTimeout(updateSpotlight, 50);
+      updateTimeoutRef.current = setTimeout(() => updateSpotlight(), 50);
     };
 
     const handleResize = () => {

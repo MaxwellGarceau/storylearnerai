@@ -127,7 +127,7 @@ class WalkthroughService {
     }
 
     if (nextIndex < this.currentWalkthrough.steps.length) {
-      this.state.currentStepIndex = nextIndex;
+      this.state = { ...this.state, currentStepIndex: nextIndex };
       this.notifyListeners();
     } else {
       this.completeWalkthrough();
@@ -147,7 +147,7 @@ class WalkthroughService {
     }
 
     if (prevIndex >= 0) {
-      this.state.currentStepIndex = prevIndex;
+      this.state = { ...this.state, currentStepIndex: prevIndex };
       this.notifyListeners();
     }
   }

@@ -57,6 +57,7 @@ describe('useViewport', () => {
       isMobile: false,
       isTablet: false,
       isDesktop: true,
+      isSmallLandscape: false,
     });
   });
 
@@ -74,6 +75,7 @@ describe('useViewport', () => {
       isMobile: true,
       isTablet: false,
       isDesktop: false,
+      isSmallLandscape: false,
     });
   });
 
@@ -91,6 +93,7 @@ describe('useViewport', () => {
       isMobile: false,
       isTablet: true,
       isDesktop: false,
+      isSmallLandscape: false,
     });
   });
 

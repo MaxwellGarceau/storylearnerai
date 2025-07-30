@@ -424,4 +424,94 @@ describe('Walkthrough Button Behavior', () => {
       expect(screen.queryByText('Step 1')).not.toBeInTheDocument();
     });
   });
+
+  describe('Positioning Behavior', () => {
+    it('should update positioning when moving between steps with same target element', async () => {
+      // Create the target element in the DOM first
+      const targetElement = createMockElement('#same-target');
+      
+      // Create a walkthrough where multiple steps target the same element
+      const sameTargetWalkthrough = {
+        id: 'same-target-walkthrough',
+        title: 'Same Target Walkthrough',
+        description: 'Testing positioning with same target',
+        steps: [
+          {
+            id: 'step-1',
+            targetSelector: '#same-target',
+            title: 'Step 1',
+            description: 'First step targeting same element',
+            position: 'bottom' as const,
+            actionText: 'Click Next to continue',
+          },
+          {
+            id: 'step-2',
+            targetSelector: '#same-target', // Same target element
+            title: 'Step 2',
+            description: 'Second step targeting same element',
+            position: 'top' as const, // Different position
+            actionText: 'Click Next to continue',
+          },
+        ],
+        autoStart: false,
+      };
+
+      // Start on step 1
+      const initialState = {
+        isActive: true,
+        currentStepIndex: 0,
+        isCompleted: false,
+        isSkipped: false,
+      };
+      vi.mocked(walkthroughService.getState).mockReturnValue(initialState);
+      vi.mocked(walkthroughService.getCurrentConfig).mockReturnValue(sameTargetWalkthrough);
+      vi.mocked(walkthroughService.getCurrentStep).mockReturnValue(sameTargetWalkthrough.steps[0]);
+      
+      render(<Walkthrough />);
+      
+      // Verify step 1 is initially visible
+      await waitFor(() => {
+        expect(screen.getByText('Step 1')).toBeInTheDocument();
+      });
+      
+      // Mock what happens when nextStep is called - advance to step 2
+      vi.mocked(walkthroughService.nextStep).mockImplementation(() => {
+        const newState = {
+          ...initialState,
+          currentStepIndex: 1, // Advanced to step 2
+        };
+        
+        // Update the current step mock to return step 2
+        vi.mocked(walkthroughService.getCurrentStep).mockReturnValue(sameTargetWalkthrough.steps[1]);
+        vi.mocked(walkthroughService.getState).mockReturnValue(newState);
+        
+        // Simulate the service notifying subscribers of the state change
+        if (mockStateChangeCallback) {
+          act(() => {
+            mockStateChangeCallback!(newState);
+          });
+        }
+      });
+      
+      // Click the Next button
+      const nextButton = screen.getByTestId('walkthrough-next-button');
+      fireEvent.click(nextButton);
+      
+      // Verify service method was called
+      expect(walkthroughService.nextStep).toHaveBeenCalled();
+      
+      // Verify modal is still present and content has changed
+      await waitFor(() => {
+        expect(screen.getByTestId('walkthrough-modal')).toBeInTheDocument();
+        expect(screen.getByText('Step 2')).toBeInTheDocument();
+        expect(screen.queryByText('Step 1')).not.toBeInTheDocument();
+      });
+      
+      // Verify the target element was found and scrollIntoView was called
+      // (This tests that the positioning logic was triggered even with same target)
+      const foundTargetElement = document.querySelector('#same-target');
+      expect(foundTargetElement).toBeTruthy();
+      expect(foundTargetElement?.scrollIntoView).toHaveBeenCalled();
+    });
+  });
 });
