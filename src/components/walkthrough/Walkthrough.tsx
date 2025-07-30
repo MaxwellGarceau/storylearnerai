@@ -189,7 +189,6 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
   const getCurrentVisibleStepIndex = useCallback(() => {
     if (!currentConfig) return 0;
-    const visibleSteps = getVisibleSteps();
     const currentStepIndex = state.currentStepIndex;
     
     // Find which visible step corresponds to the current step index
@@ -200,11 +199,11 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
       }
     }
     return visibleIndex - 1; // -1 because we want 0-based index
-  }, [currentConfig, state.currentStepIndex, getVisibleSteps]);
+  }, [currentConfig, state.currentStepIndex]);
 
-  const visibleSteps = getVisibleSteps();
+  const allVisibleSteps = getVisibleSteps();
   const currentVisibleStepIndex = getCurrentVisibleStepIndex();
-  const isLastStep = currentVisibleStepIndex === visibleSteps.length - 1;
+  const isLastStep = currentVisibleStepIndex === allVisibleSteps.length - 1;
 
   const handleNext = () => {
     walkthroughService.nextStep();
@@ -337,7 +336,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
                   {/* Progress indicator */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <Badge variant="secondary" className="text-xs">
-                      Step {currentVisibleStepIndex + 1} of {visibleSteps.length}
+                      Step {currentVisibleStepIndex + 1} of {allVisibleSteps.length}
                     </Badge>
                     <span className="capitalize hidden sm:inline">
                       {currentConfig.id

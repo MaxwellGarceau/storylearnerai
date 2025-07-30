@@ -240,19 +240,20 @@ export const walkthroughService = WalkthroughService.getInstance();
 
 // Global function for debugging walkthroughs
 if (typeof window !== 'undefined') {
-  (window as any).resetWalkthrough = (id: string) => {
+  (window as unknown as Record<string, unknown>).resetWalkthrough = (id: string) => {
     console.log(`🔄 Resetting walkthrough from console: ${id}`);
-    walkthroughService.resetWalkthrough(id as any);
+    walkthroughService.resetWalkthrough(id as WalkthroughId);
   };
   
-  (window as any).startWalkthrough = (id: string) => {
+  (window as unknown as Record<string, unknown>).startWalkthrough = (id: string) => {
     console.log(`🎬 Starting walkthrough from console: ${id}`);
-    const { walkthroughConfigs } = require('./walkthroughConfigs');
-    const config = walkthroughConfigs[id];
-    if (config) {
-      walkthroughService.startWalkthrough(config);
-    } else {
-      console.error(`❌ Walkthrough config not found: ${id}`);
-    }
+    import('./walkthroughConfigs').then(({ walkthroughConfigs }) => {
+      const config = walkthroughConfigs[id];
+      if (config) {
+        walkthroughService.startWalkthrough(config);
+      } else {
+        console.error(`❌ Walkthrough config not found: ${id}`);
+      }
+    });
   };
 } 

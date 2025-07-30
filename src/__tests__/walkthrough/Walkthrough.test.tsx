@@ -428,7 +428,7 @@ describe('Walkthrough Button Behavior', () => {
   describe('Positioning Behavior', () => {
     it('should update positioning when moving between steps with same target element', async () => {
       // Create the target element in the DOM first
-      const targetElement = createMockElement('#same-target');
+      createMockElement('#same-target');
       
       // Create a walkthrough where multiple steps target the same element
       const sameTargetWalkthrough = {

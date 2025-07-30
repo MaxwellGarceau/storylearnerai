@@ -188,7 +188,7 @@ export const useWalkthrough = () => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [location.pathname, startWalkthrough, isCompleted, isSkipped, stopWalkthrough]);
+  }, [location, startWalkthrough, isCompleted, isSkipped, stopWalkthrough]);
 
   return {
     startWalkthrough,
