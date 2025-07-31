@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
+import { Settings, Check, X } from 'lucide-react';
+import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
+import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -8,6 +11,11 @@ interface FullPageStoryInputProps {
   onSubmit: () => void;
   isTranslating: boolean;
   placeholder?: string;
+  formData: {
+    language: LanguageCode;
+    difficulty: DifficultyLevel;
+  };
+  onFormDataChange: (field: 'language' | 'difficulty', value: LanguageCode | DifficultyLevel) => void;
 }
 
 const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
@@ -15,10 +23,38 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   onChange,
   onSubmit,
   isTranslating,
-  placeholder = "Ingresa tu historia en español aquí... (Enter your Spanish story here...)"
+  placeholder = "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
+  formData,
+  onFormDataChange
 }) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const { getLanguageName } = useLanguageDisplay();
+
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(event.target.value);
+  };
+
+  const handleTranslateClick = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmTranslation = () => {
+    setShowConfirmation(false);
+    onSubmit();
+  };
+
+  const handleCancelTranslation = () => {
+    setShowConfirmation(false);
+  };
+
+  const getDifficultyLabel = (difficulty: DifficultyLevel) => {
+    switch (difficulty) {
+      case 'a1': return 'A1 (Beginner)';
+      case 'a2': return 'A2 (Elementary)';
+      case 'b1': return 'B1 (Intermediate)';
+      case 'b2': return 'B2 (Upper Intermediate)';
+    }
   };
 
   return (
@@ -53,13 +89,27 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         </Card>
       </div>
 
-      {/* Action area with button and tip */}
+      {/* Action area with buttons and tip */}
       <div className="mt-6 space-y-4">
-        {/* Translate Button */}
-        <div className="flex justify-center">
+        {/* Buttons */}
+        <div className="flex justify-center items-center gap-4">
+          {/* Options Button */}
           <Button
             type="button"
-            onClick={onSubmit}
+            variant="outline"
+            onClick={() => setShowOptions(!showOptions)}
+            size="lg"
+            className="px-6 py-3 text-lg font-medium"
+            data-testid="options-button"
+          >
+            <Settings className="w-5 h-5 mr-2" />
+            Options
+          </Button>
+
+          {/* Translate Button */}
+          <Button
+            type="button"
+            onClick={handleTranslateClick}
             disabled={isTranslating || !value.trim()}
             size="lg"
             className="px-8 py-3 text-lg font-medium"
@@ -80,6 +130,46 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           </Button>
         </div>
 
+        {/* Options Panel */}
+        {showOptions && (
+          <div className="bg-muted/50 rounded-lg p-4 space-y-4">
+            <h3 className="text-lg font-semibold">Translation Options</h3>
+            
+            {/* Language Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Target Language</label>
+              <select
+                value={formData.language}
+                onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
+                className="w-full p-2 border rounded-md bg-background"
+              >
+                <option value="en">English</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Currently only English translation is supported.
+              </p>
+            </div>
+
+            {/* Difficulty Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Target Difficulty (CEFR)</label>
+              <select
+                value={formData.difficulty}
+                onChange={(e) => onFormDataChange('difficulty', e.target.value as DifficultyLevel)}
+                className="w-full p-2 border rounded-md bg-background"
+              >
+                <option value="a1">A1 (Beginner)</option>
+                <option value="a2">A2 (Elementary)</option>
+                <option value="b1">B1 (Intermediate)</option>
+                <option value="b2">B2 (Upper Intermediate)</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                The story will be adapted to this English proficiency level.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Footer info */}
         <div className="text-sm text-muted-foreground text-center">
           <p>
@@ -87,6 +177,48 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Confirm Translation Options</h3>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">From:</span>
+                <span className="font-medium">Spanish</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">To:</span>
+                <span className="font-medium">{getLanguageName(formData.language)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Difficulty:</span>
+                <span className="font-medium">{getDifficultyLabel(formData.difficulty)}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                onClick={handleCancelTranslation}
+                variant="outline"
+                className="flex-1"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmTranslation}
+                className="flex-1"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Confirm & Translate
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
