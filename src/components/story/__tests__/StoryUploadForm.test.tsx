@@ -3,6 +3,30 @@ import '@testing-library/jest-dom';
 import StoryUploadForm from '../StoryUploadForm';
 import { vi, afterEach } from 'vitest';
 
+// Mock the useLanguages hook
+vi.mock('../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    getLanguageName: (code: string) => {
+      const languageMap: Record<string, string> = {
+        'es': 'Spanish',
+        'en': 'English',
+        'fr': 'French',
+        'de': 'German',
+      };
+      return languageMap[code] || code;
+    },
+    languages: [],
+    loading: false,
+    error: null,
+    languageMap: new Map([
+      ['es', 'Spanish'],
+      ['en', 'English'],
+      ['fr', 'French'],
+      ['de', 'German'],
+    ]),
+  }),
+}));
+
 describe('StoryUploadForm', () => {
   // Cleanup after each test to prevent DOM pollution
   afterEach(() => {

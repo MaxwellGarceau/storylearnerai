@@ -199,10 +199,10 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                   onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
                   className="w-full p-2 border rounded-md bg-background"
                 >
-                  <option value="en">English</option>
+                  <option value="en">{getLanguageName('en')}</option>
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  Currently only English translation is supported.
+                  Currently only {getLanguageName('en')} translation is supported.
                 </p>
               </div>
 
@@ -220,7 +220,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                   <option value="b2">B2 (Upper Intermediate)</option>
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  The story will be adapted to this English proficiency level.
+                  The story will be adapted to this {getLanguageName('en')} proficiency level.
                 </p>
               </div>
             </div>
@@ -246,7 +246,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">From:</span>
-                <span className="font-medium">Spanish</span>
+                <span className="font-medium">{getLanguageName('es')}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">To:</span>
