@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Badge } from '../ui/Badge';
-import { Menu, X, BookOpen } from 'lucide-react';
+import { X, BookOpen } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStories.json';
 import { useNavigate } from 'react-router-dom';
@@ -68,12 +68,13 @@ const SavedStoriesSidebar: React.FC<SavedStoriesSidebarProps> = ({ className }) 
         <div className="fixed top-16 left-4 z-50">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => setIsOpen(true)}
-            className="shadow-lg bg-background/80 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm"
             aria-label="Show saved stories"
           >
-            <Menu className="w-4 h-4" />
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Saved Stories</span>
           </Button>
         </div>
       )}
