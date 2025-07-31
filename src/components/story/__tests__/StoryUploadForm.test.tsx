@@ -38,11 +38,11 @@ describe('StoryUploadForm', () => {
 
     // Check for Spanish to English translation info within this container
     expect(within(container).getByText('Translation:')).toBeInTheDocument();
-    expect(within(container).getByText('Spanish → English')).toBeInTheDocument();
-    expect(within(container).getByText(/Enter your Spanish story below/)).toBeInTheDocument();
+    expect(within(container).getByText('es → en')).toBeInTheDocument();
+    expect(within(container).getByText(/Enter your es story below/)).toBeInTheDocument();
 
     // Check form elements
-    expect(within(container).getByRole('textbox', { name: /Spanish Story/i })).toBeInTheDocument();
+    expect(within(container).getByRole('textbox', { name: /es Story/i })).toBeInTheDocument();
     expect(within(container).getByLabelText(/Target Language/i)).toBeInTheDocument();
     expect(within(container).getByLabelText(/Target Difficulty \(CEFR\)/i)).toBeInTheDocument();
     expect(within(container).getByRole('button', { name: /Translate Story/i })).toBeInTheDocument();
@@ -50,14 +50,14 @@ describe('StoryUploadForm', () => {
 
   it('has correct placeholder text for Spanish input', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
 
     expect(textArea).toHaveAttribute('placeholder', 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)');
   });
 
   it('allows the user to type in the textarea', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Una historia de ejemplo' } });
 
@@ -67,7 +67,7 @@ describe('StoryUploadForm', () => {
   it('triggers onSubmitStory with complete form data when the form is submitted', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
-    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia de prueba' } });
@@ -110,16 +110,16 @@ describe('StoryUploadForm', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
 
     // Check for helper text within this container
-    expect(within(container).getByText('Write or paste the Spanish story text you wish to translate to English.')).toBeInTheDocument();
-    expect(within(container).getByText('Currently only English translation is supported.')).toBeInTheDocument();
-    expect(within(container).getByText('The story will be adapted to this English proficiency level.')).toBeInTheDocument();
+    expect(within(container).getByText('Write or paste the es story text you wish to translate to en.')).toBeInTheDocument();
+    expect(within(container).getByText('Currently only en translation is supported.')).toBeInTheDocument();
+    expect(within(container).getByText('The story will be adapted to this en proficiency level.')).toBeInTheDocument();
   });
 
   it('submits with different difficulty levels', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
     const difficultySelectTrigger = within(container).getByLabelText('Select difficulty level');
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
@@ -141,7 +141,7 @@ describe('StoryUploadForm', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia básica' } });
