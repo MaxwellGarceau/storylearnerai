@@ -233,46 +233,47 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold">
-              {isEditing ? (
-                <div>
-                  <input
-                    type="text"
-                    value={formData.display_name}
-                    onChange={(e) => handleInputChange('display_name', e.target.value)}
-                    className={`w-full px-2 py-1 border rounded bg-background text-sm ${
-                      validationErrors.display_name ? 'border-red-500' : 'border-input'
-                    }`}
-                    placeholder="Display name"
-                  />
-                  {validationErrors.display_name && (
-                    <p className="text-xs text-red-500 mt-1">{validationErrors.display_name}</p>
-                  )}
-                </div>
-              ) : (
-                profile.display_name || 'No display name'
-              )}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {isEditing ? (
-                <div>
-                  <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => handleInputChange('username', e.target.value)}
-                    className={`w-full px-2 py-1 border rounded bg-background text-sm ${
-                      validationErrors.username ? 'border-red-500' : 'border-input'
-                    }`}
-                    placeholder="Username"
-                  />
-                  {validationErrors.username && (
-                    <p className="text-xs text-red-500 mt-1">{validationErrors.username}</p>
-                  )}
-                </div>
-              ) : (
-                `@${profile.username || 'username'}`
-              )}
-            </p>
+            {isEditing ? (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Display Name</h3>
+                <input
+                  type="text"
+                  value={formData.display_name}
+                  onChange={(e) => handleInputChange('display_name', e.target.value)}
+                  className={`w-full px-2 py-1 border rounded bg-background text-sm ${
+                    validationErrors.display_name ? 'border-red-500' : 'border-input'
+                  }`}
+                  placeholder="Display name"
+                />
+                {validationErrors.display_name && (
+                  <p className="text-xs text-red-500 mt-1">{validationErrors.display_name}</p>
+                )}
+              </div>
+            ) : (
+              <h3 className="text-lg font-semibold">
+                {profile.display_name || 'No display name'}
+              </h3>
+            )}
+            {isEditing ? (
+              <div className="text-sm text-muted-foreground">
+                <input
+                  type="text"
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  className={`w-full px-2 py-1 border rounded bg-background text-sm ${
+                    validationErrors.username ? 'border-red-500' : 'border-input'
+                  }`}
+                  placeholder="Username"
+                />
+                {validationErrors.username && (
+                  <p className="text-xs text-red-500 mt-1">{validationErrors.username}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                @{profile.username || 'username'}
+              </p>
+            )}
           </div>
         </div>
 

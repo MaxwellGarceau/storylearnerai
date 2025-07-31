@@ -252,13 +252,9 @@ export class UserService {
 
     // Check username availability if username is being updated
     if (sanitizedData.username && sanitizedData.username !== null) {
-      const isAvailable = await this.isUsernameAvailable(sanitizedData.username)
-      if (!isAvailable) {
-        // Check if the username belongs to the same user
-        const existingUser = await this.getUserByUsername(sanitizedData.username)
-        if (!existingUser || existingUser.id !== userId) {
-          throw new Error('Username is already taken')
-        }
+      const existingUser = await this.getUserByUsername(sanitizedData.username)
+      if (existingUser && existingUser.id !== userId) {
+        throw new Error('Username is already taken')
       }
     }
 
