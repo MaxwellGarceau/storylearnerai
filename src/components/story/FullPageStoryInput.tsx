@@ -130,45 +130,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           </Button>
         </div>
 
-        {/* Options Panel */}
-        {showOptions && (
-          <div className="bg-muted/50 rounded-lg p-4 space-y-4">
-            <h3 className="text-lg font-semibold">Translation Options</h3>
-            
-            {/* Language Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Target Language</label>
-              <select
-                value={formData.language}
-                onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
-                className="w-full p-2 border rounded-md bg-background"
-              >
-                <option value="en">English</option>
-              </select>
-              <p className="text-xs text-muted-foreground">
-                Currently only English translation is supported.
-              </p>
-            </div>
-
-            {/* Difficulty Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Target Difficulty (CEFR)</label>
-              <select
-                value={formData.difficulty}
-                onChange={(e) => onFormDataChange('difficulty', e.target.value as DifficultyLevel)}
-                className="w-full p-2 border rounded-md bg-background"
-              >
-                <option value="a1">A1 (Beginner)</option>
-                <option value="a2">A2 (Elementary)</option>
-                <option value="b1">B1 (Intermediate)</option>
-                <option value="b2">B2 (Upper Intermediate)</option>
-              </select>
-              <p className="text-xs text-muted-foreground">
-                The story will be adapted to this English proficiency level.
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Options Panel - Removed from here, now in floating modal */}
 
         {/* Footer info */}
         <div className="text-sm text-muted-foreground text-center">
@@ -177,6 +139,69 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Options Modal */}
+      {showOptions && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Translation Options</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowOptions(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Language Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Target Language</label>
+                <select
+                  value={formData.language}
+                  onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
+                  className="w-full p-2 border rounded-md bg-background"
+                >
+                  <option value="en">English</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Currently only English translation is supported.
+                </p>
+              </div>
+
+              {/* Difficulty Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Target Difficulty (CEFR)</label>
+                <select
+                  value={formData.difficulty}
+                  onChange={(e) => onFormDataChange('difficulty', e.target.value as DifficultyLevel)}
+                  className="w-full p-2 border rounded-md bg-background"
+                >
+                  <option value="a1">A1 (Beginner)</option>
+                  <option value="a2">A2 (Elementary)</option>
+                  <option value="b1">B1 (Intermediate)</option>
+                  <option value="b2">B2 (Upper Intermediate)</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  The story will be adapted to this English proficiency level.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <Button
+                onClick={() => setShowOptions(false)}
+                className="px-6"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {showConfirmation && (
