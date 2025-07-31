@@ -406,6 +406,14 @@ export class SavedTranslationService {
     userId: string,
     updates: UpdateSavedTranslationRequest
   ): Promise<DatabaseSavedTranslationWithDetails> {
+    // Validate input parameters
+    if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
+      throw new Error('Valid translation ID is required');
+    }
+    if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+      throw new Error('Valid user ID is required');
+    }
+
     // Validate and sanitize update data
     const validation = SavedTranslationService.validateUpdateSavedTranslationData(updates);
     if (!validation.isValid) {
