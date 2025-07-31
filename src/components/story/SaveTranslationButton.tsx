@@ -7,15 +7,16 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
+import { useLanguages } from '../../hooks/useLanguages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
-import type { LanguageCode } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
   originalStory: string;
   originalLanguage: string;
   translatedLanguage: string;
-  difficultyLevel: string;
+  difficultyLevel: DifficultyLevelDisplay;
   isSavedStory?: boolean;
 }
 
@@ -36,22 +37,37 @@ export default function SaveTranslationButton({
   const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useSupabase();
   const { toast } = useToast();
+  const { languageMap } = useLanguages();
 
-  // Map language names to ISO codes
+  // Map language names to ISO codes using the languages hook
   const getLanguageCode = (languageName: string): LanguageCode | undefined => {
-    const languageMap: Record<string, LanguageCode> = {
+    const normalizedName = languageName.toLowerCase();
+    
+    // First try to find by exact code match
+    if (languageMap.has(normalizedName as LanguageCode)) {
+      return normalizedName as LanguageCode;
+    }
+    
+    // Then try to find by language name
+    for (const [code, name] of languageMap.entries()) {
+      if (name.toLowerCase() === normalizedName) {
+        return code;
+      }
+    }
+    
+    // Fallback to common mappings
+    const fallbackMap: Record<string, LanguageCode> = {
       'spanish': 'es',
       'english': 'en',
-      'es': 'es',
-      'en': 'en',
     };
-    return languageMap[languageName.toLowerCase()];
+    
+    return fallbackMap[normalizedName];
   };
 
   // Convert difficulty level to CEFR format (database expects CEFR codes)
-  const getDifficultyCode = (difficultyLevel: string): string => {
+  const getDifficultyCode = (difficultyLevel: DifficultyLevelDisplay): DifficultyLevel => {
     // Ensure the difficulty level is in lowercase CEFR format
-    return difficultyLevel.toLowerCase();
+    return difficultyLevel.toLowerCase() as DifficultyLevel;
   };
 
   const handleSave = async () => {

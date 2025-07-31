@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
-import type { Language } from '../lib/types/database'
+import type { DatabaseLanguage } from '../lib/types/database'
 import type { LanguageCode } from '../lib/types/prompt'
 
 export const useLanguages = () => {
-  const [languages, setLanguages] = useState<Language[]>([])
+  const [languages, setLanguages] = useState<DatabaseLanguage[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
