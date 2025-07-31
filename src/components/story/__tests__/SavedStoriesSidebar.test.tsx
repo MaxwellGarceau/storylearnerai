@@ -57,10 +57,10 @@ describe('SavedStoriesSidebar', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the sidebar with toggle button', () => {
+  it('renders the sidebar with close button in header', () => {
     renderWithRouter(<SavedStoriesSidebar />);
     
-    expect(screen.getByLabelText('Hide saved stories')).toBeInTheDocument();
+    expect(screen.getByLabelText('Close saved stories')).toBeInTheDocument();
     expect(screen.getByText('Saved Stories')).toBeInTheDocument();
     expect(screen.getByText('Click on a story to read it')).toBeInTheDocument();
   });
@@ -89,25 +89,24 @@ describe('SavedStoriesSidebar', () => {
     expect(a2Badges[0]).toBeInTheDocument();
   });
 
-  it('toggles sidebar visibility when toggle button is clicked', () => {
+  it('toggles sidebar visibility when close button is clicked', () => {
     renderWithRouter(<SavedStoriesSidebar />);
     
-    const toggleButtons = screen.getAllByLabelText('Hide saved stories');
-    const toggleButton = toggleButtons[0];
+    const closeButton = screen.getByLabelText('Close saved stories');
     
     // Initially visible
     const savedStoriesHeaders = screen.getAllByText('Saved Stories');
     expect(savedStoriesHeaders[0]).toBeInTheDocument();
     
     // Click to hide
-    fireEvent.click(toggleButton);
+    fireEvent.click(closeButton);
     const showButtons = screen.getAllByLabelText('Show saved stories');
     expect(showButtons[0]).toBeInTheDocument();
     
     // Click to show again
     fireEvent.click(showButtons[0]);
-    const hideButtons = screen.getAllByLabelText('Hide saved stories');
-    expect(hideButtons[0]).toBeInTheDocument();
+    const closeButtons = screen.getAllByLabelText('Close saved stories');
+    expect(closeButtons[0]).toBeInTheDocument();
   });
 
   it('handles story click and navigates to story page', async () => {

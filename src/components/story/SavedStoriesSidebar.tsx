@@ -63,18 +63,20 @@ const SavedStoriesSidebar: React.FC<SavedStoriesSidebarProps> = ({ className }) 
 
   return (
     <>
-      {/* Toggle Button - Fixed Position */}
-      <div className="fixed top-16 left-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsOpen(!isOpen)}
-          className="shadow-lg bg-background/80 backdrop-blur-sm"
-          aria-label={isOpen ? 'Hide saved stories' : 'Show saved stories'}
-        >
-          {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </Button>
-      </div>
+      {/* Toggle Button - Fixed Position (only visible when sidebar is closed) */}
+      {!isOpen && (
+        <div className="fixed top-16 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsOpen(true)}
+            className="shadow-lg bg-background/80 backdrop-blur-sm"
+            aria-label="Show saved stories"
+          >
+            <Menu className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Sidebar */}
       <div
@@ -91,9 +93,20 @@ const SavedStoriesSidebar: React.FC<SavedStoriesSidebarProps> = ({ className }) 
         <div className="h-full flex flex-col">
           {/* Header */}
           <div className="p-4 border-b bg-muted/50">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">Saved Stories</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold">Saved Stories</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(false)}
+                className="h-8 w-8 p-0"
+                aria-label="Close saved stories"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Click on a story to read it
