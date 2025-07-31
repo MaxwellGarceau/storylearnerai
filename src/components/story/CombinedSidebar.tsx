@@ -89,7 +89,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
     <>
       {/* Toggle Button - Fixed Position (only visible when sidebar is closed) */}
       {!isOpen && (
-        <div className="fixed top-16 left-4 z-50">
+        <div className="fixed top-20 left-4 z-50">
           <Button
             variant="outline"
             size="default"
