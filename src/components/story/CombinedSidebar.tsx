@@ -240,13 +240,13 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
                   </CardContent>
                 </Card>
 
-                {/* Language Selection (Disabled) */}
+                {/* Language Display */}
                 <div className="space-y-2">
-                  <Label htmlFor="story-language">
-                    Target Language
-                  </Label>
-                  <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                    <span className="text-foreground">{getLanguageName(translationData.toLanguage)}</span>
+                  <Label htmlFor="target-language">Target Language</Label>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-sm">
+                      {getLanguageName(translationData.toLanguage)}
+                    </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Currently only English translation is supported.
