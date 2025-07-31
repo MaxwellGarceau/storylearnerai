@@ -17,6 +17,7 @@
     "test:db:stop": "./scripts/test-db.sh stop",
     "test:db:reset": "./scripts/test-db.sh reset",
     "test:db:status": "./scripts/test-db.sh status",
+    "test:db:user": "./scripts/test-db.sh user",
     "test:db:run": "./scripts/test-db.sh test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
