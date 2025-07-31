@@ -64,7 +64,7 @@ const SavedStoriesSidebar: React.FC<SavedStoriesSidebarProps> = ({ className }) 
   return (
     <>
       {/* Toggle Button - Fixed Position */}
-      <div className="fixed top-20 left-4 z-50">
+      <div className="fixed top-16 left-4 z-50">
         <Button
           variant="outline"
           size="sm"
@@ -79,8 +79,8 @@ const SavedStoriesSidebar: React.FC<SavedStoriesSidebarProps> = ({ className }) 
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-20 left-4 z-40 w-80 max-w-[calc(100vw-32px)] h-[calc(100vh-120px)]",
-          "bg-background border rounded-lg shadow-lg transition-all duration-300",
+          "fixed top-16 left-0 z-40 w-80 max-w-[calc(100vw-16px)] h-[calc(100vh-64px)]",
+          "bg-background border-r shadow-lg transition-all duration-300",
           "overflow-hidden",
           isOpen 
             ? "translate-x-0 opacity-100" 
