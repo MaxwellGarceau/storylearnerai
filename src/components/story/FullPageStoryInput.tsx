@@ -3,6 +3,7 @@ import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
 import { Settings, Check, X } from 'lucide-react';
 import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
+import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 
 interface FullPageStoryInputProps {
@@ -29,13 +30,37 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguageDisplay();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(event.target.value);
+    const rawValue = event.target.value;
+    
+    // Validate and sanitize the input
+    const validation = validateStoryText(rawValue);
+    
+    if (validation.isValid) {
+      setValidationError(null);
+      // Use the sanitized text
+      onChange(validation.sanitizedText);
+    } else {
+      // Show validation error but still allow editing
+      setValidationError(validation.errors[0] || 'Invalid input detected');
+      // Still update with sanitized text to prevent malicious content
+      onChange(validation.sanitizedText);
+    }
   };
 
   const handleTranslateClick = () => {
+    // Final validation before translation
+    const validation = validateStoryText(value);
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors[0] || 'Please fix the input before translating');
+      return;
+    }
+    
+    setValidationError(null);
     setShowConfirmation(true);
   };
 
@@ -131,6 +156,15 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         </div>
 
         {/* Options Panel - Removed from here, now in floating modal */}
+
+        {/* Validation Error */}
+        {validationError && (
+          <div className="text-sm text-red-600 text-center bg-red-50 p-3 rounded-md border border-red-200">
+            <p className="font-medium">⚠️ Security Warning</p>
+            <p>{validationError}</p>
+            <p className="text-xs mt-1">Malicious content has been automatically removed for your safety.</p>
+          </div>
+        )}
 
         {/* Footer info */}
         <div className="text-sm text-muted-foreground text-center">

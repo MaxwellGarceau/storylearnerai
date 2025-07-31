@@ -230,8 +230,11 @@ The application uses Supabase Auth for user authentication with comprehensive us
 ### Security Features
 - Row Level Security (RLS) on all user data
 - Secure authentication through Supabase
-- Input validation and sanitization
+- **Comprehensive input sanitization and XSS prevention**
+- **Real-time security validation for text inputs**
+- **DOMPurify integration for HTML sanitization**
 - Proper error handling without information leakage
+- **Security threat detection and user warnings**
 
 ## Real-time Features
 
