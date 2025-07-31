@@ -95,10 +95,10 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
             size="default"
             onClick={() => setIsOpen(true)}
             className="inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm"
-            aria-label="Open sidebar"
+            aria-label="Open story library"
           >
             <BookOpen className="w-4 h-4" />
-            <span className="hidden sm:inline">Sidebar</span>
+            <span className="hidden sm:inline">Story Library</span>
           </Button>
         </div>
       )}
@@ -121,14 +121,14 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold">Sidebar</h2>
+                <h2 className="text-lg font-semibold">Story Library</h2>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
                 className="h-8 w-8 p-0"
-                aria-label="Close sidebar"
+                aria-label="Close story library"
               >
                 <X className="w-4 h-4" />
               </Button>

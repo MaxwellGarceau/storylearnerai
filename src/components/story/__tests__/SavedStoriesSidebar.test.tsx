@@ -57,11 +57,11 @@ describe('CombinedSidebar', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the sidebar with close button in header', () => {
+  it('renders the story library with close button in header', () => {
     renderWithRouter(<CombinedSidebar />);
     
-    expect(screen.getByLabelText('Close sidebar')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Sidebar' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Close story library')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Story Library' })).toBeInTheDocument();
     expect(screen.getByText('Click on a story to read it')).toBeInTheDocument();
   });
 
@@ -89,24 +89,24 @@ describe('CombinedSidebar', () => {
     expect(a2Badges[0]).toBeInTheDocument();
   });
 
-  it('toggles sidebar visibility when close button is clicked', () => {
+  it('toggles story library visibility when close button is clicked', () => {
     renderWithRouter(<CombinedSidebar />);
     
-    const closeButtons = screen.getAllByLabelText('Close sidebar');
+    const closeButtons = screen.getAllByLabelText('Close story library');
     const closeButton = closeButtons[0];
     
     // Initially visible
-    const sidebarHeaders = screen.getAllByRole('heading', { name: 'Sidebar' });
-    expect(sidebarHeaders[0]).toBeInTheDocument();
+    const storyLibraryHeaders = screen.getAllByRole('heading', { name: 'Story Library' });
+    expect(storyLibraryHeaders[0]).toBeInTheDocument();
     
     // Click to hide
     fireEvent.click(closeButton);
-    const showButtons = screen.getAllByLabelText('Open sidebar');
+    const showButtons = screen.getAllByLabelText('Open story library');
     expect(showButtons[0]).toBeInTheDocument();
     
     // Click to show again
     fireEvent.click(showButtons[0]);
-    const newCloseButtons = screen.getAllByLabelText('Close sidebar');
+    const newCloseButtons = screen.getAllByLabelText('Close story library');
     expect(newCloseButtons[0]).toBeInTheDocument();
   });
 
