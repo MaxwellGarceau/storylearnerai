@@ -5,6 +5,24 @@ import { vi } from 'vitest';
 import TranslatePage from '../TranslatePage';
 import { TranslationResponse } from '../../lib/translationService';
 
+// Mock the Walkthrough component
+vi.mock('../../components/walkthrough/Walkthrough', () => ({
+  Walkthrough: () => null,
+}));
+
+// Mock the WalkthroughDebug component
+vi.mock('../../components/walkthrough/WalkthroughDebug', () => ({
+  WalkthroughDebug: () => null,
+}));
+
+// Mock the useWalkthrough hook
+vi.mock('../../hooks/useWalkthrough', () => ({
+  useWalkthrough: () => ({
+    startWalkthroughById: vi.fn(),
+    resetWalkthrough: vi.fn(),
+  }),
+}));
+
 // Mock the StoryContainer component
 vi.mock('../../components/story/StoryContainer', () => ({
   default: ({ onStoryTranslated }: { onStoryTranslated: (data: TranslationResponse) => void }) => (

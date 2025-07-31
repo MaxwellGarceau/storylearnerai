@@ -6,6 +6,24 @@ import StoryReaderPage from '../StoryReaderPage';
 import { TranslationResponse } from '../../lib/translationService';
 import { TooltipProvider } from '../../components/ui/Tooltip';
 
+// Mock the Walkthrough component
+vi.mock('../../components/walkthrough/Walkthrough', () => ({
+  Walkthrough: () => null,
+}));
+
+// Mock the WalkthroughDebug component
+vi.mock('../../components/walkthrough/WalkthroughDebug', () => ({
+  WalkthroughDebug: () => null,
+}));
+
+// Mock the useWalkthrough hook
+vi.mock('../../hooks/useWalkthrough', () => ({
+  useWalkthrough: () => ({
+    startWalkthroughById: vi.fn(),
+    resetWalkthrough: vi.fn(),
+  }),
+}));
+
 // Mock the StoryRender component
 vi.mock('../../components/story/StoryRender', () => ({
   default: ({ translationData }: { translationData: TranslationResponse }) => (
