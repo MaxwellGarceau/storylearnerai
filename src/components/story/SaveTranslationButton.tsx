@@ -42,32 +42,9 @@ export default function SaveTranslationButton({
   const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useSupabase();
   const { toast } = useToast();
-  const { languageMap } = useLanguages();
+  const { languageMap, getLanguageCode } = useLanguages();
 
-  // Map language names to ISO codes using the languages hook
-  const getLanguageCode = (languageName: string): LanguageCode | undefined => {
-    const normalizedName = languageName.toLowerCase();
-    
-    // First try to find by exact code match
-    if (languageMap.has(normalizedName as LanguageCode)) {
-      return normalizedName as LanguageCode;
-    }
-    
-    // Then try to find by language name
-    for (const [code, name] of languageMap.entries()) {
-      if (name.toLowerCase() === normalizedName) {
-        return code;
-      }
-    }
-    
-    // Fallback to common mappings
-    const fallbackMap: Record<string, LanguageCode> = {
-      'spanish': 'es',
-      'english': 'en',
-    };
-    
-    return fallbackMap[normalizedName];
-  };
+
 
   // Convert difficulty level to CEFR format (database expects CEFR codes)
   const getDifficultyCode = (difficultyLevel: DifficultyLevelDisplay): DifficultyLevel => {

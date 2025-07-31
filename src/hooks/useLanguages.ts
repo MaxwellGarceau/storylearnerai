@@ -22,6 +22,31 @@ export const useLanguages = () => {
     return languageMap.get(code) || code
   }
 
+  // Map language names to ISO codes
+  const getLanguageCode = (languageName: string): LanguageCode | undefined => {
+    const normalizedName = languageName.toLowerCase();
+    
+    // First try to find by exact code match
+    if (languageMap.has(normalizedName as LanguageCode)) {
+      return normalizedName as LanguageCode;
+    }
+    
+    // Then try to find by language name
+    for (const [code, name] of languageMap.entries()) {
+      if (name.toLowerCase() === normalizedName) {
+        return code;
+      }
+    }
+    
+    // Fallback to common mappings
+    const fallbackMap: Record<string, LanguageCode> = {
+      'spanish': 'es',
+      'english': 'en',
+    };
+    
+    return fallbackMap[normalizedName];
+  };
+
   useEffect(() => {
     const loadLanguages = async () => {
       try {
@@ -46,6 +71,7 @@ export const useLanguages = () => {
     loading,
     error,
     getLanguageName,
+    getLanguageCode,
     languageMap
   }
 } 
