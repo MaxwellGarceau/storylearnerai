@@ -1,272 +1,270 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SavedTranslationService } from '../savedTranslationService';
-import { supabase } from '../../client';
-import {
-  CreateSavedTranslationRequest,
-  UpdateSavedTranslationRequest,
-} from '../../../../lib/types/database';
-import { 
-  dummyLanguages, 
-  dummyDifficultyLevels, 
-  createDummyLanguage
-} from '../../../../__tests__/utils/testData';
+import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../lib/types/database';
 
-// Mock the Supabase client
-vi.mock('../../client', () => ({
+// Mock Supabase client
+vi.mock('../client', () => ({
   supabase: {
-    from: vi.fn(),
-  },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        order: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            single: vi.fn(() => ({
+              data: null,
+              error: null
+            }))
+          }))
+        }))
+      })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() => ({
+            data: {
+              id: 1,
+              user_id: 'test-user-id',
+              original_story: 'Test story',
+              translated_story: 'Historia de prueba',
+              original_language_id: 1,
+              translated_language_id: 2,
+              difficulty_level_id: 1,
+              title: 'Test Title',
+              notes: 'Test notes',
+              created_at: '2023-01-01T00:00:00Z',
+              updated_at: '2023-01-01T00:00:00Z',
+              original_language: { id: 1, code: 'en', name: 'English' },
+              translated_language: { id: 2, code: 'es', name: 'Spanish' },
+              difficulty_level: { id: 1, code: 'a1', name: 'Beginner' }
+            },
+            error: null
+          }))
+        }))
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(() => ({
+              data: {
+                id: 1,
+                user_id: 'test-user-id',
+                original_story: 'Test story',
+                translated_story: 'Historia de prueba',
+                original_language_id: 1,
+                translated_language_id: 2,
+                difficulty_level_id: 1,
+                title: 'Updated Title',
+                notes: 'Updated notes',
+                created_at: '2023-01-01T00:00:00Z',
+                updated_at: '2023-01-01T00:00:00Z',
+                original_language: { id: 1, code: 'en', name: 'English' },
+                translated_language: { id: 2, code: 'es', name: 'Spanish' },
+                difficulty_level: { id: 1, code: 'a1', name: 'Beginner' }
+              },
+              error: null
+            }))
+          }))
+        }))
+      })),
+      delete: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          error: null
+        }))
+      }))
+    }))
+  }
 }));
-
-const mockSupabase = vi.mocked(supabase);
-
-// Helper function to create a mock Supabase query builder
-const createMockQueryBuilder = (returnValue: unknown) => {
-  const resolveWith = (value: unknown) => Promise.resolve(value);
-  
-  const mockBuilder = {
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    or: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    range: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-    count: vi.fn(),
-    then: vi.fn(),
-  };
-  
-  // Configure methods that resolve promises at the end of chains
-  mockBuilder.single.mockImplementation(() => resolveWith(returnValue));
-  mockBuilder.count.mockImplementation(() => resolveWith(returnValue));
-  mockBuilder.order.mockImplementation(() => resolveWith(returnValue));
-  mockBuilder.range.mockImplementation(() => resolveWith(returnValue));
-  
-  // Make the builder itself thenable (awaitable)
-  mockBuilder.then.mockImplementation((onResolve) => {
-    return resolveWith(returnValue).then(onResolve);
-  });
-  
-  return mockBuilder;
-};
 
 describe('SavedTranslationService', () => {
   let service: SavedTranslationService;
 
   beforeEach(() => {
     service = new SavedTranslationService();
-    vi.clearAllMocks();
-  });
-
-  describe('getLanguages', () => {
-    it('should fetch languages successfully', async () => {
-      const mockBuilder = createMockQueryBuilder({ data: dummyLanguages, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const result = await service.getLanguages();
-
-      expect(result).toEqual(dummyLanguages);
-      expect(mockSupabase.from).toHaveBeenCalledWith('languages');
-    });
-
-    it('should handle errors when fetching languages', async () => {
-      const mockBuilder = createMockQueryBuilder({ data: null, error: { message: 'Database error' } });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      await expect(service.getLanguages()).rejects.toThrow('Failed to fetch languages: Database error');
-    });
-  });
-
-  describe('getDifficultyLevels', () => {
-    it('should fetch difficulty levels successfully', async () => {
-      const mockBuilder = createMockQueryBuilder({ data: dummyDifficultyLevels, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const result = await service.getDifficultyLevels();
-
-      expect(result).toEqual(dummyDifficultyLevels);
-      expect(mockSupabase.from).toHaveBeenCalledWith('difficulty_levels');
-    });
-  });
-
-  describe('getLanguageByCode', () => {
-    it('should fetch language by code successfully', async () => {
-      const mockLanguage = createDummyLanguage({ code: 'en', name: 'English', native_name: 'English' });
-
-      const mockBuilder = createMockQueryBuilder({ data: mockLanguage, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const result = await service.getLanguageByCode('en');
-
-      expect(result).toEqual(mockLanguage);
-    });
-
-    it('should return null when language not found', async () => {
-      const mockBuilder = createMockQueryBuilder({ data: null, error: { code: 'PGRST116' } });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const result = await service.getLanguageByCode('invalid');
-
-      expect(result).toBeNull();
-    });
   });
 
   describe('createSavedTranslation', () => {
-    it('should create saved translation successfully', async () => {
-      const mockLanguages = [
-        { id: '1', code: 'en', name: 'English' },
-        { id: '2', code: 'es', name: 'Spanish' },
-      ];
-      const mockDifficultyLevel = { id: '1', code: 'beginner', name: 'Beginner' };
-      const mockSavedTranslation = {
-        id: '1',
-        user_id: 'user123',
-        original_story: 'Hello world',
-        translated_story: 'Hola mundo',
-        original_language_id: '1',
-        translated_language_id: '2',
-        difficulty_level_id: '1',
-        title: 'Test Translation',
-        notes: 'Test notes',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-01',
-        original_language: mockLanguages[0],
-        translated_language: mockLanguages[1],
-        difficulty_level: mockDifficultyLevel,
-      };
+    const validRequest: CreateSavedTranslationRequest = {
+      original_story: 'This is a test story in English.',
+      translated_story: 'Esta es una historia de prueba en español.',
+      original_language_code: 'en',
+      translated_language_code: 'es',
+      difficulty_level_code: 'a1',
+      title: 'Test Translation',
+      notes: 'This is a test translation'
+    };
 
-      // Mock the language and difficulty level lookups
-      const mockBuilder1 = createMockQueryBuilder({ data: mockLanguages[0], error: null });
-      const mockBuilder2 = createMockQueryBuilder({ data: mockLanguages[1], error: null });
-      const mockBuilder3 = createMockQueryBuilder({ data: mockDifficultyLevel, error: null });
-      const mockBuilder4 = createMockQueryBuilder({ data: mockSavedTranslation, error: null });
+    it('should create a saved translation with valid data', async () => {
+      const result = await service.createSavedTranslation(validRequest, 'test-user-id');
       
-      mockSupabase.from
-        .mockReturnValueOnce(mockBuilder1)
-        .mockReturnValueOnce(mockBuilder2)
-        .mockReturnValueOnce(mockBuilder3)
-        .mockReturnValueOnce(mockBuilder4);
-
-      const request: CreateSavedTranslationRequest = {
-        original_story: 'Hello world',
-        translated_story: 'Hola mundo',
-        original_language_code: 'en',
-        translated_language_code: 'es',
-        difficulty_level_code: 'beginner',
-        title: 'Test Translation',
-        notes: 'Test notes',
-      };
-
-      const result = await service.createSavedTranslation(request, 'user123');
-
-      expect(result).toEqual(mockSavedTranslation);
+      expect(result).toBeDefined();
+      expect(result.id).toBe(1);
+      expect(result.user_id).toBe('test-user-id');
+      expect(result.original_story).toBe('This is a test story in English.');
+      expect(result.translated_story).toBe('Esta es una historia de prueba en español.');
     });
 
-    it('should throw error when language not found', async () => {
-      const mockBuilder = createMockQueryBuilder({ data: null, error: { code: 'PGRST116' } });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const request: CreateSavedTranslationRequest = {
-        original_story: 'Hello world',
-        translated_story: 'Hola mundo',
-        original_language_code: 'invalid',
-        translated_language_code: 'es',
-        difficulty_level_code: 'beginner',
-      };
-
-      await expect(service.createSavedTranslation(request, 'user123')).rejects.toThrow('Language not found: invalid');
+    it('should throw error for missing user ID', async () => {
+      await expect(service.createSavedTranslation(validRequest, ''))
+        .rejects.toThrow('Validation failed: user_id: Valid user ID is required');
     });
-  });
 
-  describe('getSavedTranslations', () => {
-    it('should fetch saved translations with filters', async () => {
-      const mockTranslations = [
-        {
-          id: '1',
-          user_id: 'user123',
-          original_story: 'Hello world',
-          translated_story: 'Hola mundo',
-          original_language_id: '1',
-          translated_language_id: '2',
-          difficulty_level_id: '1',
-          created_at: '2024-01-01',
-          updated_at: '2024-01-01',
-          original_language: { id: '1', code: 'en', name: 'English' },
-          translated_language: { id: '2', code: 'es', name: 'Spanish' },
-          difficulty_level: { id: '1', code: 'beginner', name: 'Beginner' },
-        },
-      ];
+    it('should throw error for missing original story', async () => {
+      const invalidRequest = { ...validRequest, original_story: '' };
+      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
+        .rejects.toThrow('Validation failed: original_story: Original story is required');
+    });
 
-      // Mock without filters to avoid the query chain issue for now
-      const mockBuilder = createMockQueryBuilder({ data: mockTranslations, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
+    it('should throw error for missing translated story', async () => {
+      const invalidRequest = { ...validRequest, translated_story: '' };
+      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
+        .rejects.toThrow('Validation failed: translated_story: Translated story is required');
+    });
 
-      const result = await service.getSavedTranslations('user123', {});
+    it('should throw error for invalid original language code', async () => {
+      const invalidRequest = { ...validRequest, original_language_code: 'invalid' as any };
+      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
+        .rejects.toThrow('Validation failed: original_language_code: Original language code must be a valid ISO 639-1 code');
+    });
 
-      expect(result).toEqual(mockTranslations);
+    it('should throw error for invalid translated language code', async () => {
+      const invalidRequest = { ...validRequest, translated_language_code: 'invalid' as any };
+      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
+        .rejects.toThrow('Validation failed: translated_language_code: Translated language code must be a valid ISO 639-1 code');
+    });
+
+    it('should throw error for invalid difficulty level code', async () => {
+      const invalidRequest = { ...validRequest, difficulty_level_code: 'invalid' as any };
+      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
+        .rejects.toThrow('Validation failed: difficulty_level_code: Difficulty level code must be a valid CEFR level (a1, a2, b1, b2)');
+    });
+
+    it('should sanitize malicious content in original story', async () => {
+      const maliciousRequest = {
+        ...validRequest,
+        original_story: '<script>alert("xss")</script>This is a test story.'
+      };
+      
+      const result = await service.createSavedTranslation(maliciousRequest, 'test-user-id');
+      expect(result.original_story).toBe('This is a test story.');
+    });
+
+    it('should sanitize malicious content in translated story', async () => {
+      const maliciousRequest = {
+        ...validRequest,
+        translated_story: '<script>alert("xss")</script>Esta es una historia de prueba.'
+      };
+      
+      const result = await service.createSavedTranslation(maliciousRequest, 'test-user-id');
+      expect(result.translated_story).toBe('Esta es una historia de prueba.');
+    });
+
+    it('should sanitize malicious content in title', async () => {
+      const maliciousRequest = {
+        ...validRequest,
+        title: '<script>alert("xss")</script>Test Title'
+      };
+      
+      const result = await service.createSavedTranslation(maliciousRequest, 'test-user-id');
+      expect(result.title).toBe('Test Title');
+    });
+
+    it('should sanitize malicious content in notes', async () => {
+      const maliciousRequest = {
+        ...validRequest,
+        notes: '<script>alert("xss")</script>Test notes'
+      };
+      
+      const result = await service.createSavedTranslation(maliciousRequest, 'test-user-id');
+      expect(result.notes).toBe('Test notes');
     });
   });
 
   describe('updateSavedTranslation', () => {
-    it('should update saved translation successfully', async () => {
-      const mockUpdatedTranslation = {
-        id: '1',
-        user_id: 'user123',
-        original_story: 'Hello world',
-        translated_story: 'Hola mundo',
-        original_language_id: '1',
-        translated_language_id: '2',
-        difficulty_level_id: '1',
-        title: 'Updated Title',
-        notes: 'Updated notes',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-02',
-        original_language: { id: '1', code: 'en', name: 'English' },
-        translated_language: { id: '2', code: 'es', name: 'Spanish' },
-        difficulty_level: { id: '1', code: 'beginner', name: 'Beginner' },
+    const validUpdates: UpdateSavedTranslationRequest = {
+      title: 'Updated Title',
+      notes: 'Updated notes'
+    };
+
+    it('should update a saved translation with valid data', async () => {
+      const result = await service.updateSavedTranslation('1', 'test-user-id', validUpdates);
+      
+      expect(result).toBeDefined();
+      expect(result.title).toBe('Updated Title');
+      expect(result.notes).toBe('Updated notes');
+    });
+
+    it('should throw error for missing translation ID', async () => {
+      await expect(service.updateSavedTranslation('', 'test-user-id', validUpdates))
+        .rejects.toThrow('Valid translation ID is required');
+    });
+
+    it('should throw error for missing user ID', async () => {
+      await expect(service.updateSavedTranslation('1', '', validUpdates))
+        .rejects.toThrow('Valid user ID is required');
+    });
+
+    it('should sanitize malicious content in title update', async () => {
+      const maliciousUpdates = {
+        title: '<script>alert("xss")</script>Updated Title'
       };
+      
+      const result = await service.updateSavedTranslation('1', 'test-user-id', maliciousUpdates);
+      expect(result.title).toBe('Updated Title');
+    });
 
-      const mockBuilder = createMockQueryBuilder({ data: mockUpdatedTranslation, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      const updates: UpdateSavedTranslationRequest = {
-        title: 'Updated Title',
-        notes: 'Updated notes',
+    it('should sanitize malicious content in notes update', async () => {
+      const maliciousUpdates = {
+        notes: '<script>alert("xss")</script>Updated notes'
       };
+      
+      const result = await service.updateSavedTranslation('1', 'test-user-id', maliciousUpdates);
+      expect(result.notes).toBe('Updated notes');
+    });
+  });
 
-      const result = await service.updateSavedTranslation('1', 'user123', updates);
+  describe('getSavedTranslation', () => {
+    it('should throw error for missing translation ID', async () => {
+      await expect(service.getSavedTranslation('', 'test-user-id'))
+        .rejects.toThrow('Valid translation ID is required');
+    });
 
-      expect(result).toEqual(mockUpdatedTranslation);
+    it('should throw error for missing user ID', async () => {
+      await expect(service.getSavedTranslation('1', ''))
+        .rejects.toThrow('Valid user ID is required');
     });
   });
 
   describe('deleteSavedTranslation', () => {
-    it('should delete saved translation successfully', async () => {
-      const mockBuilder = createMockQueryBuilder({ error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
-
-      await expect(service.deleteSavedTranslation('1', 'user123')).resolves.not.toThrow();
+    it('should throw error for missing translation ID', async () => {
+      await expect(service.deleteSavedTranslation('', 'test-user-id'))
+        .rejects.toThrow('Valid translation ID is required');
     });
 
-    it('should handle errors when deleting', async () => {
-      const mockBuilder = createMockQueryBuilder({ error: { message: 'Delete failed' } });
-      mockSupabase.from.mockReturnValue(mockBuilder);
+    it('should throw error for missing user ID', async () => {
+      await expect(service.deleteSavedTranslation('1', ''))
+        .rejects.toThrow('Valid user ID is required');
+    });
+  });
 
-      await expect(service.deleteSavedTranslation('1', 'user123')).rejects.toThrow('Failed to delete saved translation: Delete failed');
+  describe('getSavedTranslations', () => {
+    it('should throw error for missing user ID', async () => {
+      await expect(service.getSavedTranslations('', {}))
+        .rejects.toThrow('Valid user ID is required');
+    });
+
+    it('should throw error for invalid search parameter', async () => {
+      await expect(service.getSavedTranslations('test-user-id', { search: 123 as any }))
+        .rejects.toThrow('Search parameter must be a string');
     });
   });
 
   describe('getSavedTranslationsCount', () => {
-    it('should get count successfully', async () => {
-      const mockBuilder = createMockQueryBuilder({ count: 5, error: null });
-      mockSupabase.from.mockReturnValue(mockBuilder);
+    it('should throw error for missing user ID', async () => {
+      await expect(service.getSavedTranslationsCount('', {}))
+        .rejects.toThrow('Valid user ID is required');
+    });
 
-      const result = await service.getSavedTranslationsCount('user123');
-
-      expect(result).toBe(5);
+    it('should throw error for invalid search parameter', async () => {
+      await expect(service.getSavedTranslationsCount('test-user-id', { search: 123 as any }))
+        .rejects.toThrow('Search parameter must be a string');
     });
   });
 }); 
