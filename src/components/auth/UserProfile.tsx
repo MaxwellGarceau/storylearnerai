@@ -7,6 +7,8 @@ import { Alert } from '../ui/Alert'
 import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase'
+import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
+
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
 interface UserProfileProps {
@@ -16,11 +18,15 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<User | null>(null)
+  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: string; created_at?: string; updated_at?: string } | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<{
+    username?: string
+    display_name?: string
+  }>({})
   const [formData, setFormData] = useState({
     username: '',
     display_name: '',
@@ -55,15 +61,55 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     }
   }, [user, loadProfile])
 
+  const validateField = (field: 'username' | 'display_name', value: string) => {
+    let error = ''
+    
+    if (field === 'username') {
+      const validation = validateUsername(value)
+      if (!validation.isValid) {
+        error = validation.errors[0] || 'Invalid username'
+      }
+    } else if (field === 'display_name') {
+      const validation = validateDisplayName(value)
+      if (!validation.isValid) {
+        error = validation.errors[0] || 'Invalid display name'
+      }
+    }
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [field]: error
+    }))
+    
+    return error === ''
+  }
+
   const handleInputChange = (field: keyof typeof formData, value: string) => {
+    // Sanitize input
+    const sanitizedValue = sanitizeText(value, { maxLength: field === 'username' ? 30 : 50 })
+    
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: sanitizedValue
     }))
+    
+    // Validate if it's a field we validate
+    if (field === 'username' || field === 'display_name') {
+      validateField(field, sanitizedValue)
+    }
   }
 
   const handleSave = async () => {
     if (!user) return
+
+    // Validate all fields before saving
+    const isUsernameValid = validateField('username', formData.username)
+    const isDisplayNameValid = validateField('display_name', formData.display_name)
+    
+    if (!isUsernameValid || !isDisplayNameValid) {
+      setError('Please fix validation errors before saving')
+      return
+    }
 
     try {
       setSaving(true)
@@ -72,6 +118,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       const updatedProfile = await UserService.updateUser(user.id, formData)
       setProfile(updatedProfile)
       setIsEditing(false)
+      setValidationErrors({}) // Clear validation errors on success
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile')
     } finally {
@@ -87,6 +134,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     })
     setIsEditing(false)
     setError(null)
+    setValidationErrors({}) // Clear validation errors
   }
 
   const handleSignOut = async () => {
@@ -185,32 +233,47 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold">
-              {isEditing ? (
+            {isEditing ? (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Display Name</h3>
                 <input
                   type="text"
                   value={formData.display_name}
                   onChange={(e) => handleInputChange('display_name', e.target.value)}
-                  className="w-full px-2 py-1 border border-input rounded bg-background text-sm"
+                  className={`w-full px-2 py-1 border rounded bg-background text-sm ${
+                    validationErrors.display_name ? 'border-red-500' : 'border-input'
+                  }`}
                   placeholder="Display name"
                 />
-              ) : (
-                profile.display_name || 'No display name'
-              )}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {isEditing ? (
+                {validationErrors.display_name && (
+                  <p className="text-xs text-red-500 mt-1">{validationErrors.display_name}</p>
+                )}
+              </div>
+            ) : (
+              <h3 className="text-lg font-semibold">
+                {profile.display_name || 'No display name'}
+              </h3>
+            )}
+            {isEditing ? (
+              <div className="text-sm text-muted-foreground">
                 <input
                   type="text"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
-                  className="w-full px-2 py-1 border border-input rounded bg-background text-sm"
+                  className={`w-full px-2 py-1 border rounded bg-background text-sm ${
+                    validationErrors.username ? 'border-red-500' : 'border-input'
+                  }`}
                   placeholder="Username"
                 />
-              ) : (
-                `@${profile.username || 'username'}`
-              )}
-            </p>
+                {validationErrors.username && (
+                  <p className="text-xs text-red-500 mt-1">{validationErrors.username}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                @{profile.username || 'username'}
+              </p>
+            )}
           </div>
         </div>
 
@@ -263,7 +326,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <div className="flex gap-2 pt-4">
             <Button
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || Object.keys(validationErrors).some(key => validationErrors[key as keyof typeof validationErrors])}
               className="flex-1"
             >
               {saving ? (

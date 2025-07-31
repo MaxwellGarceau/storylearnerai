@@ -7,15 +7,17 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
+import { useLanguages } from '../../hooks/useLanguages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
-import type { LanguageCode } from '../../lib/types/prompt';
+import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
+import type { DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
   originalStory: string;
   originalLanguage: string;
   translatedLanguage: string;
-  difficultyLevel: string;
+  difficultyLevel: DifficultyLevelDisplay;
   isSavedStory?: boolean;
 }
 
@@ -32,26 +34,65 @@ export default function SaveTranslationButton({
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{
+    title?: string;
+    notes?: string;
+  }>({});
   
   const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useSupabase();
   const { toast } = useToast();
+  const { getLanguageCode } = useLanguages();
 
-  // Map language names to ISO codes
-  const getLanguageCode = (languageName: string): LanguageCode | undefined => {
-    const languageMap: Record<string, LanguageCode> = {
-      'spanish': 'es',
-      'english': 'en',
-      'es': 'es',
-      'en': 'en',
-    };
-    return languageMap[languageName.toLowerCase()];
-  };
+
 
   // Convert difficulty level to CEFR format (database expects CEFR codes)
-  const getDifficultyCode = (difficultyLevel: string): string => {
+  const getDifficultyCode = (difficultyLevel: DifficultyLevelDisplay): DifficultyLevel => {
     // Ensure the difficulty level is in lowercase CEFR format
-    return difficultyLevel.toLowerCase();
+    return difficultyLevel.toLowerCase() as DifficultyLevel;
+  };
+
+  // Validate and sanitize input fields
+  const validateAndSanitizeInput = (field: 'title' | 'notes', value: string) => {
+    const sanitizedValue = sanitizeText(value, { maxLength: field === 'title' ? 200 : 1000 });
+    
+    const validation = validateTextInput(sanitizedValue, {
+      maxLength: field === 'title' ? 200 : 1000,
+      allowHTML: false,
+      allowLineBreaks: true,
+      trim: true,
+    });
+
+    if (!validation.isValid) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: validation.errors[0] || `Invalid ${field}`
+      }));
+      return null;
+    }
+
+    setValidationErrors(prev => ({
+      ...prev,
+      [field]: undefined
+    }));
+    return sanitizedValue;
+  };
+
+  // Handle input changes with validation
+  const handleInputChange = (field: 'title' | 'notes', value: string) => {
+    if (field === 'title') {
+      setTitle(value);
+    } else {
+      setNotes(value);
+    }
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
   };
 
   const handleSave = async () => {
@@ -62,6 +103,16 @@ export default function SaveTranslationButton({
 
     if (!translationData.translatedText) {
       setError('No translated text available to save');
+      return;
+    }
+
+    // Validate and sanitize input fields
+    const sanitizedTitle = validateAndSanitizeInput('title', title);
+    const sanitizedNotes = validateAndSanitizeInput('notes', notes);
+
+    // Check if there are any validation errors
+    if (validationErrors.title || validationErrors.notes) {
+      setError('Please fix the validation errors before saving');
       return;
     }
 
@@ -83,8 +134,8 @@ export default function SaveTranslationButton({
         original_language_code: originalLanguageCode,
         translated_language_code: translatedLanguageCode,
         difficulty_level_code: getDifficultyCode(difficultyLevel),
-        title: title.trim() || undefined,
-        notes: notes.trim() || undefined,
+        title: sanitizedTitle || undefined,
+        notes: sanitizedNotes || undefined,
       });
 
       // Show success toast
@@ -110,6 +161,7 @@ export default function SaveTranslationButton({
     setTitle('');
     setNotes('');
     setError(null);
+    setValidationErrors({});
   };
 
   return (
@@ -173,8 +225,11 @@ export default function SaveTranslationButton({
                   label="Title (optional)"
                   placeholder="Enter a title for this translation..."
                   value={title}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTitle(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('title', e.target.value)}
                 />
+                {validationErrors.title && (
+                  <p className="text-sm text-red-600">{validationErrors.title}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -184,8 +239,11 @@ export default function SaveTranslationButton({
                   label="Notes (optional)"
                   placeholder="Add any notes about this translation..."
                   value={notes}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('notes', e.target.value)}
                 />
+                {validationErrors.notes && (
+                  <p className="text-sm text-red-600">{validationErrors.notes}</p>
+                )}
               </div>
 
               <div className="text-sm text-muted-foreground space-y-1">

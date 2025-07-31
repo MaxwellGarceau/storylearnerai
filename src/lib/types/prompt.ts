@@ -2,6 +2,7 @@
 
 export type LanguageCode = 'en' | 'es';
 export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2';
+export type DifficultyLevelDisplay = 'A1' | 'A2' | 'B1' | 'B2';
 
 export interface PromptInstructions {
   // Language-specific instructions for translation

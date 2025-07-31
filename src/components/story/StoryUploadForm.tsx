@@ -3,6 +3,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@radix-ui/reac
 import { Button } from '../ui/Button';
 import TextArea from '../ui/TextArea';
 import Label from '../ui/Label';
+import { useLanguages } from '../../hooks/useLanguages';
 import { StoryFormData } from '../types/story';
 
 interface StoryUploadFormProps {
@@ -10,6 +11,7 @@ interface StoryUploadFormProps {
 }
 
 const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
+  const { getLanguageName } = useLanguages();
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
     language: 'en', // Target language (always English for now)
@@ -39,10 +41,10 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
     <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white shadow-lg rounded-lg">
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
         <p className="text-sm text-blue-800">
-          <strong>Translation:</strong> Spanish → English
+          <strong>Translation:</strong> {getLanguageName('es')} → {getLanguageName('en')}
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          Enter your Spanish story below, and it will be translated to English at your selected difficulty level.
+          Enter your {getLanguageName('es')} story below, and it will be translated to {getLanguageName('en')} at your selected difficulty level.
         </p>
       </div>
 
@@ -53,8 +55,8 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
         onChange={handleInputChange}
         placeholder="Ingresa tu historia en español aquí... (Enter your Spanish story here...)"
         required
-        label="Spanish Story"
-        helperText="Write or paste the Spanish story text you wish to translate to English."
+        label={`${getLanguageName('es')} Story`}
+        helperText={`Write or paste the ${getLanguageName('es')} story text you wish to translate to ${getLanguageName('en')}.`}
       />
 
       <div>
@@ -68,11 +70,11 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             {formData.language}
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="en">English</SelectItem>
+            <SelectItem value="en">{getLanguageName('en')}</SelectItem>
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">
-          Currently only English translation is supported.
+          Currently only {getLanguageName('en')} translation is supported.
         </p>
       </div>
 
@@ -94,7 +96,7 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">
-          The story will be adapted to this English proficiency level.
+          The story will be adapted to this {getLanguageName('en')} proficiency level.
         </p>
       </div>
 

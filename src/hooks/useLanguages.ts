@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
-import type { Language } from '../lib/types/database'
+import type { DatabaseLanguage } from '../lib/types/database'
 import type { LanguageCode } from '../lib/types/prompt'
 
 export const useLanguages = () => {
-  const [languages, setLanguages] = useState<Language[]>([])
+  const [languages, setLanguages] = useState<DatabaseLanguage[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -21,6 +21,31 @@ export const useLanguages = () => {
   const getLanguageName = (code: LanguageCode): string => {
     return languageMap.get(code) || code
   }
+
+  // Map language names to ISO codes
+  const getLanguageCode = (languageName: string): LanguageCode | undefined => {
+    const normalizedName = languageName.toLowerCase();
+    
+    // First try to find by exact code match
+    if (languageMap.has(normalizedName as LanguageCode)) {
+      return normalizedName as LanguageCode;
+    }
+    
+    // Then try to find by language name
+    for (const [code, name] of languageMap.entries()) {
+      if (name.toLowerCase() === normalizedName) {
+        return code;
+      }
+    }
+    
+    // Fallback to common mappings
+    const fallbackMap: Record<string, LanguageCode> = {
+      'spanish': 'es',
+      'english': 'en',
+    };
+    
+    return fallbackMap[normalizedName];
+  };
 
   useEffect(() => {
     const loadLanguages = async () => {
@@ -46,6 +71,7 @@ export const useLanguages = () => {
     loading,
     error,
     getLanguageName,
+    getLanguageCode,
     languageMap
   }
 } 

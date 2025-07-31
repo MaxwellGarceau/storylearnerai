@@ -5,6 +5,7 @@ import * as Popover from '@radix-ui/react-popover';
 import Label from '../ui/Label';
 import { cn } from '../../lib/utils';
 import { Card, CardContent } from '../ui/Card';
+import { useLanguages } from '../../hooks/useLanguages';
 import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 
 interface TranslationOptionsSidebarProps {
@@ -22,6 +23,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [difficultyOpen, setDifficultyOpen] = useState(false);
+  const { getLanguageName } = useLanguages();
 
   const handleSelectChange = (field: 'language' | 'difficulty', value: string) => {
     if (field === 'language') {
@@ -91,10 +93,10 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
               <Card variant="outline" className="bg-accent/50">
                 <CardContent className="p-3">
                   <p className="text-sm text-accent-foreground">
-                    <strong>Translation:</strong> Spanish → English
+                    <strong>Translation:</strong> {getLanguageName('es')} → {getLanguageName('en')}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Enter your Spanish story in the main text area, and it will be translated to English at your selected difficulty level.
+                    Enter your {getLanguageName('es')} story in the main text area, and it will be translated to {getLanguageName('en')} at your selected difficulty level.
                   </p>
                 </CardContent>
               </Card>
@@ -140,12 +142,12 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                         "focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                       )}
                     >
-                      English
+                      {getLanguageName('en')}
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Currently only English translation is supported.
+                  Currently only {getLanguageName('en')} translation is supported.
                 </p>
               </div>
 
@@ -227,7 +229,7 @@ const TranslationOptionsSidebar: React.FC<TranslationOptionsSidebarProps> = ({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mb-6">
-                  The story will be adapted to this English proficiency level.
+                  The story will be adapted to this {getLanguageName('en')} proficiency level.
                 </p>
               </div>
             </div>
