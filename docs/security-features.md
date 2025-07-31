@@ -87,6 +87,103 @@ interface SanitizationOptions {
 }
 ```
 
+## Backend Validation and Sanitization
+
+### UserService Security Implementation
+
+The backend `UserService` class implements comprehensive validation and sanitization for all user data operations:
+
+#### Input Validation and Sanitization
+- **Data Type Validation**: Ensures all inputs are of correct types
+- **Format Validation**: Validates email, username, display name, and language code formats
+- **Security Sanitization**: Removes malicious content using the same sanitization utilities as frontend
+- **Length Limits**: Enforces appropriate length limits for all fields
+- **URL Validation**: Validates and sanitizes avatar URLs to prevent XSS
+
+#### Business Logic Validation
+- **Username Uniqueness**: Prevents duplicate usernames during creation and updates
+- **Required Field Validation**: Ensures required fields are provided and valid
+- **Language Code Validation**: Validates ISO 639-1 language codes
+- **User ID Validation**: Ensures user IDs are valid strings
+
+#### Security Features
+- **XSS Prevention**: Strips HTML tags and malicious content from all text fields
+- **URL Sanitization**: Removes dangerous characters from avatar URLs
+- **Input Sanitization**: Uses the same `validateUsername`, `validateDisplayName` utilities as frontend
+- **Error Handling**: Provides detailed error messages for validation failures
+
+### Implementation Examples
+
+#### User Creation with Validation
+```typescript
+static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
+  // Validate and sanitize input data
+  const validation = this.validateCreateUserData(data);
+  if (!validation.isValid) {
+    const errorMessages = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ');
+    throw new Error(`Validation failed: ${errorMessages}`);
+  }
+
+  const { sanitizedData } = validation;
+
+  // Check username availability if username is provided
+  if (sanitizedData.username && sanitizedData.username !== null) {
+    const isAvailable = await this.isUsernameAvailable(sanitizedData.username);
+    if (!isAvailable) {
+      throw new Error('Username is already taken');
+    }
+  }
+
+  // Proceed with database operation using sanitized data
+  const { data: user, error } = await supabase
+    .from('users')
+    .insert({
+      id: sanitizedData.id,
+      username: sanitizedData.username,
+      display_name: sanitizedData.display_name,
+      avatar_url: sanitizedData.avatar_url,
+      preferred_language: sanitizedData.preferred_language || 'en',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(`Failed to create user: ${error.message}`)
+  }
+
+  return user
+}
+```
+
+#### Username Validation and Availability Check
+```typescript
+static async isUsernameAvailable(username: string): Promise<boolean> {
+  // Validate username format
+  const usernameValidation = validateUsername(username);
+  if (!usernameValidation.isValid) {
+    throw new Error(`Invalid username format: ${usernameValidation.errors[0]}`);
+  }
+
+  // Check database for existing username
+  const { error } = await supabase
+    .from('users')
+    .select('id')
+    .eq('username', usernameValidation.sanitizedText)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return true // Username is available
+    }
+    throw new Error(`Failed to check username availability: ${error.message}`)
+  }
+
+  return false // Username is taken
+}
+```
+
 ## Authentication Form Security
 
 ### SignInForm and SignUpForm Security
@@ -249,6 +346,13 @@ The security features are thoroughly tested with:
    - `src/components/auth/__tests__/SignUpForm.security.test.tsx` (20 tests)
    - Form submission prevention and validation error handling
    - Real-time input sanitization and user feedback
+
+5. **Backend Validation Tests**: `src/api/supabase/database/__tests__/userService.test.ts`
+   - 25 test cases for backend user data validation and sanitization
+   - Input validation for user creation and updates
+   - Business logic validation (username uniqueness, format requirements)
+   - Error handling and database operation security
+   - Comprehensive coverage of all user service methods
 
 ### Test Categories
 
