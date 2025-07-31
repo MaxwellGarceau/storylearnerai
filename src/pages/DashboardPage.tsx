@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSupabase } from '../hooks/useSupabase'
 import { useLanguages } from '../hooks/useLanguages'
+import { useSavedTranslations } from '../hooks/useSavedTranslations'
 import { UserService } from '../api/supabase'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
@@ -19,6 +20,7 @@ import type { User } from '../lib/types/database'
 export const DashboardPage: React.FC = () => {
   const { user } = useSupabase()
   const { getLanguageName } = useLanguages()
+  const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -113,7 +115,13 @@ export const DashboardPage: React.FC = () => {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">
+                {isLoadingSavedTranslations ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  savedTranslations.length
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Stories translated
               </p>
