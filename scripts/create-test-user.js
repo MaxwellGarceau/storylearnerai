@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Script to create a test user and sample saved translations for local development
- * Uses Supabase Admin API to create a valid user and sample data
+ * Script to create a test user for local development
+ * Uses Supabase Admin API to create a valid user
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -31,63 +31,6 @@ const testUser = {
     username: 'maxwellgarceau',
     display_name: 'Maxwell Garceau'
   }
-}
-
-// Sample saved translations removed - users should create their own translations
-const sampleTranslations = []
-
-async function getLanguageId(code) {
-  const { data, error } = await supabase
-    .from('languages')
-    .select('id')
-    .eq('code', code)
-    .single()
-
-  if (error) {
-    throw new Error(`Failed to get language ID for code ${code}: ${error.message}`)
-  }
-  return data.id
-}
-
-async function getDifficultyLevelId(code) {
-  const { data, error } = await supabase
-    .from('difficulty_levels')
-    .select('id')
-    .eq('code', code)
-    .single()
-
-  if (error) {
-    throw new Error(`Failed to get difficulty level ID for code ${code}: ${error.message}`)
-  }
-  return data.id
-}
-
-async function createSavedTranslation(userId, translation) {
-  const [originalLanguageId, translatedLanguageId, difficultyLevelId] = await Promise.all([
-    getLanguageId(translation.original_language_code),
-    getLanguageId(translation.translated_language_code),
-    getDifficultyLevelId(translation.difficulty_level_code)
-  ])
-
-  const { data, error } = await supabase
-    .from('saved_translations')
-    .insert({
-      user_id: userId,
-      original_story: translation.original_story,
-      translated_story: translation.translated_story,
-      original_language_id: originalLanguageId,
-      translated_language_id: translatedLanguageId,
-      difficulty_level_id: difficultyLevelId,
-      title: translation.title,
-      notes: translation.notes
-    })
-    .select()
-    .single()
-
-  if (error) {
-    throw new Error(`Failed to create saved translation: ${error.message}`)
-  }
-  return data
 }
 
 async function createTestUser() {
@@ -121,7 +64,6 @@ async function createTestUser() {
     console.log(`Password: ${testUser.password}`)
     console.log('')
     console.log('The user profile will be created automatically by the database trigger.')
-    console.log('No sample translations created - users should create their own translations.')
 
   } catch (error) {
     console.error('Unexpected error:', error.message)
