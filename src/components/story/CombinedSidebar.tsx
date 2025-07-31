@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../lib/types/prompt';
 import type { SavedStory } from '../../types/savedStories';
+import { useViewport } from '../../hooks/useViewport';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -19,14 +20,20 @@ interface CombinedSidebarProps {
 }
 
 const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
-  // Get initial state from localStorage or default to true (open)
+  const { isMobile } = useViewport();
+  
+  // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {
     try {
       const saved = localStorage.getItem('sidebarOpen');
-      return saved !== null ? JSON.parse(saved) : true;
+      if (saved !== null) {
+        return JSON.parse(saved);
+      }
+      // Default to closed on mobile, open on larger screens
+      return !isMobile;
     } catch (error) {
       console.warn('Failed to read sidebar state from localStorage:', error);
-      return true; // Default to open if localStorage fails
+      return !isMobile; // Default based on screen size if localStorage fails
     }
   };
 
@@ -44,6 +51,15 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
       console.warn('Failed to save sidebar state to localStorage:', error);
     }
   }, [isOpen]);
+
+  // Update sidebar state when viewport changes (e.g., screen resize, orientation change)
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebarOpen');
+    // Only auto-adjust if no preference is saved
+    if (saved === null) {
+      setIsOpen(!isMobile);
+    }
+  }, [isMobile]);
 
   const handleStoryClick = async (story: SavedStory) => {
     setIsLoading(story.id);
