@@ -2,19 +2,19 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSupabase } from './useSupabase';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
 import {
-  SavedTranslationWithDetails,
+  DatabaseSavedTranslationWithDetails,
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
   SavedTranslationFilters,
-  Language,
-  DifficultyLevel,
+  DatabaseLanguage,
+  DatabaseDifficultyLevel,
 } from '../lib/types/database';
 
 interface UseSavedTranslationsReturn {
   // Data
-  savedTranslations: SavedTranslationWithDetails[];
-  languages: Language[];
-  difficultyLevels: DifficultyLevel[];
+  savedTranslations: DatabaseSavedTranslationWithDetails[];
+  languages: DatabaseLanguage[];
+  difficultyLevels: DatabaseDifficultyLevel[];
   
   // Loading states
   isLoading: boolean;
@@ -44,9 +44,9 @@ const ITEMS_PER_PAGE = 20;
 
 export function useSavedTranslations(): UseSavedTranslationsReturn {
   const { user } = useSupabase();
-  const [savedTranslations, setSavedTranslations] = useState<SavedTranslationWithDetails[]>([]);
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([]);
+  const [savedTranslations, setSavedTranslations] = useState<DatabaseSavedTranslationWithDetails[]>([]);
+  const [languages, setLanguages] = useState<DatabaseLanguage[]>([]);
+  const [difficultyLevels, setDifficultyLevels] = useState<DatabaseDifficultyLevel[]>([]);
   const [filters, setFilters] = useState<SavedTranslationFilters>({});
   const [totalCount, setTotalCount] = useState(0);
   const [currentOffset, setCurrentOffset] = useState(0);
@@ -146,7 +146,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       const updatedTranslation = await service.updateSavedTranslation(id, user.id, updates);
       setSavedTranslations(prev => 
         prev.map(translation => 
-          translation.id === id ? updatedTranslation : translation
+          translation.id === parseInt(id) ? updatedTranslation : translation
         )
       );
     } catch (err) {
@@ -165,7 +165,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       setError(null);
       
       await service.deleteSavedTranslation(id, user.id);
-      setSavedTranslations(prev => prev.filter(translation => translation.id !== id));
+      setSavedTranslations(prev => prev.filter(translation => translation.id !== parseInt(id)));
       setTotalCount(prev => prev - 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete saved translation');
