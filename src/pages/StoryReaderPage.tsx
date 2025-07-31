@@ -10,6 +10,7 @@ import { cn } from '../lib/utils';
 import { Card, CardContent } from '../components/ui/Card';
 import Label from '../components/ui/Label';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
+import SavedStoriesSidebar from '../components/story/SavedStoriesSidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 
 const StoryReaderPage: React.FC = () => {
@@ -116,6 +117,9 @@ const StoryReaderPage: React.FC = () => {
             Home
         </Button>
       </div>
+
+      {/* Saved Stories Sidebar */}
+      <SavedStoriesSidebar />
 
       {/* Options Sidebar */}
       <div className="fixed top-28 right-4 z-50">
