@@ -32,7 +32,7 @@ const DEFAULT_STORY_OPTIONS: SanitizationOptions = {
   allowHTML: false,
   allowLineBreaks: true,
   maxLength: 10000,
-  trim: true,
+  trim: false, // Don't trim story text to allow spaces at beginning/end
 };
 
 /**

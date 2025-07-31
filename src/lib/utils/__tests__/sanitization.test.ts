@@ -14,8 +14,8 @@ describe('Sanitization Utilities', () => {
       expect(sanitizeText('')).toBe('');
     });
 
-    it('should trim whitespace by default', () => {
-      expect(sanitizeText('  hello world  ')).toBe('hello world');
+    it('should not trim whitespace by default for story text', () => {
+      expect(sanitizeText('  hello world  ')).toBe('  hello world  ');
     });
 
     it('should respect trim option', () => {
