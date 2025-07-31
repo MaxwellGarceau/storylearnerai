@@ -184,6 +184,109 @@ static async isUsernameAvailable(username: string): Promise<boolean> {
 }
 ```
 
+### TranslationService Security Implementation
+
+The backend `TranslationService` class implements comprehensive validation and sanitization for all translation data operations:
+
+#### Input Validation and Sanitization
+- **Data Type Validation**: Ensures all inputs are of correct types
+- **Format Validation**: Validates language codes (ISO 639-1) and story IDs
+- **Content Sanitization**: Removes malicious content from translated text using the same sanitization utilities as frontend
+- **Length Limits**: Enforces appropriate length limits for all fields
+- **Required Field Validation**: Ensures required fields are provided and valid
+
+#### Security Features
+- **XSS Prevention**: Strips HTML tags and malicious content from translated text
+- **Content Sanitization**: Uses the same `validateStoryText` utilities as frontend
+- **Language Code Validation**: Validates ISO 639-1 language codes
+- **Story ID Validation**: Ensures story IDs are valid strings
+- **Error Handling**: Provides detailed error messages for validation failures
+
+### Implementation Examples
+
+#### Translation Creation with Validation
+```typescript
+static async createTranslation(data: CreateTranslationData): Promise<DatabaseTranslationInsert> {
+  // Validate and sanitize input data
+  const validation = this.validateCreateTranslationData(data);
+  if (!validation.isValid) {
+    const errorMessages = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ');
+    throw new Error(`Validation failed: ${errorMessages}`);
+  }
+
+  const { sanitizedData } = validation;
+
+  // Proceed with database operation using sanitized data
+  const { data: translation, error } = await supabase
+    .from('translations')
+    .insert({
+      story_id: sanitizedData.story_id,
+      target_language: sanitizedData.target_language,
+      translated_content: sanitizedData.translated_content,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(`Failed to create translation: ${error.message}`)
+  }
+
+  return translation
+}
+```
+
+#### Language Code and Content Validation
+```typescript
+private static validateCreateTranslationData(data: CreateTranslationData): { 
+  isValid: boolean; 
+  errors: ValidationError[]; 
+  sanitizedData: CreateTranslationData 
+} {
+  const errors: ValidationError[] = [];
+  const sanitizedData: CreateTranslationData = { ...data };
+
+  // Validate required fields
+  if (!data.story_id || typeof data.story_id !== 'string') {
+    errors.push({ field: 'story_id', message: 'Story ID is required and must be a string' });
+  }
+
+  // Validate and sanitize language code
+  if (!data.target_language || typeof data.target_language !== 'string') {
+    errors.push({ field: 'target_language', message: 'Target language is required and must be a string' });
+  } else {
+    const languageRegex = /^[a-z]{2}$/;
+    if (!languageRegex.test(data.target_language)) {
+      errors.push({ field: 'target_language', message: 'Invalid language code format (use ISO 639-1)' });
+    } else {
+      sanitizedData.target_language = data.target_language.toLowerCase();
+    }
+  }
+
+  // Validate and sanitize translated content
+  if (!data.translated_content || typeof data.translated_content !== 'string') {
+    errors.push({ field: 'translated_content', message: 'Translated content is required and must be a string' });
+  } else {
+    const contentValidation = validateStoryText(data.translated_content);
+    if (!contentValidation.isValid) {
+      errors.push({ 
+        field: 'translated_content', 
+        message: contentValidation.errors[0] || 'Invalid translated content format' 
+      });
+    } else {
+      sanitizedData.translated_content = contentValidation.sanitizedText;
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitizedData
+  };
+}
+```
+
 ## Authentication Form Security
 
 ### SignInForm and SignUpForm Security
@@ -347,12 +450,13 @@ The security features are thoroughly tested with:
    - Form submission prevention and validation error handling
    - Real-time input sanitization and user feedback
 
-5. **Backend Validation Tests**: `src/api/supabase/database/__tests__/userService.test.ts`
-   - 25 test cases for backend user data validation and sanitization
-   - Input validation for user creation and updates
-   - Business logic validation (username uniqueness, format requirements)
+5. **Backend Validation Tests**: 
+   - `src/api/supabase/database/__tests__/userService.test.ts` - 25 test cases for user data validation
+   - `src/api/supabase/database/__tests__/translationService.test.ts` - 26 test cases for translation data validation
+   - Input validation for user and translation creation and updates
+   - Business logic validation (username uniqueness, language code format requirements)
    - Error handling and database operation security
-   - Comprehensive coverage of all user service methods
+   - Comprehensive coverage of all service methods
 
 ### Test Categories
 
