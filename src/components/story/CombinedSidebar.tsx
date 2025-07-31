@@ -10,6 +10,7 @@ import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../lib/types/prompt';
 import type { SavedStory } from '../../types/savedStories';
 import { useViewport } from '../../hooks/useViewport';
+import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -21,6 +22,7 @@ interface CombinedSidebarProps {
 
 const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
   const { isMobile } = useViewport();
+  const { getLanguageName } = useLanguageDisplay();
   
   // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {
@@ -230,7 +232,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
                 <Card variant="outline" className="bg-accent/50">
                   <CardContent className="p-3">
                     <p className="text-sm text-accent-foreground">
-                      <strong>Translation:</strong> Spanish → English
+                      <strong>Translation:</strong> {getLanguageName(translationData.fromLanguage)} → {getLanguageName(translationData.toLanguage)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       These are the settings used for this translation. Options editing will be available in a future update.
@@ -244,7 +246,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
                     Target Language
                   </Label>
                   <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                    <span className="text-foreground">{translationData.toLanguage || 'English'}</span>
+                    <span className="text-foreground">{getLanguageName(translationData.toLanguage)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Currently only English translation is supported.
@@ -256,8 +258,13 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
                   <Label htmlFor="story-difficulty">
                     Target Difficulty (CEFR)
                   </Label>
-                  <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-muted px-3 py-2 text-sm opacity-50 cursor-not-allowed">
-                    <span className="text-foreground">{translationData.difficulty}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge 
+                      variant="secondary" 
+                      className={cn("text-sm", getDifficultyColor(translationData.difficulty))}
+                    >
+                      {getDifficultyLabel(translationData.difficulty)}
+                    </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     The story was adapted to this English proficiency level.
