@@ -9,6 +9,11 @@ describe('FullPageStoryInput Component', () => {
     onChange: vi.fn(),
     onSubmit: vi.fn(),
     isTranslating: false,
+    formData: {
+      language: 'en' as const,
+      difficulty: 'a1' as const,
+    },
+    onFormDataChange: vi.fn(),
   };
 
   afterEach(() => {
@@ -65,6 +70,10 @@ describe('FullPageStoryInput Component', () => {
 
     const translateButton = screen.getByRole('button', { name: /translate story/i });
     fireEvent.click(translateButton);
+
+    // Wait for confirmation modal to appear and click confirm
+    const confirmButton = screen.getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
 
     expect(defaultProps.onSubmit).toHaveBeenCalledTimes(1);
   });
