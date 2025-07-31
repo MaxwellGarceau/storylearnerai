@@ -5,6 +5,7 @@ import Label from '../ui/Label'
 import { useSupabase } from '../../hooks/useSupabase'
 import { Alert } from '../ui/Alert'
 import { Loader2, Mail, Lock } from 'lucide-react'
+import { validateEmail } from '../../lib/utils/sanitization'
 
 interface SignInFormProps {
   onSuccess?: () => void
@@ -22,16 +23,57 @@ export const SignInForm: React.FC<SignInFormProps> = ({
     email: '',
     password: ''
   })
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({})
+  const [hasValidationErrors, setHasValidationErrors] = useState(false)
 
   const handleInputChange = (field: 'email' | 'password', value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    // Validate and sanitize input
+    if (field === 'email') {
+      const validation = validateEmail(value)
+      if (validation.isValid) {
+        setValidationErrors(prev => ({ ...prev, email: undefined }))
+        setFormData(prev => ({ ...prev, email: validation.sanitizedText }))
+        setHasValidationErrors(false)
+      } else {
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          email: validation.errors[0] || 'Invalid email format'
+        }))
+        setFormData(prev => ({ ...prev, email: validation.sanitizedText }))
+        setHasValidationErrors(true)
+      }
+    } else {
+      // For password, just sanitize without validation (password validation is handled by Supabase)
+      setValidationErrors(prev => ({ ...prev, password: undefined }))
+      setFormData(prev => ({ ...prev, password: value }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Check if there are any validation errors
+    if (hasValidationErrors) {
+      return
+    }
+    
+    // Final validation before submission
+    const emailValidation = validateEmail(formData.email)
+    if (!emailValidation.isValid) {
+      setValidationErrors(prev => ({ 
+        ...prev, 
+        email: emailValidation.errors[0] || 'Invalid email format'
+      }))
+      setHasValidationErrors(true)
+      return
+    }
+    
+    // Clear any validation errors if validation passes
+    setValidationErrors({})
+    setHasValidationErrors(false)
     
     const success = await signIn(formData.email, formData.password)
     
@@ -66,11 +108,16 @@ export const SignInForm: React.FC<SignInFormProps> = ({
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  validationErrors.email ? 'border-red-500 focus-visible:ring-red-500' : 'border-input'
+                }`}
                 required
                 disabled={loading}
               />
             </div>
+            {validationErrors.email && (
+              <p className="text-sm text-red-500">{validationErrors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">

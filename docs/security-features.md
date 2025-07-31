@@ -87,6 +87,96 @@ interface SanitizationOptions {
 }
 ```
 
+## Authentication Form Security
+
+### SignInForm and SignUpForm Security
+
+Both authentication forms implement comprehensive input sanitization and validation:
+
+#### Email Input Security
+- **Real-time Validation**: Email format validation with security checks
+- **XSS Prevention**: Strips malicious HTML and script tags
+- **Length Limits**: Enforces RFC 5321 email length limits (254 characters)
+- **Format Validation**: Ensures proper email format before submission
+
+#### Username Input Security
+- **Character Restrictions**: Only allows letters, numbers, underscores, and hyphens
+- **Length Validation**: 3-50 characters with real-time feedback
+- **Security Sanitization**: Removes all HTML tags and malicious content
+- **Format Enforcement**: Prevents submission with invalid characters
+
+#### Display Name Security
+- **Length Validation**: 2-100 characters with appropriate feedback
+- **Content Sanitization**: Strips HTML tags while preserving text content
+- **Security Checks**: Detects and prevents malicious content injection
+
+#### Password Security
+- **Existing Strength Validation**: Maintains current password strength requirements
+- **Special Character Support**: Allows secure passwords with special characters
+- **No Sanitization**: Passwords are not sanitized to preserve security
+
+### Form Submission Security
+
+#### Validation Flow
+1. **Real-time Validation**: Input is validated as user types
+2. **Final Validation**: All fields are re-validated before submission
+3. **Submission Prevention**: Forms cannot be submitted with validation errors
+4. **Error Display**: Clear error messages guide users to fix issues
+
+#### Security Features
+- **Button Disabling**: Submit buttons are disabled when validation errors exist
+- **Error State Management**: Tracks validation errors across all form fields
+- **Sanitized Data**: Only sanitized data is passed to backend services
+
+### Implementation Examples
+
+#### Email Validation
+```typescript
+import { validateEmail } from '../../lib/utils/sanitization';
+
+const handleInputChange = (field: 'email' | 'password', value: string) => {
+  if (field === 'email') {
+    const validation = validateEmail(value);
+    if (validation.isValid) {
+      setValidationErrors(prev => ({ ...prev, email: undefined }));
+      setFormData(prev => ({ ...prev, email: validation.sanitizedText }));
+    } else {
+      setValidationErrors(prev => ({ 
+        ...prev, 
+        email: validation.errors[0] || 'Invalid email format'
+      }));
+      setFormData(prev => ({ ...prev, email: validation.sanitizedText }));
+    }
+  }
+};
+```
+
+#### Form Submission Prevention
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  // Check if there are any validation errors
+  if (hasValidationErrors) {
+    return;
+  }
+  
+  // Final validation before submission
+  const emailValidation = validateEmail(formData.email);
+  if (!emailValidation.isValid) {
+    setValidationErrors(prev => ({ 
+      ...prev, 
+      email: emailValidation.errors[0] || 'Invalid email format'
+    }));
+    setHasValidationErrors(true);
+    return;
+  }
+  
+  // Proceed with submission only if validation passes
+  const success = await signIn(formData.email, formData.password);
+};
+```
+
 ## FullPageStoryInput Component Security
 
 ### Real-time Validation
@@ -144,10 +234,21 @@ The security features are thoroughly tested with:
    - Edge cases and performance testing
    - Security threat simulation
 
-2. **Component Tests**: `src/components/story/__tests__/FullPageStoryInput.security.test.tsx`
-   - 12 test cases for component security features
+2. **Authentication Sanitization Tests**: `src/lib/utils/__tests__/sanitization.auth.test.ts`
+   - 35 test cases for email, username, and display name validation
+   - Format validation and security threat detection
+   - Length limits and edge case handling
+
+3. **Story Input Component Tests**: `src/components/story/__tests__/FullPageStoryInput.security.test.tsx`
+   - 13 test cases for component security features
    - User interaction testing
    - Real-time validation testing
+
+4. **Authentication Form Security Tests**: 
+   - `src/components/auth/__tests__/SignInForm.security.test.tsx` (13 tests)
+   - `src/components/auth/__tests__/SignUpForm.security.test.tsx` (20 tests)
+   - Form submission prevention and validation error handling
+   - Real-time input sanitization and user feedback
 
 ### Test Categories
 

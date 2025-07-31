@@ -36,6 +36,36 @@ const DEFAULT_STORY_OPTIONS: SanitizationOptions = {
 };
 
 /**
+ * Default sanitization options for authentication forms
+ */
+const DEFAULT_AUTH_OPTIONS: SanitizationOptions = {
+  allowHTML: false,
+  allowLineBreaks: false,
+  maxLength: 255,
+  trim: true,
+};
+
+/**
+ * Default sanitization options for email fields
+ */
+const DEFAULT_EMAIL_OPTIONS: SanitizationOptions = {
+  allowHTML: false,
+  allowLineBreaks: false,
+  maxLength: 254, // RFC 5321 limit
+  trim: true,
+};
+
+/**
+ * Default sanitization options for username fields
+ */
+const DEFAULT_USERNAME_OPTIONS: SanitizationOptions = {
+  allowHTML: false,
+  allowLineBreaks: false,
+  maxLength: 50,
+  trim: true,
+};
+
+/**
  * Sanitizes text input to prevent security vulnerabilities
  * 
  * @param input - The raw text input to sanitize
@@ -179,4 +209,136 @@ export function validateStoryText(input: string): {
   sanitizedText: string;
 } {
   return validateTextInput(input, DEFAULT_STORY_OPTIONS);
+}
+
+/**
+ * Sanitizes and validates email input
+ * 
+ * @param input - The email to sanitize and validate
+ * @returns Sanitized email
+ */
+export function sanitizeEmail(input: string): string {
+  return sanitizeText(input, DEFAULT_EMAIL_OPTIONS);
+}
+
+/**
+ * Validates email input for security and format
+ * 
+ * @param input - The email to validate
+ * @returns Validation result
+ */
+export function validateEmail(input: string): {
+  isValid: boolean;
+  errors: string[];
+  sanitizedText: string;
+} {
+  const errors: string[] = [];
+  const opts = { ...DEFAULT_EMAIL_OPTIONS };
+  
+  // Basic validation
+  const validation = validateTextInput(input, opts);
+  if (!validation.isValid) {
+    return validation;
+  }
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(validation.sanitizedText)) {
+    errors.push('Invalid email format');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: [...validation.errors, ...errors],
+    sanitizedText: validation.sanitizedText,
+  };
+}
+
+/**
+ * Sanitizes and validates username input
+ * 
+ * @param input - The username to sanitize and validate
+ * @returns Sanitized username
+ */
+export function sanitizeUsername(input: string): string {
+  return sanitizeText(input, DEFAULT_USERNAME_OPTIONS);
+}
+
+/**
+ * Validates username input for security and format
+ * 
+ * @param input - The username to validate
+ * @returns Validation result
+ */
+export function validateUsername(input: string): {
+  isValid: boolean;
+  errors: string[];
+  sanitizedText: string;
+} {
+  const errors: string[] = [];
+  const opts = { ...DEFAULT_USERNAME_OPTIONS };
+  
+  // Basic validation
+  const validation = validateTextInput(input, opts);
+  if (!validation.isValid) {
+    return validation;
+  }
+
+  // Username format validation
+  const usernameRegex = /^[a-zA-Z0-9_-]{3,50}$/;
+  if (!usernameRegex.test(validation.sanitizedText)) {
+    errors.push('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: [...validation.errors, ...errors],
+    sanitizedText: validation.sanitizedText,
+  };
+}
+
+/**
+ * Sanitizes and validates display name input
+ * 
+ * @param input - The display name to sanitize and validate
+ * @returns Sanitized display name
+ */
+export function sanitizeDisplayName(input: string): string {
+  return sanitizeText(input, DEFAULT_AUTH_OPTIONS);
+}
+
+/**
+ * Validates display name input for security and format
+ * 
+ * @param input - The display name to validate
+ * @returns Validation result
+ */
+export function validateDisplayName(input: string): {
+  isValid: boolean;
+  errors: string[];
+  sanitizedText: string;
+} {
+  const errors: string[] = [];
+  const opts = { ...DEFAULT_AUTH_OPTIONS };
+  
+  // Basic validation
+  const validation = validateTextInput(input, opts);
+  if (!validation.isValid) {
+    return validation;
+  }
+
+  // Display name format validation
+  if (validation.sanitizedText.length < 2) {
+    errors.push('Display name must be at least 2 characters long');
+  }
+
+  if (validation.sanitizedText.length > 100) {
+    errors.push('Display name must be 100 characters or less');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: [...validation.errors, ...errors],
+    sanitizedText: validation.sanitizedText,
+  };
 } 

@@ -5,6 +5,7 @@ import Label from '../ui/Label'
 import { useSupabase } from '../../hooks/useSupabase'
 import { Alert } from '../ui/Alert'
 import { Loader2, Mail, Lock, User, Check, X } from 'lucide-react'
+import { validateEmail, validateUsername, validateDisplayName } from '../../lib/utils/sanitization'
 
 interface SignUpFormProps {
   onSuccess?: () => void
@@ -30,12 +31,54 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     number: false,
     special: false
   })
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    username?: string;
+    displayName?: string;
+  }>({})
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    // Validate and sanitize input based on field type
+    if (field === 'email') {
+      const validation = validateEmail(value)
+      if (validation.isValid) {
+        setValidationErrors(prev => ({ ...prev, email: undefined }))
+        setFormData(prev => ({ ...prev, email: validation.sanitizedText }))
+      } else {
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          email: validation.errors[0] || 'Invalid email format'
+        }))
+        setFormData(prev => ({ ...prev, email: validation.sanitizedText }))
+      }
+    } else if (field === 'username') {
+      const validation = validateUsername(value)
+      if (validation.isValid) {
+        setValidationErrors(prev => ({ ...prev, username: undefined }))
+        setFormData(prev => ({ ...prev, username: validation.sanitizedText }))
+      } else {
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          username: validation.errors[0] || 'Invalid username format'
+        }))
+        setFormData(prev => ({ ...prev, username: validation.sanitizedText }))
+      }
+    } else if (field === 'displayName') {
+      const validation = validateDisplayName(value)
+      if (validation.isValid) {
+        setValidationErrors(prev => ({ ...prev, displayName: undefined }))
+        setFormData(prev => ({ ...prev, displayName: validation.sanitizedText }))
+      } else {
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          displayName: validation.errors[0] || 'Invalid display name format'
+        }))
+        setFormData(prev => ({ ...prev, displayName: validation.sanitizedText }))
+      }
+    } else {
+      // For password fields, just update the value
+      setFormData(prev => ({ ...prev, [field]: value }))
+    }
 
     // Check password strength when password changes
     if (field === 'password') {
@@ -51,9 +94,24 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
 
   const isPasswordValid = Object.values(passwordStrength).every(Boolean)
   const doPasswordsMatch = formData.password === formData.confirmPassword
+  const hasValidationErrors = Object.values(validationErrors).some(error => error !== undefined)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Final validation before submission
+    const emailValidation = validateEmail(formData.email)
+    const usernameValidation = validateUsername(formData.username)
+    const displayNameValidation = validateDisplayName(formData.displayName)
+    
+    if (!emailValidation.isValid || !usernameValidation.isValid || !displayNameValidation.isValid) {
+      setValidationErrors({
+        email: emailValidation.isValid ? undefined : emailValidation.errors[0],
+        username: usernameValidation.isValid ? undefined : usernameValidation.errors[0],
+        displayName: displayNameValidation.isValid ? undefined : displayNameValidation.errors[0],
+      })
+      return
+    }
     
     if (!isPasswordValid) {
       return
@@ -96,11 +154,16 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  validationErrors.email ? 'border-red-500 focus-visible:ring-red-500' : 'border-input'
+                }`}
                 required
                 disabled={loading}
               />
             </div>
+            {validationErrors.email && (
+              <p className="text-sm text-red-500">{validationErrors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -113,11 +176,16 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 placeholder="Choose a username"
                 value={formData.username}
                 onChange={(e) => handleInputChange('username', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  validationErrors.username ? 'border-red-500 focus-visible:ring-red-500' : 'border-input'
+                }`}
                 required
                 disabled={loading}
               />
             </div>
+            {validationErrors.username && (
+              <p className="text-sm text-red-500">{validationErrors.username}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -130,11 +198,16 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 placeholder="Enter your display name"
                 value={formData.displayName}
                 onChange={(e) => handleInputChange('displayName', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-input rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`w-full pl-10 pr-3 py-2 border rounded-md bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  validationErrors.displayName ? 'border-red-500 focus-visible:ring-red-500' : 'border-input'
+                }`}
                 required
                 disabled={loading}
               />
             </div>
+            {validationErrors.displayName && (
+              <p className="text-sm text-red-500">{validationErrors.displayName}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -207,7 +280,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={loading || !isPasswordValid || !doPasswordsMatch}
+            disabled={loading || !isPasswordValid || !doPasswordsMatch || hasValidationErrors}
           >
             {loading ? (
               <>
