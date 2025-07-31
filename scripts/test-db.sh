@@ -92,6 +92,25 @@ status_test_db() {
     fi
 }
 
+# Function to create test user
+create_test_user() {
+    print_status "Creating test user..."
+    
+    # Ensure test database is running
+    if ! supabase status &>/dev/null; then
+        print_warning "Test database not running. Starting it first..."
+        start_test_db
+    fi
+    
+    # Create the test user
+    if node scripts/create-test-user.js; then
+        print_success "Test user created successfully"
+    else
+        print_error "Failed to create test user"
+        exit 1
+    fi
+}
+
 # Function to run tests with test database
 run_tests() {
     print_status "Running E2E integration tests..."
@@ -117,11 +136,13 @@ show_help() {
     echo "  stop      Stop the Supabase test instance"
     echo "  reset     Reset the test database (clear all data)"
     echo "  status    Show the status of the test instance"
+    echo "  user      Create test user for development"
     echo "  test      Run E2E integration tests"
     echo "  help      Show this help message"
     echo ""
     echo "Examples:"
     echo "  $0 start    # Start test database"
+    echo "  $0 user     # Create test user"
     echo "  $0 test     # Run E2E tests"
     echo "  $0 stop     # Stop test database"
 }
@@ -144,6 +165,9 @@ main() {
             ;;
         status)
             status_test_db
+            ;;
+        user)
+            create_test_user
             ;;
         test)
             run_tests

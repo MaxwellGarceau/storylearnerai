@@ -48,18 +48,10 @@ export default function SaveTranslationButton({
     return languageMap[languageName.toLowerCase()];
   };
 
-  // Map CEFR levels to database difficulty codes
-  const getDifficultyCode = (cefrLevel: string): string => {
-    const difficultyMap: Record<string, string> = {
-      'a1': 'beginner',
-      'a2': 'beginner',
-      'b1': 'intermediate',
-      'b2': 'intermediate',
-      'c1': 'advanced',
-      'c2': 'advanced'
-    };
-    
-    return difficultyMap[cefrLevel.toLowerCase()] || 'beginner';
+  // Convert difficulty level to CEFR format (database expects CEFR codes)
+  const getDifficultyCode = (difficultyLevel: string): string => {
+    // Ensure the difficulty level is in lowercase CEFR format
+    return difficultyLevel.toLowerCase();
   };
 
   const handleSave = async () => {

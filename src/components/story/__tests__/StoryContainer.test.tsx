@@ -48,6 +48,14 @@ describe('StoryContainer Component', () => {
     fireEvent.change(textArea, { target: { value: 'Esta es una historia de prueba.' } });
     fireEvent.click(submitButton);
 
+    // Wait for confirmation modal to appear and click confirm
+    await waitFor(() => {
+      expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
+
     // Wait for translation to complete - check that the callback was called
     await waitFor(() => {
       expect(mockOnStoryTranslated).toHaveBeenCalledWith(mockTranslationResponse);
@@ -86,6 +94,14 @@ describe('StoryContainer Component', () => {
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
 
+    // Wait for confirmation modal to appear and click confirm
+    await waitFor(() => {
+      expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
+
     await waitFor(() => {
       expect(within(container).getByText('Translation Error:')).toBeInTheDocument();
       expect(within(container).getByText('Translation service error')).toBeInTheDocument();
@@ -111,6 +127,14 @@ describe('StoryContainer Component', () => {
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
 
+    // Wait for confirmation modal to appear and click confirm
+    await waitFor(() => {
+      expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
+
     await waitFor(() => {
       expect(within(container).getByText('Translation Error:')).toBeInTheDocument();
       expect(within(container).getByText('Network connection error')).toBeInTheDocument();
@@ -132,6 +156,14 @@ describe('StoryContainer Component', () => {
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
+
+    // Wait for confirmation modal to appear and click confirm
+    await waitFor(() => {
+      expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
 
     // Should show loading state in the button
     expect(within(container).getByText('Translating...')).toBeInTheDocument();
@@ -159,6 +191,14 @@ describe('StoryContainer Component', () => {
 
     fireEvent.change(textArea, { target: { value: 'Test story' } });
     fireEvent.click(submitButton);
+
+    // Wait for confirmation modal to appear and click confirm
+    await waitFor(() => {
+      expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    fireEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(mockTranslationService.translate).toHaveBeenCalledWith({

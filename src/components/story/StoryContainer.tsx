@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
-import TranslationOptionsSidebar from './TranslationOptionsSidebar';
 import { translationService, TranslationResponse, TranslationError } from '../../lib/translationService';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
@@ -106,14 +105,12 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
           onChange={handleStoryChange}
           onSubmit={handleSubmit}
           isTranslating={isTranslating}
+          formData={formData}
+          onFormDataChange={handleFormDataChange}
         />
       </div>
 
-      {/* Sidebar */}
-      <TranslationOptionsSidebar
-        formData={formData}
-        onFormDataChange={handleFormDataChange}
-      />
+      {/* Sidebar removed - options now integrated into main input */}
 
       {/* Error message */}
       {translationError && (
