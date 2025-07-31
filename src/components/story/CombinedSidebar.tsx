@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Badge } from '../ui/Badge';
@@ -19,11 +19,31 @@ interface CombinedSidebarProps {
 }
 
 const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // Get initial state from localStorage or default to true (open)
+  const getInitialSidebarState = (): boolean => {
+    try {
+      const saved = localStorage.getItem('sidebarOpen');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch (error) {
+      console.warn('Failed to read sidebar state from localStorage:', error);
+      return true; // Default to open if localStorage fails
+    }
+  };
+
+  const [isOpen, setIsOpen] = useState(getInitialSidebarState);
   const [activeSection, setActiveSection] = useState<'stories' | 'info'>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const navigate = useNavigate();
   const stories: SavedStory[] = savedStoriesData.stories as SavedStory[];
+
+  // Save sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('sidebarOpen', JSON.stringify(isOpen));
+    } catch (error) {
+      console.warn('Failed to save sidebar state to localStorage:', error);
+    }
+  }, [isOpen]);
 
   const handleStoryClick = async (story: SavedStory) => {
     setIsLoading(story.id);
