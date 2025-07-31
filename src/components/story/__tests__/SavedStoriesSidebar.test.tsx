@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import SavedStoriesSidebar from '../SavedStoriesSidebar';
+import CombinedSidebar from '../CombinedSidebar';
 import { translationService } from '../../../lib/translationService';
 
 // Mock the translation service
@@ -52,21 +52,21 @@ const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
-describe('SavedStoriesSidebar', () => {
+describe('CombinedSidebar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders the sidebar with close button in header', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
-    expect(screen.getByLabelText('Close saved stories')).toBeInTheDocument();
-    expect(screen.getByText('Saved Stories')).toBeInTheDocument();
+    expect(screen.getByLabelText('Close sidebar')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Sidebar' })).toBeInTheDocument();
     expect(screen.getByText('Click on a story to read it')).toBeInTheDocument();
   });
 
   it('displays all saved stories', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const storyTitles = screen.getAllByText('The Three Little Pigs');
     const storyTitles2 = screen.getAllByText('Little Red Riding Hood');
@@ -80,7 +80,7 @@ describe('SavedStoriesSidebar', () => {
   });
 
   it('shows difficulty badges for each story', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const a1Badges = screen.getAllByText('A1');
     const a2Badges = screen.getAllByText('A2');
@@ -90,23 +90,24 @@ describe('SavedStoriesSidebar', () => {
   });
 
   it('toggles sidebar visibility when close button is clicked', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
-    const closeButton = screen.getByLabelText('Close saved stories');
+    const closeButtons = screen.getAllByLabelText('Close sidebar');
+    const closeButton = closeButtons[0];
     
     // Initially visible
-    const savedStoriesHeaders = screen.getAllByText('Saved Stories');
-    expect(savedStoriesHeaders[0]).toBeInTheDocument();
+    const sidebarHeaders = screen.getAllByRole('heading', { name: 'Sidebar' });
+    expect(sidebarHeaders[0]).toBeInTheDocument();
     
     // Click to hide
     fireEvent.click(closeButton);
-    const showButtons = screen.getAllByLabelText('Show saved stories');
+    const showButtons = screen.getAllByLabelText('Open sidebar');
     expect(showButtons[0]).toBeInTheDocument();
     
     // Click to show again
     fireEvent.click(showButtons[0]);
-    const closeButtons = screen.getAllByLabelText('Close saved stories');
-    expect(closeButtons[0]).toBeInTheDocument();
+    const newCloseButtons = screen.getAllByLabelText('Close sidebar');
+    expect(newCloseButtons[0]).toBeInTheDocument();
   });
 
   it('handles story click and navigates to story page', async () => {
@@ -119,7 +120,7 @@ describe('SavedStoriesSidebar', () => {
 
     (translationService.translate as jest.MockedFunction<typeof translationService.translate>).mockResolvedValue(mockTranslationResponse);
 
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const storyCards = screen.getAllByText('The Three Little Pigs');
     const storyCard = storyCards[0].closest('.cursor-pointer');
@@ -151,7 +152,7 @@ describe('SavedStoriesSidebar', () => {
       () => new Promise(resolve => setTimeout(resolve, 100))
     );
 
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const storyCards = screen.getAllByText('The Three Little Pigs');
     const storyCard = storyCards[0].closest('.cursor-pointer');
@@ -166,7 +167,7 @@ describe('SavedStoriesSidebar', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     (translationService.translate as jest.MockedFunction<typeof translationService.translate>).mockRejectedValue(new Error('Translation failed'));
 
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const storyCards = screen.getAllByText('The Three Little Pigs');
     const storyCard = storyCards[0].closest('.cursor-pointer');
@@ -180,14 +181,14 @@ describe('SavedStoriesSidebar', () => {
   });
 
   it('displays footer with demo information', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const footerTexts = screen.getAllByText('Demo stories • Spanish to English');
     expect(footerTexts[0]).toBeInTheDocument();
   });
 
   it('applies correct difficulty colors', () => {
-    renderWithRouter(<SavedStoriesSidebar />);
+    renderWithRouter(<CombinedSidebar />);
     
     const a1Badges = screen.getAllByText('A1');
     const a2Badges = screen.getAllByText('A2');
