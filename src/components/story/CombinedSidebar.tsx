@@ -11,6 +11,7 @@ import type { DifficultyLevel } from '../../lib/types/prompt';
 import type { SavedStory } from '../../types/savedStories';
 import { useViewport } from '../../hooks/useViewport';
 import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
+import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -23,6 +24,7 @@ interface CombinedSidebarProps {
 const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguageDisplay();
+  const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations();
   
   // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {
@@ -43,7 +45,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
   const [activeSection, setActiveSection] = useState<'stories' | 'info'>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const navigate = useNavigate();
-  const stories: SavedStory[] = savedStoriesData.stories as SavedStory[];
+  const sampleStories: SavedStory[] = savedStoriesData.stories as SavedStory[];
 
   // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
@@ -178,45 +180,111 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
             {activeSection === 'stories' && (
-              <div className="p-4 space-y-3">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Click on a story to read it
-                </p>
-                {stories.map((story) => (
-                  <Card
-                    key={story.id}
-                    className={cn(
-                      "cursor-pointer transition-all duration-200 hover:shadow-md",
-                      "hover:border-primary/50 hover:bg-accent/50",
-                      isLoading === story.id && "opacity-50 pointer-events-none"
-                    )}
-                    onClick={() => handleStoryClick(story)}
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base leading-tight">
-                          {story.title}
-                        </CardTitle>
-                        <Badge 
-                          variant="secondary" 
-                          className={cn("text-xs", getDifficultyColor(story.difficulty))}
-                        >
-                          {getDifficultyLabel(story.difficulty)}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {story.description}
-                      </p>
-                      {isLoading === story.id && (
-                        <div className="mt-2 text-xs text-primary">
-                          Loading story...
-                        </div>
+              <div className="p-4 space-y-6">
+                {/* Saved Stories Section */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-foreground border-b pb-2">
+                    Saved Stories
+                  </h3>
+                  {isLoadingSavedTranslations ? (
+                    <div className="text-sm text-muted-foreground text-center py-4">
+                      Loading saved stories...
+                    </div>
+                  ) : savedTranslations.length > 0 ? (
+                    savedTranslations.map((savedTranslation) => (
+                      <Card
+                        key={savedTranslation.id}
+                        className={cn(
+                          "cursor-pointer transition-all duration-200 hover:shadow-md",
+                          "hover:border-primary/50 hover:bg-accent/50"
+                        )}
+                        onClick={() => {
+                          // Navigate to story page with saved translation data
+                          navigate('/story', {
+                            state: {
+                              translationData: {
+                                originalText: savedTranslation.original_story,
+                                translatedText: savedTranslation.translated_story,
+                                difficulty: savedTranslation.difficulty_level.code,
+                                fromLanguage: savedTranslation.original_language.code,
+                                toLanguage: savedTranslation.translated_language.code,
+                              },
+                              isSavedStory: true
+                            }
+                          });
+                        }}
+                      >
+                        <CardHeader className="pb-2">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-base leading-tight">
+                              {savedTranslation.title || 'Untitled Story'}
+                            </CardTitle>
+                            <Badge 
+                              variant="secondary" 
+                              className={cn("text-xs", getDifficultyColor(savedTranslation.difficulty_level.code))}
+                            >
+                              {getDifficultyLabel(savedTranslation.difficulty_level.code)}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {savedTranslation.original_story.substring(0, 100)}...
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground text-center py-4">
+                      No saved stories yet. Translate a story to save it here.
+                    </div>
+                  )}
+                </div>
+
+                {/* Sample Stories Section */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-foreground border-b pb-2">
+                    Sample Stories
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Click on a story to read it
+                  </p>
+                  {sampleStories.map((story) => (
+                    <Card
+                      key={story.id}
+                      className={cn(
+                        "cursor-pointer transition-all duration-200 hover:shadow-md",
+                        "hover:border-primary/50 hover:bg-accent/50",
+                        isLoading === story.id && "opacity-50 pointer-events-none"
                       )}
-                    </CardContent>
-                  </Card>
-                ))}
+                      onClick={() => handleStoryClick(story)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between">
+                          <CardTitle className="text-base leading-tight">
+                            {story.title}
+                          </CardTitle>
+                          <Badge 
+                            variant="secondary" 
+                            className={cn("text-xs", getDifficultyColor(story.difficulty))}
+                          >
+                            {getDifficultyLabel(story.difficulty)}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {story.description}
+                        </p>
+                        {isLoading === story.id && (
+                          <div className="mt-2 text-xs text-primary">
+                            Loading story...
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
 
