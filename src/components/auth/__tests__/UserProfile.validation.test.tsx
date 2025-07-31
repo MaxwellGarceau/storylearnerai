@@ -105,6 +105,24 @@ vi.mock('../../../lib/utils/sanitization', () => ({
 describe('UserProfile Validation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Reset the mock implementations
+    const userService = mockUserService()
+    userService.getOrCreateUser.mockResolvedValue({
+      id: 'test-user-id',
+      username: 'testuser',
+      display_name: 'Test User',
+      preferred_language: 'en',
+      created_at: '2023-01-01T00:00:00Z',
+      updated_at: '2023-01-01T00:00:00Z'
+    })
+    userService.updateUser.mockResolvedValue({
+      id: 'test-user-id',
+      username: 'updateduser',
+      display_name: 'Updated User',
+      preferred_language: 'en',
+      created_at: '2023-01-01T00:00:00Z',
+      updated_at: '2023-01-01T00:00:00Z'
+    })
   })
 
   it('should load profile and display edit button', async () => {
