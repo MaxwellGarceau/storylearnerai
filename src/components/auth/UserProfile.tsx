@@ -8,7 +8,7 @@ import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
-import type { DatabaseUser } from '../../lib/types/database'
+
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
 interface UserProfileProps {
@@ -18,7 +18,7 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: string; created_at?: string; updated_at?: string } | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

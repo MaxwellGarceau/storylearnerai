@@ -10,7 +10,7 @@ import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
-import type { LanguageCode, DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
+import type { DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
@@ -42,7 +42,7 @@ export default function SaveTranslationButton({
   const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useSupabase();
   const { toast } = useToast();
-  const { languageMap, getLanguageCode } = useLanguages();
+  const { getLanguageCode } = useLanguages();
 
 
 

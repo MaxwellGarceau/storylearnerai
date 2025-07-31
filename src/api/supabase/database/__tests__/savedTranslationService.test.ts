@@ -3,11 +3,11 @@ import { SavedTranslationService } from '../savedTranslationService';
 import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../lib/types/database';
 
 // Import the actual validation functions for direct testing
-import { validateStoryText, sanitizeText } from '../../../../lib/utils/sanitization';
+import { validateStoryText } from '../../../../lib/utils/sanitization';
 
 // Mock the sanitization utilities for service tests, but use real ones for direct validation tests
 vi.mock('../../../../lib/utils/sanitization', async () => {
-  const actual = await vi.importActual('../../../../lib/utils/sanitization') as any;
+  const actual = await vi.importActual('../../../../lib/utils/sanitization') as Record<string, unknown>;
   return {
     ...actual,
     // Keep the real functions for direct testing
@@ -110,19 +110,19 @@ describe('SavedTranslationService', () => {
     });
 
     it('should throw error for invalid original language code', async () => {
-      const invalidRequest = { ...validRequest, original_language_code: 'invalid' as any };
+      const invalidRequest = { ...validRequest, original_language_code: 'invalid' as 'en' | 'es' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
         .rejects.toThrow('Validation failed: original_language_code: Original language code must be a valid ISO 639-1 code');
     });
 
     it('should throw error for invalid translated language code', async () => {
-      const invalidRequest = { ...validRequest, translated_language_code: 'invalid' as any };
+      const invalidRequest = { ...validRequest, translated_language_code: 'invalid' as 'en' | 'es' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
         .rejects.toThrow('Validation failed: translated_language_code: Translated language code must be a valid ISO 639-1 code');
     });
 
     it('should throw error for invalid difficulty level code', async () => {
-      const invalidRequest = { ...validRequest, difficulty_level_code: 'invalid' as any };
+      const invalidRequest = { ...validRequest, difficulty_level_code: 'invalid' as 'a1' | 'a2' | 'b1' | 'b2' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
         .rejects.toThrow('Validation failed: difficulty_level_code: Difficulty level code must be a valid CEFR level (a1, a2, b1, b2)');
     });
@@ -228,7 +228,7 @@ describe('SavedTranslationService', () => {
     });
 
     it('should throw error for invalid search parameter', async () => {
-      await expect(service.getSavedTranslations('test-user-id', { search: 123 as any }))
+      await expect(service.getSavedTranslations('test-user-id', { search: 123 as unknown as string }))
         .rejects.toThrow('Search parameter must be a string');
     });
   });
@@ -240,7 +240,7 @@ describe('SavedTranslationService', () => {
     });
 
     it('should throw error for invalid search parameter', async () => {
-      await expect(service.getSavedTranslationsCount('test-user-id', { search: 123 as any }))
+      await expect(service.getSavedTranslationsCount('test-user-id', { search: 123 as unknown as string }))
         .rejects.toThrow('Search parameter must be a string');
     });
   });

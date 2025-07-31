@@ -52,7 +52,7 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -151,7 +151,7 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -196,7 +196,7 @@ describe('UserService', () => {
           updated_at: '2024-01-02T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -257,7 +257,7 @@ describe('UserService', () => {
           updated_at: '2024-01-02T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -297,7 +297,7 @@ describe('UserService', () => {
       })
 
       it('should reject non-string user ID', async () => {
-        await expect(UserService.getUser(null as any)).rejects.toThrow('Invalid user ID provided')
+        await expect(UserService.getUser(null as unknown as string)).rejects.toThrow('Invalid user ID provided')
       })
     })
 
@@ -317,7 +317,7 @@ describe('UserService', () => {
       })
 
       it('should return true for available username', async () => {
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -334,7 +334,7 @@ describe('UserService', () => {
       })
 
       it('should return false for taken username', async () => {
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -367,7 +367,7 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -388,7 +388,7 @@ describe('UserService', () => {
   describe('Business Logic Validation', () => {
     describe('Username Uniqueness', () => {
       it('should reject creation with taken username', async () => {
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -409,7 +409,7 @@ describe('UserService', () => {
       })
 
       it('should reject update with taken username', async () => {
-        const mockSupabase = supabase as any
+        const mockSupabase = supabase as unknown as { from: jest.Mock }
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -431,37 +431,37 @@ describe('UserService', () => {
   })
 
   describe('Error Handling', () => {
-         it('should handle database errors gracefully', async () => {
-       const mockSupabase = supabase as any
-       mockSupabase.from.mockReturnValue({
-         select: vi.fn().mockReturnValue({
-           eq: vi.fn().mockReturnValue({
-             single: vi.fn().mockResolvedValue({
-               data: null,
-               error: { code: 'PGRST116' }
-             })
-           })
-         }),
-         insert: vi.fn().mockReturnValue({
-           select: vi.fn().mockReturnValue({
-             single: vi.fn().mockResolvedValue({
-               data: null,
-               error: { message: 'Database connection failed' }
-             })
-           })
-         })
-       })
+    it('should handle database errors gracefully', async () => {
+      const mockSupabase = supabase as unknown as { from: jest.Mock }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116' }
+            })
+          })
+        }),
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Database connection failed' }
+            })
+          })
+        })
+      })
 
-       const userData: CreateUserData = {
-         id: 'user123',
-         username: 'testuser'
-       }
+      const userData: CreateUserData = {
+        id: 'user123',
+        username: 'testuser'
+      }
 
-       await expect(UserService.createUser(userData)).rejects.toThrow('Failed to create user: Database connection failed')
-     })
+      await expect(UserService.createUser(userData)).rejects.toThrow('Failed to create user: Database connection failed')
+    })
 
     it('should handle user not found errors', async () => {
-      const mockSupabase = supabase as any
+      const mockSupabase = supabase as unknown as { from: jest.Mock }
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({

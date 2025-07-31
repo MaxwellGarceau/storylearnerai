@@ -69,7 +69,7 @@ describe('TranslationService', () => {
       it('should reject missing story ID', async () => {
         const translationData: CreateTranslationData = {
           story_id: '',
-        target_language: 'es',
+          target_language: 'es',
           translated_content: 'Hola mundo'
         }
 
@@ -97,9 +97,9 @@ describe('TranslationService', () => {
       })
 
       it('should reject malicious translated content', async () => {
-      const translationData: CreateTranslationData = {
+        const translationData: CreateTranslationData = {
           story_id: 'story123',
-        target_language: 'es',
+          target_language: 'es',
           translated_content: '<script>alert("xss")</script>Hola mundo'
         }
 
@@ -109,51 +109,51 @@ describe('TranslationService', () => {
       it('should reject missing translated content', async () => {
         const translationData: CreateTranslationData = {
           story_id: 'story123',
-        target_language: 'es',
+          target_language: 'es',
           translated_content: ''
         }
 
         await expect(TranslationService.createTranslation(translationData)).rejects.toThrow('Validation failed: translated_content: Translated content is required and must be a string')
       })
 
-             it('should normalize language code to lowercase', async () => {
-         const mockTranslation = {
-           id: 'trans123',
-           story_id: 'story123',
-           target_language: 'es',
-           translated_content: 'Hola mundo',
-           created_at: '2024-01-01T00:00:00Z',
-           updated_at: '2024-01-01T00:00:00Z'
-         }
+      it('should normalize language code to lowercase', async () => {
+        const mockTranslation = {
+          id: 'trans123',
+          story_id: 'story123',
+          target_language: 'es',
+          translated_content: 'Hola mundo',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        }
 
-         const mockSupabase = supabase as any
-         mockSupabase.from.mockReturnValue({
-           insert: vi.fn().mockReturnValue({
-             select: vi.fn().mockReturnValue({
-               single: vi.fn().mockResolvedValue({
-                 data: mockTranslation,
-                 error: null
-               })
-             })
-           })
-         })
+        const mockSupabase = supabase as any
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockTranslation,
+                error: null
+              })
+            })
+          })
+        })
 
-         const translationData: CreateTranslationData = {
-           story_id: 'story123',
-           target_language: 'es', // Already lowercase
-           translated_content: 'Hola mundo'
-         }
+        const translationData: CreateTranslationData = {
+          story_id: 'story123',
+          target_language: 'es', // Already lowercase
+          translated_content: 'Hola mundo'
+        }
 
-         const result = await TranslationService.createTranslation(translationData)
+        const result = await TranslationService.createTranslation(translationData)
 
-         expect(result).toEqual(mockTranslation)
-         // Verify that the language code was normalized to lowercase
-         expect(mockSupabase.from().insert).toHaveBeenCalledWith(
-           expect.objectContaining({
-             target_language: 'es'
-           })
-         )
-       })
+        expect(result).toEqual(mockTranslation)
+        // Verify that the language code was normalized to lowercase
+        expect(mockSupabase.from().insert).toHaveBeenCalledWith(
+          expect.objectContaining({
+            target_language: 'es'
+          })
+        )
+      })
     })
 
     describe('updateTranslation', () => {
@@ -227,10 +227,10 @@ describe('TranslationService', () => {
     describe('getTranslationsByStoryId', () => {
       it('should reject invalid story ID', async () => {
         await expect(TranslationService.getTranslationsByStoryId('')).rejects.toThrow('Invalid story ID provided')
+      })
     })
-  })
 
-  describe('getTranslationByStoryAndLanguage', () => {
+    describe('getTranslationByStoryAndLanguage', () => {
       it('should reject invalid story ID', async () => {
         await expect(TranslationService.getTranslationByStoryAndLanguage('', 'es')).rejects.toThrow('Invalid story ID provided')
       })
@@ -281,75 +281,75 @@ describe('TranslationService', () => {
     })
   })
 
-     describe('Content Sanitization', () => {
-     it('should sanitize malicious content in translated text', async () => {
-       const mockTranslation = {
-         id: 'trans123',
-         story_id: 'story123',
-         target_language: 'es',
-         translated_content: 'Hola mundo', // Sanitized content
-         created_at: '2024-01-01T00:00:00Z',
-         updated_at: '2024-01-01T00:00:00Z'
-       }
+  describe('Content Sanitization', () => {
+    it('should sanitize malicious content in translated text', async () => {
+      const mockTranslation = {
+        id: 'trans123',
+        story_id: 'story123',
+        target_language: 'es',
+        translated_content: 'Hola mundo', // Sanitized content
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
+      }
 
-       const mockQuery = {
-         insert: vi.fn().mockReturnThis(),
-         select: vi.fn().mockReturnThis(),
-         single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
-       }
+      const mockQuery = {
+        insert: vi.fn().mockReturnThis(),
+        select: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+      }
 
-       mockedSupabase.from.mockReturnValue(mockQuery)
+      mockedSupabase.from.mockReturnValue(mockQuery)
 
-       const translationData: CreateTranslationData = {
-         story_id: 'story123',
-         target_language: 'es',
-         translated_content: 'Hola mundo' // Valid content without malicious parts
-       }
+      const translationData: CreateTranslationData = {
+        story_id: 'story123',
+        target_language: 'es',
+        translated_content: 'Hola mundo' // Valid content without malicious parts
+      }
 
-       const result = await TranslationService.createTranslation(translationData)
+      const result = await TranslationService.createTranslation(translationData)
 
-       expect(result).toEqual(mockTranslation)
-       expect(supabase.from).toHaveBeenCalledWith('translations')
-       expect(mockQuery.insert).toHaveBeenCalledWith(
-         expect.objectContaining({
-           translated_content: 'Hola mundo'
-         })
-       )
-     })
+      expect(result).toEqual(mockTranslation)
+      expect(supabase.from).toHaveBeenCalledWith('translations')
+      expect(mockQuery.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          translated_content: 'Hola mundo'
+        })
+      )
+    })
 
-     it('should preserve valid content while removing malicious parts', async () => {
-       const mockTranslation = {
-         id: 'trans123',
-         story_id: 'story123',
-          target_language: 'es',
-         translated_content: 'Hola mundo - esto es una prueba',
-         created_at: '2024-01-01T00:00:00Z',
-         updated_at: '2024-01-01T00:00:00Z'
-       }
+    it('should preserve valid content while removing malicious parts', async () => {
+      const mockTranslation = {
+        id: 'trans123',
+        story_id: 'story123',
+        target_language: 'es',
+        translated_content: 'Hola mundo - esto es una prueba',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z'
+      }
 
-       const mockQuery = {
-         insert: vi.fn().mockReturnThis(),
-         select: vi.fn().mockReturnThis(),
-         single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
-       }
+      const mockQuery = {
+        insert: vi.fn().mockReturnThis(),
+        select: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+      }
 
-       mockedSupabase.from.mockReturnValue(mockQuery)
+      mockedSupabase.from.mockReturnValue(mockQuery)
 
-       const translationData: CreateTranslationData = {
-         story_id: 'story123',
-         target_language: 'es',
-         translated_content: 'Hola mundo - esto es una prueba' // Valid content
-       }
+      const translationData: CreateTranslationData = {
+        story_id: 'story123',
+        target_language: 'es',
+        translated_content: 'Hola mundo - esto es una prueba' // Valid content
+      }
 
-       const result = await TranslationService.createTranslation(translationData)
+      const result = await TranslationService.createTranslation(translationData)
 
-       expect(result).toEqual(mockTranslation)
-       expect(supabase.from).toHaveBeenCalledWith('translations')
-       expect(mockQuery.insert).toHaveBeenCalledWith(
-         expect.objectContaining({
-           translated_content: 'Hola mundo - esto es una prueba'
-         })
-       )
+      expect(result).toEqual(mockTranslation)
+      expect(supabase.from).toHaveBeenCalledWith('translations')
+      expect(mockQuery.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          translated_content: 'Hola mundo - esto es una prueba'
+        })
+      )
     })
   })
 

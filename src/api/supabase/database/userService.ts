@@ -1,12 +1,8 @@
 import { supabase } from '../client'
 import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../lib/types/database'
 import { 
-  validateEmail, 
   validateUsername, 
-  validateDisplayName,
-  sanitizeEmail,
-  sanitizeUsername,
-  sanitizeDisplayName
+  validateDisplayName
 } from '../../../lib/utils/sanitization'
 
 export interface CreateUserData {

@@ -34,5 +34,6 @@ TODO: Finalize the test cases for malicious input
 ### Areas To Test
 - User sign in
 - User sign up
+- User profile edit
 - Save translated story
 - Translate story
