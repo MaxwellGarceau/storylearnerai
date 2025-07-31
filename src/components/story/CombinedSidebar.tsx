@@ -181,6 +181,11 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
           <div className="flex-1 overflow-y-auto">
             {activeSection === 'stories' && (
               <div className="p-4 space-y-6">
+                {/* Help Text */}
+                <p className="text-sm text-muted-foreground text-center">
+                  Click on a story to read it
+                </p>
+
                 {/* Saved Stories Section */}
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-foreground border-b pb-2">
@@ -246,9 +251,6 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
                   <h3 className="text-lg font-semibold text-foreground border-b pb-2">
                     Sample Stories
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Click on a story to read it
-                  </p>
                   {sampleStories.map((story) => (
                     <Card
                       key={story.id}
