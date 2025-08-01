@@ -9,6 +9,7 @@ import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
 import type { DatabaseUser } from '../../types/database/user'
+import type { LanguageCode } from '../../types/llm/prompts'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
@@ -28,7 +29,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     username?: string
     display_name?: string
   }>({})
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    username: string
+    display_name: string
+    preferred_language: LanguageCode
+  }>({
     username: '',
     display_name: '',
     preferred_language: 'en'
