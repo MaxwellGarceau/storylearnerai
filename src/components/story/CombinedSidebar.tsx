@@ -10,7 +10,7 @@ import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { SavedStory } from '../../types/app/savedStories';
 import { useViewport } from '../../hooks/useViewport';
-import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
+import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { logger } from '../../lib/logger';
 
@@ -24,7 +24,7 @@ interface CombinedSidebarProps {
 
 const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
   const { isMobile } = useViewport();
-  const { getLanguageName } = useLanguageDisplay();
+  const { getLanguageName } = useLanguages();
   const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations();
   
   // Get initial state from localStorage or default based on screen size
