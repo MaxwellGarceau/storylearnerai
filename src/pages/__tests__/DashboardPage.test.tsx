@@ -34,7 +34,7 @@ vi.mock('../../hooks/useLanguages', () => ({
 vi.mock('../../hooks/useSupabase')
 
 // Mock the UserService
-vi.mock('../../api/supabase', () => ({
+vi.mock('../../api/supabase/database/userProfileService', () => ({
   UserService: {
     getUser: vi.fn()
   }
