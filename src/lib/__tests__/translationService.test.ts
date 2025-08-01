@@ -3,11 +3,24 @@ import { translationService } from '../translationService';
 import { EnvironmentConfig } from '../config/env';
 import type { TranslationRequest } from '../translationService';
 import { generalPromptConfigService } from '../prompts';
+import { logger } from '../logger';
 
 // Mock the dependencies
 vi.mock('../config/env', () => ({
   EnvironmentConfig: {
     isMockTranslationEnabled: vi.fn(),
+  },
+}));
+
+// Mock the logger
+vi.mock('../logger', () => ({
+  logger: {
+    warn: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+    time: vi.fn(),
+    timeEnd: vi.fn(),
   },
 }));
 
@@ -22,6 +35,7 @@ vi.mock('../llm/LLMServiceManager', () => ({
 
 
 const mockEnvironmentConfig = vi.mocked(EnvironmentConfig);
+const mockLogger = vi.mocked(logger);
 
 describe('TranslationService', () => {
   const mockRequest: TranslationRequest = {
@@ -182,7 +196,6 @@ describe('TranslationService with Prompt Configuration', () => {
 
     it('should fall back to basic prompt for unsupported language/difficulty', async () => {
       const isSupportedSpy = vi.spyOn(generalPromptConfigService, 'isSupported').mockReturnValue(false);
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Mock the LLM service for this test
       const { llmServiceManager } = await import('../llm/LLMServiceManager');
@@ -195,11 +208,10 @@ describe('TranslationService with Prompt Configuration', () => {
       await translationService.translateStory(mockPromptRequest);
 
       expect(isSupportedSpy).toHaveBeenCalledWith('en', 'a1');
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'translation',
         'Unsupported language/difficulty combination: en/a1. Using fallback prompt.'
       );
-
-      consoleSpy.mockRestore();
     });
 
     it('should generate different prompts for different difficulty levels', async () => {
