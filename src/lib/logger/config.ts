@@ -11,7 +11,7 @@ const getEnvironment = (): string => {
   
   // Node.js environment
   if (typeof process !== 'undefined' && process.env) {
-    return process.env.NODE_ENV || 'development';
+    return process.env.NODE_ENV ?? 'development';
   }
   
   return 'development';
@@ -99,7 +99,7 @@ const getEnvVar = (key: string, defaultValue?: string): string | undefined => {
   
   // Node.js environment
   if (typeof process !== 'undefined' && process.env) {
-    return process.env[key] || defaultValue;
+    return process.env[key] ?? defaultValue;
   }
   
   return defaultValue;
@@ -123,6 +123,6 @@ export function getLoggerConfigWithOverrides(): LoggerConfig {
     enableConsole: getEnvVar('LOG_CONSOLE') ? getEnvVar('LOG_CONSOLE') === 'true' : baseConfig.enableConsole,
     enableFile: getEnvVar('LOG_FILE') ? getEnvVar('LOG_FILE') === 'true' : baseConfig.enableFile,
     enableRemote: getEnvVar('LOG_REMOTE') ? getEnvVar('LOG_REMOTE') === 'true' : baseConfig.enableRemote,
-    remoteEndpoint: getEnvVar('LOG_ENDPOINT') || baseConfig.remoteEndpoint,
+    remoteEndpoint: getEnvVar('LOG_ENDPOINT') ?? baseConfig.remoteEndpoint,
   };
 } 

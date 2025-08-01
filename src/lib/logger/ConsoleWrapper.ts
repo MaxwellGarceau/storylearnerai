@@ -23,23 +23,23 @@ class ConsoleWrapper {
     // Console logging
     if (this.config.enableConsole) {
       const timestamp = new Date().toISOString();
-      const prefix = `[${timestamp}] [${level.toUpperCase()}] [${channel || 'general'}]`;
+      const prefix = `[${timestamp}] [${level.toUpperCase()}] [${channel ?? 'general'}]`;
       
       switch (level) {
         case 'error':
-          console.error(prefix, message, data || rest);
+          console.error(prefix, message, data ?? rest);
           break;
         case 'warn':
-          console.warn(prefix, message, data || rest);
+          console.warn(prefix, message, data ?? rest);
           break;
         case 'info':
-          console.info(prefix, message, data || rest);
+          console.info(prefix, message, data ?? rest);
           break;
         case 'debug':
-          console.debug(prefix, message, data || rest);
+          console.debug(prefix, message, data ?? rest);
           break;
         default:
-          console.log(prefix, message, data || rest);
+          console.log(prefix, message, data ?? rest);
       }
     }
 
@@ -60,7 +60,7 @@ class ConsoleWrapper {
       this.queue.push(logEntry);
 
       if (this.queue.length >= this.batchSize) {
-        this.flush();
+        void this.flush();
       }
     }
   }
@@ -68,7 +68,7 @@ class ConsoleWrapper {
   private startFlushTimer() {
     this.flushTimer = setInterval(() => {
       if (this.queue.length > 0) {
-        this.flush();
+        void this.flush();
       }
     }, this.flushInterval);
   }
@@ -99,7 +99,7 @@ class ConsoleWrapper {
     if (this.flushTimer) {
       clearInterval(this.flushTimer);
     }
-    this.flush();
+    void this.flush();
   }
 }
 

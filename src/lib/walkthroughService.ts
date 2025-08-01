@@ -248,7 +248,7 @@ if (typeof window !== 'undefined') {
   
   (window as unknown as Record<string, unknown>).startWalkthrough = (id: string) => {
     logger.info('walkthrough', `Starting walkthrough from console: ${id}`);
-    import('./walkthroughConfigs').then(({ walkthroughConfigs }) => {
+    void import('./walkthroughConfigs').then(({ walkthroughConfigs }) => {
       const config = walkthroughConfigs[id];
       if (config) {
         walkthroughService.startWalkthrough(config);

@@ -135,16 +135,16 @@ class TranslationService {
     switch (code) {
       case 'API_ERROR':
         if (statusCode === 401 || statusCode === 403) {
-          return `Authentication failed for ${provider || 'translation service'}. Please check your API key.`;
+          return `Authentication failed for ${provider ?? 'translation service'}. Please check your API key.`;
         }
         if (statusCode === 429) {
-          return `Rate limit exceeded for ${provider || 'translation service'}. Please wait a moment and try again.`;
+          return `Rate limit exceeded for ${provider ?? 'translation service'}. Please wait a moment and try again.`;
         }
         if (statusCode === 500 || statusCode === 502 || statusCode === 503 || statusCode === 504) {
-          return `${provider || 'Translation service'} is temporarily unavailable. Please try again later.`;
+          return `${provider ?? 'Translation service'} is temporarily unavailable. Please try again later.`;
         }
         if (statusCode === 400) {
-          return `Invalid request to ${provider || 'translation service'}. Please check your input and try again.`;
+          return `Invalid request to ${provider ?? 'translation service'}. Please check your input and try again.`;
         }
         return `Service error (${statusCode}): ${message}`;
       
@@ -164,7 +164,7 @@ class TranslationService {
         return `Custom LLM service error: ${message}`;
       
       case 'PARSE_ERROR':
-        return `Failed to process response from ${provider || 'translation service'}. Please try again.`;
+        return `Failed to process response from ${provider ?? 'translation service'}. Please try again.`;
       
       case 'NETWORK_ERROR':
         return `Network connection error. Please check your internet connection and try again.`;
@@ -180,7 +180,7 @@ class TranslationService {
         if (provider && provider !== 'unknown') {
           return `${provider} service error: ${message}`;
         }
-        return message || 'An unexpected error occurred during translation.';
+        return message ?? 'An unexpected error occurred during translation.';
     }
   }
 

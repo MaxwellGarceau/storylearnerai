@@ -104,8 +104,8 @@ export function sanitizeText(input: string, options: SanitizationOptions = {}): 
   } else {
     // If HTML is allowed, use custom allowed tags and attributes
     const purifyConfig = {
-      ALLOWED_TAGS: opts.allowedTags || ['p', 'br', 'strong', 'em', 'u', 'i'],
-      ALLOWED_ATTR: opts.allowedAttributes || ['class'],
+      ALLOWED_TAGS: opts.allowedTags ?? ['p', 'br', 'strong', 'em', 'u', 'i'],
+      ALLOWED_ATTR: opts.allowedAttributes ?? ['class'],
       KEEP_CONTENT: true,
       RETURN_DOM: false,
       RETURN_DOM_FRAGMENT: false,
