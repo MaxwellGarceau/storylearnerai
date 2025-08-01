@@ -20,7 +20,7 @@ export interface UpdateUserData {
   preferred_language?: string
 }
 
-export interface ValidationError {
+interface ValidationError {
   field: string
   message: string
 }

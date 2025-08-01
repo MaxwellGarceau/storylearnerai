@@ -1,6 +1,6 @@
 export type LLMProvider = 'openai' | 'anthropic' | 'gemini' | 'llama' | 'custom';
 
-export interface LLMConfig {
+interface LLMConfig {
   provider: LLMProvider;
   apiKey: string;
   endpoint: string;

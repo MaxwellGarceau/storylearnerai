@@ -106,7 +106,7 @@ const getEnvVar = (key: string, defaultValue?: string): string | undefined => {
 };
 
 // Get configuration based on environment
-export function getLoggerConfig(): LoggerConfig {
+function getLoggerConfig(): LoggerConfig {
   if (isTest) return testConfig;
   if (isProduction) return productionConfig;
   return developmentConfig;

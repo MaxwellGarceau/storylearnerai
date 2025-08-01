@@ -2,7 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/api/supabase/client'
 import { createDefaultTestAdminClient } from './supabase-test-client'
 
-export interface TestStory {
+interface TestStory {
   id?: string
   title: string
   content: string
@@ -11,7 +11,7 @@ export interface TestStory {
   user_id?: string
 }
 
-export interface TestTranslation {
+interface TestTranslation {
   id?: string
   story_id: string
   target_language: string
@@ -150,7 +150,7 @@ export function createTestDatabase(adminClient?: SupabaseClient<Database>): Test
 /**
  * Default test stories for common test scenarios
  */
-export const defaultTestStories: TestStory[] = [
+const defaultTestStories: TestStory[] = [
   {
     title: 'The Test Story',
     content: 'This is a test story for integration testing.',
@@ -168,7 +168,7 @@ export const defaultTestStories: TestStory[] = [
 /**
  * Default test translations for common test scenarios
  */
-export const createDefaultTestTranslations = (storyIds: string[]): TestTranslation[] => [
+const createDefaultTestTranslations = (storyIds: string[]): TestTranslation[] => [
   {
     story_id: storyIds[0],
     target_language: 'es',

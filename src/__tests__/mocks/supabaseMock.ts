@@ -12,7 +12,7 @@ if (!isTranslationSidebarTest) {
 }
 
 // Mock Supabase client
-export const mockSupabaseClient = {
+const mockSupabaseClient = {
   auth: {
     signUp: vi.fn(),
     signInWithPassword: vi.fn(),
@@ -58,7 +58,7 @@ export const mockUseSupabase = vi.fn(() => ({
 }))
 
 // MSW handlers for Supabase REST API
-export const supabaseHandlers = [
+const supabaseHandlers = [
   // Auth endpoints
   http.post('*/auth/v1/signup', () => {
     return HttpResponse.json({
@@ -134,7 +134,7 @@ export const supabaseHandlers = [
 ]
 
 // MSW handlers for Llama service
-export const llamaHandlers = [
+const llamaHandlers = [
   http.post('https://api.groq.com/openai/v1/chat/completions', () => {
     return HttpResponse.json({
       choices: [
@@ -222,7 +222,7 @@ export const setupSupabaseMocks = () => {
 }
 
 // Helper functions for common mock scenarios
-export const mockAuthUser = (user: User | null = null) => {
+const mockAuthUser = (user: User | null = null) => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),
@@ -234,7 +234,7 @@ export const mockAuthUser = (user: User | null = null) => {
   })
 }
 
-export const mockAuthLoading = () => {
+const mockAuthLoading = () => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),
@@ -246,7 +246,7 @@ export const mockAuthLoading = () => {
   })
 }
 
-export const mockAuthError = (error = 'Authentication failed') => {
+const mockAuthError = (error = 'Authentication failed') => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),

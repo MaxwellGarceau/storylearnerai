@@ -31,14 +31,14 @@ export interface NativeToTargetInstructions {
   };
 }
 
-export interface NativeToTargetDifficultyPrompts {
+interface NativeToTargetDifficultyPrompts {
   a1: NativeToTargetInstructions;
   a2: NativeToTargetInstructions;
   b1: NativeToTargetInstructions;
   b2: NativeToTargetInstructions;
 }
 
-export type NativeToTargetConfig = {
+type NativeToTargetConfig = {
   [K in LanguageCode]: NativeToTargetDifficultyPrompts;
 };
 
@@ -46,14 +46,14 @@ export type NativeToTargetLanguageConfig = {
   [K in LanguageCode]: NativeToTargetConfig;
 };
 
-export interface DifficultyPrompts {
+interface DifficultyPrompts {
   a1: PromptInstructions;
   a2: PromptInstructions;
   b1: PromptInstructions;
   b2: PromptInstructions;
 }
 
-export type LanguagePrompts = {
+type LanguagePrompts = {
   [K in LanguageCode]: DifficultyPrompts;
 };
 
@@ -69,7 +69,7 @@ export type LanguagePromptConfig = {
   [K in LanguageCode]: DifficultyPrompts;
 };
 
-export interface PromptConfig {
+interface PromptConfig {
   general: GeneralPromptConfig;
   languages: LanguagePrompts;
 }

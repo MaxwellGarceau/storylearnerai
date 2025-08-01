@@ -10,7 +10,7 @@ import DOMPurify from 'dompurify';
  * - Other malicious content
  */
 
-export interface SanitizationOptions {
+interface SanitizationOptions {
   /** Whether to allow HTML tags (default: false) */
   allowHTML?: boolean;
   /** Whether to allow line breaks (default: true) */

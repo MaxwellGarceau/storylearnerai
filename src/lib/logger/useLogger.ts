@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { logger } from './logger';
 import { LogLevel, LogChannel } from './types';
 
-export function useLogger() {
+function useLogger() {
   const loggerRef = useRef(logger);
 
   const log = useCallback((level: LogLevel, channel: LogChannel, message: string, data?: unknown) => {
@@ -70,7 +70,7 @@ export function useLogger() {
 }
 
 // Specialized hooks for different channels
-export function useApiLogger() {
+function useApiLogger() {
   const logger = useLogger();
   
   return {
@@ -84,7 +84,7 @@ export function useApiLogger() {
   };
 }
 
-export function useAuthLogger() {
+function useAuthLogger() {
   const logger = useLogger();
   
   return {
@@ -98,7 +98,7 @@ export function useAuthLogger() {
   };
 }
 
-export function useUILogger() {
+function useUILogger() {
   const logger = useLogger();
   
   return {
@@ -112,7 +112,7 @@ export function useUILogger() {
   };
 }
 
-export function usePromptLogger() {
+function usePromptLogger() {
   const logger = useLogger();
   
   return {

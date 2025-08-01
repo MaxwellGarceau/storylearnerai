@@ -21,7 +21,7 @@ export const homeWalkthrough: WalkthroughConfig = {
   allowSkip: true,
 };
 
-export const translateWalkthrough: WalkthroughConfig = {
+const translateWalkthrough: WalkthroughConfig = {
   id: 'translate-walkthrough',
   title: 'Translate Your Story',
   description: 'Learn how to translate stories with AI assistance.',
@@ -79,7 +79,7 @@ function isUserSignedIn() {
   return hasAuthData;
 }
 
-export const storyWalkthrough: WalkthroughConfig = {
+const storyWalkthrough: WalkthroughConfig = {
   id: 'story-walkthrough',
   title: 'Save Your Translation',
   description: 'Learn how to save translations and create an account.',

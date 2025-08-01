@@ -71,4 +71,4 @@ const AlertIcon = {
   info: Info,
 }
 
-export { Alert, AlertTitle, AlertDescription, AlertIcon } 
+export { Alert,  AlertDescription, AlertIcon } 

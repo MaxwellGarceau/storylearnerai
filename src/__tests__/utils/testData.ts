@@ -10,7 +10,7 @@ import type {
 import type { TranslationResponse } from '../../lib/translationService';
 
 // Dummy data for tests
-export const dummyLanguages: Language[] = [
+const dummyLanguages: Language[] = [
   {
     id: '1',
     code: 'en',
@@ -27,7 +27,7 @@ export const dummyLanguages: Language[] = [
   }
 ]
 
-export const dummyDifficultyLevels: DifficultyLevel[] = [
+const dummyDifficultyLevels: DifficultyLevel[] = [
   {
     id: '1',
     code: 'beginner',
@@ -51,7 +51,7 @@ export const dummyDifficultyLevels: DifficultyLevel[] = [
   }
 ]
 
-export const dummyUser: User = {
+const dummyUser: User = {
   id: 'test-user-id',
   username: 'testuser',
   display_name: 'Test User',
@@ -61,7 +61,7 @@ export const dummyUser: User = {
   updated_at: '2023-01-01T00:00:00Z'
 }
 
-export const dummyStory: Story = {
+const dummyStory: Story = {
   id: 'story-1',
   title: 'The Little Red Hen',
   content: 'Once upon a time, there was a little red hen who lived on a farm...',
@@ -72,7 +72,7 @@ export const dummyStory: Story = {
   updated_at: '2023-01-01T00:00:00Z'
 }
 
-export const dummyTranslation: Translation = {
+const dummyTranslation: Translation = {
   id: 'translation-1',
   story_id: 'story-1',
   target_language: 'es',
@@ -81,7 +81,7 @@ export const dummyTranslation: Translation = {
   updated_at: '2023-01-01T00:00:00Z'
 }
 
-export const dummySavedTranslation: SavedTranslation = {
+const dummySavedTranslation: SavedTranslation = {
   id: 'saved-translation-1',
   user_id: 'test-user-id',
   original_story: 'Once upon a time, there was a little red hen...',
@@ -95,7 +95,7 @@ export const dummySavedTranslation: SavedTranslation = {
   updated_at: '2023-01-01T00:00:00Z'
 }
 
-export const dummySavedTranslationWithDetails: SavedTranslationWithDetails = {
+const dummySavedTranslationWithDetails: SavedTranslationWithDetails = {
   ...dummySavedTranslation,
   original_language: dummyLanguages[0], // English
   translated_language: dummyLanguages[1], // Spanish
@@ -103,7 +103,7 @@ export const dummySavedTranslationWithDetails: SavedTranslationWithDetails = {
 }
 
 // Helper functions for creating test data
-export const createDummyLanguage = (overrides: Partial<Language> = {}): Language => ({
+const createDummyLanguage = (overrides: Partial<Language> = {}): Language => ({
   id: 'test-lang-id',
   code: 'en',
   name: 'English',
@@ -112,7 +112,7 @@ export const createDummyLanguage = (overrides: Partial<Language> = {}): Language
   ...overrides
 })
 
-export const createDummyDifficultyLevel = (overrides: Partial<DifficultyLevel> = {}): DifficultyLevel => ({
+const createDummyDifficultyLevel = (overrides: Partial<DifficultyLevel> = {}): DifficultyLevel => ({
   id: 'test-difficulty-id',
   code: 'beginner',
   name: 'Beginner',
@@ -121,7 +121,7 @@ export const createDummyDifficultyLevel = (overrides: Partial<DifficultyLevel> =
   ...overrides
 })
 
-export const createDummyUser = (overrides: Partial<User> = {}): User => ({
+const createDummyUser = (overrides: Partial<User> = {}): User => ({
   id: 'test-user-id',
   username: 'testuser',
   display_name: 'Test User',
@@ -144,7 +144,7 @@ export const createDummyStory = (overrides: Partial<Story> = {}): Story => ({
   ...overrides
 })
 
-export const createDummyTranslation = (overrides: Partial<Translation> = {}): Translation => ({
+const createDummyTranslation = (overrides: Partial<Translation> = {}): Translation => ({
   id: 'test-translation-id',
   story_id: 'test-story-id',
   target_language: 'es',
@@ -154,7 +154,7 @@ export const createDummyTranslation = (overrides: Partial<Translation> = {}): Tr
   ...overrides
 })
 
-export const createDummySavedTranslation = (overrides: Partial<SavedTranslation> = {}): SavedTranslation => ({
+const createDummySavedTranslation = (overrides: Partial<SavedTranslation> = {}): SavedTranslation => ({
   id: 'test-saved-translation-id',
   user_id: 'test-user-id',
   original_story: 'This is the original story.',
@@ -169,7 +169,7 @@ export const createDummySavedTranslation = (overrides: Partial<SavedTranslation>
   ...overrides
 })
 
-export const createDummySavedTranslationWithDetails = (
+const createDummySavedTranslationWithDetails = (
   overrides: Partial<SavedTranslationWithDetails> = {}
 ): SavedTranslationWithDetails => ({
   ...createDummySavedTranslation(),

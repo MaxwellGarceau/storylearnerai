@@ -87,7 +87,7 @@ afterEach(async () => {
 /**
  * Export the test database instance for use in tests
  */
-export { testDatabase }
+
 
 /**
  * Helper function to get the test database instance

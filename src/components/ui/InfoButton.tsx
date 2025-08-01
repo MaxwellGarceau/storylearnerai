@@ -26,7 +26,7 @@ const infoButtonVariants = cva(
   }
 )
 
-export interface InfoButtonProps
+interface InfoButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof infoButtonVariants> {
   asChild?: boolean

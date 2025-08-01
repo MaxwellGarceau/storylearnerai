@@ -13,7 +13,7 @@ export interface UpdateTranslationData {
   translated_content?: string
 }
 
-export interface ValidationError {
+interface ValidationError {
   field: string
   message: string
 }

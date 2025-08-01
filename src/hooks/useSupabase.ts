@@ -3,7 +3,7 @@ import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { getAuthErrorMessage, type AuthError } from '../lib/utils/authErrors'
 
-export interface UseSupabaseReturn {
+interface UseSupabaseReturn {
   user: User | null
   loading: boolean
   error: string | null
@@ -159,7 +159,7 @@ export function useSupabase(): UseSupabaseReturn {
 }
 
 // Hook for real-time subscriptions
-export function useRealtimeSubscription<T>(
+function useRealtimeSubscription<T>(
   table: string,
   callback: (payload: T) => void,
   filter?: string
@@ -186,7 +186,7 @@ export function useRealtimeSubscription<T>(
 }
 
 // Hook for data fetching with loading and error states
-export function useSupabaseQuery<T>(
+function useSupabaseQuery<T>(
   queryFn: () => Promise<T>,
   dependencies: unknown[] = []
 ) {
