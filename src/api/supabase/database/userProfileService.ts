@@ -1,20 +1,21 @@
 import { supabase } from '../client'
 import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
+import type { LanguageCode } from '../../../types/llm/prompts'
 
 export interface CreateUserData {
   id: string
   username?: string
   display_name?: string
   avatar_url?: string
-  preferred_language?: string
+  preferred_language?: LanguageCode
 }
 
 export interface UpdateUserData {
   username?: string
   display_name?: string
   avatar_url?: string
-  preferred_language?: string
+  preferred_language?: LanguageCode
 }
 
 interface ValidationError {
@@ -85,10 +86,10 @@ export class UserService {
     if (data.preferred_language !== undefined && data.preferred_language !== null) {
       if (typeof data.preferred_language !== 'string') {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!/^[a-z]{2}$/.test(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a valid ISO 639-1 code' })
+      } else if (!['en', 'es'].includes(data.preferred_language)) {
+        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language
+        sanitizedData.preferred_language = data.preferred_language as LanguageCode
       }
     }
 
@@ -156,10 +157,10 @@ export class UserService {
     if (data.preferred_language !== undefined && data.preferred_language !== null) {
       if (typeof data.preferred_language !== 'string') {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!/^[a-z]{2}$/.test(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a valid ISO 639-1 code' })
+      } else if (!['en', 'es'].includes(data.preferred_language)) {
+        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language
+        sanitizedData.preferred_language = data.preferred_language as LanguageCode
       }
     }
 
@@ -362,11 +363,11 @@ export class UserService {
     if (!language || typeof language !== 'string' || language.trim().length === 0) {
       throw new Error('Valid language is required')
     }
-    if (!/^[a-z]{2}$/.test(language)) {
-      throw new Error('Language must be a valid ISO 639-1 code')
+    if (!['en', 'es'].includes(language)) {
+      throw new Error('Language must be one of: en, es')
     }
 
-    return this.updateUser(userId, { preferred_language: language })
+    return this.updateUser(userId, { preferred_language: language as LanguageCode })
   }
 
   /**
