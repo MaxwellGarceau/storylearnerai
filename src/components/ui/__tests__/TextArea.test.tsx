@@ -49,7 +49,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value="Test content" />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe('Test content');
   });
 
@@ -209,7 +209,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value="" />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe('');
   });
 
@@ -219,7 +219,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value={multilineContent} />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe(multilineContent);
   });
 }); 

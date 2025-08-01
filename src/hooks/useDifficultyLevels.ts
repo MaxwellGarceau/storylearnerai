@@ -12,7 +12,7 @@ export const useDifficultyLevels = () => {
   const difficultyMap = useMemo(() => {
     const map = new Map<DifficultyLevel, string>()
     difficultyLevels.forEach(level => {
-      map.set(level.code as DifficultyLevel, level.name)
+      map.set(level.code, level.name)
     })
     return map
   }, [difficultyLevels])
@@ -27,7 +27,7 @@ export const useDifficultyLevels = () => {
       'b2': 'B2 (Upper Intermediate)'
     }
     difficultyLevels.forEach(level => {
-      map.set(level.code as DifficultyLevel, displayMap[level.code as DifficultyLevel])
+      map.set(level.code, displayMap[level.code])
     })
     return map
   }, [difficultyLevels])

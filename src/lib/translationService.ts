@@ -207,9 +207,9 @@ class TranslationService {
   // Smart translation method that chooses between mock and real based on environment
   async translate(request: TranslationRequest): Promise<TranslationResponse> {
     if (EnvironmentConfig.isMockTranslationEnabled()) {
-      return await this.mockTranslateStory(request);
+      return this.mockTranslateStory(request);
     } else {
-      return await this.translateStory(request);
+      return this.translateStory(request);
     }
   }
 

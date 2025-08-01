@@ -12,7 +12,7 @@ export const useLanguages = () => {
   const languageMap = useMemo(() => {
     const map = new Map<LanguageCode, string>()
     languages.forEach(lang => {
-      map.set(lang.code as LanguageCode, lang.name)
+      map.set(lang.code, lang.name)
     })
     return map
   }, [languages])

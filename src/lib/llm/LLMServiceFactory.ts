@@ -13,19 +13,19 @@ export class LLMServiceFactory {
   static createService(config: ProviderConfig): LLMService {
     switch (config.provider) {
       case 'openai':
-        return new OpenAIService(config as OpenAIConfig);
+        return new OpenAIService(config);
       
       case 'anthropic':
-        return new AnthropicService(config as AnthropicConfig);
+        return new AnthropicService(config);
       
       case 'gemini':
-        return new GeminiService(config as GeminiConfig);
+        return new GeminiService(config);
       
       case 'llama':
-        return new LlamaService(config as LlamaConfig);
+        return new LlamaService(config);
       
       case 'custom':
-        return new CustomService(config as CustomConfig);
+        return new CustomService(config);
       
       default:
         throw new Error(`Unsupported LLM provider: ${(config as ProviderConfig).provider}`);

@@ -39,8 +39,8 @@ export default function SavedTranslationsList() {
 
   const handleFilterChange = () => {
     setFilters({
-      translated_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
-      difficulty_level_code: (selectedDifficulty || undefined) as DifficultyLevel | undefined,
+      translated_language_code: (selectedLanguage || undefined),
+      difficulty_level_code: (selectedDifficulty || undefined),
       search: searchTerm.trim() || undefined,
     });
   };
@@ -59,9 +59,9 @@ export default function SavedTranslationsList() {
     return {
       originalText: savedTranslation.original_story,
       translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.code as LanguageCode,
-      toLanguage: savedTranslation.translated_language.code as LanguageCode,
-      difficulty: savedTranslation.difficulty_level.code as DifficultyLevel,
+      fromLanguage: savedTranslation.original_language.code,
+      toLanguage: savedTranslation.translated_language.code,
+      difficulty: savedTranslation.difficulty_level.code,
       provider: 'saved',
       model: 'saved-translation',
     };

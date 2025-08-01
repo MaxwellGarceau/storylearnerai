@@ -6,8 +6,8 @@ import { LogLevel, LogChannel } from './types';
 class ConsoleWrapper {
   private config: LoggerConfig;
   private queue: LogEntry[] = [];
-  private batchSize: number = 10;
-  private flushInterval: number = 5000;
+  private batchSize = 10;
+  private flushInterval = 5000;
   private flushTimer?: NodeJS.Timeout;
 
   constructor(config: LoggerConfig) {

@@ -7,7 +7,7 @@ import { validateStoryText } from '../../../../lib/utils/sanitization';
 
 // Mock the sanitization utilities for service tests, but use real ones for direct validation tests
 vi.mock('../../../../lib/utils/sanitization', async () => {
-  const actual = await vi.importActual('../../../../lib/utils/sanitization') as Record<string, unknown>;
+  const actual = await vi.importActual('../../../../lib/utils/sanitization');
   return {
     ...actual,
     // Keep the real functions for direct testing

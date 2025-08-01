@@ -62,7 +62,7 @@ export interface Database {
           username: string | null
           display_name: string | null
           avatar_url: string | null
-          preferred_language: string
+          preferred_language: LanguageCode
           created_at: string
           updated_at: string
         }
@@ -71,7 +71,7 @@ export interface Database {
           username?: string | null
           display_name?: string | null
           avatar_url?: string | null
-          preferred_language?: string
+          preferred_language?: LanguageCode
           created_at?: string
           updated_at?: string
         }
@@ -80,7 +80,7 @@ export interface Database {
           username?: string | null
           display_name?: string | null
           avatar_url?: string | null
-          preferred_language?: string
+          preferred_language?: LanguageCode
           created_at?: string
           updated_at?: string
         }
@@ -91,9 +91,9 @@ export interface Database {
           id: string
           title: string
           content: string
-          language: string
+          language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id: string | null
+          user_id: string | null // Foreign key reference to users.id
           created_at: string
           updated_at: string
         }
@@ -101,9 +101,9 @@ export interface Database {
           id?: string
           title: string
           content: string
-          language: string
+          language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id?: string | null
+          user_id?: string | null // Foreign key reference to users.id
           created_at?: string
           updated_at?: string
         }
@@ -111,9 +111,9 @@ export interface Database {
           id?: string
           title?: string
           content?: string
-          language?: string
+          language?: LanguageCode
           difficulty_level?: DifficultyLevel
-          user_id?: string | null
+          user_id?: string | null // Foreign key reference to users.id
           created_at?: string
           updated_at?: string
         }
@@ -122,7 +122,7 @@ export interface Database {
         Row: {
           id: string
           story_id: string
-          target_language: string
+          target_language: LanguageCode
           translated_content: string
           created_at: string
           updated_at: string
@@ -130,7 +130,7 @@ export interface Database {
         Insert: {
           id?: string
           story_id: string
-          target_language: string
+          target_language: LanguageCode
           translated_content: string
           created_at?: string
           updated_at?: string
@@ -138,7 +138,7 @@ export interface Database {
         Update: {
           id?: string
           story_id?: string
-          target_language?: string
+          target_language?: LanguageCode
           translated_content?: string
           created_at?: string
           updated_at?: string
@@ -148,11 +148,11 @@ export interface Database {
       saved_translations: {
         Row: {
           id: number
-          user_id: string
+          user_id: string // Foreign key reference to users.id
           original_story: string
           translated_story: string
-          original_language_id: number
-          translated_language_id: number
+          original_language_id: number // Foreign key reference to languages.id
+          translated_language_id: number // Foreign key reference to languages.id
           difficulty_level_id: number
           title: string | null
           notes: string | null
@@ -161,11 +161,11 @@ export interface Database {
         }
         Insert: {
           id?: number
-          user_id: string
+          user_id: string // Foreign key reference to users.id
           original_story: string
           translated_story: string
-          original_language_id: number
-          translated_language_id: number
+          original_language_id: number // Foreign key reference to languages.id
+          translated_language_id: number // Foreign key reference to languages.id
           difficulty_level_id: number
           title?: string | null
           notes?: string | null
@@ -174,11 +174,11 @@ export interface Database {
         }
         Update: {
           id?: number
-          user_id?: string
+          user_id?: string // Foreign key reference to users.id
           original_story?: string
           translated_story?: string
-          original_language_id?: number
-          translated_language_id?: number
+          original_language_id?: number // Foreign key reference to languages.id
+          translated_language_id?: number // Foreign key reference to languages.id
           difficulty_level_id?: number
           title?: string | null
           notes?: string | null

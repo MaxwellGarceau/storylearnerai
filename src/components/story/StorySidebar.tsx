@@ -73,8 +73,8 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
       // Use the translation service to translate the story
       const response = await translationService.translate({
         text: story.originalText,
-        fromLanguage: story.fromLanguage as 'es',
-        toLanguage: story.toLanguage as 'en',
+        fromLanguage: story.fromLanguage,
+        toLanguage: story.toLanguage,
         difficulty: story.difficulty,
       });
 

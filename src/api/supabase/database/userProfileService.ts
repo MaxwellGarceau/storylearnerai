@@ -78,7 +78,7 @@ export class UserService {
       } else if (!['en', 'es'].includes(data.preferred_language)) {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language as LanguageCode
+        sanitizedData.preferred_language = data.preferred_language
       }
     }
 
@@ -149,7 +149,7 @@ export class UserService {
       } else if (!['en', 'es'].includes(data.preferred_language)) {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language as LanguageCode
+        sanitizedData.preferred_language = data.preferred_language
       }
     }
 
