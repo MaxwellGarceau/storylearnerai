@@ -8,7 +8,7 @@ import {
   NativeToTargetInstructions,
   LanguageCode,
   DifficultyLevel
-} from '../types/prompt';
+} from '../../types/llm/prompts';
 import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';

@@ -1,4 +1,4 @@
-import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../types/llm';
+import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../../types/llm/providers';
 
 export abstract class LLMService {
   protected config: ProviderConfig;

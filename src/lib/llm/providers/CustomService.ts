@@ -1,5 +1,5 @@
 import { LLMService } from '../LLMService';
-import { LLMRequest, LLMResponse, CustomConfig } from '../../types/llm';
+import { LLMRequest, LLMResponse, CustomConfig } from '../../../types/llm/providers';
 import { logger } from '../../../lib/logger';
 
 export class CustomService extends LLMService {

@@ -4,7 +4,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { DashboardPage } from '../DashboardPage'
 import { useSupabase } from '../../hooks/useSupabase'
-import { UserService } from '../../api/supabase'
+import { UserService } from '../../api/supabase/database/userProfileService'
 import type { RenderResult } from '@testing-library/react'
 
 // Mock the useLanguages hook

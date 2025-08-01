@@ -1,5 +1,5 @@
 import { generalPromptConfigService } from '../GeneralPromptConfigService';
-import { PromptBuildContext } from '../../types/prompt';
+import { PromptBuildContext } from '../../../types/llm/prompts';
 import { vi } from 'vitest';
 
 // Mock the dynamic imports for native-to-target configurations

@@ -1,4 +1,4 @@
-import { LLMProvider, ProviderConfig } from '../types/llm';
+import { LLMProvider, ProviderConfig } from '../../types/llm/providers';
 import { logger } from '../logger';
 
 export class EnvironmentConfig {

@@ -41,7 +41,7 @@ vi.mock('../../../api/supabase', () => ({
 }))
 
 // Import the mocked UserService
-import { UserService } from '../../../api/supabase'
+import { UserService } from '../../../api/supabase/database/userProfileService'
 
 describe('UserProfile Component', () => {
   const mockUser: User = {

@@ -6,7 +6,7 @@ import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
 import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
-import { UserService } from '../../api/supabase'
+import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'

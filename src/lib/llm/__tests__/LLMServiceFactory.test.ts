@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { LLMServiceFactory } from '../LLMServiceFactory';
-import { OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../../types/llm';
+import { OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../../../types/llm/providers';
 
 // Mock environment variables for testing
 vi.mock('../../config/env', () => ({

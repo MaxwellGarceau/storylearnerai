@@ -1,5 +1,5 @@
 import { LLMService } from '../LLMService';
-import { LLMRequest, LLMResponse, LlamaConfig } from '../../types/llm';
+import { LLMRequest, LLMResponse, LlamaConfig } from '../../../types/llm/providers';
 import { logger } from '../../../lib/logger';
 
 export class LlamaService extends LLMService {

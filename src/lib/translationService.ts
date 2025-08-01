@@ -1,8 +1,8 @@
 import { llmServiceManager } from './llm/LLMServiceManager';
 import { EnvironmentConfig } from './config/env';
 import { generalPromptConfigService } from './prompts';
-import { LanguageCode, DifficultyLevel } from './types/prompt';
-import { LLMError } from './types/llm';
+import { LanguageCode, DifficultyLevel } from '../types/llm/prompts';
+import { LLMError } from '../types/llm/providers';
 import { logger } from './logger';
 
 export interface TranslationRequest {

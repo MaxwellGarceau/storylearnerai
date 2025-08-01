@@ -1,5 +1,5 @@
 import { LLMService } from '../LLMService';
-import { LLMRequest, LLMResponse, GeminiConfig } from '../../types/llm';
+import { LLMRequest, LLMResponse, GeminiConfig } from '../../../types/llm/providers';
 import { logger } from '../../../lib/logger';
 import { GoogleGenAI } from '@google/genai';
 

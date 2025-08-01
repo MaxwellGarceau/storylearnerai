@@ -1,5 +1,5 @@
 import { LLMService } from '../LLMService';
-import { LLMRequest, LLMResponse, AnthropicConfig } from '../../types/llm';
+import { LLMRequest, LLMResponse, AnthropicConfig } from '../../../types/llm/providers';
 import { logger } from '../../../lib/logger';
 
 export class AnthropicService extends LLMService {

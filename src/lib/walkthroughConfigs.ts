@@ -1,4 +1,4 @@
-import type { WalkthroughConfig } from './types/walkthrough';
+import type { WalkthroughConfig } from '../types/app/walkthrough';
 import { logger } from './logger';
 
 export const homeWalkthrough: WalkthroughConfig = {

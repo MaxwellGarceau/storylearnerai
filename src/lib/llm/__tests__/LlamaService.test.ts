@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LlamaService } from '../providers/LlamaService';
-import { LlamaConfig } from '../../types/llm';
+import { LlamaConfig } from '../../../types/llm/providers';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../__tests__/mocks/supabaseMock';
 

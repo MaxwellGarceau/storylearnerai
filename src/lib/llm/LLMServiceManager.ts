@@ -1,7 +1,7 @@
 import { LLMService } from './LLMService';
 import { LLMServiceFactory } from './LLMServiceFactory';
 import { EnvironmentConfig } from '../config/env';
-import { LLMRequest, LLMResponse, ProviderConfig } from '../types/llm';
+import { LLMRequest, LLMResponse, ProviderConfig } from '../../types/llm/providers';
 
 export class LLMServiceManager {
   private static instance: LLMServiceManager;
