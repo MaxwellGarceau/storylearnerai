@@ -23,7 +23,13 @@ class ConsoleWrapper {
     // Console logging
     if (this.config.enableConsole) {
       const timestamp = new Date().toISOString();
-      const prefix = `[${timestamp}] [${level.toUpperCase()}] [${String(channel ?? 'general')}]`;
+      let channelStr: string;
+      if (typeof channel === 'string' || typeof channel === 'number') {
+        channelStr = String(channel);
+      } else {
+        channelStr = 'general';
+      }
+      const prefix = `[${timestamp}] [${level.toUpperCase()}] [${channelStr}]`;
       
       switch (level) {
         case 'error':

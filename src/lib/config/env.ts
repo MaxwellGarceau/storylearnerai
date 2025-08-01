@@ -10,13 +10,13 @@ export class EnvironmentConfig {
   }
 
   static getLLMConfig(): ProviderConfig {
-    const provider = this.validateRequiredEnvVar('VITE_LLM_PROVIDER', import.meta.env.VITE_LLM_PROVIDER) as LLMProvider;
-    const apiKey = this.validateRequiredEnvVar('VITE_LLM_API_KEY', import.meta.env.VITE_LLM_API_KEY);
-    const endpoint = this.validateRequiredEnvVar('VITE_LLM_ENDPOINT', import.meta.env.VITE_LLM_ENDPOINT);
-    const model = this.validateRequiredEnvVar('VITE_LLM_MODEL', import.meta.env.VITE_LLM_MODEL);
+    const provider = this.validateRequiredEnvVar('VITE_LLM_PROVIDER', import.meta.env.VITE_LLM_PROVIDER as string | undefined) as LLMProvider;
+    const apiKey = this.validateRequiredEnvVar('VITE_LLM_API_KEY', import.meta.env.VITE_LLM_API_KEY as string | undefined);
+    const endpoint = this.validateRequiredEnvVar('VITE_LLM_ENDPOINT', import.meta.env.VITE_LLM_ENDPOINT as string | undefined);
+    const model = this.validateRequiredEnvVar('VITE_LLM_MODEL', import.meta.env.VITE_LLM_MODEL as string | undefined);
     
-    const maxTokens = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS ?? '2000', 10);
-    const temperature = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE ?? '0.7');
+    const maxTokens = parseInt((import.meta.env.VITE_LLM_MAX_TOKENS as string | undefined) ?? '2000', 10);
+    const temperature = parseFloat((import.meta.env.VITE_LLM_TEMPERATURE as string | undefined) ?? '0.7');
 
     const baseConfig = {
       provider,
@@ -33,42 +33,42 @@ export class EnvironmentConfig {
         return {
           ...baseConfig,
           provider: 'openai',
-          organization: import.meta.env.VITE_OPENAI_ORGANIZATION,
+          organization: import.meta.env.VITE_OPENAI_ORGANIZATION as string | undefined,
         };
       
       case 'anthropic':
         return {
           ...baseConfig,
           provider: 'anthropic',
-          version: import.meta.env.VITE_ANTHROPIC_VERSION ?? '2023-06-01',
+          version: (import.meta.env.VITE_ANTHROPIC_VERSION as string | undefined) ?? '2023-06-01',
         };
       
       case 'gemini':
         return {
           ...baseConfig,
           provider: 'gemini',
-          projectId: import.meta.env.VITE_GEMINI_PROJECT_ID,
+          projectId: import.meta.env.VITE_GEMINI_PROJECT_ID as string | undefined,
         };
       
       case 'llama':
         return {
           ...baseConfig,
           provider: 'llama',
-          llamaProvider: import.meta.env.VITE_LLAMA_PROVIDER ?? 'ollama',
-          systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT,
-          stopSequences: this.parseStopSequences(import.meta.env.VITE_LLAMA_STOP_SEQUENCES),
-          headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS),
+          llamaProvider: (import.meta.env.VITE_LLAMA_PROVIDER as string | undefined) ?? 'ollama',
+          systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT as string | undefined,
+          stopSequences: this.parseStopSequences(import.meta.env.VITE_LLAMA_STOP_SEQUENCES as string | undefined),
+          headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS as string | undefined),
         };
       
       case 'custom':
         return {
           ...baseConfig,
           provider: 'custom',
-          headers: this.parseCustomHeaders(import.meta.env.VITE_CUSTOM_HEADERS),
+          headers: this.parseCustomHeaders(import.meta.env.VITE_CUSTOM_HEADERS as string | undefined),
         };
       
       default:
-        throw new Error(`Unsupported LLM provider: ${provider}`);
+        throw new Error(`Unsupported LLM provider: ${String(provider)}`);
     }
   }
 

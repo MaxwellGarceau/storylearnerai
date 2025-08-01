@@ -2,6 +2,7 @@ import { supabase } from '../client'
 import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
+import type { PostgrestError } from '@supabase/supabase-js';
 
 // Use existing database types for consistency
 export type CreateUserData = Omit<DatabaseUserInsert, 'created_at' | 'updated_at'>
@@ -168,7 +169,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single() as unknown as { data: any; error: any }
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -177,7 +178,7 @@ export class UserService {
       throw new Error(`Failed to fetch user: ${error.message}`)
     }
 
-    return user as unknown as DatabaseUserInsert
+    return user;
   }
 
   /**
@@ -213,13 +214,13 @@ export class UserService {
         updated_at: new Date().toISOString()
       })
       .select()
-      .single() as unknown as { data: any; error: any }
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
     }
 
-    return user as unknown as DatabaseUserInsert
+    return user;
   }
 
   /**
@@ -258,13 +259,13 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single() as unknown as { data: any; error: any }
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
     }
 
-    return user as unknown as DatabaseUserInsert
+    return user;
   }
 
   /**
@@ -329,7 +330,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', username)
-      .single() as unknown as { data: any; error: any }
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -338,7 +339,7 @@ export class UserService {
       throw new Error(`Failed to fetch user by username: ${error.message}`)
     }
 
-    return user as unknown as DatabaseUserInsert
+    return user;
   }
 
   /**
@@ -392,16 +393,14 @@ export class UserService {
 
     let user = await this.getUser(userId)
     
-    if (!user) {
-      user = await this.createUser({
-        id: userId,
-        username: userData?.username,
-        display_name: userData?.display_name,
-        avatar_url: userData?.avatar_url,
-        preferred_language: userData?.preferred_language
-      })
-    }
+    user ??= await this.createUser({
+      id: userId,
+      username: userData?.username,
+      display_name: userData?.display_name,
+      avatar_url: userData?.avatar_url,
+      preferred_language: userData?.preferred_language
+    });
 
-    return user as unknown as DatabaseUserInsert
+    return user;
   }
 } 

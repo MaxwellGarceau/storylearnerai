@@ -54,20 +54,20 @@ describe('PromptConfigService', () => {
 
     it('should return null for unsupported language', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = generalPromptConfigService.getLanguageInstructions('unsupported' as any, 'a1');
+      const instructions = generalPromptConfigService.getLanguageInstructions('unsupported' as string, 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as any);
+      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as string);
       expect(instructions).toBeNull();
     });
 
     it('should handle case insensitive language codes', () => {
       const instructionsLower = generalPromptConfigService.getLanguageInstructions('en', 'a1');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructionsUpper = generalPromptConfigService.getLanguageInstructions('EN' as any, 'a1');
+      const instructionsUpper = generalPromptConfigService.getLanguageInstructions('EN' as string, 'a1');
       
       // Both should return the same mock data since the mock normalizes to lowercase
       expect(instructionsLower).toBeDefined();
@@ -140,8 +140,8 @@ describe('PromptConfigService', () => {
   });
 
   describe('getAvailableLanguages', () => {
-    it('should return array of available language codes', async () => {
-      const languages = await generalPromptConfigService.getAvailableLanguages();
+    it('should return array of available language codes', () => {
+      const languages = generalPromptConfigService.getAvailableLanguages();
       
       expect(Array.isArray(languages)).toBe(true);
       expect(languages).toContain('en');
@@ -150,8 +150,8 @@ describe('PromptConfigService', () => {
   });
 
   describe('getAvailableDifficulties', () => {
-    it('should return difficulties for supported language', async () => {
-      const difficulties = await generalPromptConfigService.getAvailableDifficulties('en');
+    it('should return difficulties for supported language', () => {
+      const difficulties = generalPromptConfigService.getAvailableDifficulties('en');
       
       expect(Array.isArray(difficulties)).toBe(true);
       expect(difficulties).toContain('a1');
@@ -160,33 +160,33 @@ describe('PromptConfigService', () => {
       expect(difficulties).toContain('b2');
     });
 
-    it('should return empty array for unsupported language', async () => {
-      const difficulties = await generalPromptConfigService.getAvailableDifficulties('unsupported');
+    it('should return empty array for unsupported language', () => {
+      const difficulties = generalPromptConfigService.getAvailableDifficulties('unsupported');
       expect(difficulties).toEqual([]);
     });
   });
 
   describe('isSupported', () => {
-    it('should return true for supported combinations', async () => {
-      expect(await generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
-      expect(await generalPromptConfigService.isSupported('es', 'b2')).toBe(true);
+    it('should return true for supported combinations', () => {
+      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('es', 'b2')).toBe(true);
     });
 
-    it('should return false for unsupported language', async () => {
+    it('should return false for unsupported language', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(await generalPromptConfigService.isSupported('unsupported' as any, 'a1')).toBe(false);
+      expect(generalPromptConfigService.isSupported('unsupported' as string, 'a1')).toBe(false);
     });
 
-    it('should return false for unsupported difficulty', async () => {
+    it('should return false for unsupported difficulty', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(await generalPromptConfigService.isSupported('en', 'unsupported' as any)).toBe(false);
+      expect(generalPromptConfigService.isSupported('en', 'unsupported' as string)).toBe(false);
     });
 
-    it('should be case insensitive', async () => {
+    it('should be case insensitive', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(await generalPromptConfigService.isSupported('EN' as any, 'a1')).toBe(true);
+      expect(generalPromptConfigService.isSupported('EN' as string, 'a1')).toBe(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(await generalPromptConfigService.isSupported('Es' as any, 'b2')).toBe(true);
+      expect(generalPromptConfigService.isSupported('Es' as string, 'b2')).toBe(true);
     });
   });
 
@@ -201,19 +201,19 @@ describe('PromptConfigService', () => {
 
     it('should return null for unsupported native language', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('fr' as any, 'es', 'a1');
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('fr' as string, 'es', 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported target language', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as any, 'a1');
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as string, 'a1');
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as any);
+      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as string);
       expect(instructions).toBeNull();
     });
 
