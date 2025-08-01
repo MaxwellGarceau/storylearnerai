@@ -1,22 +1,11 @@
 import { supabase } from '../client'
-import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database'
+import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
 
-export interface CreateUserData {
-  id: string
-  username?: string
-  display_name?: string
-  avatar_url?: string
-  preferred_language?: LanguageCode
-}
-
-export interface UpdateUserData {
-  username?: string
-  display_name?: string
-  avatar_url?: string
-  preferred_language?: LanguageCode
-}
+// Use existing database types for consistency
+export type CreateUserData = Omit<DatabaseUserInsert, 'created_at' | 'updated_at'>
+export type UpdateUserData = Omit<DatabaseUserUpdate, 'id' | 'created_at' | 'updated_at'>
 
 interface ValidationError {
   field: string
