@@ -4,6 +4,7 @@ import { translationService, TranslationResponse, TranslationError } from '../..
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
 import { StoryFormData } from '../types/story';
+import { logger } from '../../lib/logger';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -56,7 +57,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       // Trigger the view switch to story reader page
       onStoryTranslated(response);
     } catch (error) {
-      console.error('Translation failed:', error);
+      logger.error('translation', 'Translation failed', { error });
       
       // Handle TranslationError type
       if (error && typeof error === 'object' && 'code' in error) {

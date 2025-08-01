@@ -10,6 +10,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { walkthroughService } from '../../lib/walkthroughService';
 import type { WalkthroughState } from '../../lib/types/walkthrough';
 import { useSupabase } from '../../hooks/useSupabase';
+import { logger } from '../../lib/logger';
 
 interface WalkthroughProps {
   className?: string;
@@ -120,7 +121,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         updateSpotlight(true, element);
       }
     } else {
-      console.warn(`Target element not found: ${currentStep.targetSelector}`);
+      logger.warn('walkthrough', `Target element not found: ${currentStep.targetSelector}`);
       // Auto-advance if target not found (similar to Joyride behavior)
       setTimeout(() => {
         walkthroughService.nextStep();

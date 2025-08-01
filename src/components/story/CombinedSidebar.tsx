@@ -12,6 +12,7 @@ import type { SavedStory } from '../../types/savedStories';
 import { useViewport } from '../../hooks/useViewport';
 import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
+import { logger } from '../../lib/logger';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -36,7 +37,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
       // Default to closed on mobile, open on larger screens
       return !isMobile;
     } catch (error) {
-      console.warn('Failed to read sidebar state from localStorage:', error);
+      logger.warn('ui', 'Failed to read sidebar state from localStorage', { error });
       return !isMobile; // Default based on screen size if localStorage fails
     }
   };
@@ -52,7 +53,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
     try {
       localStorage.setItem('sidebarOpen', JSON.stringify(isOpen));
     } catch (error) {
-      console.warn('Failed to save sidebar state to localStorage:', error);
+      logger.warn('ui', 'Failed to save sidebar state to localStorage', { error });
     }
   }, [isOpen]);
 
@@ -85,7 +86,7 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
         } 
       });
     } catch (error) {
-      console.error('Failed to load story:', error);
+      logger.error('ui', 'Failed to load story', { error });
     } finally {
       setIsLoading(null);
     }

@@ -8,6 +8,7 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { DatabaseSavedTranslationWithDetails } from '../../lib/types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import { DifficultyLevel, LanguageCode } from '../../lib/types/prompt';
+import { logger } from '../../lib/logger';
 
 // CEFR difficulty level options
 const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
@@ -49,7 +50,7 @@ export default function SavedTranslationsList() {
       try {
         await deleteSavedTranslation(id);
       } catch (err) {
-        console.error('Failed to delete translation:', err);
+        logger.error('ui', 'Failed to delete translation', { error: err });
       }
     }
   };
