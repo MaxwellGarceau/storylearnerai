@@ -46,6 +46,45 @@ export default tseslint.config(
           property: 'info',
           message: 'Use logger.info() instead of console.info() for structured logging'
         }
+      ],
+      // Enforce consistent type organization
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      }],
+      // Encourage type exports from dedicated files
+      '@typescript-eslint/prefer-namespace-keyword': 'off',
+      // Enforce consistent interface naming
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'interface',
+          format: ['PascalCase'],
+          custom: {
+            regex: '^[A-Z][a-zA-Z0-9]*$',
+            match: true
+          }
+        }
+      ],
+      // Encourage type organization through naming conventions
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'interface',
+          format: ['PascalCase'],
+          custom: {
+            regex: '^[A-Z][a-zA-Z0-9]*$',
+            match: true
+          }
+        },
+        {
+          selector: 'typeAlias',
+          format: ['PascalCase'],
+          custom: {
+            regex: '^[A-Z][a-zA-Z0-9]*$',
+            match: true
+          }
+        }
       ]
     },
   },
