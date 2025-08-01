@@ -1,6 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, CustomConfig } from '../../types/llm';
-import { logger } from '../../../logger';
+import { logger } from '../../../lib/logger';
 
 export class CustomService extends LLMService {
   constructor(config: CustomConfig) {

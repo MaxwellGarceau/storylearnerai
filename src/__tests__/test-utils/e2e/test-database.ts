@@ -1,6 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/lib/types/database'
 import { createDefaultTestAdminClient } from './supabase-test-client'
+import { logger } from '../../../lib/logger'
 
 interface TestStory {
   id?: string
@@ -49,7 +50,7 @@ export class TestDatabase {
       // Reset sequences if they exist
       await this.adminClient.rpc('reset_sequences')
     } catch (error) {
-      console.warn('Error clearing test data:', error)
+      logger.warn('database', 'Error clearing test data', { error })
     }
   }
 

@@ -7,6 +7,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
+import { logger } from '../src/lib/logger/index.js'
 
 // Load environment variables
 dotenv.config()
@@ -17,7 +18,7 @@ const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbG
 
 // Validate required environment variables
 if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn('⚠️  Warning: Using fallback values. For production, set VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY in your .env file.')
+  logger.warn('config', 'Warning: Using fallback values. For production, set VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY in your .env file.')
 }
 
 // Create Supabase client with service role key
@@ -35,10 +36,10 @@ const testUser = {
 
 async function createTestUser() {
   try {
-    console.log('Creating test user...')
-    console.log(`Email: ${testUser.email}`)
-    console.log(`Password: ${testUser.password}`)
-    console.log('')
+    logger.info('setup', 'Creating test user...')
+    logger.info('setup', `Email: ${testUser.email}`)
+    logger.info('setup', `Password: ${testUser.password}`)
+    logger.info('setup', '')
 
     // Create user using Admin API
     const { data, error } = await supabase.auth.admin.createUser({
@@ -49,24 +50,24 @@ async function createTestUser() {
     })
 
     if (error) {
-      console.error('Error creating user:', error.message)
+      logger.error('setup', 'Error creating user', { error: error.message })
       process.exit(1)
     }
 
     const userId = data.user.id
-    console.log('✅ User created successfully!')
-    console.log('User ID:', userId)
-    console.log('')
+    logger.info('setup', '✅ User created successfully!')
+    logger.info('setup', `User ID: ${userId}`)
+    logger.info('setup', '')
 
-    console.log('🎉 Setup complete!')
-    console.log('You can now log in with:')
-    console.log(`Email: ${testUser.email}`)
-    console.log(`Password: ${testUser.password}`)
-    console.log('')
-    console.log('The user profile will be created automatically by the database trigger.')
+    logger.info('setup', '🎉 Setup complete!')
+    logger.info('setup', 'You can now log in with:')
+    logger.info('setup', `Email: ${testUser.email}`)
+    logger.info('setup', `Password: ${testUser.password}`)
+    logger.info('setup', '')
+    logger.info('setup', 'The user profile will be created automatically by the database trigger.')
 
   } catch (error) {
-    console.error('Unexpected error:', error.message)
+    logger.error('setup', 'Unexpected error', { error: error.message })
     process.exit(1)
   }
 }

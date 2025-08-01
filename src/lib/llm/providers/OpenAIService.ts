@@ -1,6 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, OpenAIConfig } from '../../types/llm';
-import { logger } from '../../../logger';
+import { logger } from '../../../lib/logger';
 
 export class OpenAIService extends LLMService {
   constructor(config: OpenAIConfig) {

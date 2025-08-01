@@ -121,7 +121,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         updateSpotlight(true, element);
       }
     } else {
-      logger.warn('walkthrough', `Target element not found: ${currentStep.targetSelector}`);
+      logger.warn('ui', `Target element not found: ${currentStep.targetSelector}`);
       // Auto-advance if target not found (similar to Joyride behavior)
       setTimeout(() => {
         walkthroughService.nextStep();

@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-libra
 import { Walkthrough } from '../../components/walkthrough/Walkthrough';
 import { walkthroughService } from '../../lib/walkthroughService';
 import type { WalkthroughState } from '../../lib/types/walkthrough';
+import { logger } from '../../lib/logger';
 
 // Mock the walkthrough service
 vi.mock('../../lib/walkthroughService', () => ({
@@ -136,11 +137,11 @@ describe('Walkthrough Button Behavior', () => {
       });
       expect(screen.getByText('Step 1')).toBeInTheDocument();
       expect(screen.getByText('First step of the walkthrough')).toBeInTheDocument();
-      console.log('✅ Initial modal window shows Step 1 content');
+      logger.debug('general', '✅ Initial modal window shows Step 1 content');
       
       // Mock what happens when nextStep is called - advance to step 2
       vi.mocked(walkthroughService.nextStep).mockImplementation(() => {
-        console.log('🔧 Service: nextStep() called, updating to step 2');
+        logger.debug('general', '🔧 Service: nextStep() called, updating to step 2');
         const newState = {
           ...initialState,
           currentStepIndex: 1, // Advanced to step 2
@@ -152,7 +153,7 @@ describe('Walkthrough Button Behavior', () => {
         
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
-          console.log('🔧 Service: Notifying subscribers with new state:', newState);
+          logger.debug('general', '🔧 Service: Notifying subscribers with new state', { newState });
           act(() => {
             mockStateChangeCallback!(newState);
           });
@@ -162,35 +163,35 @@ describe('Walkthrough Button Behavior', () => {
       // Click the Next button
       const nextButton = screen.getByTestId('walkthrough-next-button');
       fireEvent.click(nextButton);
-      console.log('🔍 Clicked Next button');
+      logger.debug('general', '🔍 Clicked Next button');
       
       // Verify service method was called
       expect(walkthroughService.nextStep).toHaveBeenCalled();
-      console.log('✅ nextStep service method was called');
+      logger.debug('general', '✅ nextStep service method was called');
       
       // CRITICAL: Verify modal window is STILL present (same modal, different content)
       await waitFor(() => {
         const modal = screen.getByTestId('walkthrough-modal');
         expect(modal).toBeInTheDocument();
       });
-      console.log('✅ Modal window is still present after Next click');
+      logger.debug('general', '✅ Modal window is still present after Next click');
       
       // Verify the modal window now shows step 2 content
       await waitFor(() => {
         expect(screen.getByText('Step 2')).toBeInTheDocument();
         expect(screen.getByText('Second step of the walkthrough')).toBeInTheDocument();
       });
-      console.log('✅ Modal window now shows Step 2 content');
+      logger.debug('general', '✅ Modal window now shows Step 2 content');
       
       // Verify step 1 content is no longer in the modal
       expect(screen.queryByText('Step 1')).not.toBeInTheDocument();
       expect(screen.queryByText('First step of the walkthrough')).not.toBeInTheDocument();
-      console.log('✅ Step 1 content is no longer visible');
+      logger.debug('general', '✅ Step 1 content is no longer visible');
       
       // Verify it's the same modal element that got updated (not a new one)
       const modal = screen.getByTestId('walkthrough-modal');
       expect(modal).toBeInTheDocument();
-      console.log('✅ Same modal element updated with new content');
+      logger.debug('general', '✅ Same modal element updated with new content');
     });
 
     it('should advance to next step when Next button is clicked (not close)', async () => {
@@ -206,7 +207,7 @@ describe('Walkthrough Button Behavior', () => {
       render(<Walkthrough />);
       
       // Debug: Log initial render
-      console.log('🔍 Initial render - looking for Step 1');
+      logger.debug('general', '🔍 Initial render - looking for Step 1');
       
       // Verify step 1 is initially visible
       const initialModals = screen.getAllByTestId('walkthrough-modal');
@@ -215,7 +216,7 @@ describe('Walkthrough Button Behavior', () => {
       
       // Mock what happens when nextStep is called - advance to step 2
       vi.mocked(walkthroughService.nextStep).mockImplementation(() => {
-        console.log('🔧 Service: nextStep() called, updating to step 2');
+        logger.debug('general', '🔧 Service: nextStep() called, updating to step 2');
         const newState = {
           ...initialState,
           currentStepIndex: 1, // Advanced to step 2
@@ -227,7 +228,7 @@ describe('Walkthrough Button Behavior', () => {
         
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
-          console.log('🔧 Service: Notifying subscribers with new state:', newState);
+          logger.debug('general', '🔧 Service: Notifying subscribers with new state', { newState });
           act(() => {
             mockStateChangeCallback!(newState);
           });
@@ -235,30 +236,30 @@ describe('Walkthrough Button Behavior', () => {
       });
       
       // Click the Next button
-      console.log('🔍 Clicking Next button');
+      logger.debug('general', '🔍 Clicking Next button');
       const nextButton = screen.getByTestId('walkthrough-next-button');
       fireEvent.click(nextButton);
       
       // Verify service methods were called
       expect(walkthroughService.nextStep).toHaveBeenCalled();
-      console.log('✅ Service nextStep() was called');
+      logger.debug('general', '✅ Service nextStep() was called');
       
       // Verify modal is STILL present (not closed)
       await waitFor(() => {
         const updatedModals = screen.getAllByTestId('walkthrough-modal');
         expect(updatedModals[0]).toBeInTheDocument();
       });
-      console.log('✅ Modal is still present');
+      logger.debug('general', '✅ Modal is still present');
       
       // Verify content has changed to step 2
       await waitFor(() => {
         expect(screen.getByText('Step 2')).toBeInTheDocument();
       });
-      console.log('✅ Content changed to Step 2');
+      logger.debug('general', '✅ Content changed to Step 2');
       
       // Verify step 1 content is no longer present
       expect(screen.queryByText('Step 1')).not.toBeInTheDocument();
-      console.log('✅ Step 1 content is gone');
+      logger.debug('general', '✅ Step 1 content is gone');
     });
 
     it('should advance from step 2 to step 3 when Next button is clicked', async () => {
@@ -399,7 +400,7 @@ describe('Walkthrough Button Behavior', () => {
         
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
-          console.log('🔧 X Button: Notifying subscribers modal should close');
+          logger.debug('general', '🔧 X Button: Notifying subscribers modal should close');
           act(() => {
             mockStateChangeCallback!(closedState);
           });
@@ -412,13 +413,13 @@ describe('Walkthrough Button Behavior', () => {
       
       // Verify service method was called
       expect(walkthroughService.stopWalkthrough).toHaveBeenCalled();
-      console.log('✅ stopWalkthrough was called');
+      logger.debug('general', '✅ stopWalkthrough was called');
       
       // Verify modal disappears immediately
       await waitFor(() => {
         expect(screen.queryByTestId('walkthrough-modal')).not.toBeInTheDocument();
       });
-      console.log('✅ Modal disappeared');
+      logger.debug('general', '✅ Modal disappeared');
       
       // Verify content is gone
       expect(screen.queryByText('Step 1')).not.toBeInTheDocument();

@@ -1,6 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, GeminiConfig } from '../../types/llm';
-import { logger } from '../../../logger';
+import { logger } from '../../../lib/logger';
 import { GoogleGenAI } from '@google/genai';
 
 export class GeminiService extends LLMService {

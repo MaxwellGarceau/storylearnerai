@@ -2,6 +2,7 @@ import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { createTestDatabase } from './test-database'
+import { logger } from '../../../lib/logger'
 
 const execAsync = promisify(exec)
 
@@ -13,7 +14,7 @@ let testDatabase: ReturnType<typeof createTestDatabase>
  */
 async function startSupabaseTest(): Promise<void> {
   try {
-    console.log('Starting Supabase test instance...')
+    logger.info('general', 'Starting Supabase test instance...')
     
     // Stop any existing test instance
     await execAsync('supabase stop')
@@ -24,9 +25,9 @@ async function startSupabaseTest(): Promise<void> {
   try {
     // Start the test instance
     await execAsync('supabase start')
-    console.log('Supabase test instance started successfully')
+    logger.info('general', 'Supabase test instance started successfully')
   } catch (error) {
-    console.error('Failed to start Supabase test instance:', error)
+    logger.error('general', 'Failed to start Supabase test instance', { error })
     throw error
   }
 }
@@ -36,11 +37,11 @@ async function startSupabaseTest(): Promise<void> {
  */
 async function stopSupabaseTest(): Promise<void> {
   try {
-    console.log('Stopping Supabase test instance...')
+    logger.info('general', 'Stopping Supabase test instance...')
     await execAsync('supabase stop')
-    console.log('Supabase test instance stopped successfully')
+    logger.info('general', 'Supabase test instance stopped successfully')
   } catch (error) {
-    console.error('Failed to stop Supabase test instance:', error)
+    logger.error('general', 'Failed to stop Supabase test instance', { error })
   }
 }
 
