@@ -24,6 +24,37 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
 	  'indent': ['error', 2, { 'SwitchCase': 1 }], // Enforce 2 spaces, adjust as desired
+      // Prevent direct console usage - enforce structured logging
+      'no-console': ['error', { 
+        allow: ['warn', 'error'] // Allow console.warn and console.error for critical errors only
+      }],
+      // Custom rule to suggest using logger instead
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'console',
+          property: 'log',
+          message: 'Use logger.info() instead of console.log() for structured logging'
+        },
+        {
+          object: 'console',
+          property: 'debug',
+          message: 'Use logger.debug() instead of console.debug() for structured logging'
+        },
+        {
+          object: 'console',
+          property: 'info',
+          message: 'Use logger.info() instead of console.info() for structured logging'
+        }
+      ]
     },
   },
+  // Exclude ConsoleWrapper and test files from console restrictions
+  {
+    files: ['**/ConsoleWrapper.ts', '**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
+    rules: {
+      'no-console': 'off',
+      'no-restricted-properties': 'off'
+    }
+  }
 )
