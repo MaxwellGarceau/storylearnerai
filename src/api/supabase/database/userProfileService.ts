@@ -168,7 +168,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -177,7 +177,7 @@ export class UserService {
       throw new Error(`Failed to fetch user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -208,18 +208,18 @@ export class UserService {
         username: sanitizedData.username,
         display_name: sanitizedData.display_name,
         avatar_url: sanitizedData.avatar_url,
-        preferred_language: sanitizedData.preferred_language || 'en',
+        preferred_language: sanitizedData.preferred_language ?? 'en',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .select()
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -258,13 +258,13 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -329,7 +329,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', username)
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -338,7 +338,7 @@ export class UserService {
       throw new Error(`Failed to fetch user by username: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -393,7 +393,7 @@ export class UserService {
     let user = await this.getUser(userId)
     
     if (!user) {
-      user = await this.createUser({
+      user ??= await this.createUser({
         id: userId,
         username: userData?.username,
         display_name: userData?.display_name,
@@ -402,6 +402,6 @@ export class UserService {
       })
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 } 

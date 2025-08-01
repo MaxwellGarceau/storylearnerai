@@ -17,9 +17,7 @@ class FrontEndLogger implements Logger {
     this.channels = new Map(Object.entries(this.config.channels) as [LogChannel, boolean][]);
     
     // Generate session ID if not provided
-    if (!this.sessionId) {
-      this.sessionId = this.generateSessionId();
-    }
+    this.sessionId ??= this.generateSessionId();
   }
 
   private generateSessionId(): string {
@@ -133,7 +131,7 @@ class FrontEndLogger implements Logger {
   }
 
   isChannelEnabled(channel: LogChannel): boolean {
-    return this.channels.get(channel) || false;
+    return this.channels.get(channel) ?? false;
   }
 
   // Configuration methods
@@ -154,7 +152,7 @@ class FrontEndLogger implements Logger {
 
   // Additional utility methods
   setRequestId(requestId?: string): void {
-    this.requestId = requestId || this.generateRequestId();
+    this.requestId = requestId ?? this.generateRequestId();
     this.debug('general', `Request ID set: ${this.requestId}`);
   }
 

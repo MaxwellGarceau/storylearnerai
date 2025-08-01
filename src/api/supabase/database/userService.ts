@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database'
+import type { LanguageCode } from '../../../types/llm/prompts'
 import { 
   validateUsername, 
   validateDisplayName
@@ -217,7 +218,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -226,7 +227,7 @@ export class UserService {
       throw new Error(`Failed to fetch user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -257,18 +258,18 @@ export class UserService {
         username: sanitizedData.username,
         display_name: sanitizedData.display_name,
         avatar_url: sanitizedData.avatar_url,
-        preferred_language: sanitizedData.preferred_language || 'en',
+        preferred_language: (sanitizedData.preferred_language ?? 'en') as LanguageCode,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .select()
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -299,6 +300,7 @@ export class UserService {
 
     const updateData: DatabaseUserUpdate = {
       ...sanitizedData,
+      preferred_language: sanitizedData.preferred_language as LanguageCode | null | undefined,
       updated_at: new Date().toISOString()
     }
 
@@ -307,13 +309,13 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -375,7 +377,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', usernameValidation.sanitizedText)
-      .single()
+      .single() as unknown as { data: any; error: any }
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -384,7 +386,7 @@ export class UserService {
       throw new Error(`Failed to fetch user by username: ${error.message}`)
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 
   /**
@@ -408,7 +410,7 @@ export class UserService {
     let user = await this.getUser(userId)
     
     if (!user) {
-      user = await this.createUser({
+      user ??= await this.createUser({
         id: userId,
         username: userData?.username,
         display_name: userData?.display_name,
@@ -417,6 +419,6 @@ export class UserService {
       })
     }
 
-    return user
+    return user as unknown as DatabaseUserInsert
   }
 } 
