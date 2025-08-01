@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useWalkthrough } from '../../hooks/useWalkthrough';
-import { walkthroughService } from '../../lib/walkthroughService';
-import { homeWalkthrough } from '../../lib/walkthroughConfigs';
+import { useWalkthrough } from '../../../hooks/useWalkthrough';
+import { walkthroughService } from '../../../lib/walkthroughService';
+import { homeWalkthrough } from '../../../lib/walkthroughConfigs';
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({
@@ -21,7 +21,7 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock the walkthrough service
-vi.mock('../../lib/walkthroughService', () => ({
+vi.mock('../../../lib/walkthroughService', () => ({
   walkthroughService: {
     startWalkthrough: vi.fn(),
     stopWalkthrough: vi.fn(),

@@ -1,13 +1,13 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
-import { Walkthrough } from '../../components/walkthrough/Walkthrough';
-import { walkthroughService } from '../../lib/walkthroughService';
-import type { WalkthroughState } from '../../types/app/walkthrough';
-import { logger } from '../../lib/logger';
+import { Walkthrough } from '../Walkthrough';
+import { walkthroughService } from '../../../lib/walkthroughService';
+import type { WalkthroughState } from '../../../types/app/walkthrough';
+import { logger } from '../../../lib/logger';
 
 // Mock the walkthrough service
-vi.mock('../../lib/walkthroughService', () => ({
+vi.mock('../../../lib/walkthroughService', () => ({
   walkthroughService: {
     getState: vi.fn(),
     subscribe: vi.fn(),

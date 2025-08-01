@@ -1,14 +1,6 @@
 import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
 
 // Translation management types
-interface DatabaseTranslation {
-  id: string;
-  story_id: string;
-  target_language: string;
-  translated_content: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export interface DatabaseTranslationInsert {
   id?: string;
@@ -46,19 +38,6 @@ export interface DatabaseDifficultyLevel {
 }
 
 // Saved translations (new feature)
-interface DatabaseSavedTranslation {
-  id: number;
-  user_id: string;
-  original_story: string;
-  translated_story: string;
-  original_language_id: number;
-  translated_language_id: number;
-  difficulty_level_id: number;
-  title: string | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 // Extended types for joins and relationships
 export interface DatabaseSavedTranslationWithDetails {

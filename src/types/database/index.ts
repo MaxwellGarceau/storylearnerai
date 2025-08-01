@@ -2,7 +2,6 @@ import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
 
 // Re-export all database types
 export * from './user';
-export * from './story';
 export * from './translation';
 
 // Main Database interface that includes all tables
