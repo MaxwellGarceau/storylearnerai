@@ -68,7 +68,7 @@ class TranslationService {
           statusCode: llmError.statusCode,
           details: llmError.message,
         };
-        throw translationError;
+        throw new Error(translationError.message);
       }
       
       // Handle other errors
@@ -78,7 +78,7 @@ class TranslationService {
         code: 'TRANSLATION_ERROR',
         details: errorMessage,
       };
-      throw translationError;
+      throw new Error(translationError.message);
     }
   }
 

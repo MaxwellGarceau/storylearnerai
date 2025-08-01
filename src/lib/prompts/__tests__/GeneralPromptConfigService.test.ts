@@ -41,8 +41,8 @@ vi.mock('../config/native-to-target/es/en.json', () => ({
  */
 describe('PromptConfigService', () => {
   describe('getLanguageInstructions', () => {
-    it('should return instructions for supported language and difficulty', async () => {
-      const instructions = await generalPromptConfigService.getLanguageInstructions('en', 'a1');
+    it('should return instructions for supported language and difficulty', () => {
+      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'a1');
       
       expect(instructions).toBeDefined();
       expect(instructions?.vocabulary).toBeDefined();
@@ -52,22 +52,22 @@ describe('PromptConfigService', () => {
       expect(instructions?.examples).toBeDefined();
     });
 
-    it('should return null for unsupported language', async () => {
+    it('should return null for unsupported language', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = await generalPromptConfigService.getLanguageInstructions('unsupported' as any, 'a1');
+      const instructions = generalPromptConfigService.getLanguageInstructions('unsupported' as any, 'a1');
       expect(instructions).toBeNull();
     });
 
-    it('should return null for unsupported difficulty', async () => {
+    it('should return null for unsupported difficulty', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructions = await generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as any);
+      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as any);
       expect(instructions).toBeNull();
     });
 
-    it('should handle case insensitive language codes', async () => {
-      const instructionsLower = await generalPromptConfigService.getLanguageInstructions('en', 'a1');
+    it('should handle case insensitive language codes', () => {
+      const instructionsLower = generalPromptConfigService.getLanguageInstructions('en', 'a1');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const instructionsUpper = await generalPromptConfigService.getLanguageInstructions('EN' as any, 'a1');
+      const instructionsUpper = generalPromptConfigService.getLanguageInstructions('EN' as any, 'a1');
       
       // Both should return the same mock data since the mock normalizes to lowercase
       expect(instructionsLower).toBeDefined();
@@ -109,19 +109,19 @@ describe('PromptConfigService', () => {
       text: 'Hola, ¿cómo estás?'
     };
 
-    it('should build different prompts for different difficulty levels', async () => {
+    it('should build different prompts for different difficulty levels', () => {
       const a1Context: PromptBuildContext = { ...mockContext, difficulty: 'a1' };
       const b2Context: PromptBuildContext = { ...mockContext, difficulty: 'b2' };
       
-      const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
-      const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
+      const a1Prompt = generalPromptConfigService.buildPrompt(a1Context);
+      const b2Prompt = generalPromptConfigService.buildPrompt(b2Context);
       
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('most common 1000 English words');
       expect(b2Prompt).toContain('upper-intermediate vocabulary');
     });
 
-    it('should build different prompts for different languages', async () => {
+    it('should build different prompts for different languages', () => {
       const enContext: PromptBuildContext = { ...mockContext, toLanguage: 'en' };
       const esContext: PromptBuildContext = { 
         fromLanguage: 'en', 
@@ -130,8 +130,8 @@ describe('PromptConfigService', () => {
         text: 'Hello, how are you?' 
       };
       
-      const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
-      const esPrompt = await generalPromptConfigService.buildPrompt(esContext);
+      const enPrompt = generalPromptConfigService.buildPrompt(enContext);
+      const esPrompt = generalPromptConfigService.buildPrompt(esContext);
       
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');

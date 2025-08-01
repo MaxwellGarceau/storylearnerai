@@ -27,9 +27,8 @@ export class LlamaService extends LLMService {
         throw error;
       }
       // Otherwise, create a new LLMError
-      throw this.createError(
-        error instanceof Error ? error.message : 'Llama API request failed',
-        'LLAMA_ERROR'
+      throw new Error(
+        error instanceof Error ? error.message : 'Llama API request failed'
       );
     }
   }
@@ -66,7 +65,7 @@ export class LlamaService extends LLMService {
   }
 
   private getCompletionEndpoint(config: LlamaConfig): string {
-    const provider = config.llamaProvider || 'ollama';
+    const provider = config.llamaProvider ?? 'ollama';
     
     switch (provider) {
       case 'ollama':
@@ -84,11 +83,11 @@ export class LlamaService extends LLMService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private buildRequestBody(request: LLMRequest, config: LlamaConfig): any {
-    const provider = config.llamaProvider || 'ollama';
+    const provider = config.llamaProvider ?? 'ollama';
     const baseBody = {
-      model: request.model || config.model,
-      max_tokens: request.maxTokens || config.maxTokens,
-      temperature: request.temperature || config.temperature,
+      model: request.model ?? config.model,
+      max_tokens: request.maxTokens ?? config.maxTokens,
+      temperature: request.temperature ?? config.temperature,
     };
 
     switch (provider) {
@@ -147,37 +146,37 @@ export class LlamaService extends LLMService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private parseResponse(data: any, config: LlamaConfig): LLMResponse {
-    const provider = config.llamaProvider || 'ollama';
+    const provider = config.llamaProvider ?? 'ollama';
     
     switch (provider) {
       case 'ollama':
         return {
-          content: data.message?.content || '',
-          tokenUsage: data.prompt_eval_count || data.eval_count ? {
-            promptTokens: data.prompt_eval_count || 0,
-            completionTokens: data.eval_count || 0,
-            totalTokens: (data.prompt_eval_count || 0) + (data.eval_count || 0),
+          content: data.message?.content ?? '',
+          tokenUsage: data.prompt_eval_count ?? data.eval_count ? {
+            promptTokens: data.prompt_eval_count ?? 0,
+            completionTokens: data.eval_count ?? 0,
+            totalTokens: (data.prompt_eval_count ?? 0) + (data.eval_count ?? 0),
           } : undefined,
-          model: data.model || config.model,
+          model: data.model ?? config.model,
           provider: 'llama',
         };
       
       case 'groq':
       case 'together':
         return {
-          content: data.choices?.[0]?.message?.content || '',
+          content: data.choices?.[0]?.message?.content ?? '',
           tokenUsage: data.usage ? {
             promptTokens: data.usage.prompt_tokens,
             completionTokens: data.usage.completion_tokens,
             totalTokens: data.usage.total_tokens,
           } : undefined,
-          model: data.model || config.model,
+          model: data.model ?? config.model,
           provider: 'llama',
         };
       
       case 'replicate':
         return {
-          content: Array.isArray(data.output) ? data.output.join('') : data.output || '',
+          content: Array.isArray(data.output) ? data.output.join('') : data.output ?? '',
           tokenUsage: data.metrics ? {
             promptTokens: 0, // Replicate doesn't typically provide token counts
             completionTokens: 0,
@@ -189,13 +188,13 @@ export class LlamaService extends LLMService {
       
       default:
         return {
-          content: data.choices?.[0]?.message?.content || data.content || '',
+          content: data.choices?.[0]?.message?.content ?? data.content ?? '',
           tokenUsage: data.usage ? {
-            promptTokens: data.usage.prompt_tokens || 0,
-            completionTokens: data.usage.completion_tokens || 0,
-            totalTokens: data.usage.total_tokens || 0,
+            promptTokens: data.usage.prompt_tokens ?? 0,
+            completionTokens: data.usage.completion_tokens ?? 0,
+            totalTokens: data.usage.total_tokens ?? 0,
           } : undefined,
-          model: data.model || config.model,
+          model: data.model ?? config.model,
           provider: 'llama',
         };
     }
@@ -204,7 +203,7 @@ export class LlamaService extends LLMService {
   private buildLlamaHeaders(): Record<string, string> {
     const headers = this.buildHeaders();
     const llamaConfig = this.config as LlamaConfig;
-    const provider = llamaConfig.llamaProvider || 'ollama';
+    const provider = llamaConfig.llamaProvider ?? 'ollama';
     
     switch (provider) {
       case 'ollama':

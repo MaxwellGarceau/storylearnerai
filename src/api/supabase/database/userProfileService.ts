@@ -393,7 +393,7 @@ export class UserService {
     let user = await this.getUser(userId)
     
     if (!user) {
-      user ??= await this.createUser({
+      user = await this.createUser({
         id: userId,
         username: userData?.username,
         display_name: userData?.display_name,

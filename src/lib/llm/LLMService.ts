@@ -60,20 +60,16 @@ export abstract class LLMService {
   protected async handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
       const errorText = await response.text();
-      throw this.createError(
-        `API request failed: ${response.status} ${response.statusText}. ${errorText}`,
-        'API_ERROR',
-        response.status
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}. ${errorText}`
       );
     }
 
     try {
       return await response.json();
     } catch {
-      throw this.createError(
-        'Failed to parse API response',
-        'PARSE_ERROR',
-        response.status
+      throw new Error(
+        'Failed to parse API response'
       );
     }
   }

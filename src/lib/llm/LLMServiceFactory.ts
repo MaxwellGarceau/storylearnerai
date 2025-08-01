@@ -1,5 +1,5 @@
 import { LLMService } from './LLMService';
-import { ProviderConfig, OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../../types/llm/providers';
+import { ProviderConfig } from '../../types/llm/providers';
 import { OpenAIService } from './providers/OpenAIService';
 import { AnthropicService } from './providers/AnthropicService';
 import { GeminiService } from './providers/GeminiService';

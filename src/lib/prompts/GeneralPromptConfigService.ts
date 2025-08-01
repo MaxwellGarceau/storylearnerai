@@ -341,8 +341,6 @@ Please provide only the ${toLanguage} translation.`;
 let _instance: GeneralPromptConfigService | null = null;
 
 export const generalPromptConfigService = (() => {
-  if (!_instance) {
-    _instance = new GeneralPromptConfigService();
-  }
+  _instance ??= new GeneralPromptConfigService();
   return _instance;
 })(); 

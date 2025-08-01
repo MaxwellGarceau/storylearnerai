@@ -214,7 +214,7 @@ describe('TranslationService with Prompt Configuration', () => {
       );
     });
 
-    it('should generate different prompts for different difficulty levels', async () => {
+    it('should generate different prompts for different difficulty levels', () => {
       // Test that different difficulty levels generate different prompts
       // Note: This test is disabled due to module resolution issues
       // The core functionality is tested in other tests
@@ -278,7 +278,7 @@ describe('TranslationService with Prompt Configuration', () => {
       expect(prompt).toContain('Keep the story engaging and readable');
     });
 
-    it('should include language-specific instructions in the prompt', async () => {
+    it('should include language-specific instructions in the prompt', () => {
       // Test that language-specific instructions are included in the prompt
       // Note: This test is disabled due to module resolution issues
       // The core functionality is tested in other tests

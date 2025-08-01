@@ -15,8 +15,8 @@ export class EnvironmentConfig {
     const endpoint = this.validateRequiredEnvVar('VITE_LLM_ENDPOINT', import.meta.env.VITE_LLM_ENDPOINT);
     const model = this.validateRequiredEnvVar('VITE_LLM_MODEL', import.meta.env.VITE_LLM_MODEL);
     
-    const maxTokens = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS || '2000', 10);
-    const temperature = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE || '0.7');
+    const maxTokens = parseInt(import.meta.env.VITE_LLM_MAX_TOKENS ?? '2000', 10);
+    const temperature = parseFloat(import.meta.env.VITE_LLM_TEMPERATURE ?? '0.7');
 
     const baseConfig = {
       provider,
@@ -40,7 +40,7 @@ export class EnvironmentConfig {
         return {
           ...baseConfig,
           provider: 'anthropic',
-          version: import.meta.env.VITE_ANTHROPIC_VERSION || '2023-06-01',
+          version: import.meta.env.VITE_ANTHROPIC_VERSION ?? '2023-06-01',
         };
       
       case 'gemini':
@@ -54,7 +54,7 @@ export class EnvironmentConfig {
         return {
           ...baseConfig,
           provider: 'llama',
-          llamaProvider: import.meta.env.VITE_LLAMA_PROVIDER || 'ollama',
+          llamaProvider: import.meta.env.VITE_LLAMA_PROVIDER ?? 'ollama',
           systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT,
           stopSequences: this.parseStopSequences(import.meta.env.VITE_LLAMA_STOP_SEQUENCES),
           headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS),

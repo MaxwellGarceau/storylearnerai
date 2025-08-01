@@ -42,9 +42,8 @@ export class GeminiService extends LLMService {
       logger.error('llm', 'Gemini API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
-        : this.createError(
-          error instanceof Error ? error.message : 'Gemini API request failed',
-          'GEMINI_ERROR'
+        : new Error(
+          error instanceof Error ? error.message : 'Gemini API request failed'
         );
     }
   }

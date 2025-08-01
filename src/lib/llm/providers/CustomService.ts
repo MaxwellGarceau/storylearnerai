@@ -14,10 +14,10 @@ export class CustomService extends LLMService {
         method: 'POST',
         headers: this.buildCustomHeaders(),
         body: JSON.stringify({
-          model: request.model || customConfig.model,
+          model: request.model ?? customConfig.model,
           prompt: request.prompt,
-          max_tokens: request.maxTokens || customConfig.maxTokens,
-          temperature: request.temperature || customConfig.temperature,
+          max_tokens: request.maxTokens ?? customConfig.maxTokens,
+          temperature: request.temperature ?? customConfig.temperature,
         }),
       });
 
@@ -25,22 +25,21 @@ export class CustomService extends LLMService {
 
       // Generic response format - may need adjustment based on actual API
       return {
-        content: data.choices?.[0]?.text || data.content || data.response || '',
+        content: data.choices?.[0]?.text ?? data.content ?? data.response ?? '',
         tokenUsage: data.usage ? {
-          promptTokens: data.usage.prompt_tokens || data.usage.input_tokens || 0,
-          completionTokens: data.usage.completion_tokens || data.usage.output_tokens || 0,
-          totalTokens: data.usage.total_tokens || (data.usage.prompt_tokens + data.usage.completion_tokens) || 0,
+          promptTokens: data.usage.prompt_tokens ?? data.usage.input_tokens ?? 0,
+          completionTokens: data.usage.completion_tokens ?? data.usage.output_tokens ?? 0,
+          totalTokens: data.usage.total_tokens ?? ((data.usage.prompt_tokens ?? 0) + (data.usage.completion_tokens ?? 0)),
         } : undefined,
-        model: data.model || customConfig.model,
+        model: data.model ?? customConfig.model,
         provider: 'custom',
       };
     } catch (error) {
       logger.error('llm', 'Custom API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
-        : this.createError(
-          error instanceof Error ? error.message : 'Custom API request failed',
-          'CUSTOM_ERROR'
+        : new Error(
+          error instanceof Error ? error.message : 'Custom API request failed'
         );
     }
   }

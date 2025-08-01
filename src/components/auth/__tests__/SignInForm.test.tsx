@@ -53,7 +53,7 @@ describe('SignInForm Component', () => {
     expect(passwordInput).toHaveValue('Password123!')
   })
 
-  it('submits form with valid data', async () => {
+  it('submits form with valid data', () => {
     mockSignIn.mockResolvedValue(true)
 
     render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
@@ -76,7 +76,7 @@ describe('SignInForm Component', () => {
     })
   })
 
-  it('handles sign in error', async () => {
+  it('handles sign in error', () => {
     const errorMessage = 'Invalid credentials'
     
     // Mock the error state from useSupabase
@@ -104,7 +104,7 @@ describe('SignInForm Component', () => {
     expect(mockOnSwitchToSignUp).toHaveBeenCalled()
   })
 
-  it('disables form during loading', async () => {
+  it('disables form during loading', () => {
     // Mock the loading state from useSupabase
     mockUseSupabase.mockReturnValue({
       signIn: mockSignIn,

@@ -54,9 +54,9 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = async (component: React.ReactElement): Promise<RenderResult> => {
+const renderWithRouter = (component: React.ReactElement): RenderResult => {
   let result: RenderResult;
-  await act(async () => {
+  act(() => {
     result = render(
       <BrowserRouter>
         {component}

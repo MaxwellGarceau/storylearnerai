@@ -16,7 +16,7 @@ export class DifficultyLevelService {
       throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
     }
 
-    return data || [];
+    return data ?? [];
   }
 
   /**
@@ -45,7 +45,7 @@ export class DifficultyLevelService {
   async getDifficultyLevelName(code: DifficultyLevelCode): Promise<string> {
     try {
       const difficultyLevel = await this.getDifficultyLevelByCode(code);
-      return difficultyLevel?.name || code;
+      return difficultyLevel?.name ?? code;
     } catch (error) {
       logger.warn('database', `Failed to fetch difficulty level name for code: ${code}`, { error });
       return code; // Fallback to code if fetch fails

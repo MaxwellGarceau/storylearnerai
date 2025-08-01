@@ -45,7 +45,7 @@ export class LanguageService {
   async getLanguageName(code: LanguageCode): Promise<string> {
     try {
       const language = await this.getLanguageByCode(code);
-      return language?.name || code;
+      return language?.name ?? code;
     } catch (error) {
       logger.warn('database', `Failed to fetch language name for code: ${code}`, { error });
       return code; // Fallback to code if fetch fails

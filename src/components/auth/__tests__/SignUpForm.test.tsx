@@ -99,7 +99,7 @@ describe('SignUpForm Component', () => {
     expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
   })
 
-  it('submits form with valid data', async () => {
+  it('submits form with valid data', () => {
     mockSignUp.mockResolvedValue(true)
 
     render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />)
@@ -128,7 +128,7 @@ describe('SignUpForm Component', () => {
     })
   })
 
-  it('handles sign up error', async () => {
+  it('handles sign up error', () => {
     const errorMessage = 'Email already exists'
     
     // Mock the error state from useSupabase
@@ -156,7 +156,7 @@ describe('SignUpForm Component', () => {
     expect(mockOnSwitchToSignIn).toHaveBeenCalled()
   })
 
-  it('disables form during loading', async () => {
+  it('disables form during loading', () => {
     // Mock the loading state from useSupabase
     mockUseSupabase.mockReturnValue({
       signIn: vi.fn(),
