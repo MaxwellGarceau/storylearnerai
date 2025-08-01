@@ -3,6 +3,7 @@ import { EnvironmentConfig } from './config/env';
 import { generalPromptConfigService } from './prompts';
 import { LanguageCode, DifficultyLevel } from './types/prompt';
 import { LLMError } from './types/llm';
+import { logger } from './logger';
 
 export interface TranslationRequest {
   text: string;
@@ -55,7 +56,7 @@ class TranslationService {
         model: llmResponse.model,
       };
     } catch (error) {
-      console.error('Translation service error:', error);
+      logger.error('translation', 'Translation service error', { error });
       
       // Handle LLM-specific errors
       if (error && typeof error === 'object' && 'provider' in error) {
@@ -96,7 +97,7 @@ class TranslationService {
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
     if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
-      console.warn(`Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
+      logger.warn('translation', `Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
       return this.buildFallbackPrompt(request);
     }
 
@@ -221,7 +222,7 @@ class TranslationService {
     try {
       return await llmServiceManager.healthCheck();
     } catch (error) {
-      console.warn('LLM service health check failed:', error);
+      logger.warn('translation', 'LLM service health check failed', { error });
       return false;
     }
   }

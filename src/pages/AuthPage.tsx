@@ -6,6 +6,7 @@ import { UserProfile } from '../components/auth/UserProfile'
 import { useSupabase } from '../hooks/useSupabase'
 import { Button } from '../components/ui/Button'
 import { ArrowLeft } from 'lucide-react'
+import { logger } from '../lib/logger'
 
 type AuthMode = 'signin' | 'signup' | 'profile'
 
@@ -79,7 +80,7 @@ export const AuthPage: React.FC = () => {
             onSwitchToSignUp={() => handleSwitchMode('signup')}
             onForgotPassword={() => {
               // TODO: Implement forgot password functionality
-              console.log('Forgot password clicked')
+              logger.info('auth', 'Forgot password clicked')
             }}
           />
         )}

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
 import type { DatabaseLanguage } from '../lib/types/database'
 import type { LanguageCode } from '../lib/types/prompt'
+import { logger } from '../lib/logger'
 
 export const useLanguages = () => {
   const [languages, setLanguages] = useState<DatabaseLanguage[]>([])
@@ -57,7 +58,7 @@ export const useLanguages = () => {
         setLanguages(languagesData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load languages')
-        console.error('Failed to load languages:', err)
+        logger.error('general', 'Failed to load languages', { error: err })
       } finally {
         setLoading(false)
       }

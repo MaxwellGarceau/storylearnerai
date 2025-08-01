@@ -5,6 +5,7 @@ import type {
   WalkthroughStorage,
   WalkthroughStep 
 } from './types/walkthrough';
+import { logger } from './logger';
 
 class WalkthroughService {
   private static instance: WalkthroughService;
@@ -39,7 +40,7 @@ class WalkthroughService {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.warn('Failed to load walkthrough storage:', error);
+      logger.warn('walkthrough', 'Failed to load walkthrough storage', { error });
     }
     return { completed: [], skipped: [] };
   }
@@ -48,7 +49,7 @@ class WalkthroughService {
     try {
       localStorage.setItem(this.getStorageKey(), JSON.stringify(storage));
     } catch (error) {
-      console.warn('Failed to save walkthrough storage:', error);
+      logger.warn('walkthrough', 'Failed to save walkthrough storage', { error });
     }
   }
 
@@ -69,13 +70,13 @@ class WalkthroughService {
   }
 
   startWalkthrough(config: WalkthroughConfig): void {
-    console.log(`🎯 startWalkthrough called for: ${config.id}`);
+    logger.info('walkthrough', `startWalkthrough called for: ${config.id}`);
     
     // Check if walkthrough is already completed
     const storage = this.loadStorage();
-    console.log(`📦 Current storage state:`, storage);
+    logger.debug('walkthrough', 'Current storage state', { storage });
     if (storage.completed.includes(config.id as WalkthroughId)) {
-      console.log(`✅ Walkthrough already completed: ${config.id}`);
+      logger.info('walkthrough', `Walkthrough already completed: ${config.id}`);
       return;
     }
 
@@ -87,18 +88,18 @@ class WalkthroughService {
       firstVisibleIndex < config.steps.length &&
       config.steps[firstVisibleIndex]?.skipIf?.()
     ) {
-      console.log(`⏭️ Skipping step ${firstVisibleIndex}: ${config.steps[firstVisibleIndex]?.id}`);
+      logger.debug('walkthrough', `Skipping step ${firstVisibleIndex}`, { stepId: config.steps[firstVisibleIndex]?.id });
       firstVisibleIndex++;
     }
 
     // If all steps are skipped, complete the walkthrough immediately
     if (firstVisibleIndex >= config.steps.length) {
-      console.log(`🎯 All steps skipped for walkthrough: ${config.id}, completing immediately`);
+      logger.info('walkthrough', `All steps skipped for walkthrough: ${config.id}, completing immediately`);
       this.completeWalkthrough();
       return;
     }
 
-    console.log(`🎬 Starting walkthrough at step ${firstVisibleIndex}: ${config.steps[firstVisibleIndex]?.id}`);
+    logger.info('walkthrough', `Starting walkthrough at step ${firstVisibleIndex}`, { stepId: config.steps[firstVisibleIndex]?.id });
 
     this.state = {
       isActive: true,
@@ -222,12 +223,12 @@ class WalkthroughService {
   }
 
   resetWalkthrough(walkthroughId: WalkthroughId): void {
-    console.log(`🔄 Resetting walkthrough: ${walkthroughId}`);
+    logger.info('walkthrough', `Resetting walkthrough: ${walkthroughId}`);
     const storage = this.loadStorage();
     storage.completed = storage.completed.filter(id => id !== walkthroughId);
     storage.skipped = storage.skipped.filter(id => id !== walkthroughId);
     this.saveStorage(storage);
-    console.log(`✅ Walkthrough reset: ${walkthroughId}`);
+    logger.info('walkthrough', `Walkthrough reset: ${walkthroughId}`);
   }
 
   resetAllWalkthroughs(): void {
@@ -241,18 +242,18 @@ export const walkthroughService = WalkthroughService.getInstance();
 // Global function for debugging walkthroughs
 if (typeof window !== 'undefined') {
   (window as unknown as Record<string, unknown>).resetWalkthrough = (id: string) => {
-    console.log(`🔄 Resetting walkthrough from console: ${id}`);
+    logger.info('walkthrough', `Resetting walkthrough from console: ${id}`);
     walkthroughService.resetWalkthrough(id as WalkthroughId);
   };
   
   (window as unknown as Record<string, unknown>).startWalkthrough = (id: string) => {
-    console.log(`🎬 Starting walkthrough from console: ${id}`);
+    logger.info('walkthrough', `Starting walkthrough from console: ${id}`);
     import('./walkthroughConfigs').then(({ walkthroughConfigs }) => {
       const config = walkthroughConfigs[id];
       if (config) {
         walkthroughService.startWalkthrough(config);
       } else {
-        console.error(`❌ Walkthrough config not found: ${id}`);
+        logger.error('walkthrough', `Walkthrough config not found: ${id}`);
       }
     });
   };

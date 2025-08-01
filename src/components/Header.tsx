@@ -14,6 +14,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { logger } from '../lib/logger';
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -31,7 +32,7 @@ const Header: React.FC = () => {
       setShowUserMenu(false);
       setShowMobileMenu(false);
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('auth', 'Error signing out', { error });
     }
   };
 

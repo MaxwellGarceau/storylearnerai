@@ -1,4 +1,5 @@
 import { LLMProvider, ProviderConfig } from '../types/llm';
+import { logger } from '../logger';
 
 export class EnvironmentConfig {
   private static validateRequiredEnvVar(key: string, value: string | undefined): string {
@@ -77,7 +78,7 @@ export class EnvironmentConfig {
     try {
       return JSON.parse(headersString);
     } catch (error) {
-      console.warn('Failed to parse custom headers, using empty object:', error);
+      logger.warn('config', 'Failed to parse custom headers, using empty object', { error });
       return {};
     }
   }

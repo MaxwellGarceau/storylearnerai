@@ -1,4 +1,5 @@
 import type { WalkthroughConfig } from './types/walkthrough';
+import { logger } from './logger';
 
 export const homeWalkthrough: WalkthroughConfig = {
   id: 'home-walkthrough',
@@ -70,7 +71,7 @@ function isUserSignedIn() {
   );
   const hasAuthData = supabaseKeys.length > 0;
   
-  console.log(`🔐 isUserSignedIn check:`, {
+  logger.debug('walkthrough', 'isUserSignedIn check', {
     supabaseKeys,
     hasAuthData,
     allLocalStorageKeys: Object.keys(localStorage).filter(key => key.includes('supabase'))
