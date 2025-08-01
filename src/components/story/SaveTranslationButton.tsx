@@ -8,6 +8,7 @@ import { useSupabase } from '../../hooks/useSupabase';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
+import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
 import type { DifficultyLevel } from '../../types/llm/prompts';
@@ -43,6 +44,7 @@ export default function SaveTranslationButton({
   const { user } = useSupabase();
   const { toast } = useToast();
   const { getLanguageCode } = useLanguages();
+  const { getDifficultyLevelName } = useDifficultyLevels();
 
   // Validate and sanitize input fields
   const validateAndSanitizeInput = (field: 'title' | 'notes', value: string) => {
@@ -246,7 +248,7 @@ export default function SaveTranslationButton({
                   <span className="font-medium">Translated Language:</span> {translatedLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel.toUpperCase()}
+                  <span className="font-medium">Difficulty Level:</span> {getDifficultyLevelName(difficultyLevel)}
                 </div>
               </div>
 
