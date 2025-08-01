@@ -312,11 +312,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               ))}
             </select>
           ) : (
-              profile.preferred_language && (
+            profile.preferred_language && (
               <Badge variant="secondary">
                 {getLanguageName(profile.preferred_language)}
               </Badge>
-             )
+            )
           )}
         </div>
 

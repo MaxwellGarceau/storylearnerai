@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -7,11 +7,11 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
-import { DifficultyLevel, LanguageCode } from '../../types/llm/prompts';
+import { DifficultyLevel, DifficultyLevelDisplay, LanguageCode } from '../../types/llm/prompts';
 import { logger } from '../../lib/logger';
 
 // CEFR difficulty level options
-const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
+const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: DifficultyLevelDisplay; description: string }[] = [
   { value: 'a1', label: 'A1 (Beginner)', description: 'Basic level - Can understand and use familiar everyday expressions' },
   { value: 'a2', label: 'A2 (Elementary)', description: 'Elementary level - Can communicate in simple and routine tasks' },
   { value: 'b1', label: 'B1 (Intermediate)', description: 'Intermediate level - Can deal with most situations while traveling' },
@@ -45,7 +45,7 @@ export default function SavedTranslationsList() {
     });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this saved translation?')) {
       try {
         await deleteSavedTranslation(id);

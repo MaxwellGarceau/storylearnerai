@@ -446,9 +446,9 @@ export class SavedTranslationService {
   /**
    * Delete a saved translation
    */
-  async deleteSavedTranslation(translationId: string, userId: string): Promise<void> {
+  async deleteSavedTranslation(translationId: number, userId: string): Promise<void> {
     // Validate input parameters
-    if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
+    if (!translationId || typeof translationId !== 'number' || translationId <= 0) {
       throw new Error('Valid translation ID is required');
     }
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {

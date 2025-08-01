@@ -30,7 +30,7 @@ interface UseSavedTranslationsReturn {
   // Actions
   createSavedTranslation: (request: CreateSavedTranslationRequest) => Promise<void>;
   updateSavedTranslation: (id: string, updates: UpdateSavedTranslationRequest) => Promise<void>;
-  deleteSavedTranslation: (id: string) => Promise<void>;
+  deleteSavedTranslation: (id: number) => Promise<void>;
   refreshSavedTranslations: () => Promise<void>;
   setFilters: (filters: SavedTranslationFilters) => void;
   
@@ -157,7 +157,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     }
   }, [user, service]);
   
-  const deleteSavedTranslation = useCallback(async (id: string) => {
+  const deleteSavedTranslation = useCallback(async (id: number) => {
     if (!user) throw new Error('User not authenticated');
     
     try {
@@ -165,7 +165,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       setError(null);
       
       await service.deleteSavedTranslation(id, user.id);
-      setSavedTranslations(prev => prev.filter(translation => translation.id !== parseInt(id)));
+      setSavedTranslations(prev => prev.filter(translation => translation.id !== id));
       setTotalCount(prev => prev - 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete saved translation');

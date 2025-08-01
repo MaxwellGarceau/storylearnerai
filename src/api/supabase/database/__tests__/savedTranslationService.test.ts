@@ -211,12 +211,12 @@ describe('SavedTranslationService', () => {
 
   describe('deleteSavedTranslation', () => {
     it('should throw error for missing translation ID', async () => {
-      await expect(service.deleteSavedTranslation('', 'test-user-id'))
+      await expect(service.deleteSavedTranslation(0, 'test-user-id'))
         .rejects.toThrow('Valid translation ID is required');
     });
 
     it('should throw error for missing user ID', async () => {
-      await expect(service.deleteSavedTranslation('1', ''))
+      await expect(service.deleteSavedTranslation(1, ''))
         .rejects.toThrow('Valid user ID is required');
     });
   });

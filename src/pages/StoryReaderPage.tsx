@@ -113,7 +113,7 @@ const StoryReaderPage: React.FC = () => {
       </div>
 
       {/* Combined Sidebar */}
-              <StorySidebar translationData={finalTranslationData} />
+      <StorySidebar translationData={finalTranslationData} />
     </div>
   );
 };
