@@ -1,6 +1,7 @@
 import { supabase } from '../client'
 import type { Language } from '../../../lib/types/database'
 import type { LanguageCode } from '../../../lib/types/prompt'
+import { logger } from '../../../lib/logger'
 
 export class LanguageService {
   /**
@@ -47,7 +48,7 @@ export class LanguageService {
       const language = await this.getLanguageByCode(code);
       return language?.name || code;
     } catch (error) {
-      console.warn(`Failed to fetch language name for code: ${code}`, error);
+      logger.warn('database', `Failed to fetch language name for code: ${code}`, { error });
       return code; // Fallback to code if fetch fails
     }
   }

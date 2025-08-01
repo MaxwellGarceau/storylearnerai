@@ -1,5 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, AnthropicConfig } from '../../types/llm';
+import { logger } from '../../../logger';
 
 export class AnthropicService extends LLMService {
   constructor(config: AnthropicConfig) {
@@ -38,7 +39,7 @@ export class AnthropicService extends LLMService {
         provider: 'anthropic',
       };
     } catch (error) {
-      console.error('Anthropic API error:', error);
+      logger.error('llm', 'Anthropic API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
         : this.createError(
@@ -69,7 +70,7 @@ export class AnthropicService extends LLMService {
 
       return response.ok;
     } catch (error) {
-      console.error('Anthropic health check failed:', error);
+      logger.error('llm', 'Anthropic health check failed', { error });
       return false;
     }
   }

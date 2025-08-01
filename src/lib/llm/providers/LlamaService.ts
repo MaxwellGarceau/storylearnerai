@@ -1,5 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, LlamaConfig } from '../../types/llm';
+import { logger } from '../../../logger';
 
 export class LlamaService extends LLMService {
   constructor(config: LlamaConfig) {
@@ -20,7 +21,7 @@ export class LlamaService extends LLMService {
       const data = await this.handleResponse(response);
       return this.parseResponse(data, llamaConfig);
     } catch (error) {
-      console.error('Llama API error:', error);
+      logger.error('llm', 'Llama API error', { error });
       // If it's already an LLMError from handleResponse, re-throw it
       if (error && typeof error === 'object' && 'provider' in error) {
         throw error;
@@ -59,7 +60,7 @@ export class LlamaService extends LLMService {
       
       return testResponse.ok;
     } catch (error) {
-      console.error('Llama health check failed:', error);
+      logger.error('llm', 'Llama health check failed', { error });
       return false;
     }
   }

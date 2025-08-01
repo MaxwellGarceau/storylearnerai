@@ -1,5 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, CustomConfig } from '../../types/llm';
+import { logger } from '../../../logger';
 
 export class CustomService extends LLMService {
   constructor(config: CustomConfig) {
@@ -34,7 +35,7 @@ export class CustomService extends LLMService {
         provider: 'custom',
       };
     } catch (error) {
-      console.error('Custom API error:', error);
+      logger.error('llm', 'Custom API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
         : this.createError(
@@ -69,7 +70,7 @@ export class CustomService extends LLMService {
 
       return response.ok;
     } catch (error) {
-      console.error('Custom API health check failed:', error);
+      logger.error('llm', 'Custom API health check failed', { error });
       return false;
     }
   }

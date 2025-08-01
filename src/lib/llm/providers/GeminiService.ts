@@ -1,5 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, GeminiConfig } from '../../types/llm';
+import { logger } from '../../../logger';
 import { GoogleGenAI } from '@google/genai';
 
 export class GeminiService extends LLMService {
@@ -38,7 +39,7 @@ export class GeminiService extends LLMService {
         provider: 'gemini',
       };
     } catch (error) {
-      console.error('Gemini API error:', error);
+      logger.error('llm', 'Gemini API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
         : this.createError(
@@ -64,7 +65,7 @@ export class GeminiService extends LLMService {
 
       return response.text !== undefined;
     } catch (error) {
-      console.error('Gemini health check failed:', error);
+      logger.error('llm', 'Gemini health check failed', { error });
       return false;
     }
   }

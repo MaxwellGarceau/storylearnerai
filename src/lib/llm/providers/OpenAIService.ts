@@ -1,5 +1,6 @@
 import { LLMService } from '../LLMService';
 import { LLMRequest, LLMResponse, OpenAIConfig } from '../../types/llm';
+import { logger } from '../../../logger';
 
 export class OpenAIService extends LLMService {
   constructor(config: OpenAIConfig) {
@@ -38,7 +39,7 @@ export class OpenAIService extends LLMService {
         provider: 'openai',
       };
     } catch (error) {
-      console.error('OpenAI API error:', error);
+      logger.error('llm', 'OpenAI API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
         : this.createError(
@@ -58,7 +59,7 @@ export class OpenAIService extends LLMService {
 
       return response.ok;
     } catch (error) {
-      console.error('OpenAI health check failed:', error);
+      logger.error('llm', 'OpenAI health check failed', { error });
       return false;
     }
   }

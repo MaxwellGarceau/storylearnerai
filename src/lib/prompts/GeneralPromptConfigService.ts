@@ -170,7 +170,7 @@ class GeneralPromptConfigService {
     const config = this.languageConfig as Record<string, unknown>;
     const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
     if (!language) {
-      console.warn(`No prompt configuration found for language: ${languageCode}`);
+      logger.warn('prompts', `No prompt configuration found for language: ${languageCode}`);
       return null;
     }
 
