@@ -1,5 +1,6 @@
 import { supabase } from '../client'
-import type { Database } from '../client'
+import type { Database } from '../../../types/database'
+import { DifficultyLevel } from '../../../types/llm/prompts'
 
 type Story = Database['public']['Tables']['stories']['Row']
 type StoryUpdate = Database['public']['Tables']['stories']['Update']
@@ -8,7 +9,7 @@ export interface CreateStoryData {
   title: string
   content: string
   language: string
-  difficulty_level: 'beginner' | 'intermediate' | 'advanced'
+  difficulty_level: DifficultyLevel
   user_id?: string
 }
 
@@ -16,7 +17,7 @@ export interface UpdateStoryData {
   title?: string
   content?: string
   language?: string
-  difficulty_level?: 'beginner' | 'intermediate' | 'advanced'
+  difficulty_level?: DifficultyLevel
 }
 
 export class StoryService {
@@ -153,7 +154,7 @@ export class StoryService {
   /**
    * Get stories by difficulty level
    */
-  static async getStoriesByDifficulty(difficulty: 'beginner' | 'intermediate' | 'advanced'): Promise<Story[]> {
+  static async getStoriesByDifficulty(difficulty: DifficultyLevel): Promise<Story[]> {
     const { data: stories, error } = await supabase
       .from('stories')
       .select('*')

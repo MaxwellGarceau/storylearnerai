@@ -32,7 +32,7 @@ describe('StoryService', () => {
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
         user_id: 'user-1'
       })
 
@@ -48,7 +48,7 @@ describe('StoryService', () => {
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
         user_id: 'user-1',
       }
 
@@ -59,7 +59,7 @@ describe('StoryService', () => {
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
         user_id: 'user-1',
         created_at: expect.any(String),
         updated_at: expect.any(String),
@@ -83,7 +83,7 @@ describe('StoryService', () => {
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
       }
 
       await expect(StoryService.createStory(storyData)).rejects.toThrow(
@@ -99,7 +99,7 @@ describe('StoryService', () => {
         title: 'Test Story',
         content: 'Test content',
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
         user_id: 'user-1'
       })
 
@@ -159,7 +159,7 @@ describe('StoryService', () => {
           title: 'Story 1',
           content: 'Content 1',
           language: 'en',
-          difficulty_level: 'beginner',
+          difficulty_level: 'a1',
           user_id: 'user-1'
         }),
         createDummyStory({
@@ -167,7 +167,7 @@ describe('StoryService', () => {
           title: 'Story 2',
           content: 'Content 2',
           language: 'es',
-          difficulty_level: 'intermediate',
+          difficulty_level: 'a2',
           user_id: 'user-2'
         }),
       ]
@@ -195,7 +195,7 @@ describe('StoryService', () => {
           title: 'English Story',
           content: 'English content',
           language: 'en',
-          difficulty_level: 'beginner',
+          difficulty_level: 'a1',
           user_id: 'user-1'
         }),
       ]
@@ -226,7 +226,7 @@ describe('StoryService', () => {
 
       await StoryService.getStories({
         language: 'en',
-        difficulty_level: 'beginner',
+        difficulty_level: 'a1',
         user_id: 'user-1',
       })
 
@@ -272,7 +272,7 @@ describe('StoryService', () => {
         title: 'Updated Story',
         content: 'Updated content',
         language: 'en',
-        difficulty_level: 'intermediate',
+        difficulty_level: 'a1',
         user_id: 'user-1'
       })
 
@@ -287,7 +287,7 @@ describe('StoryService', () => {
 
       const updateData: UpdateStoryData = {
         title: 'Updated Story',
-        difficulty_level: 'intermediate',
+        difficulty_level: 'b1',
       }
 
       const result = await StoryService.updateStory('1', updateData)
@@ -295,7 +295,7 @@ describe('StoryService', () => {
       expect(supabase.from).toHaveBeenCalledWith('stories')
       expect(mockQuery.update).toHaveBeenCalledWith({
         title: 'Updated Story',
-        difficulty_level: 'intermediate',
+        difficulty_level: 'b1',
         updated_at: expect.any(String),
       })
       expect(mockQuery.eq).toHaveBeenCalledWith('id', '1')
@@ -364,7 +364,7 @@ describe('StoryService', () => {
           title: 'Test Story',
           content: 'Test content',
           language: 'en',
-          difficulty_level: 'beginner',
+          difficulty_level: 'a1',
           user_id: 'user-1'
         }),
       ]
@@ -424,7 +424,7 @@ describe('StoryService', () => {
           title: 'Beginner Story',
           content: 'Simple content',
           language: 'en',
-          difficulty_level: 'beginner',
+          difficulty_level: 'a1',
           user_id: 'user-1'
         }),
       ]
@@ -437,7 +437,7 @@ describe('StoryService', () => {
 
       mockedSupabase.from.mockReturnValue(mockQuery)
 
-      const result = await StoryService.getStoriesByDifficulty('beginner')
+      const result = await StoryService.getStoriesByDifficulty('a1')
 
       expect(supabase.from).toHaveBeenCalledWith('stories')
       expect(mockQuery.select).toHaveBeenCalledWith('*')
@@ -456,7 +456,7 @@ describe('StoryService', () => {
 
       mockedSupabase.from.mockReturnValue(mockQuery)
 
-      await expect(StoryService.getStoriesByDifficulty('beginner')).rejects.toThrow(
+      await expect(StoryService.getStoriesByDifficulty('a1')).rejects.toThrow(
         'Failed to fetch stories by difficulty: Query failed'
       )
     })
@@ -470,7 +470,7 @@ describe('StoryService', () => {
           title: 'Spanish Story',
           content: 'Contenido en español',
           language: 'es',
-          difficulty_level: 'intermediate',
+          difficulty_level: 'a2',
           user_id: 'user-1'
         }),
       ]
