@@ -8,7 +8,6 @@ import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
-import { LanguageCode } from '../../types/llm/prompts'
 import type { DatabaseUser } from '../../types/database/user'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
@@ -310,7 +309,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           ) : (
               profile.preferred_language && (
               <Badge variant="secondary">
-                {getLanguageName(profile.preferred_language as LanguageCode)}
+                {getLanguageName(profile.preferred_language)}
               </Badge>
              )
           )}

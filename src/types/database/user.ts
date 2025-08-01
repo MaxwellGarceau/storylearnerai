@@ -6,7 +6,7 @@ export interface DatabaseUser {
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
-  preferred_language: string;
+  preferred_language: LanguageCode | null;
   created_at: string;
   updated_at: string;
 }
@@ -26,7 +26,7 @@ export interface DatabaseUserUpdate {
   username?: string | null;
   display_name?: string | null;
   avatar_url?: string | null;
-  preferred_language?: string;
+  preferred_language?: LanguageCode | null;
   created_at?: string;
   updated_at?: string;
 } 
