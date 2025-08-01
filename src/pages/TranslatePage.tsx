@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryContainer from '../components/story/StoryContainer';
-import CombinedSidebar from '../components/story/CombinedSidebar';
+import StorySidebar from '../components/story/StorySidebar';
 import { TranslationResponse } from '../lib/translationService';
 
 const TranslatePage: React.FC = () => {
@@ -17,7 +17,7 @@ const TranslatePage: React.FC = () => {
   return (
     <div className="relative">
       <StoryContainer onStoryTranslated={handleStoryTranslated} />
-      <CombinedSidebar />
+      <StorySidebar />
     </div>
   );
 };

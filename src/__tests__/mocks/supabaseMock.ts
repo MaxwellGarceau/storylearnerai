@@ -2,15 +2,6 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import type { User } from '@supabase/supabase-js'
 
-// Mock TranslationOptionsSidebar to prevent DOM issues in tests
-// Only mock it when not testing the component itself
-const isTranslationSidebarTest = process.env.VITEST_POOL_ID?.includes('TranslationOptionsSidebar')
-if (!isTranslationSidebarTest) {
-  vi.mock('../../components/story/TranslationOptionsSidebar', () => ({
-    default: () => null,
-  }))
-}
-
 // Mock Supabase client
 const mockSupabaseClient = {
   auth: {

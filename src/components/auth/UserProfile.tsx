@@ -8,6 +8,7 @@ import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
+import { LanguageCode } from '../../types/llm/prompts'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
@@ -18,7 +19,7 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: string; created_at?: string; updated_at?: string } | null>(null)
+  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: LanguageCode | null; created_at?: string; updated_at?: string } | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -306,9 +307,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               ))}
             </select>
           ) : (
-            <Badge variant="secondary">
-              {getLanguageName(profile.preferred_language)}
-            </Badge>
+            profile.preferred_language && (
+              <Badge variant="secondary">
+                {getLanguageName(profile.preferred_language)}
+              </Badge>
+            )
           )}
         </div>
 

@@ -17,12 +17,12 @@ import { logger } from '../../lib/logger';
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
 
-interface CombinedSidebarProps {
+interface StorySidebarProps {
   className?: string;
   translationData?: TranslationResponse;
 }
 
-const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translationData }) => {
+const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData }) => {
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
   const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations();
@@ -365,4 +365,4 @@ const CombinedSidebar: React.FC<CombinedSidebarProps> = ({ className, translatio
   );
 };
 
-export default CombinedSidebar; 
+export default StorySidebar; 

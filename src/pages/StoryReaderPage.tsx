@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
-import CombinedSidebar from '../components/story/CombinedSidebar';
+import StorySidebar from '../components/story/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 
 const StoryReaderPage: React.FC = () => {
@@ -113,7 +113,7 @@ const StoryReaderPage: React.FC = () => {
       </div>
 
       {/* Combined Sidebar */}
-      <CombinedSidebar translationData={finalTranslationData} />
+              <StorySidebar translationData={finalTranslationData} />
     </div>
   );
 };

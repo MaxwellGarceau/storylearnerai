@@ -1,3 +1,5 @@
+import { LanguageCode } from "../llm/prompts";
+
 // User management types
 export interface DatabaseUser {
   id: string;
@@ -14,7 +16,7 @@ export interface DatabaseUserInsert {
   username?: string | null;
   display_name?: string | null;
   avatar_url?: string | null;
-  preferred_language?: string;
+  preferred_language?: LanguageCode | null;
   created_at?: string;
   updated_at?: string;
 }
