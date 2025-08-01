@@ -14,26 +14,26 @@ export class GeminiService extends LLMService {
   async generateCompletion(request: LLMRequest): Promise<LLMResponse> {
     try {
       const geminiConfig = this.config as GeminiConfig;
-      const model = request.model || geminiConfig.model;
+      const model = request.model ?? geminiConfig.model;
       
       const response = await this.genAI.models.generateContent({
         model: model,
         contents: request.prompt,
         config: {
-          temperature: request.temperature || geminiConfig.temperature,
-          maxOutputTokens: request.maxTokens || geminiConfig.maxTokens,
+          temperature: request.temperature ?? geminiConfig.temperature,
+          maxOutputTokens: request.maxTokens ?? geminiConfig.maxTokens,
         },
       });
 
-      const content = response.text || '';
+      const content = response.text ?? '';
       const usage = response.usageMetadata;
 
       return {
         content,
         tokenUsage: usage ? {
-          promptTokens: usage.promptTokenCount || 0,
-          completionTokens: usage.candidatesTokenCount || 0,
-          totalTokens: usage.totalTokenCount || 0,
+          promptTokens: usage.promptTokenCount ?? 0,
+          completionTokens: usage.candidatesTokenCount ?? 0,
+          totalTokens: usage.totalTokenCount ?? 0,
         } : undefined,
         model: model,
         provider: 'gemini',

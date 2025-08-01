@@ -14,22 +14,22 @@ export class OpenAIService extends LLMService {
         method: 'POST',
         headers: this.buildOpenAIHeaders(),
         body: JSON.stringify({
-          model: request.model || openaiConfig.model,
+          model: request.model ?? openaiConfig.model,
           messages: [
             {
               role: 'user',
               content: request.prompt,
             },
           ],
-          max_tokens: request.maxTokens || openaiConfig.maxTokens,
-          temperature: request.temperature || openaiConfig.temperature,
+          max_tokens: request.maxTokens ?? openaiConfig.maxTokens,
+          temperature: request.temperature ?? openaiConfig.temperature,
         }),
       });
 
       const data = await this.handleResponse(response);
 
       return {
-        content: data.choices[0]?.message?.content || '',
+        content: data.choices[0]?.message?.content ?? '',
         tokenUsage: data.usage ? {
           promptTokens: data.usage.prompt_tokens,
           completionTokens: data.usage.completion_tokens,
@@ -42,9 +42,8 @@ export class OpenAIService extends LLMService {
       logger.error('llm', 'OpenAI API error', { error });
       throw error instanceof Error && 'provider' in error
         ? error
-        : this.createError(
-          error instanceof Error ? error.message : 'OpenAI API request failed',
-          'OPENAI_ERROR'
+        : new Error(
+          error instanceof Error ? error.message : 'OpenAI API request failed'
         );
     }
   }
