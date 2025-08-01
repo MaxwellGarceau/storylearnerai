@@ -10,14 +10,14 @@ import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
-import type { DifficultyLevel, DifficultyLevelDisplay } from '../../types/llm/prompts';
+import type { DifficultyLevel } from '../../types/llm/prompts';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
   originalStory: string;
   originalLanguage: string;
   translatedLanguage: string;
-  difficultyLevel: DifficultyLevelDisplay;
+  difficultyLevel: DifficultyLevel;
   isSavedStory?: boolean;
 }
 
@@ -43,14 +43,6 @@ export default function SaveTranslationButton({
   const { user } = useSupabase();
   const { toast } = useToast();
   const { getLanguageCode } = useLanguages();
-
-
-
-  // Convert difficulty level to CEFR format (database expects CEFR codes)
-  const getDifficultyCode = (difficultyLevel: DifficultyLevelDisplay): DifficultyLevel => {
-    // Ensure the difficulty level is in lowercase CEFR format
-    return difficultyLevel.toLowerCase() as DifficultyLevel;
-  };
 
   // Validate and sanitize input fields
   const validateAndSanitizeInput = (field: 'title' | 'notes', value: string) => {
@@ -133,7 +125,7 @@ export default function SaveTranslationButton({
         translated_story: translationData.translatedText,
         original_language_code: originalLanguageCode,
         translated_language_code: translatedLanguageCode,
-        difficulty_level_code: getDifficultyCode(difficultyLevel),
+        difficulty_level_code: difficultyLevel,
         title: sanitizedTitle || undefined,
         notes: sanitizedNotes || undefined,
       });
