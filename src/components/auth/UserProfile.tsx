@@ -9,6 +9,7 @@ import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
 import { LanguageCode } from '../../types/llm/prompts'
+import type { DatabaseUser } from '../../types/database/user'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
@@ -19,7 +20,7 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: LanguageCode | null; created_at?: string; updated_at?: string } | null>(null)
+  const [profile, setProfile] = useState<DatabaseUser | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -43,7 +44,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         username: user.email?.split('@')[0] || '',
         display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || ''
       })
-      setProfile(userProfile)
+      setProfile(userProfile as DatabaseUser)
       setFormData({
         username: userProfile.username || '',
         display_name: userProfile.display_name || '',
@@ -117,7 +118,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       setError(null)
       
       const updatedProfile = await UserService.updateUser(user.id, formData)
-      setProfile(updatedProfile)
+      setProfile(updatedProfile as DatabaseUser)
       setIsEditing(false)
       setValidationErrors({}) // Clear validation errors on success
     } catch (err) {
@@ -307,11 +308,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               ))}
             </select>
           ) : (
-            profile.preferred_language && (
+              profile.preferred_language && (
               <Badge variant="secondary">
-                {getLanguageName(profile.preferred_language)}
+                {getLanguageName(profile.preferred_language as LanguageCode)}
               </Badge>
-            )
+             )
           )}
         </div>
 

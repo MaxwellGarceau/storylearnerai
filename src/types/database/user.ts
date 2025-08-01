@@ -17,8 +17,8 @@ export interface DatabaseUserInsert {
   display_name?: string | null;
   avatar_url?: string | null;
   preferred_language?: LanguageCode | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DatabaseUserUpdate {
