@@ -187,11 +187,7 @@ Handles all user-related database operations:
 - Update user preferences (language, avatar)
 - Get or create user profiles automatically
 
-### StoryService
-Handles all story-related database operations:
-- Create, read, update, delete stories
-- Search stories by title or content
-- Filter stories by language and difficulty level
+
 
 ### TranslationService
 Manages story translations:

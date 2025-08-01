@@ -192,7 +192,7 @@ const translation = testDb.createTestTranslation(storyId, {
 import { describe, it, expect, beforeEach } from 'vitest'
 import { createDefaultTestClient } from '@/__tests__/test-utils/e2e/supabase-test-client'
 import { getTestDatabase } from '@/__tests__/test-utils/e2e/test-setup'
-import { storyService } from '@/api/supabase/database/storyService'
+import { SavedTranslationService } from '@/api/supabase/database/savedTranslationService'
 
 // Import test setup to ensure Supabase is running
 import '@/__tests__/test-utils/e2e/test-setup'
@@ -211,15 +211,22 @@ describe('My Service E2E Tests', () => {
 
   it('should perform a complete workflow', async () => {
     // Arrange
-    const testData = { /* your test data */ }
-    await testDb.seedTestData(testData)
+    const service = new SavedTranslationService()
+    const testData = {
+      original_story: 'Test story',
+      translated_story: 'Historia de prueba',
+      original_language_code: 'en',
+      translated_language_code: 'es',
+      difficulty_level_code: 'a1',
+      title: 'Test Translation'
+    }
 
     // Act
-    const result = await storyService.someOperation(supabaseClient, data)
+    const result = await service.createSavedTranslation(testData, 'test-user-id')
 
     // Assert
     expect(result).toBeDefined()
-    expect(result.property).toBe(expectedValue)
+    expect(result.original_story).toBe(testData.original_story)
   })
 })
 ```
@@ -441,15 +448,18 @@ For performance testing, you can create larger datasets:
 
 ```typescript
 const createLargeDataset = async (count: number) => {
-  const stories = Array.from({ length: count }, (_, i) => ({
-    title: `Story ${i}`,
-    content: `Content ${i}`,
-    language: 'en',
-    difficulty_level: 'beginner'
+  const service = new SavedTranslationService()
+  const translations = Array.from({ length: count }, (_, i) => ({
+    original_story: `Original story ${i}`,
+    translated_story: `Translated story ${i}`,
+    original_language_code: 'en' as const,
+    translated_language_code: 'es' as const,
+    difficulty_level_code: 'a1' as const,
+    title: `Translation ${i}`
   }))
   
   return await Promise.all(
-    stories.map(story => storyService.createStory(supabaseClient, story))
+    translations.map(translation => service.createSavedTranslation(translation, 'test-user-id'))
   )
 }
 ```
