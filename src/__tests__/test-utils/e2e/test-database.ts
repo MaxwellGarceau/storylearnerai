@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/database'
+import type { Database } from '@/types/database'
 import { createDefaultTestAdminClient } from './supabase-test-client'
 import { logger } from '../../../lib/logger'
 

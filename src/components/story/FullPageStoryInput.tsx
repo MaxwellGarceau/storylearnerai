@@ -4,7 +4,7 @@ import { Card, CardContent } from '../ui/Card';
 import { Settings, Check, X } from 'lucide-react';
 import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
 import { validateStoryText } from '../../lib/utils/sanitization';
-import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 
 interface FullPageStoryInputProps {
   value: string;

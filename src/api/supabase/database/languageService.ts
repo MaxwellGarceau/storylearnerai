@@ -1,6 +1,5 @@
 import { supabase } from '../client'
-import type { Language } from '../../../lib/types/database'
-import type { LanguageCode } from '../../../lib/types/prompt'
+import type { DatabaseLanguage as Language, LanguageCode } from '../../../types'
 import { logger } from '../../../lib/logger'
 
 export class LanguageService {

@@ -3,7 +3,7 @@ import { useWalkthrough } from '../../hooks/useWalkthrough';
 import { walkthroughConfigs } from '../../lib/walkthroughConfigs';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import type { WalkthroughId } from '../../lib/types/walkthrough';
+import type { WalkthroughId } from '../../types/app/walkthrough';
 
 interface WalkthroughDebugProps {
   show?: boolean;

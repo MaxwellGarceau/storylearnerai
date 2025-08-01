@@ -1,4 +1,4 @@
-import type { DifficultyLevel } from '../lib/types/prompt';
+import type { DifficultyLevel } from './llm/prompts';
 
 export interface SavedStory {
   id: string;

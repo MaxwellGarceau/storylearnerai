@@ -15,7 +15,7 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import type { User } from '../lib/types/database'
+import type { DatabaseUser as User } from '../types/database'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useSupabase()

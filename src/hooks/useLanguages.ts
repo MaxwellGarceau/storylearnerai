@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
-import type { DatabaseLanguage } from '../lib/types/database'
-import type { LanguageCode } from '../lib/types/prompt'
+import type { DatabaseLanguage, LanguageCode } from '../types'
 import { logger } from '../lib/logger'
 
 export const useLanguages = () => {

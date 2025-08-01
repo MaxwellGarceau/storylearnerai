@@ -6,7 +6,7 @@ import Label from '../ui/Label';
 import { cn } from '../../lib/utils';
 import { Card, CardContent } from '../ui/Card';
 import { useLanguages } from '../../hooks/useLanguages';
-import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 
 interface TranslationOptionsSidebarProps {
   formData: {

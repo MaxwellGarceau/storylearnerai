@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { walkthroughService } from '../lib/walkthroughService';
 import { walkthroughConfigs } from '../lib/walkthroughConfigs';
-import type { WalkthroughConfig, WalkthroughId } from '../lib/types/walkthrough';
+import type { WalkthroughConfig, WalkthroughId } from '../types/app/walkthrough';
 import { logger } from '../lib/logger';
 
 export const useWalkthrough = () => {

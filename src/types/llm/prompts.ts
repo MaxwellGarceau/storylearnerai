@@ -53,8 +53,6 @@ interface DifficultyPrompts {
   b2: PromptInstructions;
 }
 
-
-
 export interface GeneralPromptConfig {
   instructions: string[];
 }
@@ -66,8 +64,6 @@ export interface TemplateConfig {
 export type LanguagePromptConfig = {
   [K in LanguageCode]: DifficultyPrompts;
 };
-
-
 
 export interface PromptBuildContext {
   fromLanguage: LanguageCode;

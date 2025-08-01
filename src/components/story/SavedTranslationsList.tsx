@@ -5,9 +5,9 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { DatabaseSavedTranslationWithDetails } from '../../lib/types/database';
+import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
-import { DifficultyLevel, LanguageCode } from '../../lib/types/prompt';
+import { DifficultyLevel, LanguageCode } from '../../types/llm/prompts';
 import { logger } from '../../lib/logger';
 
 // CEFR difficulty level options

@@ -6,8 +6,8 @@ import {
   SavedTranslationFilters,
   DatabaseLanguage,
   DatabaseDifficultyLevel,
-} from '../../../lib/types/database';
-import type { LanguageCode } from '../../../lib/types/prompt';
+} from '../../../types/database';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
 
 interface ValidationError {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import { translationService, TranslationResponse, TranslationError } from '../../lib/translationService';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
 

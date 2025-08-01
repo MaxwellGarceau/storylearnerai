@@ -1,5 +1,5 @@
 import { supabase } from '../client'
-import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../lib/types/database'
+import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 
 export interface CreateUserData {

@@ -8,7 +8,7 @@ import { cn } from '../../lib/utils';
 
 import { useViewport } from '../../hooks/useViewport';
 import { walkthroughService } from '../../lib/walkthroughService';
-import type { WalkthroughState } from '../../lib/types/walkthrough';
+import type { WalkthroughState } from '../../types/app/walkthrough';
 import { useSupabase } from '../../hooks/useSupabase';
 import { logger } from '../../lib/logger';
 

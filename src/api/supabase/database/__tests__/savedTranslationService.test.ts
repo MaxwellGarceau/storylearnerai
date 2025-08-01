@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SavedTranslationService } from '../savedTranslationService';
-import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../lib/types/database';
+import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../types/database';
 
 // Import the actual validation functions for direct testing
 import { validateStoryText } from '../../../../lib/utils/sanitization';

@@ -10,7 +10,7 @@ import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
-import type { DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
+import type { DifficultyLevel, DifficultyLevelDisplay } from '../../types/llm/prompts';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;

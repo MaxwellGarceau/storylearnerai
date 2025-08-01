@@ -1,5 +1,5 @@
 import { supabase } from '../client'
-import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../lib/types/database'
+import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
 
 export interface CreateTranslationData {

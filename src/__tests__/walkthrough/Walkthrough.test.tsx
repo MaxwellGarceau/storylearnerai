@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { Walkthrough } from '../../components/walkthrough/Walkthrough';
 import { walkthroughService } from '../../lib/walkthroughService';
-import type { WalkthroughState } from '../../lib/types/walkthrough';
+import type { WalkthroughState } from '../../types/app/walkthrough';
 import { logger } from '../../lib/logger';
 
 // Mock the walkthrough service
