@@ -45,14 +45,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     try {
       setLoading(true)
       const userProfile = await UserService.getOrCreateUser(user.id, {
-        username: user.email?.split('@')[0] || '',
-        display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || ''
+        username: user.email?.split('@')[0] ?? '',
+        display_name: user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? ''
       })
-      setProfile(userProfile as DatabaseUser)
+      setProfile(userProfile as unknown as DatabaseUser)
       setFormData({
-        username: userProfile.username || '',
-        display_name: userProfile.display_name || '',
-        preferred_language: userProfile.preferred_language || 'en'
+        username: userProfile.username ?? '',
+        display_name: userProfile.display_name ?? '',
+        preferred_language: userProfile.preferred_language ?? 'en'
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load profile')
@@ -63,7 +63,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
   useEffect(() => {
     if (user) {
-      loadProfile()
+      void loadProfile()
     }
   }, [user, loadProfile])
 
@@ -134,9 +134,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
   const handleCancel = () => {
     setFormData({
-      username: profile?.username || '',
-      display_name: profile?.display_name || '',
-      preferred_language: profile?.preferred_language || 'en'
+      username: profile?.username ?? '',
+      display_name: profile?.display_name ?? '',
+      preferred_language: profile?.preferred_language ?? 'en'
     })
     setIsEditing(false)
     setError(null)
@@ -257,7 +257,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               </div>
             ) : (
               <h3 className="text-lg font-semibold">
-                {profile.display_name || 'No display name'}
+                {profile.display_name ?? 'No display name'}
               </h3>
             )}
             {isEditing ? (
@@ -277,7 +277,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                @{profile.username || 'username'}
+                @{profile.username ?? 'username'}
               </p>
             )}
           </div>
@@ -333,7 +333,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         {isEditing ? (
           <div className="flex gap-2 pt-4">
             <Button
-              onClick={handleSave}
+              onClick={() => void handleSave()}
               disabled={saving || Object.keys(validationErrors).some(key => validationErrors[key as keyof typeof validationErrors])}
               className="flex-1"
             >
@@ -361,7 +361,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <div className="pt-4">
             <Button
               variant="outline"
-              onClick={handleSignOut}
+              onClick={() => void handleSignOut()}
               className="w-full"
             >
               Sign Out

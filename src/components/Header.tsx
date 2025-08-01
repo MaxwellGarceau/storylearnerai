@@ -113,7 +113,7 @@ const Header: React.FC = () => {
                   <User className="h-4 w-4 text-primary" />
                 </div>
                 <span className="hidden sm:inline">
-                  {user.email?.split('@')[0] || 'User'}
+                  {user.email?.split('@')[0] ?? 'User'}
                 </span>
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -145,7 +145,7 @@ const Header: React.FC = () => {
                     Profile
                   </Link>
                   <button
-                    onClick={handleSignOut}
+                    onClick={() => void handleSignOut()}
                     className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent/50 transition-colors"
                   >
                     <LogIn className="h-4 w-4 mr-2" />
@@ -265,7 +265,7 @@ const Header: React.FC = () => {
                   Profile
                 </Link>
                 <button
-                  onClick={handleSignOut}
+                  onClick={() => void handleSignOut()}
                   className="flex items-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors rounded-md"
                 >
                   <LogIn className="h-4 w-4 mr-2" />

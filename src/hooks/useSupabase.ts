@@ -41,11 +41,11 @@ export function useSupabase(): UseSupabaseReturn {
       }
     }
 
-    getInitialSession()
+    void getInitialSession()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setUser(session?.user ?? null)
         setLoading(false)
       }

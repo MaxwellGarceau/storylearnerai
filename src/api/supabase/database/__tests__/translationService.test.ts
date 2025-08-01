@@ -16,7 +16,7 @@ vi.mock('../../client', () => {
 import { supabase } from '../../client'
 
 // Type the mocked supabase
-const mockedSupabase = vi.mocked(supabase) as any
+const mockedSupabase = vi.mocked(supabase)
 
 describe('TranslationService', () => {
   beforeEach(() => {
@@ -126,7 +126,7 @@ describe('TranslationService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           insert: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
@@ -220,7 +220,7 @@ describe('TranslationService', () => {
       })
 
       it('should reject non-string translation ID', async () => {
-        await expect(TranslationService.getTranslationById(null as any)).rejects.toThrow('Invalid translation ID provided')
+        await expect(TranslationService.getTranslationById(null as unknown as string)).rejects.toThrow('Invalid translation ID provided')
       })
     })
 

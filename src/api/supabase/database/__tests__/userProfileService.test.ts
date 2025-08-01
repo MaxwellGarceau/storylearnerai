@@ -104,7 +104,7 @@ vi.mock('../../../lib/utils/sanitization', () => ({
     }
   }),
   sanitizeText: vi.fn((input: string, options?: { maxLength?: number }) => {
-    const maxLength = options?.maxLength || 100
+    const maxLength = options?.maxLength ?? 100
     const sanitized = input.replace(/<script[^>]*>.*?<\/script>/gi, '')
     return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized
   })

@@ -80,7 +80,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
         <div className="font-medium">Translation Error:</div>
         <div className="text-sm">{error.message}</div>
         
-        {(error.provider || error.statusCode || (error.code && error.code !== 'UNKNOWN_ERROR')) && (
+        {(error.provider ?? error.statusCode ?? (error.code && error.code !== 'UNKNOWN_ERROR')) && (
           <div className="text-xs text-muted-foreground space-y-1">
             {error.provider && (
               <div>Provider: {error.provider}</div>
@@ -104,7 +104,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
         <FullPageStoryInput
           value={formData.story}
           onChange={handleStoryChange}
-          onSubmit={handleSubmit}
+          onSubmit={() => void handleSubmit()}
           isTranslating={isTranslating}
           formData={formData}
           onFormDataChange={handleFormDataChange}

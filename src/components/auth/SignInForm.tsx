@@ -91,7 +91,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           {error && (
             <Alert variant="destructive">
               <p>{error}</p>

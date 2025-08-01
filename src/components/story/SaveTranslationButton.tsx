@@ -128,8 +128,8 @@ export default function SaveTranslationButton({
         original_language_code: originalLanguageCode,
         translated_language_code: translatedLanguageCode,
         difficulty_level_code: difficultyLevel,
-        title: sanitizedTitle || undefined,
-        notes: sanitizedNotes || undefined,
+        title: sanitizedTitle ?? undefined,
+        notes: sanitizedNotes ?? undefined,
       });
 
       // Show success toast
@@ -261,7 +261,7 @@ export default function SaveTranslationButton({
 
               <div className="flex gap-2 pt-2">
                 <Button
-                  onClick={handleSave}
+                  onClick={() => void handleSave()}
                   disabled={isSaving || isCreating}
                   className="flex-1"
                 >

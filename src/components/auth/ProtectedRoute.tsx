@@ -14,7 +14,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     // Only redirect if we're not loading and there's no user
     if (!loading && !user) {
-      navigate('/', { replace: true })
+      void navigate('/', { replace: true })
     }
   }, [user, loading, navigate])
 

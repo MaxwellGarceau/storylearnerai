@@ -33,11 +33,11 @@ export const AuthPage: React.FC = () => {
   }, [searchParams, user])
 
   const handleAuthSuccess = () => {
-    navigate('/dashboard')
+    void navigate('/dashboard')
   }
 
   const handleClose = () => {
-    navigate('/')
+    void navigate('/')
   }
 
   const handleSwitchMode = (newMode: AuthMode) => {

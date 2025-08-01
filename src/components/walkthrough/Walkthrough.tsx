@@ -37,7 +37,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
   // Update spotlight effect when scrolling
   const updateSpotlight = useCallback((forceUpdate = false, elementOverride?: HTMLElement | null) => {
-    const element = elementOverride || targetElement;
+    const element = elementOverride ?? targetElement;
     if (!element || !overlayRef.current) return;
 
     const rect = element.getBoundingClientRect();

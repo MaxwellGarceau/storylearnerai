@@ -11,7 +11,7 @@ const TranslatePage: React.FC = () => {
     // Navigate to the story page with the translation data
     // For now, we'll pass the data through state, but in the future
     // we'll save it and pass an ID
-    navigate('/story', { state: { translationData: data } });
+    void navigate('/story', { state: { translationData: data } });
   };
 
   return (

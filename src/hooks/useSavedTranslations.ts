@@ -88,7 +88,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       }
     };
     
-    loadLookupData();
+    void loadLookupData();
   }, [user, service]);
   
   // Load saved translations when user or filters change
@@ -115,7 +115,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       }
     };
     
-    loadSavedTranslations();
+    void loadSavedTranslations();
   }, [user, filters, service]);
   
   const createSavedTranslation = useCallback(async (request: CreateSavedTranslationRequest) => {

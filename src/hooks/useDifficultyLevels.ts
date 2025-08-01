@@ -34,12 +34,12 @@ export const useDifficultyLevels = () => {
 
   // Get difficulty level name with fallback
   const getDifficultyLevelName = (code: DifficultyLevel): string => {
-    return difficultyMap.get(code) || code
+    return difficultyMap.get(code) ?? code
   }
 
   // Get difficulty level display name (A1, A2, B1, B2)
   const getDifficultyLevelDisplay = (code: DifficultyLevel): DifficultyLevelDisplay => {
-    return difficultyDisplayMap.get(code) || code.toUpperCase() as DifficultyLevelDisplay
+    return difficultyDisplayMap.get(code) ?? code.toUpperCase() as DifficultyLevelDisplay
   }
 
   // Map difficulty level names to codes
@@ -97,7 +97,7 @@ export const useDifficultyLevels = () => {
       }
     }
 
-    loadDifficultyLevels()
+    void loadDifficultyLevels()
   }, [])
 
   return {

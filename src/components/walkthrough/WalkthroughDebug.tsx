@@ -37,8 +37,8 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
           <div className="bg-gray-100 p-2 rounded">
             <div>Active: {state.isActive ? '✅' : '❌'}</div>
             <div>Step: {state.currentStepIndex + 1}</div>
-            <div>Config: {currentConfig?.id || 'None'}</div>
-            <div>Title: {currentConfig?.title || 'N/A'}</div>
+            <div>Config: {currentConfig?.id ?? 'None'}</div>
+            <div>Title: {currentConfig?.title ?? 'N/A'}</div>
           </div>
         </div>
 

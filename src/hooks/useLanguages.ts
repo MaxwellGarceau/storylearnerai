@@ -19,7 +19,7 @@ export const useLanguages = () => {
 
   // Get language name with fallback
   const getLanguageName = (code: LanguageCode): string => {
-    return languageMap.get(code) || code
+    return languageMap.get(code) ?? code
   }
 
   // Map language names to ISO codes
@@ -63,7 +63,7 @@ export const useLanguages = () => {
       }
     }
 
-    loadLanguages()
+    void loadLanguages()
   }, [])
 
   return {

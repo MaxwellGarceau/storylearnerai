@@ -17,14 +17,14 @@ const StoryReaderPage: React.FC = () => {
 
   // Use test data if in debug mode and no translation data
   const isDebugMode = window.location.search.includes('debug=walkthrough');
-  const finalTranslationData = translationData || (isDebugMode ? testWalkthroughTranslationData : undefined);
+  const finalTranslationData = translationData ?? (isDebugMode ? testWalkthroughTranslationData : undefined);
 
   const handleTranslateAnother = () => {
-    navigate('/translate');
+    void navigate('/translate');
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   // If no translation data is available, show a message

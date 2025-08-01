@@ -69,7 +69,7 @@ export default function SavedTranslationsList() {
 
   const handleViewStory = (savedTranslation: DatabaseSavedTranslationWithDetails) => {
     const translationData = convertToTranslationResponse(savedTranslation);
-    navigate('/story', { 
+    void navigate('/story', { 
       state: { 
         translationData,
         isSavedStory: true,
@@ -186,7 +186,7 @@ export default function SavedTranslationsList() {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-lg">
-                    {translation.title || 'Untitled Translation'}
+                    {translation.title ?? 'Untitled Translation'}
                   </CardTitle>
                   <CardDescription>
                     {formatDate(translation.created_at)} •{' '}
@@ -205,7 +205,7 @@ export default function SavedTranslationsList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(translation.id)}
+                    onClick={() => void handleDelete(translation.id)}
                     disabled={isDeleting}
                   >
                     Delete
@@ -244,7 +244,7 @@ export default function SavedTranslationsList() {
       {hasMore && (
         <div className="text-center">
           <Button
-            onClick={loadMore}
+            onClick={() => void loadMore()}
             disabled={isLoading}
             variant="outline"
           >

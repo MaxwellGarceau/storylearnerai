@@ -171,7 +171,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch languages: ${error.message}`);
     }
 
-    return data || [];
+    return data ?? [];
   }
 
   /**
@@ -187,7 +187,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
     }
 
-    return data || [];
+    return data ?? [];
   }
 
   /**
@@ -350,7 +350,7 @@ export class SavedTranslationService {
     }
 
     if (filters.offset) {
-      query = query.range(filters.offset, filters.offset + (filters.limit || 50) - 1);
+      query = query.range(filters.offset, filters.offset + (filters.limit ?? 50) - 1);
     }
 
     const { data, error } = await query;
@@ -359,7 +359,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch saved translations: ${error.message}`);
     }
 
-    return (data || []) as DatabaseSavedTranslationWithDetails[];
+    return (data ?? []) as DatabaseSavedTranslationWithDetails[];
   }
 
   /**
@@ -395,7 +395,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch saved translation: ${error.message}`);
     }
 
-    return data as DatabaseSavedTranslationWithDetails;
+    return data as unknown as DatabaseSavedTranslationWithDetails;
   }
 
   /**
@@ -440,7 +440,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to update saved translation: ${error.message}`);
     }
 
-    return data as DatabaseSavedTranslationWithDetails;
+    return data as unknown as DatabaseSavedTranslationWithDetails;
   }
 
   /**
@@ -520,6 +520,6 @@ export class SavedTranslationService {
       throw new Error(`Failed to get saved translations count: ${error.message}`);
     }
 
-    return count || 0;
+    return count ?? 0;
   }
 } 

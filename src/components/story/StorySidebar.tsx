@@ -32,7 +32,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
     try {
       const saved = localStorage.getItem('sidebarOpen');
       if (saved !== null) {
-        return JSON.parse(saved);
+        return JSON.parse(saved) as boolean;
       }
       // Default to closed on mobile, open on larger screens
       return !isMobile;
@@ -79,7 +79,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
       });
 
       // Navigate to story page with the translated data
-      navigate('/story', { 
+      void navigate('/story', { 
         state: { 
           translationData: response,
           isSavedStory: true 
@@ -206,7 +206,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                         )}
                         onClick={() => {
                           // Navigate to story page with saved translation data
-                          navigate('/story', {
+                          void navigate('/story', {
                             state: {
                               translationData: {
                                 originalText: savedTranslation.original_story,
@@ -223,7 +223,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                         <CardHeader className="pb-2">
                           <div className="flex items-start justify-between">
                             <CardTitle className="text-base leading-tight">
-                              {savedTranslation.title || 'Untitled Story'}
+                              {savedTranslation.title ?? 'Untitled Story'}
                             </CardTitle>
                             <Badge 
                               variant="secondary" 
@@ -260,7 +260,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                         "hover:border-primary/50 hover:bg-accent/50",
                         isLoading === story.id && "opacity-50 pointer-events-none"
                       )}
-                      onClick={() => handleStoryClick(story)}
+                      onClick={() => void handleStoryClick(story)}
                     >
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
