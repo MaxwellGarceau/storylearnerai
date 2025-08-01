@@ -37,7 +37,7 @@ The LLM Service System provides a unified interface for interacting with multipl
 ### Basic Usage
 
 ```typescript
-import { llmServiceManager } from '@/lib/llm';
+import { llmServiceManager } from '@/lib/llm/LLMServiceManager';
 
 // Generate text completion
 const response = await llmServiceManager.generateCompletion({
