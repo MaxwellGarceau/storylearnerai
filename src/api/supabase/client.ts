@@ -10,5 +10,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
-// Typed Supabase client
-type TypedSupabaseClient = ReturnType<typeof createClient<Database>> 
+ 

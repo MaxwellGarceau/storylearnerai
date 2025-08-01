@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/api/supabase/client'
+import type { Database } from '@/lib/types/database'
 import { createDefaultTestAdminClient } from './supabase-test-client'
 
 interface TestStory {
@@ -147,36 +147,4 @@ export function createTestDatabase(adminClient?: SupabaseClient<Database>): Test
   return new TestDatabase(adminClient)
 }
 
-/**
- * Default test stories for common test scenarios
- */
-const defaultTestStories: TestStory[] = [
-  {
-    title: 'The Test Story',
-    content: 'This is a test story for integration testing.',
-    language: 'en',
-    difficulty_level: 'beginner'
-  },
-  {
-    title: 'La Historia de Prueba',
-    content: 'Esta es una historia de prueba para pruebas de integración.',
-    language: 'es',
-    difficulty_level: 'intermediate'
-  }
-]
-
-/**
- * Default test translations for common test scenarios
- */
-const createDefaultTestTranslations = (storyIds: string[]): TestTranslation[] => [
-  {
-    story_id: storyIds[0],
-    target_language: 'es',
-    translated_content: 'Esta es una historia de prueba para pruebas de integración.'
-  },
-  {
-    story_id: storyIds[0],
-    target_language: 'fr',
-    translated_content: 'Ceci est une histoire de test pour les tests d\'intégration.'
-  }
-] 
+ 

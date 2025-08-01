@@ -10,6 +10,4 @@ export interface SavedStory {
   description: string;
 }
 
-interface SavedStoriesData {
-  stories: SavedStory[];
-} 
+ 

@@ -200,36 +200,31 @@ export interface Database {
 // Convenience types for easier usage
 export type DatabaseLanguage = Database['public']['Tables']['languages']['Row']
 export type DatabaseDifficultyLevel = Database['public']['Tables']['difficulty_levels']['Row']
-type DatabaseUser = Database['public']['Tables']['users']['Row']
-type DatabaseStory = Database['public']['Tables']['stories']['Row']
-type DatabaseTranslation = Database['public']['Tables']['translations']['Row']
-type DatabaseSavedTranslation = Database['public']['Tables']['saved_translations']['Row']
 
 // Insert types
-type DatabaseLanguageInsert = Database['public']['Tables']['languages']['Insert']
-type DatabaseDifficultyLevelInsert = Database['public']['Tables']['difficulty_levels']['Insert']
 export type DatabaseUserInsert = Database['public']['Tables']['users']['Insert']
-type DatabaseStoryInsert = Database['public']['Tables']['stories']['Insert']
 export type DatabaseTranslationInsert = Database['public']['Tables']['translations']['Insert']
-type DatabaseSavedTranslationInsert = Database['public']['Tables']['saved_translations']['Insert']
 
 // Update types
-type DatabaseLanguageUpdate = Database['public']['Tables']['languages']['Update']
-type DatabaseDifficultyLevelUpdate = Database['public']['Tables']['difficulty_levels']['Update']
 export type DatabaseUserUpdate = Database['public']['Tables']['users']['Update']
-type DatabaseStoryUpdate = Database['public']['Tables']['stories']['Update']
 export type DatabaseTranslationUpdate = Database['public']['Tables']['translations']['Update']
-type DatabaseSavedTranslationUpdate = Database['public']['Tables']['saved_translations']['Update']
 
 // Extended types for joins and relationships
-export interface DatabaseSavedTranslationWithDetails extends DatabaseSavedTranslation {
+export interface DatabaseSavedTranslationWithDetails {
+  id: number
+  user_id: string
+  original_story: string
+  translated_story: string
+  original_language_id: number
+  translated_language_id: number
+  difficulty_level_id: number
+  title: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
   original_language: DatabaseLanguage
   translated_language: DatabaseLanguage
   difficulty_level: DatabaseDifficultyLevel
-}
-
-interface DatabaseStoryWithTranslations extends DatabaseStory {
-  translations: DatabaseTranslation[]
 }
 
 // API request types for easier service usage

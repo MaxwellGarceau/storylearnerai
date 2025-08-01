@@ -222,7 +222,7 @@ export const setupSupabaseMocks = () => {
 }
 
 // Helper functions for common mock scenarios
-const mockAuthUser = (user: User | null = null) => {
+export const mockAuthUser = (user: User | null = null) => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),
@@ -234,7 +234,7 @@ const mockAuthUser = (user: User | null = null) => {
   })
 }
 
-const mockAuthLoading = () => {
+export const mockAuthLoading = () => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),
@@ -246,7 +246,7 @@ const mockAuthLoading = () => {
   })
 }
 
-const mockAuthError = (error = 'Authentication failed') => {
+export const mockAuthError = (error = 'Authentication failed') => {
   mockUseSupabase.mockReturnValue({
     signIn: vi.fn(),
     signUp: vi.fn(),

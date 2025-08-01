@@ -55,7 +55,7 @@ const getDefaultTestConfig = (): TestSupabaseConfig => ({
 /**
  * Creates a default test client using environment variables
  */
-const createDefaultTestClient = () => createTestSupabaseClient(getDefaultTestConfig())
+export const createDefaultTestClient = () => createTestSupabaseClient(getDefaultTestConfig())
 
 /**
  * Creates a default test admin client using environment variables
