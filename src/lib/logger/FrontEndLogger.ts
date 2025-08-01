@@ -1,9 +1,9 @@
 import { Logger, LogLevel, LogChannel, LogEntry, LoggerConfig } from './types';
-import { createLogger } from './createLogger';
+import { createLogger } from './ConsoleWrapper';
 import { getLoggerConfigWithOverrides } from './config';
 
-class AppLogger implements Logger {
-  private browserLogger: ReturnType<typeof createLogger>;
+class FrontEndLogger implements Logger {
+  private consoleLogger: ReturnType<typeof createLogger>;
   private config: LoggerConfig;
   private channels: Map<LogChannel, boolean>;
   private timers: Map<string, number> = new Map();
@@ -13,7 +13,7 @@ class AppLogger implements Logger {
 
   constructor(config?: Partial<LoggerConfig>) {
     this.config = { ...getLoggerConfigWithOverrides(), ...config };
-    this.browserLogger = createLogger(this.config);
+    this.consoleLogger = createLogger(this.config);
     this.channels = new Map(Object.entries(this.config.channels) as [LogChannel, boolean][]);
     
     // Generate session ID if not provided
@@ -62,7 +62,7 @@ class AppLogger implements Logger {
 
     const logEntry = this.createLogEntry(level, channel, message, data);
     
-    this.browserLogger.log(level, logEntry.message, {
+    this.consoleLogger.log(level, logEntry.message, {
       channel: logEntry.channel,
       data: logEntry.data,
       userId: logEntry.userId,
@@ -107,7 +107,7 @@ class AppLogger implements Logger {
       const logEntry = this.createLogEntry('info', channel, `Timer ended: ${label}`, data);
       logEntry.performance = { duration };
       
-      this.browserLogger.log('info', logEntry.message, {
+      this.consoleLogger.log('info', logEntry.message, {
         channel: logEntry.channel,
         data: logEntry.data,
         userId: logEntry.userId,
@@ -191,4 +191,4 @@ class AppLogger implements Logger {
 }
 
 // Create and export the default logger instance
-export const logger = new AppLogger(); 
+export const logger = new FrontEndLogger(); 

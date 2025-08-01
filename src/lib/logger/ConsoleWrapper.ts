@@ -3,7 +3,7 @@ import { getLoggerConfigWithOverrides } from './config';
 import { LogLevel, LogChannel } from './types';
 
 // Simple browser-compatible logger
-class BrowserLogger {
+class ConsoleWrapper {
   private config: LoggerConfig;
   private queue: LogEntry[] = [];
   private batchSize: number = 10;
@@ -105,5 +105,5 @@ class BrowserLogger {
 
 export function createLogger(config?: Partial<LoggerConfig>) {
   const fullConfig = { ...getLoggerConfigWithOverrides(), ...config };
-  return new BrowserLogger(fullConfig);
+  return new ConsoleWrapper(fullConfig);
 } 

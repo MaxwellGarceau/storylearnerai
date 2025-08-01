@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { logger } from './logger';
+import { logger } from './FrontEndLogger';
 import { LogLevel, LogChannel } from './types';
 
 function useLogger() {

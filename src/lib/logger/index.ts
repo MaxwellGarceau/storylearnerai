@@ -1,3 +1,1 @@
-export { logger } from './logger';
-;
-;; 
+export { logger } from './FrontEndLogger';
