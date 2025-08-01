@@ -21,10 +21,10 @@ export const useDifficultyLevels = () => {
   const difficultyDisplayMap = useMemo(() => {
     const map = new Map<DifficultyLevel, DifficultyLevelDisplay>()
     const displayMap: Record<DifficultyLevel, DifficultyLevelDisplay> = {
-      'a1': 'A1',
-      'a2': 'A2', 
-      'b1': 'B1',
-      'b2': 'B2'
+      'a1': 'A1 (Beginner)',
+      'a2': 'A2 (Elementary)', 
+      'b1': 'B1 (Intermediate)',
+      'b2': 'B2 (Upper Intermediate)'
     }
     difficultyLevels.forEach(level => {
       map.set(level.code as DifficultyLevel, displayMap[level.code as DifficultyLevel])
@@ -73,10 +73,10 @@ export const useDifficultyLevels = () => {
   // Convert display name to code
   const getDifficultyLevelCodeFromDisplay = (display: DifficultyLevelDisplay): DifficultyLevel => {
     const displayToCode: Record<DifficultyLevelDisplay, DifficultyLevel> = {
-      'A1': 'a1',
-      'A2': 'a2',
-      'B1': 'b1',
-      'B2': 'b2'
+      'A1 (Beginner)': 'a1',
+      'A2 (Elementary)': 'a2',
+      'B1 (Intermediate)': 'b1',
+      'B2 (Upper Intermediate)': 'b2'
     }
     return displayToCode[display]
   }

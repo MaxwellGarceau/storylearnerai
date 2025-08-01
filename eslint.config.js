@@ -7,11 +7,19 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   { ignores: ['dist'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [
+      js.configs.recommended, 
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        project: './tsconfig.app.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -85,7 +93,28 @@ export default tseslint.config(
             match: true
           }
         }
-      ]
+      ],
+      // TypeScript-specific rules for better type safety
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/return-await': 'error',
+      '@typescript-eslint/prefer-as-const': 'error',
+      '@typescript-eslint/no-inferrable-types': 'error',
+      '@typescript-eslint/prefer-includes': 'error',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'off', // Too strict for React components
+      '@typescript-eslint/explicit-module-boundary-types': 'off', // Too strict for React components
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn'
     },
   },
   // Exclude ConsoleWrapper and test files from console restrictions
@@ -93,7 +122,14 @@ export default tseslint.config(
     files: ['**/ConsoleWrapper.ts', '**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
     rules: {
       'no-console': 'off',
-      'no-restricted-properties': 'off'
+      'no-restricted-properties': 'off',
+      // Relax some TypeScript rules for test files
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/unbound-method': 'warn'
     }
   }
 )
