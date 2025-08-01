@@ -1,7 +1,7 @@
 import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
 
 // Translation management types
-export interface DatabaseTranslation {
+interface DatabaseTranslation {
   id: string;
   story_id: string;
   target_language: string;
@@ -46,7 +46,7 @@ export interface DatabaseDifficultyLevel {
 }
 
 // Saved translations (new feature)
-export interface DatabaseSavedTranslation {
+interface DatabaseSavedTranslation {
   id: number;
   user_id: string;
   original_story: string;

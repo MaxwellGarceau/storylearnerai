@@ -12,7 +12,7 @@ export interface DatabaseStory {
   updated_at: string;
 }
 
-export interface DatabaseStoryInsert {
+interface DatabaseStoryInsert {
   id?: string;
   title: string;
   content: string;
@@ -23,7 +23,7 @@ export interface DatabaseStoryInsert {
   updated_at?: string;
 }
 
-export interface DatabaseStoryUpdate {
+interface DatabaseStoryUpdate {
   id?: string;
   title?: string;
   content?: string;

@@ -13,7 +13,7 @@ export const testWalkthroughTranslationData: TranslationResponse = {
 };
 
 // Test data creation utilities
-export const createDummyStory = (overrides: Partial<DatabaseStory> = {}): DatabaseStory => {
+const createDummyStory = (overrides: Partial<DatabaseStory> = {}): DatabaseStory => {
   const now = new Date().toISOString();
   return {
     id: 'test-story-id',

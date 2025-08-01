@@ -32,7 +32,7 @@ vi.mock('../../../hooks/useLanguages', () => ({
 setupSupabaseMocks()
 
 // Mock UserService
-vi.mock('../../../api/supabase', () => ({
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
   UserService: {
     getOrCreateUser: vi.fn(),
     updateUser: vi.fn(),
