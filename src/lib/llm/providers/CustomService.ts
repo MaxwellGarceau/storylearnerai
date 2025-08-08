@@ -21,7 +21,19 @@ export class CustomService extends LLMService {
         }),
       });
 
-      const data = await this.handleResponse(response);
+      const data = await this.handleResponse(response) as {
+        choices?: Array<{ text: string }>;
+        content?: string;
+        response?: string;
+        usage?: {
+          prompt_tokens?: number;
+          input_tokens?: number;
+          completion_tokens?: number;
+          output_tokens?: number;
+          total_tokens?: number;
+        };
+        model?: string;
+      };
 
       // Generic response format - may need adjustment based on actual API
       return {

@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseDifficultyLevel as DifficultyLevel, DifficultyLevel as DifficultyLevelCode } from '../../../types'
+import type { Database } from '../../../types/database'
 import { logger } from '../../../lib/logger'
 
 export class DifficultyLevelService {
@@ -7,36 +8,36 @@ export class DifficultyLevelService {
    * Get all difficulty levels supported by the application
    */
   async getDifficultyLevels(): Promise<DifficultyLevel[]> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('difficulty_levels')
       .select('*')
       .order('id');
 
-    if (error) {
-      throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to fetch difficulty levels: ${result.error.message}`);
     }
 
-    return data ?? [];
+    return (result.data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? [];
   }
 
   /**
    * Get a difficulty level by its code
    */
   async getDifficultyLevelByCode(code: DifficultyLevelCode): Promise<DifficultyLevel | null> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('difficulty_levels')
       .select('*')
       .eq('code', code)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null; // No rows returned
       }
-      throw new Error(`Failed to fetch difficulty level: ${error.message}`);
+      throw new Error(`Failed to fetch difficulty level: ${result.error.message}`);
     }
 
-    return data;
+    return result.data as Database['public']['Tables']['difficulty_levels']['Row'] | null;
   }
 
   /**

@@ -11,8 +11,9 @@ import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const translationData = location.state?.translationData as TranslationResponse | undefined;
-  const isSavedStory = location.state?.isSavedStory as boolean | undefined;
+  const state = location.state as { translationData?: TranslationResponse; isSavedStory?: boolean } | null;
+  const translationData = state?.translationData;
+  const isSavedStory = state?.isSavedStory;
   // const savedTranslationId = location.state?.savedTranslationId as string | undefined;
 
   // Use test data if in debug mode and no translation data

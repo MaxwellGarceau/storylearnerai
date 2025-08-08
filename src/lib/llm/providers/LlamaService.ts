@@ -18,7 +18,18 @@ export class LlamaService extends LLMService {
         body: JSON.stringify(this.buildRequestBody(request, llamaConfig)),
       });
 
-      const data = await this.handleResponse(response);
+      const data = await this.handleResponse(response) as {
+        message?: { content: string };
+        prompt_eval_count?: number;
+        eval_count?: number;
+        choices?: Array<{ message: { content: string } }>;
+        usage?: {
+          prompt_tokens?: number;
+          completion_tokens?: number;
+          total_tokens?: number;
+        };
+        model?: string;
+      };
       return this.parseResponse(data, llamaConfig);
     } catch (error) {
       logger.error('llm', 'Llama API error', { error });
@@ -144,8 +155,21 @@ export class LlamaService extends LLMService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private parseResponse(data: any, config: LlamaConfig): LLMResponse {
+  private parseResponse(data: {
+    message?: { content: string };
+    prompt_eval_count?: number;
+    eval_count?: number;
+    choices?: Array<{ message: { content: string } }>;
+    usage?: {
+      prompt_tokens?: number;
+      completion_tokens?: number;
+      total_tokens?: number;
+    };
+    model?: string;
+    output?: string | string[];
+    content?: string;
+    metrics?: unknown;
+  }, config: LlamaConfig): LLMResponse {
     const provider = config.llamaProvider ?? 'ollama';
     
     switch (provider) {
@@ -166,9 +190,9 @@ export class LlamaService extends LLMService {
         return {
           content: data.choices?.[0]?.message?.content ?? '',
           tokenUsage: data.usage ? {
-            promptTokens: data.usage.prompt_tokens,
-            completionTokens: data.usage.completion_tokens,
-            totalTokens: data.usage.total_tokens,
+            promptTokens: data.usage.prompt_tokens ?? 0,
+            completionTokens: data.usage.completion_tokens ?? 0,
+            totalTokens: data.usage.total_tokens ?? 0,
           } : undefined,
           model: data.model ?? config.model,
           provider: 'llama',

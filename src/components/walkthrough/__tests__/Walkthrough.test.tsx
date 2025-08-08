@@ -155,7 +155,7 @@ describe('Walkthrough Button Behavior', () => {
         if (mockStateChangeCallback) {
           logger.debug('general', '🔧 Service: Notifying subscribers with new state', { newState });
           act(() => {
-            mockStateChangeCallback!(newState);
+            mockStateChangeCallback(newState);
           });
         }
       });
@@ -230,7 +230,7 @@ describe('Walkthrough Button Behavior', () => {
         if (mockStateChangeCallback) {
           logger.debug('general', '🔧 Service: Notifying subscribers with new state', { newState });
           act(() => {
-            mockStateChangeCallback!(newState);
+            mockStateChangeCallback(newState);
           });
         }
       });
@@ -294,7 +294,7 @@ describe('Walkthrough Button Behavior', () => {
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
           act(() => {
-            mockStateChangeCallback!(newState);
+            mockStateChangeCallback(newState);
           });
         }
       });
@@ -352,7 +352,7 @@ describe('Walkthrough Button Behavior', () => {
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
           act(() => {
-            mockStateChangeCallback!(completedState);
+            mockStateChangeCallback(completedState);
           });
         }
       });
@@ -402,7 +402,7 @@ describe('Walkthrough Button Behavior', () => {
         if (mockStateChangeCallback) {
           logger.debug('general', '🔧 X Button: Notifying subscribers modal should close');
           act(() => {
-            mockStateChangeCallback!(closedState);
+            mockStateChangeCallback(closedState);
           });
         }
       });
@@ -489,7 +489,7 @@ describe('Walkthrough Button Behavior', () => {
         // Simulate the service notifying subscribers of the state change
         if (mockStateChangeCallback) {
           act(() => {
-            mockStateChangeCallback!(newState);
+            mockStateChangeCallback(newState);
           });
         }
       });

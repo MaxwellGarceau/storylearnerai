@@ -143,7 +143,9 @@ describe('SaveTranslationButton Component', () => {
     const triggerButtons = screen.getAllByText('Save Translation');
     const triggerButton = triggerButtons.find(button => !button.disabled);
     expect(triggerButton).toBeDefined();
-    fireEvent.click(triggerButton!);
+    if (triggerButton) {
+      fireEvent.click(triggerButton);
+    }
     
     expect(screen.getByText('Save this translation to your library for future reference')).toBeInTheDocument();
   });

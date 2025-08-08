@@ -26,7 +26,14 @@ export class AnthropicService extends LLMService {
         }),
       });
 
-      const data = await this.handleResponse(response);
+      const data = await this.handleResponse(response) as {
+        content: Array<{ text: string }>;
+        usage?: {
+          input_tokens: number;
+          output_tokens: number;
+        };
+        model: string;
+      };
 
       return {
         content: data.content[0]?.text ?? '',

@@ -76,7 +76,7 @@ export class EnvironmentConfig {
     if (!headersString) return {};
     
     try {
-      return JSON.parse(headersString);
+      return JSON.parse(headersString) as Record<string, string>;
     } catch (error) {
       logger.warn('config', 'Failed to parse custom headers, using empty object', { error });
       return {};
@@ -88,7 +88,7 @@ export class EnvironmentConfig {
     
     try {
       // Try parsing as JSON array first
-      return JSON.parse(stopSequencesString);
+      return JSON.parse(stopSequencesString) as string[];
     } catch {
       // Fallback to comma-separated string
       return stopSequencesString.split(',').map(s => s.trim()).filter(s => s.length > 0);

@@ -8,7 +8,7 @@ import { useSupabase } from '../../hooks/useSupabase'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
-import type { DatabaseUser } from '../../types/database/user'
+import type { DatabaseUserInsert } from '../../types/database/user'
 import type { LanguageCode } from '../../types/llm/prompts'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
@@ -20,7 +20,7 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useSupabase()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<DatabaseUser | null>(null)
+  const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -46,9 +46,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       setLoading(true)
       const userProfile = await UserService.getOrCreateUser(user.id, {
         username: user.email?.split('@')[0] ?? '',
-        display_name: user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? ''
+        display_name: (user.user_metadata as { display_name?: string })?.display_name ?? user.email?.split('@')[0] ?? ''
       })
-      setProfile(userProfile as unknown as DatabaseUser)
+      setProfile(userProfile)
       setFormData({
         username: userProfile.username ?? '',
         display_name: userProfile.display_name ?? '',
@@ -122,7 +122,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       setError(null)
       
       const updatedProfile = await UserService.updateUser(user.id, formData)
-      setProfile(updatedProfile as DatabaseUser)
+      setProfile(updatedProfile)
       setIsEditing(false)
       setValidationErrors({}) // Clear validation errors on success
     } catch (err) {

@@ -137,8 +137,8 @@ describe.skip('useSupabase', () => {
         email: 'test@example.com',
       }
 
-      let authCallback: any
-      mockOnAuthStateChange.mockImplementation((callback) => {
+      let authCallback: ((event: string, session: any) => void) | undefined
+      mockOnAuthStateChange.mockImplementation((callback: (event: string, session: any) => void) => {
         authCallback = callback
         return {
           data: {
@@ -158,13 +158,15 @@ describe.skip('useSupabase', () => {
 
       // Simulate auth state change
       act(() => {
-        authCallback('SIGNED_IN', { 
-          user: mockUser,
-          access_token: 'token',
-          refresh_token: 'refresh',
-          expires_at: Date.now() + 3600000,
-          token_type: 'bearer'
-        })
+        if (authCallback) {
+          authCallback('SIGNED_IN', { 
+            user: mockUser,
+            access_token: 'token',
+            refresh_token: 'refresh',
+            expires_at: Date.now() + 3600000,
+            token_type: 'bearer'
+          })
+        }
       })
 
       expect(result.current.user).toEqual(mockUser)
@@ -177,8 +179,8 @@ describe.skip('useSupabase', () => {
         email: 'test@example.com',
       }
 
-      let authCallback: any
-      mockOnAuthStateChange.mockImplementation((callback) => {
+      let authCallback: ((event: string, session: any) => void) | undefined
+      mockOnAuthStateChange.mockImplementation((callback: (event: string, session: any) => void) => {
         authCallback = callback
         return {
           data: {
@@ -198,20 +200,24 @@ describe.skip('useSupabase', () => {
 
       // Simulate sign in
       act(() => {
-        authCallback('SIGNED_IN', { 
-          user: mockUser,
-          access_token: 'token',
-          refresh_token: 'refresh',
-          expires_at: Date.now() + 3600000,
-          token_type: 'bearer'
-        })
+        if (authCallback) {
+          authCallback('SIGNED_IN', { 
+            user: mockUser,
+            access_token: 'token',
+            refresh_token: 'refresh',
+            expires_at: Date.now() + 3600000,
+            token_type: 'bearer'
+          })
+        }
       })
 
       expect(result.current.user).toEqual(mockUser)
 
       // Simulate sign out
       act(() => {
-        authCallback('SIGNED_OUT', null)
+        if (authCallback) {
+          authCallback('SIGNED_OUT', null)
+        }
       })
 
       expect(result.current.user).toBe(null)

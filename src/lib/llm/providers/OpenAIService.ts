@@ -26,7 +26,15 @@ export class OpenAIService extends LLMService {
         }),
       });
 
-      const data = await this.handleResponse(response);
+      const data = await this.handleResponse(response) as {
+        choices: Array<{ message: { content: string } }>;
+        usage?: {
+          prompt_tokens: number;
+          completion_tokens: number;
+          total_tokens: number;
+        };
+        model: string;
+      };
 
       return {
         content: data.choices[0]?.message?.content ?? '',

@@ -38,7 +38,7 @@ class TranslationService {
 
   async translateStory(request: TranslationRequest): Promise<TranslationResponse> {
     try {
-      const prompt = this.buildTranslationPrompt(request);
+      const prompt = await this.buildTranslationPrompt(request);
       
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -85,7 +85,7 @@ class TranslationService {
   /**
    * Build a customized translation prompt based on language and difficulty level
    */
-  private buildTranslationPrompt(request: TranslationRequest): string {
+  private async buildTranslationPrompt(request: TranslationRequest): Promise<string> {
     const context = {
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,

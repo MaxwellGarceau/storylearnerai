@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database'
+import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
 
 export interface CreateTranslationData {
@@ -124,7 +125,7 @@ export class TranslationService {
    */
   static async createTranslation(data: CreateTranslationData): Promise<DatabaseTranslationInsert> {
     // Validate and sanitize input data
-    const validation = this.validateCreateTranslationData(data);
+    const validation = TranslationService.validateCreateTranslationData(data);
     if (!validation.isValid) {
       const errorMessages = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ');
       throw new Error(`Validation failed: ${errorMessages}`);
@@ -132,7 +133,7 @@ export class TranslationService {
 
     const { sanitizedData } = validation;
 
-    const { data: translation, error } = await supabase
+    const result = await supabase
       .from('translations')
       .insert({
         story_id: sanitizedData.story_id,
@@ -144,11 +145,11 @@ export class TranslationService {
       .select()
       .single()
 
-    if (error) {
-      throw new Error(`Failed to create translation: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to create translation: ${result.error.message}`)
     }
 
-    return translation
+    return result.data as Database['public']['Tables']['translations']['Row']
   }
 
   /**
@@ -160,20 +161,20 @@ export class TranslationService {
       throw new Error('Invalid translation ID provided');
     }
 
-    const { data: translation, error } = await supabase
+    const result = await supabase
       .from('translations')
       .select('*')
       .eq('id', id)
       .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // Translation not found
       }
-      throw new Error(`Failed to fetch translation: ${error.message}`)
+      throw new Error(`Failed to fetch translation: ${result.error.message}`)
     }
 
-    return translation
+    return result.data as Database['public']['Tables']['translations']['Row'] | null
   }
 
   /**
@@ -185,17 +186,17 @@ export class TranslationService {
       throw new Error('Invalid story ID provided');
     }
 
-    const { data: translations, error } = await supabase
+    const result = await supabase
       .from('translations')
       .select('*')
       .eq('story_id', storyId)
       .order('created_at', { ascending: false })
 
-    if (error) {
-      throw new Error(`Failed to fetch translations: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to fetch translations: ${result.error.message}`)
     }
 
-    return translations || []
+    return (result.data as Database['public']['Tables']['translations']['Row'][]) || []
   }
 
   /**
@@ -221,21 +222,21 @@ export class TranslationService {
       throw new Error('Invalid language code format (use ISO 639-1)');
     }
 
-    const { data: translation, error } = await supabase
+    const result = await supabase
       .from('translations')
       .select('*')
       .eq('story_id', storyId)
       .eq('target_language', targetLanguage)
       .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // Translation not found
       }
-      throw new Error(`Failed to fetch translation: ${error.message}`)
+      throw new Error(`Failed to fetch translation: ${result.error.message}`)
     }
 
-    return translation
+    return result.data as Database['public']['Tables']['translations']['Row'] | null
   }
 
   /**
@@ -256,18 +257,18 @@ export class TranslationService {
       updated_at: new Date().toISOString()
     }
 
-    const { data: translation, error } = await supabase
+    const result = await supabase
       .from('translations')
       .update(updateData)
       .eq('id', id)
       .select()
       .single()
 
-    if (error) {
-      throw new Error(`Failed to update translation: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to update translation: ${result.error.message}`)
     }
 
-    return translation
+    return result.data as Database['public']['Tables']['translations']['Row']
   }
 
   /**
@@ -279,13 +280,13 @@ export class TranslationService {
       throw new Error('Invalid translation ID provided');
     }
 
-    const { error } = await supabase
+    const result = await supabase
       .from('translations')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      throw new Error(`Failed to delete translation: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to delete translation: ${result.error.message}`)
     }
   }
 
@@ -298,13 +299,13 @@ export class TranslationService {
       throw new Error('Invalid story ID provided');
     }
 
-    const { error } = await supabase
+    const result = await supabase
       .from('translations')
       .delete()
       .eq('story_id', storyId)
 
-    if (error) {
-      throw new Error(`Failed to delete translations for story: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to delete translations for story: ${result.error.message}`)
     }
   }
 
@@ -341,13 +342,13 @@ export class TranslationService {
       query = query.eq('target_language', filters.target_language.toLowerCase())
     }
 
-    const { data: translations, error } = await query.order('created_at', { ascending: false })
+    const result = await query.order('created_at', { ascending: false })
 
-    if (error) {
-      throw new Error(`Failed to fetch translations: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to fetch translations: ${result.error.message}`)
     }
 
-    return translations || []
+    return (result.data as Database['public']['Tables']['translations']['Row'][]) || []
   }
 
   /**

@@ -40,8 +40,8 @@ vi.mock('../../api/supabase/database/userProfileService', () => ({
   }
 }))
 
-const mockUseSupabase = useSupabase as vi.MockedFunction<typeof useSupabase>
-const mockUserService = UserService as vi.Mocked<typeof UserService>
+const mockUseSupabase = vi.mocked(useSupabase)
+const mockUserService = vi.mocked(UserService)
 
 // Mock react-router-dom hooks
 const mockNavigate = vi.fn()
@@ -63,7 +63,7 @@ const renderWithRouter = (component: React.ReactElement): RenderResult => {
       </BrowserRouter>
     )
   })
-  return result!
+  return result
 }
 
 describe('DashboardPage Component', () => {

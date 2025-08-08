@@ -65,7 +65,7 @@ describe('TextArea Component', () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
     // Just check that the event was called with a SyntheticEvent-like object
     expect(handleChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: expect.any(Object),
+      target: expect.any(Object) as HTMLElement,
       type: 'change'
     }));
   });
@@ -199,7 +199,7 @@ describe('TextArea Component', () => {
     // Test interaction
     fireEvent.change(textarea, { target: { value: 'New story content' } });
     expect(handleChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: expect.any(Object),
+      target: expect.any(Object) as HTMLElement,
       type: 'change'
     }));
   });

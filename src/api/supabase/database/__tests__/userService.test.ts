@@ -52,24 +52,30 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
+        const mockSingleNotFound = vi.fn().mockResolvedValue({
+          data: null,
+          error: { code: 'PGRST116' }
+        })
+        const mockEqNotFound = vi.fn().mockReturnValue({
+          single: mockSingleNotFound
+        })
+        const mockSelectNotFound = vi.fn().mockReturnValue({
+          eq: mockEqNotFound
+        })
+        const mockSingleFound = vi.fn().mockResolvedValue({
+          data: mockUser,
+          error: null
+        })
+        const mockSelectFound = vi.fn().mockReturnValue({
+          single: mockSingleFound
+        })
+        const mockInsert = vi.fn().mockReturnValue({
+          select: mockSelectFound
+        })
         mockSupabase.from.mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: null,
-                error: { code: 'PGRST116' }
-              })
-            })
-          }),
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: mockUser,
-                error: null
-              })
-            })
-          })
+          select: mockSelectNotFound,
+          insert: mockInsert
         })
 
         const userData: CreateUserData = {
@@ -151,7 +157,7 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -196,7 +202,7 @@ describe('UserService', () => {
           updated_at: '2024-01-02T00:00:00Z'
         }
 
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -257,7 +263,7 @@ describe('UserService', () => {
           updated_at: '2024-01-02T00:00:00Z'
         }
 
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -317,7 +323,7 @@ describe('UserService', () => {
       })
 
       it('should return true for available username', async () => {
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -334,7 +340,7 @@ describe('UserService', () => {
       })
 
       it('should return false for taken username', async () => {
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -367,7 +373,7 @@ describe('UserService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -388,7 +394,7 @@ describe('UserService', () => {
   describe('Business Logic Validation', () => {
     describe('Username Uniqueness', () => {
       it('should reject creation with taken username', async () => {
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -409,7 +415,7 @@ describe('UserService', () => {
       })
 
       it('should reject update with taken username', async () => {
-        const mockSupabase = supabase as unknown as { from: jest.Mock }
+        const mockSupabase = vi.mocked(supabase)
         mockSupabase.from.mockReturnValue({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -432,7 +438,7 @@ describe('UserService', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
-      const mockSupabase = supabase as unknown as { from: jest.Mock }
+      const mockSupabase = vi.mocked(supabase)
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
@@ -461,7 +467,7 @@ describe('UserService', () => {
     })
 
     it('should handle user not found errors', async () => {
-      const mockSupabase = supabase as unknown as { from: jest.Mock }
+      const mockSupabase = vi.mocked(supabase)
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({

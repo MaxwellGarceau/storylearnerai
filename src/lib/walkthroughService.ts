@@ -37,7 +37,7 @@ class WalkthroughService {
     try {
       const stored = localStorage.getItem(this.getStorageKey());
       if (stored) {
-        return JSON.parse(stored);
+        return JSON.parse(stored) as WalkthroughStorage;
       }
     } catch (error) {
       logger.warn('walkthrough', 'Failed to load walkthrough storage', { error });

@@ -9,7 +9,7 @@ import type { User } from '@supabase/supabase-js'
 // Mock the useSupabase hook
 vi.mock('../../../hooks/useSupabase')
 
-const mockUseSupabase = useSupabase as jest.MockedFunction<typeof useSupabase>
+const mockUseSupabase = vi.mocked(useSupabase)
 
 // Mock react-router-dom's useNavigate
 const mockNavigate = vi.fn()
