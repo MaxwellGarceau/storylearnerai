@@ -99,7 +99,7 @@ describe('SignUpForm Component', () => {
     expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
   })
 
-  it('submits form with valid data', () => {
+  it('submits form with valid data', async () => {
     mockSignUp.mockResolvedValue(true)
 
     render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />)

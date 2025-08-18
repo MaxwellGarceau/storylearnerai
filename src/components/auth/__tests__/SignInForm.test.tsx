@@ -53,7 +53,7 @@ describe('SignInForm Component', () => {
     expect(passwordInput).toHaveValue('Password123!')
   })
 
-  it('submits form with valid data', () => {
+  it('submits form with valid data', async () => {
     mockSignIn.mockResolvedValue(true)
 
     render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)

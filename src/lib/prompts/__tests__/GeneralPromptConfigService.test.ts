@@ -106,19 +106,19 @@ describe('PromptConfigService', () => {
       text: 'Hola, ¿cómo estás?'
     };
 
-    it('should build different prompts for different difficulty levels', () => {
+    it('should build different prompts for different difficulty levels', async () => {
       const a1Context: PromptBuildContext = { ...mockContext, difficulty: 'a1' };
       const b2Context: PromptBuildContext = { ...mockContext, difficulty: 'b2' };
       
-      const a1Prompt = generalPromptConfigService.buildPrompt(a1Context);
-      const b2Prompt = generalPromptConfigService.buildPrompt(b2Context);
+      const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
+      const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
       
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('most common 1000 English words');
       expect(b2Prompt).toContain('upper-intermediate vocabulary');
     });
 
-    it('should build different prompts for different languages', () => {
+    it('should build different prompts for different languages', async () => {
       const enContext: PromptBuildContext = { ...mockContext, toLanguage: 'en' };
       const esContext: PromptBuildContext = { 
         fromLanguage: 'en', 
@@ -127,8 +127,8 @@ describe('PromptConfigService', () => {
         text: 'Hello, how are you?' 
       };
       
-      const enPrompt = generalPromptConfigService.buildPrompt(enContext);
-      const esPrompt = generalPromptConfigService.buildPrompt(esContext);
+      const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
+      const esPrompt = await generalPromptConfigService.buildPrompt(esContext);
       
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');
@@ -184,30 +184,30 @@ describe('PromptConfigService', () => {
   });
 
   describe('Native-to-Target Instructions', () => {
-    it('should return native-to-target instructions for supported combinations', () => {
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'a1');
+    it('should return native-to-target instructions for supported combinations', async () => {
+      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'a1');
       expect(instructions).toBeTruthy();
       expect(instructions?.description).toContain('Maximum scaffolding');
       expect(instructions?.grammar_focus).toBeDefined();
       expect(instructions?.vocabulary_focus).toBeDefined();
     });
 
-    it('should return null for unsupported native language', () => {
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('fr' as string, 'es', 'a1');
+    it('should return null for unsupported native language', async () => {
+      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('fr' as string, 'es', 'a1');
       expect(instructions).toBeNull();
     });
 
-    it('should return null for unsupported target language', () => {
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as string, 'a1');
+    it('should return null for unsupported target language', async () => {
+      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as string, 'a1');
       expect(instructions).toBeNull();
     });
 
-    it('should return null for unsupported difficulty', () => {
-      const instructions = generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as string);
+    it('should return null for unsupported difficulty', async () => {
+      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as string);
       expect(instructions).toBeNull();
     });
 
-    it('should build prompt with native-to-target instructions when fromLanguage is provided', () => {
+    it('should build prompt with native-to-target instructions when fromLanguage is provided', async () => {
       const context: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -215,13 +215,13 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?'
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(context);
+      const prompt = await generalPromptConfigService.buildPrompt(context);
       expect(prompt).toContain('Native Speaker Guidance');
       expect(prompt).toContain('Grammar Focus');
       expect(prompt).toContain('Vocabulary Focus');
     });
 
-    it('should build prompt without native-to-target instructions when fromLanguage is not provided', () => {
+    it('should build prompt without native-to-target instructions when fromLanguage is not provided', async () => {
       const context: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -229,14 +229,14 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?'
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(context);
+      const prompt = await generalPromptConfigService.buildPrompt(context);
       // The prompt should still contain native-to-target instructions since fromLanguage is provided
       expect(prompt).toContain('Native Speaker Guidance');
     });
   });
 
   describe('Advanced User Input Handling', () => {
-    it('should handle empty text gracefully', () => {
+    it('should handle empty text gracefully', async () => {
       const contextWithEmptyText: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -244,14 +244,14 @@ describe('PromptConfigService', () => {
         text: ''
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(contextWithEmptyText);
+      const prompt = await generalPromptConfigService.buildPrompt(contextWithEmptyText);
       
       // Should handle empty text without errors
       expect(prompt).toContain('es Story:');
       expect(prompt).toContain('Please provide only the en translation');
     });
 
-    it('should handle text with quotes and apostrophes', () => {
+    it('should handle text with quotes and apostrophes', async () => {
       const contextWithQuotes: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -259,7 +259,7 @@ describe('PromptConfigService', () => {
         text: 'She said "Hello, how are you?" and he replied "I\'m fine, thanks!"'
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(contextWithQuotes);
+      const prompt = await generalPromptConfigService.buildPrompt(contextWithQuotes);
       
       // Should preserve quotes and apostrophes
       expect(prompt).toContain('"Hello, how are you?"');
@@ -275,8 +275,8 @@ describe('PromptConfigService', () => {
       text: 'Hola, ¿cómo estás?'
     };
 
-    it('should include native-to-target instruction sections when fromLanguage is provided', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include native-to-target instruction sections when fromLanguage is provided', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for native-to-target sections
       expect(prompt).toContain('Native Speaker Guidance:');
@@ -284,16 +284,16 @@ describe('PromptConfigService', () => {
       expect(prompt).toContain('Vocabulary Focus:');
     });
 
-    it('should include specific vocabulary instructions for A1 level', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include specific vocabulary instructions for A1 level', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for A1-specific vocabulary instructions
       expect(prompt).toContain('1000 English words');
       expect(prompt).toContain('simple alternatives');
     });
 
-    it('should include specific grammar instructions for A1 level', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include specific grammar instructions for A1 level', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for A1-specific grammar instructions
       expect(prompt).toContain('present simple');
@@ -301,30 +301,30 @@ describe('PromptConfigService', () => {
       expect(prompt).toContain('present continuous');
     });
 
-    it('should include specific style instructions for A1 level', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include specific style instructions for A1 level', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for A1-specific style instructions
       expect(prompt).toContain('5-10 words');
       expect(prompt).toContain('compound and complex sentences');
     });
 
-    it('should include native-to-target grammar focus instructions', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include native-to-target grammar focus instructions', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for native-to-target grammar instructions
       expect(prompt).toContain('SUBJECT PRONOUNS:');
       expect(prompt).toContain('ADJECTIVE PLACEMENT:');
     });
 
-    it('should include native-to-target vocabulary focus instructions', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include native-to-target vocabulary focus instructions', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for native-to-target vocabulary instructions
       expect(prompt).toContain('FALSE FRIENDS:');
     });
 
-    it('should generate different content for different difficulty levels', () => {
+    it('should generate different content for different difficulty levels', async () => {
       const a1Context: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -339,8 +339,8 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?'
       };
 
-      const a1Prompt = generalPromptConfigService.buildPrompt(a1Context);
-      const b2Prompt = generalPromptConfigService.buildPrompt(b2Context);
+      const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
+      const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
 
       // A1 should contain beginner-specific content
       expect(a1Prompt).toContain('1000 English words');
@@ -351,7 +351,7 @@ describe('PromptConfigService', () => {
       expect(b2Prompt).toContain('sophisticated sentence structures');
     });
 
-    it('should generate different content for different target languages', () => {
+    it('should generate different content for different target languages', async () => {
       const enContext: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -366,8 +366,8 @@ describe('PromptConfigService', () => {
         text: 'Hello, how are you?'
       };
 
-      const enPrompt = generalPromptConfigService.buildPrompt(enContext);
-      const esPrompt = generalPromptConfigService.buildPrompt(esContext);
+      const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
+      const esPrompt = await generalPromptConfigService.buildPrompt(esContext);
 
       // English target should contain English-specific instructions
       expect(enPrompt).toContain('English words');
