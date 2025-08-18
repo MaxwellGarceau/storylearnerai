@@ -9,7 +9,7 @@ export default tseslint.config(
       js.configs.recommended, 
       ...tseslint.configs.recommended,
     ],
-    files: ['**/*.test.ts'],
+    files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: 'module',
@@ -28,7 +28,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      'testCustom/no-duplicate-types': ['warn', { minComplexity: 2 }],
+      'testCustom/no-duplicate-types': ['warn', { minComplexity: 1 }],
     },
   }
 )
