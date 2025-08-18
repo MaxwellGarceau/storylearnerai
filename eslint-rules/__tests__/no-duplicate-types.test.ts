@@ -1,40 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { ESLint } from 'eslint'
-// Import the rule module directly
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - JS module
-import noDuplicateTypesRule from '../no-duplicate-types.js'
 
 async function runLint(code: string) {
-  const tsParser = await import('@typescript-eslint/parser')
-  const parser = (tsParser as any).default ?? tsParser
-
   const eslint = new ESLint({
-    // Do not load repo config
-    overrideConfigFile: true,
-    // Provide a flat config array with files matcher
-    overrideConfig: [
-      {
-        files: ['**/*.ts', 'test.ts'],
-        languageOptions: {
-          parser,
-          parserOptions: {
-            ecmaVersion: 2020,
-            sourceType: 'module',
-          },
-        },
-        plugins: {
-          testCustom: {
-            rules: {
-              'no-duplicate-types': noDuplicateTypesRule as any,
-            },
-          },
-        },
-        rules: {
-          'testCustom/no-duplicate-types': ['warn', { minComplexity: 2 }],
-        },
-      },
-    ],
+    // Use the test-specific config
+    overrideConfigFile: './eslint-rules/__tests__/test-eslint.config.js',
   })
 
   // Provide a .ts filename so TS parser engages
