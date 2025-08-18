@@ -12,6 +12,7 @@ export type VoidFunction = () => void;
 // Promise types
 export type BooleanPromise = Promise<boolean>;
 export type VoidPromise = Promise<void>;
+export type UnknownPromise = Promise<unknown>;
 
 // React event types
 export type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>;

@@ -1,7 +1,9 @@
 import { supabase } from '../client'
-import type { DatabaseTranslationInsert, DatabaseTranslationUpdate, DatabaseTranslationInsertPromise } from '../../../types/database/translation'
+import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database/translation'
+import type { DatabaseTranslationInsertPromise } from '../../../types/database/promise'
 import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
+import type { VoidPromise } from '../../../types/common'
 
 export interface CreateTranslationData {
   story_id: string
@@ -274,7 +276,7 @@ export class TranslationService {
   /**
    * Delete a translation
    */
-  static async deleteTranslation(id: string): Promise<void> {
+  static async deleteTranslation(id: string): VoidPromise {
     // Validate ID
     if (!id || typeof id !== 'string') {
       throw new Error('Invalid translation ID provided');
@@ -293,7 +295,7 @@ export class TranslationService {
   /**
    * Delete all translations for a story
    */
-  static async deleteTranslationsByStoryId(storyId: string): Promise<void> {
+  static async deleteTranslationsByStoryId(storyId: string): VoidPromise {
     // Validate story ID
     if (!storyId || typeof storyId !== 'string') {
       throw new Error('Invalid story ID provided');

@@ -3,6 +3,7 @@ import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/data
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { PostgrestError } from '@supabase/supabase-js';
+import type { VoidPromise } from '../../../types/common';
 
 // Use existing database types for consistency
 export type CreateUserData = Omit<DatabaseUserInsert, 'created_at' | 'updated_at'>
@@ -271,7 +272,7 @@ export class UserService {
   /**
    * Delete user
    */
-  static async deleteUser(userId: string): Promise<void> {
+  static async deleteUser(userId: string): VoidPromise {
     const { error } = await supabase
       .from('users')
       .delete()

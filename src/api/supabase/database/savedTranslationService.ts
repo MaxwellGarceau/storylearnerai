@@ -10,6 +10,7 @@ import {
 import type { Database } from '../../../types/database';
 import type { LanguageCode } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
+import type { VoidPromise } from '../../../types/common';
 
 interface ValidationError {
   field: string;
@@ -447,7 +448,7 @@ export class SavedTranslationService {
   /**
    * Delete a saved translation
    */
-  async deleteSavedTranslation(translationId: number, userId: string): Promise<void> {
+  async deleteSavedTranslation(translationId: number, userId: string): VoidPromise {
     // Validate input parameters
     if (!translationId || typeof translationId !== 'number' || translationId <= 0) {
       throw new Error('Valid translation ID is required');

@@ -4,6 +4,7 @@ import type { NullableString } from '../common';
 // Re-export all database types
 export * from './user';
 export * from './translation';
+export * from './promise';
 
 // Main Database interface that includes all tables
 export interface Database {

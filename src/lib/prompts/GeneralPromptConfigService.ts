@@ -13,6 +13,7 @@ import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
 import templateConfigData from './config/template.json';
+import type { VoidPromise } from '../../types/common';
 
 /**
  * General Prompt Configuration Service
@@ -36,7 +37,7 @@ class GeneralPromptConfigService {
   private generalConfig: GeneralPromptConfig;
   private templateConfig: TemplateConfig;
   private nativeToTargetConfig: NativeToTargetLanguageConfig;
-  private configLoadingPromise: Promise<void> | null = null;
+  private configLoadingPromise: VoidPromise | null = null;
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
@@ -49,7 +50,7 @@ class GeneralPromptConfigService {
   /**
    * Dynamically load native-to-target configurations
    */
-  private async loadNativeToTargetConfigs(): Promise<void> {
+  private async loadNativeToTargetConfigs(): VoidPromise {
     try {
       logger.time('prompts', 'load-native-to-target-configs');
       

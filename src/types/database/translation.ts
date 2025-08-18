@@ -1,10 +1,7 @@
-import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
+import type { LanguageCode, NullableLanguageCode, DifficultyLevel } from '../llm/prompts';
 import type { NullableString } from '../common';
 
 // Translation management types
-
-// Promise types for translation operations
-export type DatabaseTranslationInsertPromise = Promise<DatabaseTranslationInsert>;
 
 export interface DatabaseTranslationInsert {
   id?: string;

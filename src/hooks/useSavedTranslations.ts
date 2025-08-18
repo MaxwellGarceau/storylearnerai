@@ -9,6 +9,7 @@ import {
   DatabaseLanguage,
   DatabaseDifficultyLevel,
 } from '../types/database';
+import type { VoidPromise } from '../types/common';
 
 interface UseSavedTranslationsReturn {
   // Data
@@ -28,16 +29,16 @@ interface UseSavedTranslationsReturn {
   error: string | null;
   
   // Actions
-  createSavedTranslation: (request: CreateSavedTranslationRequest) => Promise<void>;
-  updateSavedTranslation: (id: string, updates: UpdateSavedTranslationRequest) => Promise<void>;
-  deleteSavedTranslation: (id: number) => Promise<void>;
-  refreshSavedTranslations: () => Promise<void>;
+  createSavedTranslation: (request: CreateSavedTranslationRequest) => VoidPromise;
+  updateSavedTranslation: (id: string, updates: UpdateSavedTranslationRequest) => VoidPromise;
+  deleteSavedTranslation: (id: number) => VoidPromise;
+  refreshSavedTranslations: () => VoidPromise;
   setFilters: (filters: SavedTranslationFilters) => void;
   
   // Pagination
   totalCount: number;
   hasMore: boolean;
-  loadMore: () => Promise<void>;
+  loadMore: () => VoidPromise;
 }
 
 const ITEMS_PER_PAGE = 20;

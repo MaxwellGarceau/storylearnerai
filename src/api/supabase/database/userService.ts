@@ -2,7 +2,7 @@ import { supabase } from '../client'
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { DatabaseUserInsert } from '../../../types/database/user';
 import type { LanguageCode } from '../../../types/llm/prompts'
-import type { NullableString } from '../../../types/common'
+import type { NullableString, VoidPromise } from '../../../types/common'
 import { 
   validateUsername, 
   validateDisplayName
@@ -323,7 +323,7 @@ export class UserService {
   /**
    * Delete user
    */
-  static async deleteUser(userId: string): Promise<void> {
+  static async deleteUser(userId: string): VoidPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
