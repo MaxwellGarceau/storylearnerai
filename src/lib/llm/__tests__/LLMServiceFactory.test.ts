@@ -14,41 +14,26 @@ describe('LLMServiceFactory', () => {
     it('should return available providers', () => {
       const providers = LLMServiceFactory.getAvailableProviders();
       
-      expect(providers).toEqual(['openai', 'anthropic', 'gemini', 'llama', 'custom']);
-      expect(providers).toContain('openai');
-      expect(providers).toContain('anthropic');
+      expect(providers).toEqual(['gemini']);
       expect(providers).toContain('gemini');
-      expect(providers).toContain('llama');
-      expect(providers).toContain('custom');
+      expect(providers).toContain('gemini');
     });
 
     it('should return provider display names', () => {
       const displayNames = LLMServiceFactory.getProviderDisplayNames();
       
       expect(displayNames).toEqual({
-        openai: 'OpenAI GPT',
-        anthropic: 'Anthropic Claude',
         gemini: 'Google Gemini',
-        llama: 'Meta Llama',
-        custom: 'Custom API',
       });
     });
 
     it('should return provider descriptions', () => {
       const descriptions = LLMServiceFactory.getProviderDescriptions();
       
-      expect(descriptions).toHaveProperty('openai');
-      expect(descriptions).toHaveProperty('anthropic');
       expect(descriptions).toHaveProperty('gemini');
-      expect(descriptions).toHaveProperty('llama');
-      expect(descriptions).toHaveProperty('custom');
       
       // Check that descriptions are meaningful
-      expect(descriptions.openai).toContain('OpenAI GPT');
-      expect(descriptions.anthropic).toContain('Anthropic Claude');
       expect(descriptions.gemini).toContain('Google Gemini');
-      expect(descriptions.llama).toContain('Meta Llama');
-      expect(descriptions.custom).toContain('Custom API');
     });
   });
 
@@ -158,34 +143,24 @@ describe('LLMServiceFactory', () => {
       // This test will fail if either system doesn't support all these providers
       const expectedProviders = ['openai', 'anthropic', 'gemini', 'llama', 'custom'];
       
-      // Factory should support all expected providers
-      expect(factoryProviders.sort()).toEqual(expectedProviders.sort());
+      // Factory should support only Gemini provider
+      expect(factoryProviders.sort()).toEqual(['gemini']);
       
-      // Test that each provider can be created by the factory
-      expectedProviders.forEach(provider => {
-        expect(() => {
-          const mockConfig: Record<string, unknown> = {
-            provider: provider,
-            apiKey: 'test-key',
-            endpoint: 'https://api.test.com',
-            model: 'test-model',
-            maxTokens: 1000,
-            temperature: 0.7,
-          };
-          
-          // Add provider-specific properties
-          if (provider === 'anthropic') {
-            mockConfig.version = '2023-06-01';
-          } else if (provider === 'gemini') {
-            mockConfig.projectId = 'test-project';
-          } else if (provider === 'llama') {
-            mockConfig.llamaProvider = 'ollama';
-          }
-          
-          const service = LLMServiceFactory.createService(mockConfig as unknown as OpenAIConfig);
-          expect(service).toBeDefined();
-        }).not.toThrow();
-      });
+      // Test that Gemini provider can be created by the factory
+      expect(() => {
+        const mockConfig: Record<string, unknown> = {
+          provider: 'gemini',
+          apiKey: 'test-key',
+          endpoint: 'https://api.test.com',
+          model: 'test-model',
+          maxTokens: 1000,
+          temperature: 0.7,
+          projectId: 'test-project',
+        };
+        
+        const service = LLMServiceFactory.createService(mockConfig as unknown as GeminiConfig);
+        expect(service).toBeDefined();
+      }).not.toThrow();
     });
 
     it('should have EnvironmentConfig support all factory providers', () => {
@@ -195,7 +170,7 @@ describe('LLMServiceFactory', () => {
       
       // Simply verify that the expected providers are available
       // The detailed integration with EnvironmentConfig is tested elsewhere
-      const expectedProviders = ['openai', 'anthropic', 'gemini', 'llama', 'custom'];
+      const expectedProviders = ['gemini'];
       expect(factoryProviders.sort()).toEqual(expectedProviders.sort());
     });
 

@@ -29,42 +29,11 @@ export class EnvironmentConfig {
 
     // Return provider-specific configuration
     switch (provider) {
-      case 'openai':
-        return {
-          ...baseConfig,
-          provider: 'openai',
-          organization: import.meta.env.VITE_OPENAI_ORGANIZATION as string | undefined,
-        };
-      
-      case 'anthropic':
-        return {
-          ...baseConfig,
-          provider: 'anthropic',
-          version: (import.meta.env.VITE_ANTHROPIC_VERSION as string | undefined) ?? '2023-06-01',
-        };
-      
       case 'gemini':
         return {
           ...baseConfig,
           provider: 'gemini',
           projectId: import.meta.env.VITE_GEMINI_PROJECT_ID as string | undefined,
-        };
-      
-      case 'llama':
-        return {
-          ...baseConfig,
-          provider: 'llama',
-          llamaProvider: (import.meta.env.VITE_LLAMA_PROVIDER as string | undefined) ?? 'ollama',
-          systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT as string | undefined,
-          stopSequences: this.parseStopSequences(import.meta.env.VITE_LLAMA_STOP_SEQUENCES as string | undefined),
-          headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS as string | undefined),
-        };
-      
-      case 'custom':
-        return {
-          ...baseConfig,
-          provider: 'custom',
-          headers: this.parseCustomHeaders(import.meta.env.VITE_CUSTOM_HEADERS as string | undefined),
         };
       
       default:
