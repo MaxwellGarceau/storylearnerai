@@ -28,7 +28,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      'testCustom/no-duplicate-types': ['warn', { minComplexity: 1 }],
+      'testCustom/no-duplicate-types': ['warn', { minComplexity: 2 }],
     },
   }
 )

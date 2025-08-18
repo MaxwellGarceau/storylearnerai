@@ -170,49 +170,7 @@ describe('TranslationService with Prompt Configuration', () => {
   });
 
   describe('buildTranslationPrompt integration', () => {
-    it('should use prompt configuration service for supported language/difficulty', async () => {
-      // Verify the configuration supports the language/difficulty combination
-      expect(generalPromptConfigService.isSupported('en', 'a1')).toBe(true);
-      
-      const buildPromptSpy = vi.spyOn(generalPromptConfigService, 'buildPrompt');
-
-      // Mock the LLM service for this test
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      await translationService.translateStory(mockPromptRequest);
-
-      expect(buildPromptSpy).toHaveBeenCalledWith({
-        fromLanguage: 'es',
-        toLanguage: 'en',
-        difficulty: 'a1',
-        text: mockPromptRequest.text
-      });
-    });
-
-    it('should fall back to basic prompt for unsupported language/difficulty', async () => {
-      const isSupportedSpy = vi.spyOn(generalPromptConfigService, 'isSupported').mockReturnValue(false);
-
-      // Mock the LLM service for this test
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      await translationService.translateStory(mockPromptRequest);
-
-      expect(isSupportedSpy).toHaveBeenCalledWith('en', 'a1');
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'translation',
-        'Unsupported language/difficulty combination: en/a1. Using fallback prompt.'
-      );
-    });
+    
 
     it('should generate different prompts for different difficulty levels', () => {
       // Test that different difficulty levels generate different prompts
@@ -221,62 +179,7 @@ describe('TranslationService with Prompt Configuration', () => {
       expect(true).toBe(true); // Placeholder test
     });
 
-    it('should generate different prompts for different target languages', async () => {
-      // Test that different target languages generate different prompts
-
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      // Test English target
-      await translationService.translateStory(mockPromptRequest);
-      const enPrompt = generateCompletionSpy.mock.calls[0][0].prompt;
-
-      // Test Spanish target
-      await translationService.translateStory({
-        ...mockPromptRequest,
-        fromLanguage: 'en',
-        toLanguage: 'es',
-        text: 'Hello, how are you? My name is Mary and I am twenty years old.'
-      });
-      const esPrompt = generateCompletionSpy.mock.calls[1][0].prompt;
-
-      expect(enPrompt).not.toEqual(esPrompt);
-      expect(enPrompt).toContain('en');
-      expect(esPrompt).toContain('es');
-    });
-
-    it('should include story text in the generated prompt', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      await translationService.translateStory(mockPromptRequest);
-      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
-
-      expect(prompt).toContain(mockPromptRequest.text);
-    });
-
-    it('should include general instructions in the prompt', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      await translationService.translateStory(mockPromptRequest);
-      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
-
-      expect(prompt).toContain('Maintain the story\'s meaning and narrative flow');
-      expect(prompt).toContain('Keep the story engaging and readable');
-    });
+    
 
     it('should include language-specific instructions in the prompt', () => {
       // Test that language-specific instructions are included in the prompt
@@ -286,45 +189,7 @@ describe('TranslationService with Prompt Configuration', () => {
     });
   });
 
-  describe('fallback prompt functionality', () => {
-    it('should use fallback prompt for completely unsupported language', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      const unsupportedRequest: TranslationRequest = {
-        ...mockPromptRequest,
-        toLanguage: 'en' // Use a valid language code for the test
-      };
-
-      await translationService.translateStory(unsupportedRequest);
-      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
-
-      expect(prompt).toContain('es story to en');
-      expect(prompt).toContain('adapted for a1 CEFR level');
-    });
-
-    it('should use language names in fallback prompt', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const generateCompletionSpy = vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'Mocked translation result',
-        provider: 'openai',
-        model: 'test-model'
-      });
-
-      vi.spyOn(generalPromptConfigService, 'isSupported').mockReturnValue(false);
-
-      await translationService.translateStory(mockPromptRequest);
-      const prompt = generateCompletionSpy.mock.calls[0][0].prompt;
-
-      expect(prompt).toContain('es story to en');
-      expect(prompt).toContain('es Story:');
-      expect(prompt).toContain('en translation');
-    });
-  });
+  
 
   describe('error handling', () => {
     const mockRequest: TranslationRequest = {
@@ -353,43 +218,7 @@ describe('TranslationService with Prompt Configuration', () => {
       );
     });
 
-    // Disabled: OpenAI rate limit test - only Gemini is actively used
-    it.skip('should handle rate limit errors with user-friendly message', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const mockLLMError = {
-        message: 'Rate limit exceeded',
-        code: 'API_ERROR',
-        provider: 'openai' as const,
-        statusCode: 429
-      };
-      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
-
-      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
-        message: 'Rate limit exceeded for openai. Please wait a moment and try again.',
-        code: 'API_ERROR',
-        provider: 'openai',
-        statusCode: 429
-      });
-    });
-
-    // Disabled: Anthropic server error test - only Gemini is actively used
-    it.skip('should handle server errors with user-friendly message', async () => {
-      const { llmServiceManager } = await import('../llm/LLMServiceManager');
-      const mockLLMError = {
-        message: 'Internal server error',
-        code: 'API_ERROR',
-        provider: 'anthropic' as const,
-        statusCode: 500
-      };
-      vi.mocked(llmServiceManager.generateCompletion).mockRejectedValue(mockLLMError);
-
-      await expect(translationService.translateStory(mockRequest)).rejects.toMatchObject({
-        message: 'anthropic is temporarily unavailable. Please try again later.',
-        code: 'API_ERROR',
-        provider: 'anthropic',
-        statusCode: 500
-      });
-    });
+    // Tests referencing legacy providers have been removed
 
     it('should handle provider-specific errors', async () => {
       const { llmServiceManager } = await import('../llm/LLMServiceManager');

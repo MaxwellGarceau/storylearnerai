@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { LLMServiceFactory } from '../LLMServiceFactory';
-import { OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../../../types/llm/providers';
+import { GeminiConfig } from '../../../types/llm/providers';
 
 // Mock environment variables for testing
 vi.mock('../../config/env', () => ({
@@ -38,39 +38,6 @@ describe('LLMServiceFactory', () => {
   });
 
   describe('Service Creation', () => {
-    // Disabled: OpenAI service tests - only Gemini is actively used
-    it.skip('should create OpenAI service', () => {
-      const config: OpenAIConfig = {
-        provider: 'openai',
-        apiKey: 'test-key',
-        endpoint: 'https://api.openai.com/v1',
-        model: 'gpt-4',
-        maxTokens: 1000,
-        temperature: 0.7,
-      };
-
-      const service = LLMServiceFactory.createService(config);
-      expect(service).toBeDefined();
-      expect(service.constructor.name).toBe('OpenAIService');
-    });
-
-    // Disabled: Anthropic service tests - only Gemini is actively used
-    it.skip('should create Anthropic service', () => {
-      const config: AnthropicConfig = {
-        provider: 'anthropic',
-        apiKey: 'test-key',
-        endpoint: 'https://api.anthropic.com/v1',
-        model: 'claude-3-haiku',
-        maxTokens: 1000,
-        temperature: 0.7,
-        version: '2023-06-01',
-      };
-
-      const service = LLMServiceFactory.createService(config);
-      expect(service).toBeDefined();
-      expect(service.constructor.name).toBe('AnthropicService');
-    });
-
     it('should create Gemini service', () => {
       const config: GeminiConfig = {
         provider: 'gemini',
@@ -87,48 +54,16 @@ describe('LLMServiceFactory', () => {
       expect(service.constructor.name).toBe('GeminiService');
     });
 
-    // Disabled: Llama service tests - only Gemini is actively used
-    it.skip('should create Llama service', () => {
-      const config: LlamaConfig = {
-        provider: 'llama',
-        apiKey: 'test-key',
-        endpoint: 'http://localhost:11434',
-        model: 'llama2',
-        maxTokens: 1000,
-        temperature: 0.7,
-        llamaProvider: 'ollama',
-      };
-
-      const service = LLMServiceFactory.createService(config);
-      expect(service).toBeDefined();
-      expect(service.constructor.name).toBe('LlamaService');
-    });
-
-    // Disabled: Custom service tests - only Gemini is actively used
-    it.skip('should create Custom service', () => {
-      const config: CustomConfig = {
-        provider: 'custom',
-        apiKey: 'test-key',
-        endpoint: 'https://api.custom.com/v1',
-        model: 'custom-model',
-        maxTokens: 1000,
-        temperature: 0.7,
-      };
-
-      const service = LLMServiceFactory.createService(config);
-      expect(service).toBeDefined();
-      expect(service.constructor.name).toBe('CustomService');
-    });
-
     it('should throw error for unsupported provider', () => {
       const config = {
-        provider: 'unsupported' as 'openai',
+        provider: 'unsupported',
         apiKey: 'test-key',
         endpoint: 'https://api.test.com',
         model: 'test-model',
         maxTokens: 1000,
         temperature: 0.7,
-      };
+        projectId: 'test-project',
+      } as unknown as GeminiConfig;
 
       expect(() => LLMServiceFactory.createService(config)).toThrow('Unsupported LLM provider: unsupported');
     });
@@ -138,11 +73,7 @@ describe('LLMServiceFactory', () => {
     it('should support the same providers as EnvironmentConfig', () => {
       // Get providers supported by the factory
       const factoryProviders = LLMServiceFactory.getAvailableProviders();
-      
-      // Define expected providers that should be supported in both factory and config
-      // This test will fail if either system doesn't support all these providers
-      const expectedProviders = ['openai', 'anthropic', 'gemini', 'llama', 'custom'];
-      
+
       // Factory should support only Gemini provider
       expect(factoryProviders.sort()).toEqual(['gemini']);
       
