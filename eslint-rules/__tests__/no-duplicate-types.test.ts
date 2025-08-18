@@ -10,25 +10,31 @@ async function runLint(code: string) {
   const parser = (tsParser as any).default ?? tsParser
 
   const eslint = new ESLint({
-    overrideConfig: {
-      languageOptions: {
-        parser,
-        parserOptions: {
-          ecmaVersion: 2020,
-          sourceType: 'module',
-        },
-      },
-      plugins: {
-        testCustom: {
-          rules: {
-            'no-duplicate-types': noDuplicateTypesRule as any,
+    // Do not load repo config
+    overrideConfigFile: true,
+    // Provide a flat config array with files matcher
+    overrideConfig: [
+      {
+        files: ['**/*.ts', 'test.ts'],
+        languageOptions: {
+          parser,
+          parserOptions: {
+            ecmaVersion: 2020,
+            sourceType: 'module',
           },
         },
+        plugins: {
+          testCustom: {
+            rules: {
+              'no-duplicate-types': noDuplicateTypesRule as any,
+            },
+          },
+        },
+        rules: {
+          'testCustom/no-duplicate-types': ['warn', { minComplexity: 2 }],
+        },
       },
-      rules: {
-        'testCustom/no-duplicate-types': ['warn', { minComplexity: 2 }],
-      },
-    },
+    ],
   })
 
   // Provide a .ts filename so TS parser engages

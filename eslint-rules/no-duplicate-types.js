@@ -201,38 +201,12 @@ export default {
     }
 
     return {
-      // Process variable declarations that have type annotations
-      VariableDeclarator(node) {
-        if (node.id && node.id.typeAnnotation) {
-          const typeString = context.getSourceCode().getText(node.id.typeAnnotation.typeAnnotation);
-          visitTypeString(node.id.typeAnnotation, typeString);
-        }
-      },
-
       // Process any type annotation (covers unions, intersections, function types, object literals, etc.)
       TSTypeAnnotation(node) {
         if (node.typeAnnotation) {
           const typeString = context.getSourceCode().getText(node.typeAnnotation);
           visitTypeString(node, typeString);
         }
-      },
-
-      // Keep specific handlers for completeness (in case parser doesn't attach annotations in some cases)
-      TSUnionType(node) {
-        const typeString = context.getSourceCode().getText(node);
-        visitTypeString(node, typeString);
-      },
-      TSIntersectionType(node) {
-        const typeString = context.getSourceCode().getText(node);
-        visitTypeString(node, typeString);
-      },
-      TSFunctionType(node) {
-        const typeString = context.getSourceCode().getText(node);
-        visitTypeString(node, typeString);
-      },
-      TSTypeLiteral(node) {
-        const typeString = context.getSourceCode().getText(node);
-        visitTypeString(node, typeString);
       },
     };
   },
