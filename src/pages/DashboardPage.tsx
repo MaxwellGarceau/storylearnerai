@@ -16,6 +16,7 @@ import {
   Loader2
 } from 'lucide-react'
 import type { DatabaseUser as User } from '../types/database'
+import type { NullableString } from '../types/common'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useSupabase()
@@ -23,7 +24,7 @@ export const DashboardPage: React.FC = () => {
   const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<NullableString>(null)
   const [profile, setProfile] = useState<User | null>(null)
 
   const loadDashboardData = useCallback(async () => {

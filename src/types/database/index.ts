@@ -1,4 +1,5 @@
 import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
+import type { NullableString } from '../common';
 
 // Re-export all database types
 export * from './user';
@@ -14,21 +15,21 @@ export interface Database {
           id: number
           code: LanguageCode
           name: string
-          native_name: string | null
+          native_name: NullableString
           created_at: string
         }
         Insert: {
           id?: number
           code: LanguageCode
           name: string
-          native_name?: string | null
+          native_name?: NullableString
           created_at?: string
         }
         Update: {
           id?: number
           code?: LanguageCode
           name?: string
-          native_name?: string | null
+          native_name?: NullableString
           created_at?: string
         }
       }
@@ -37,21 +38,21 @@ export interface Database {
           id: number
           code: DifficultyLevel
           name: string
-          description: string | null
+          description: NullableString
           created_at: string
         }
         Insert: {
           id?: number
           code: DifficultyLevel
           name: string
-          description?: string | null
+          description?: NullableString
           created_at?: string
         }
         Update: {
           id?: number
           code?: DifficultyLevel
           name?: string
-          description?: string | null
+          description?: NullableString
           created_at?: string
         }
       }
@@ -59,27 +60,27 @@ export interface Database {
       users: {
         Row: {
           id: string
-          username: string | null
-          display_name: string | null
-          avatar_url: string | null
+          username: NullableString
+          display_name: NullableString
+          avatar_url: NullableString
           preferred_language: LanguageCode
           created_at: string
           updated_at: string
         }
         Insert: {
           id: string
-          username?: string | null
-          display_name?: string | null
-          avatar_url?: string | null
+          username?: NullableString
+          display_name?: NullableString
+          avatar_url?: NullableString
           preferred_language?: LanguageCode
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          username?: string | null
-          display_name?: string | null
-          avatar_url?: string | null
+          username?: NullableString
+          display_name?: NullableString
+          avatar_url?: NullableString
           preferred_language?: LanguageCode
           created_at?: string
           updated_at?: string
@@ -93,7 +94,7 @@ export interface Database {
           content: string
           language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id: string | null // Foreign key reference to users.id
+          user_id: NullableString // Foreign key reference to users.id
           created_at: string
           updated_at: string
         }
@@ -103,7 +104,7 @@ export interface Database {
           content: string
           language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id?: string | null // Foreign key reference to users.id
+          user_id?: NullableString // Foreign key reference to users.id
           created_at?: string
           updated_at?: string
         }
@@ -113,7 +114,7 @@ export interface Database {
           content?: string
           language?: LanguageCode
           difficulty_level?: DifficultyLevel
-          user_id?: string | null // Foreign key reference to users.id
+          user_id?: NullableString // Foreign key reference to users.id
           created_at?: string
           updated_at?: string
         }
@@ -154,8 +155,8 @@ export interface Database {
           original_language_id: number // Foreign key reference to languages.id
           translated_language_id: number // Foreign key reference to languages.id
           difficulty_level_id: number
-          title: string | null
-          notes: string | null
+          title: NullableString
+          notes: NullableString
           created_at: string
           updated_at: string
         }
@@ -167,8 +168,8 @@ export interface Database {
           original_language_id: number // Foreign key reference to languages.id
           translated_language_id: number // Foreign key reference to languages.id
           difficulty_level_id: number
-          title?: string | null
-          notes?: string | null
+          title?: NullableString
+          notes?: NullableString
           created_at?: string
           updated_at?: string
         }
@@ -180,8 +181,8 @@ export interface Database {
           original_language_id?: number // Foreign key reference to languages.id
           translated_language_id?: number // Foreign key reference to languages.id
           difficulty_level_id?: number
-          title?: string | null
-          notes?: string | null
+          title?: NullableString
+          notes?: NullableString
           created_at?: string
           updated_at?: string
         }

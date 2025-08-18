@@ -1,11 +1,12 @@
 import { LanguageCode } from "../llm/prompts";
+import type { NullableString } from "../common";
 
 // User management types
 export interface DatabaseUser {
   id: string;
-  username: string | null;
-  display_name: string | null;
-  avatar_url: string | null;
+  username: NullableString;
+  display_name: NullableString;
+  avatar_url: NullableString;
   preferred_language: LanguageCode | null;
   created_at: string;
   updated_at: string;
@@ -13,9 +14,9 @@ export interface DatabaseUser {
 
 export interface DatabaseUserInsert {
   id: string;
-  username?: string | null;
-  display_name?: string | null;
-  avatar_url?: string | null;
+  username?: NullableString;
+  display_name?: NullableString;
+  avatar_url?: NullableString;
   preferred_language?: LanguageCode | null;
   created_at: string;
   updated_at: string;
@@ -23,9 +24,9 @@ export interface DatabaseUserInsert {
 
 export interface DatabaseUserUpdate {
   id?: string;
-  username?: string | null;
-  display_name?: string | null;
-  avatar_url?: string | null;
+  username?: NullableString;
+  display_name?: NullableString;
+  avatar_url?: NullableString;
   preferred_language?: LanguageCode | null;
   created_at?: string;
   updated_at?: string;

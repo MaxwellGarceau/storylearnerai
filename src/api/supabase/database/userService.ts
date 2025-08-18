@@ -2,6 +2,7 @@ import { supabase } from '../client'
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { DatabaseUserInsert } from '../../../types/database/user';
 import type { LanguageCode } from '../../../types/llm/prompts'
+import type { NullableString } from '../../../types/common'
 import { 
   validateUsername, 
   validateDisplayName
@@ -9,16 +10,16 @@ import {
 
 export interface CreateUserData {
   id: string
-  username?: string | null
-  display_name?: string | null
-  avatar_url?: string | null
+  username?: NullableString
+  display_name?: NullableString
+  avatar_url?: NullableString
   preferred_language?: string
 }
 
 export interface UpdateUserData {
-  username?: string | null
-  display_name?: string | null
-  avatar_url?: string | null
+  username?: NullableString
+  display_name?: NullableString
+  avatar_url?: NullableString
   preferred_language?: string
 }
 
