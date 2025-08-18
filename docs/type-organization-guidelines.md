@@ -1,242 +1,245 @@
 # Type Organization Guidelines
 
-This document outlines the guidelines for organizing TypeScript types in the Story Learner AI application to maintain consistency and improve maintainability.
-
 ## Overview
 
-Types should be organized in dedicated type files when they are used by multiple components or services. This promotes reusability, reduces duplication, and makes the codebase easier to maintain.
+This document outlines the guidelines for organizing TypeScript types in the StoryLearnerAI project to prevent duplicate type definitions and maintain a clean, maintainable codebase.
 
-## Type File Structure
+## Custom ESLint Rule: `no-duplicate-types`
 
-### Dedicated Type Files
-- **`src/lib/types/`** - Core application types
-  - `database.ts` - Database schema types
-  - `llm.ts` - LLM service types
-  - `prompt.ts` - Prompt configuration types
-  - `walkthrough.ts` - Walkthrough system types
-- **`src/types/`** - Feature-specific types
-  - `savedStories.ts` - Saved stories feature types
+We've implemented a custom ESLint rule that prevents duplicate type definitions across the codebase. This rule:
 
-### Component-Specific Types
-Types that are only used within a single component can remain in the component file, but should follow naming conventions.
+- Detects when the same type is defined in multiple places
+- Suggests creating reusable type aliases
+- Ignores simple types (string, number, boolean, etc.)
+- Only triggers for types with complexity >= 2
 
-## When to Move Types to Dedicated Files
+## Common Duplicate Types Found
 
-### ✅ **Move to dedicated type files when:**
-- Type is used by 2+ files
-- Type represents a core domain concept
-- Type is part of a public API
-- Type is used across different features
-- Type is complex (multiple properties, nested objects)
+### 1. Nullable String Types
+```typescript
+// ❌ Duplicate across many files
+type SomeField = string | null;
 
-### ❌ **Keep in component file when:**
-- Type is only used within one component
-- Type is a simple prop interface for that component
-- Type is internal/private to the component
-- Type is a temporary/local type
-
-## Naming Conventions
-
-### Type Files
-- Use descriptive names: `database.ts`, `llm.ts`, `prompt.ts`
-- Group related types together
-- Use kebab-case for file names
-
-### Type Names
-- **Interfaces**: PascalCase (e.g., `UserProfile`, `TranslationResponse`)
-- **Type Aliases**: PascalCase (e.g., `LanguageCode`, `DifficultyLevel`)
-- **Internal Types**: Prefix with `Internal`, `Private`, or `Local` (e.g., `InternalState`, `PrivateHelper`)
-
-## ESLint Rules
-
-The following ESLint rules help enforce type organization:
-
-### Naming Conventions
-```javascript
-'@typescript-eslint/naming-convention': [
-  'warn',
-  {
-    selector: 'interface',
-    format: ['PascalCase'],
-    custom: {
-      regex: '^[A-Z][a-zA-Z0-9]*$',
-      match: true
-    }
-  },
-  {
-    selector: 'typeAlias',
-    format: ['PascalCase'],
-    custom: {
-      regex: '^[A-Z][a-zA-Z0-9]*$',
-      match: true
-    }
-  }
-]
+// ✅ Create a reusable type
+export type NullableString = string | null;
 ```
 
-### Unused Variables
+### 2. Promise Return Types
+```typescript
+// ❌ Duplicate across services
+async function someFunction(): Promise<DatabaseUserInsert> { ... }
+
+// ✅ Create reusable types
+export type UserInsertPromise = Promise<DatabaseUserInsert>;
+export type UserInsertOrNullPromise = Promise<DatabaseUserInsert | null>;
+```
+
+### 3. Function Types
+```typescript
+// ❌ Duplicate callback types
+type Callback = () => void;
+type AuthCallback = (email: string, password: string) => Promise<boolean>;
+
+// ✅ Create reusable types
+export type VoidCallback = () => void;
+export type AuthFunction = (email: string, password: string) => Promise<boolean>;
+```
+
+### 4. Object Types
+```typescript
+// ❌ Duplicate validation result types
+type ValidationResult = {
+  isValid: boolean;
+  errors: string[];
+  sanitizedText: string;
+};
+
+// ✅ Create reusable type
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+  sanitizedText: string;
+}
+```
+
+## Type Organization Strategy
+
+### 1. Create Shared Type Files
+
+Create dedicated type files for common patterns:
+
+```typescript
+// src/types/common.ts
+export type NullableString = string | null;
+export type NullableNumber = number | null;
+export type NullableBoolean = boolean | null;
+
+export type PromiseResult<T> = Promise<T>;
+export type PromiseResultOrNull<T> = Promise<T | null>;
+
+export type VoidCallback = () => void;
+export type AsyncVoidCallback = () => Promise<void>;
+
+export type RecordString = Record<string, string>;
+export type RecordUnknown = Record<string, unknown>;
+```
+
+### 2. Service-Specific Type Files
+
+Create type files for each service:
+
+```typescript
+// src/types/database/common.ts
+export type DatabaseInsertResult<T> = Promise<T>;
+export type DatabaseSelectResult<T> = Promise<T | null>;
+export type DatabaseUpdateResult<T> = Promise<T>;
+
+export type SupabaseResponse<T> = {
+  data: T;
+  error: PostgrestError;
+};
+```
+
+### 3. Component-Specific Type Files
+
+Create type files for components:
+
+```typescript
+// src/types/components/auth.ts
+export type AuthCallback = () => void;
+export type AuthSuccessCallback = () => void;
+export type AuthErrorCallback = (error: string) => void;
+```
+
+## Implementation Steps
+
+### Step 1: Create Common Types
+
+1. Create `src/types/common.ts` with frequently used types
+2. Create `src/types/database/common.ts` for database-related types
+3. Create `src/types/components/common.ts` for component-related types
+
+### Step 2: Update Existing Code
+
+Replace duplicate types with imports:
+
+```typescript
+// Before
+function someFunction(): Promise<DatabaseUserInsert> { ... }
+
+// After
+import type { DatabaseInsertResult } from '@/types/database/common';
+import type { DatabaseUserInsert } from '@/types/database/user';
+
+function someFunction(): DatabaseInsertResult<DatabaseUserInsert> { ... }
+```
+
+### Step 3: Update ESLint Configuration
+
+Add new types to the ignore list as needed:
+
 ```javascript
-'@typescript-eslint/no-unused-vars': ['error', { 
-  argsIgnorePattern: '^_',
-  varsIgnorePattern: '^_',
+// eslint.config.js
+'custom/no-duplicate-types': ['warn', {
+  ignoreTypes: [
+    'string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined',
+    'LanguageCode', 'DifficultyLevel', 'NullableString', 'PromiseResult', 'VoidCallback'
+  ],
+  minComplexity: 2
 }]
 ```
 
-## Examples
+## Best Practices
 
-### ✅ **Good: Types in dedicated files**
+### 1. Naming Conventions
 
-```typescript
-// src/lib/types/database.ts
-export interface DatabaseUser {
-  id: string;
-  username: string;
-  email: string;
-}
+- Use PascalCase for type names
+- Use descriptive names that indicate the purpose
+- Add suffixes like `Type`, `Result`, `Callback`, `Promise` when appropriate
 
-export type UserRole = 'admin' | 'user' | 'guest';
-```
+### 2. File Organization
 
-```typescript
-// src/components/UserProfile.tsx
-import type { DatabaseUser, UserRole } from '@/lib/types/database';
+- Group related types in the same file
+- Use barrel exports (`index.ts`) for easy importing
+- Keep types close to where they're used when they're specific to a feature
 
-interface UserProfileProps {
-  user: DatabaseUser;
-  role: UserRole;
-}
-```
+### 3. Type Reusability
 
-### ❌ **Bad: Types scattered across components**
+- Create types that can be reused across multiple files
+- Use generics for flexible, reusable types
+- Avoid creating types that are only used once
 
-```typescript
-// src/components/UserProfile.tsx
-interface DatabaseUser {
-  id: string;
-  username: string;
-  email: string;
-}
+### 4. Documentation
 
-interface UserProfileProps {
-  user: DatabaseUser;
-}
-```
-
-```typescript
-// src/components/UserList.tsx
-interface DatabaseUser {  // Duplicate definition!
-  id: string;
-  username: string;
-  email: string;
-}
-```
-
-### ✅ **Good: Component-specific types**
-
-```typescript
-// src/components/Button.tsx
-interface ButtonProps {
-  variant: 'primary' | 'secondary';
-  size: 'sm' | 'md' | 'lg';
-  children: React.ReactNode;
-  onClick?: () => void;
-}
-
-// This is fine because it's only used in this component
-```
+- Document complex types with JSDoc comments
+- Explain the purpose and usage of each type
+- Provide examples when the type usage isn't obvious
 
 ## Migration Strategy
 
-### Step 1: Identify Shared Types
-Look for types that appear in multiple files or represent core concepts.
+### Phase 1: Identify and Group
+1. Run the ESLint rule to identify all duplicates
+2. Group similar types together
+3. Create a plan for consolidation
 
-### Step 2: Create Type Files
-Create appropriate type files in `src/lib/types/` or `src/types/`.
+### Phase 2: Create Shared Types
+1. Create common type files
+2. Define the most frequently used types
+3. Update ESLint configuration
 
-### Step 3: Move Types
-Move the types to the appropriate file and export them.
+### Phase 3: Gradual Migration
+1. Update one file at a time
+2. Test after each change
+3. Update imports throughout the codebase
 
-### Step 4: Update Imports
-Update all files that use these types to import from the new location.
+### Phase 4: Validation
+1. Run ESLint to ensure no new duplicates
+2. Update documentation
+3. Train team on new conventions
 
-### Step 5: Remove Duplicates
-Remove duplicate type definitions from component files.
+## Examples
 
-## Tools and Scripts
-
-### Manual Review
-Regularly review your codebase for:
-- Duplicate type definitions
-- Types that could be shared
-- Types that belong in dedicated files
-
-### ESLint Integration
-The ESLint configuration will warn about:
-- Inconsistent naming conventions
-- Unused variables
-- Potential type organization issues
-
-## Best Practices
-
-1. **Start with dedicated files**: When creating new features, start by defining types in dedicated files
-2. **Group related types**: Keep related types together in the same file
-3. **Use descriptive names**: Make type names self-documenting
-4. **Export everything**: Always export types that might be used elsewhere
-5. **Document complex types**: Add JSDoc comments for complex types
-6. **Review regularly**: Periodically review type organization
-
-## Common Patterns
-
-### Database Types
+### Before (Duplicate Types)
 ```typescript
-// src/lib/types/database.ts
-export interface DatabaseUser {
-  id: string;
-  username: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-}
+// file1.ts
+function getUser(): Promise<DatabaseUserInsert | null> { ... }
 
-export type DatabaseUserInsert = Omit<DatabaseUser, 'id' | 'created_at' | 'updated_at'>;
-export type DatabaseUserUpdate = Partial<DatabaseUserInsert>;
+// file2.ts
+function createUser(): Promise<DatabaseUserInsert | null> { ... }
+
+// file3.ts
+function updateUser(): Promise<DatabaseUserInsert | null> { ... }
 ```
 
-### API Response Types
+### After (Reusable Types)
 ```typescript
-// src/lib/types/api.ts
-export interface ApiResponse<T> {
-  data: T;
-  status: 'success' | 'error';
-  message?: string;
-}
+// types/database/common.ts
+export type UserResult = Promise<DatabaseUserInsert | null>;
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-}
+// file1.ts
+import type { UserResult } from '@/types/database/common';
+function getUser(): UserResult { ... }
+
+// file2.ts
+import type { UserResult } from '@/types/database/common';
+function createUser(): UserResult { ... }
+
+// file3.ts
+import type { UserResult } from '@/types/database/common';
+function updateUser(): UserResult { ... }
 ```
 
-### Component Props
-```typescript
-// src/lib/types/components.ts
-export interface BaseComponentProps {
-  className?: string;
-  id?: string;
-  'data-testid'?: string;
-}
+## Benefits
 
-export interface ButtonProps extends BaseComponentProps {
-  variant: 'primary' | 'secondary' | 'outline';
-  size: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  children: React.ReactNode;
-}
-```
+1. **Maintainability**: Changes to types only need to be made in one place
+2. **Consistency**: Ensures the same type is used everywhere
+3. **Readability**: Clear, descriptive type names improve code understanding
+4. **Refactoring**: Easier to refactor when types are centralized
+5. **Type Safety**: Reduces the chance of type mismatches
 
-## Conclusion
+## Monitoring
 
-Following these guidelines will help maintain a clean, organized, and maintainable type system. The key is to think about reusability and organization from the start, and to regularly review and refactor as the codebase grows. 
+- Run `npm run lint` regularly to check for new duplicates
+- Review PRs for type organization
+- Update this document as new patterns emerge
+- Regular team reviews of type organization 

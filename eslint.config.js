@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
+import noDuplicateTypes from './eslint-rules/no-duplicate-types.js'
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -24,6 +25,11 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'custom': {
+        rules: {
+          'no-duplicate-types': noDuplicateTypes,
+        },
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -114,7 +120,36 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
-      '@typescript-eslint/no-unsafe-return': 'warn'
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      // Custom rule to prevent duplicate type definitions
+      'custom/no-duplicate-types': ['warn', {
+        ignoreTypes: [
+          'string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined',
+          'LanguageCode', 'DifficultyLevel',
+          // Common types
+          'NullableString', 'NullableNumber', 'NullableBoolean',
+          'PromiseResult', 'PromiseResultOrNull', 'PromiseVoid',
+          'VoidCallback', 'AsyncVoidCallback',
+          'RecordString', 'RecordUnknown',
+          'TextAreaChangeEvent', 'InputChangeEvent',
+          'ValidationResult',
+          'AuthFunction', 'AuthCallback', 'AuthSuccessCallback', 'AuthErrorCallback',
+          'DatabaseResponse', 'LanguageFilter', 'DifficultyFilter',
+          // Additional common types
+          'OptionalString', 'HTMLElementOrNull', 'ViMockFunction', 'AuthErrorOrString',
+          'WalkthroughStateCallback', 'WalkthroughConfigOrNull', 'TranslationResponsePromise',
+          'PromptInstructionsOrNull', 'RecordUnknownOrUndefined', 'LlamaMessage', 'LlamaMessageArray',
+          'SaveFieldType', 'SupabaseEventCallback', 'SupabaseEventCallbackOrUndefined',
+          // Database types
+          'DatabaseInsertResult', 'DatabaseSelectResult', 'DatabaseUpdateResult', 'DatabaseDeleteResult',
+          'SupabaseResponse', 'DatabaseId', 'DatabaseTimestamp', 'DatabaseNullableString', 'DatabaseNullableNumber',
+          'DatabaseOperation', 'DatabaseOperationOrNull',
+          'UserInsertResult', 'UserSelectResult', 'UserUpdateResult',
+          'TranslationInsertResult', 'TranslationSelectResult', 'TranslationUpdateResult',
+          'SavedTranslationResult'
+        ],
+        minComplexity: 2
+      }]
     },
   },
   // Exclude ConsoleWrapper and test files from console restrictions
