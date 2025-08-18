@@ -4,6 +4,8 @@
  */
 
 import type { PostgrestError } from '@supabase/supabase-js';
+import type { DatabaseUserInsert } from './user';
+import type { DatabaseTranslationInsert, DatabaseSavedTranslationWithDetails } from './translation';
 
 // Database operation result types
 export type DatabaseInsertResult<T> = Promise<T>;
@@ -39,3 +41,10 @@ export type TranslationUpdateResult = Promise<unknown>;
 
 // Saved translation types
 export type SavedTranslationResult = Promise<unknown>;
+
+// Specific database promise types
+export type DatabaseUserInsertPromise = Promise<DatabaseUserInsert>;
+export type DatabaseUserInsertOrNullPromise = Promise<DatabaseUserInsert | null>;
+export type DatabaseTranslationInsertOrNullPromise = Promise<DatabaseTranslationInsert | null>;
+export type DatabaseTranslationInsertArrayPromise = Promise<DatabaseTranslationInsert[]>;
+export type DatabaseSavedTranslationWithDetailsPromise = Promise<DatabaseSavedTranslationWithDetails>;

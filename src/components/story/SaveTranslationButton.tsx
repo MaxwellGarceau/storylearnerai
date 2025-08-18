@@ -12,6 +12,7 @@ import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
 import type { DifficultyLevel } from '../../types/llm/prompts';
+import type { SaveFieldType, TextAreaChangeEvent } from '../../types/common';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
@@ -47,7 +48,7 @@ export default function SaveTranslationButton({
   const { getDifficultyLevelName } = useDifficultyLevels();
 
   // Validate and sanitize input fields
-  const validateAndSanitizeInput = (field: 'title' | 'notes', value: string) => {
+  const validateAndSanitizeInput = (field: SaveFieldType, value: string) => {
     const sanitizedValue = sanitizeText(value, { maxLength: field === 'title' ? 200 : 1000 });
     
     const validation = validateTextInput(sanitizedValue, {
@@ -73,7 +74,7 @@ export default function SaveTranslationButton({
   };
 
   // Handle input changes with validation
-  const handleInputChange = (field: 'title' | 'notes', value: string) => {
+  const handleInputChange = (field: SaveFieldType, value: string) => {
     if (field === 'title') {
       setTitle(value);
     } else {
@@ -219,7 +220,7 @@ export default function SaveTranslationButton({
                   label="Title (optional)"
                   placeholder="Enter a title for this translation..."
                   value={title}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('title', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => handleInputChange('title', e.target.value)}
                 />
                 {validationErrors.title && (
                   <p className="text-sm text-red-600">{validationErrors.title}</p>
@@ -233,7 +234,7 @@ export default function SaveTranslationButton({
                   label="Notes (optional)"
                   placeholder="Add any notes about this translation..."
                   value={notes}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('notes', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => handleInputChange('notes', e.target.value)}
                 />
                 {validationErrors.notes && (
                   <p className="text-sm text-red-600">{validationErrors.notes}</p>

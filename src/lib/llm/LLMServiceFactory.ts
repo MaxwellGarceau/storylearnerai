@@ -5,6 +5,7 @@ import { AnthropicService } from './providers/AnthropicService';
 import { GeminiService } from './providers/GeminiService';
 import { LlamaService } from './providers/LlamaService';
 import { CustomService } from './providers/CustomService';
+import type { RecordString } from '../../types/common';
 
 export class LLMServiceFactory {
   /**
@@ -42,7 +43,7 @@ export class LLMServiceFactory {
   /**
    * Get provider display names for UI
    */
-  static getProviderDisplayNames(): Record<string, string> {
+  static getProviderDisplayNames(): RecordString {
     return {
       openai: 'OpenAI GPT',
       anthropic: 'Anthropic Claude',
@@ -55,7 +56,7 @@ export class LLMServiceFactory {
   /**
    * Get provider descriptions for UI
    */
-  static getProviderDescriptions(): Record<string, string> {
+  static getProviderDescriptions(): RecordString {
     return {
       openai: 'OpenAI GPT models including GPT-4, GPT-3.5, and GPT-4o',
       anthropic: 'Anthropic Claude models including Claude-3 Haiku, Sonnet, and Opus',

@@ -12,3 +12,12 @@ export type VoidFunction = () => void;
 // Promise types
 export type BooleanPromise = Promise<boolean>;
 export type VoidPromise = Promise<void>;
+
+// React event types
+export type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>;
+
+// Record types
+export type RecordString = Record<string, string>;
+
+// Union types
+export type SaveFieldType = 'notes' | 'title';

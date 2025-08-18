@@ -1,4 +1,5 @@
 import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../../types/llm/providers';
+import type { RecordString } from '../../types/common';
 
 export abstract class LLMService {
   protected config: ProviderConfig;
@@ -46,7 +47,7 @@ export abstract class LLMService {
   /**
    * Build request headers for API calls
    */
-  protected buildHeaders(): Record<string, string> {
+  protected buildHeaders(): RecordString {
     return {
       'Content-Type': 'application/json',
       'User-Agent': 'StoryLearnerAI/1.0',

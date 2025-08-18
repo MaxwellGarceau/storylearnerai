@@ -109,7 +109,7 @@ export function useSupabase(): UseSupabaseReturn {
     }
   }, [])
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async (): VoidPromise => {
     try {
       setLoading(true)
       setError(null)
@@ -124,7 +124,7 @@ export function useSupabase(): UseSupabaseReturn {
     }
   }, [])
 
-  const resetPassword = useCallback(async (email: string): Promise<boolean> => {
+  const resetPassword = useCallback(async (email: string): BooleanPromise => {
     try {
       setLoading(true)
       setError(null)
