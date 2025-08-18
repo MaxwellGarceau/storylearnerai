@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { useSupabase } from '../hooks/useSupabase';
+import { useAuth } from '../hooks/useAuth';
 import { Button } from './ui/Button';
 import { 
   User, 
@@ -18,7 +18,7 @@ import { logger } from '../lib/logger';
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const { user, signOut } = useSupabase();
+  const { user, signOut } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 

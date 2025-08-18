@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { useSupabase } from '../useSupabase'
+import { useAuth } from '../useAuth'
 
 // Create mock functions
 const mockGetSession = vi.fn()
@@ -27,7 +27,7 @@ vi.mock('../../api/supabase/client', () => ({
 }))
 
 // Skip these tests due to complex mock conflicts with global MSW setup
-describe.skip('useSupabase', () => {
+describe.skip('useAuth', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Setup default mock returns
@@ -54,7 +54,7 @@ describe.skip('useSupabase', () => {
 
   describe('Initial State', () => {
     it('should initialize with default values', async () => {
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       expect(result.current.user).toBe(null)
       expect(result.current.loading).toBe(true)
@@ -90,7 +90,7 @@ describe.skip('useSupabase', () => {
         error: null,
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
@@ -104,7 +104,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'Session error' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
@@ -115,7 +115,7 @@ describe.skip('useSupabase', () => {
     it('should handle session exception', async () => {
       mockGetSession.mockRejectedValue(new Error('Network error'))
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
@@ -126,7 +126,7 @@ describe.skip('useSupabase', () => {
 
   describe('Auth State Changes', () => {
     it('should listen for auth state changes', () => {
-      renderHook(() => useSupabase())
+      renderHook(() => useAuth())
 
       expect(mockOnAuthStateChange).toHaveBeenCalled()
     })
@@ -149,7 +149,7 @@ describe.skip('useSupabase', () => {
         }
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       // Wait for initial loading to complete
       await waitFor(() => {
@@ -191,7 +191,7 @@ describe.skip('useSupabase', () => {
         }
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       // Wait for initial loading to complete
       await waitFor(() => {
@@ -226,7 +226,7 @@ describe.skip('useSupabase', () => {
 
   describe('signIn', () => {
     it('should sign in successfully', async () => {
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signIn('test@example.com', 'password')
@@ -244,7 +244,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'Invalid credentials' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signIn('test@example.com', 'password')
@@ -256,7 +256,7 @@ describe.skip('useSupabase', () => {
     it('should handle sign in exception', async () => {
       mockSignInWithPassword.mockRejectedValue(new Error('Network error'))
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signIn('test@example.com', 'password')
@@ -268,7 +268,7 @@ describe.skip('useSupabase', () => {
 
   describe('signUp', () => {
     it('should sign up successfully', async () => {
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signUp('test@example.com', 'password')
@@ -286,7 +286,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'Email already exists' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signUp('test@example.com', 'password')
@@ -298,7 +298,7 @@ describe.skip('useSupabase', () => {
     it('should handle sign up exception', async () => {
       mockSignUp.mockRejectedValue(new Error('Network error'))
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signUp('test@example.com', 'password')
@@ -310,7 +310,7 @@ describe.skip('useSupabase', () => {
 
   describe('signOut', () => {
     it('should sign out successfully', async () => {
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signOut()
@@ -325,7 +325,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'Sign out failed' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signOut()
@@ -337,7 +337,7 @@ describe.skip('useSupabase', () => {
     it('should handle sign out exception', async () => {
       mockSignOut.mockRejectedValue(new Error('Network error'))
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signOut()
@@ -349,7 +349,7 @@ describe.skip('useSupabase', () => {
 
   describe('resetPassword', () => {
     it('should reset password successfully', async () => {
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.resetPassword('test@example.com')
@@ -364,7 +364,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'User not found' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.resetPassword('test@example.com')
@@ -376,7 +376,7 @@ describe.skip('useSupabase', () => {
     it('should handle reset password exception', async () => {
       mockResetPasswordForEmail.mockRejectedValue(new Error('Network error'))
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.resetPassword('test@example.com')
@@ -393,7 +393,7 @@ describe.skip('useSupabase', () => {
         error: { message: 'Previous error' },
       })
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signIn('test@example.com', 'password')
@@ -414,7 +414,7 @@ describe.skip('useSupabase', () => {
     it('should handle non-Error exceptions', async () => {
       mockSignInWithPassword.mockRejectedValue('String error')
 
-      const { result } = renderHook(() => useSupabase())
+      const { result } = renderHook(() => useAuth())
 
       await act(async () => {
         await result.current.signIn('test@example.com', 'password')
@@ -426,7 +426,7 @@ describe.skip('useSupabase', () => {
 
   describe('Cleanup', () => {
     it('should unsubscribe from auth state changes on unmount', () => {
-      const { unmount } = renderHook(() => useSupabase())
+      const { unmount } = renderHook(() => useAuth())
 
       unmount()
 

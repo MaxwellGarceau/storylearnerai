@@ -3,7 +3,7 @@ import { render, screen, waitFor, act } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { DashboardPage } from '../DashboardPage'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import type { RenderResult } from '@testing-library/react'
 
@@ -30,8 +30,8 @@ vi.mock('../../hooks/useLanguages', () => ({
   })
 }))
 
-// Mock the useSupabase hook
-vi.mock('../../hooks/useSupabase')
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth')
 
 // Mock the UserService
 vi.mock('../../api/supabase/database/userProfileService', () => ({
@@ -40,7 +40,7 @@ vi.mock('../../api/supabase/database/userProfileService', () => ({
   }
 }))
 
-const mockUseSupabase = vi.mocked(useSupabase)
+const mockUseAuth = vi.mocked(useAuth)
 const mockUserService = vi.mocked(UserService)
 
 // Mock react-router-dom hooks
@@ -86,7 +86,7 @@ describe('DashboardPage Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { Loader2 } from 'lucide-react'
 
 interface ProtectedRouteProps {
@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading } = useSupabase()
+  const { user, loading } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {

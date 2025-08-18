@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { SignInForm } from '../components/auth/SignInForm'
 import { SignUpForm } from '../components/auth/SignUpForm'
 import { UserProfile } from '../components/auth/UserProfile'
-import { useSupabase } from '../hooks/useSupabase'
+import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/ui/Button'
 import { ArrowLeft } from 'lucide-react'
 import { logger } from '../lib/logger'
@@ -11,7 +11,7 @@ import { logger } from '../lib/logger'
 type AuthMode = 'signin' | 'signup' | 'profile'
 
 export const AuthPage: React.FC = () => {
-  const { user, loading } = useSupabase()
+  const { user, loading } = useAuth()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [mode, setMode] = useState<AuthMode>('signin')

@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSupabase } from '../hooks/useSupabase';
+import { useAuth } from '../hooks/useAuth';
 import SavedTranslationsList from '../components/story/SavedTranslationsList';
 
 export default function SavedTranslationsPage() {
-  const { user } = useSupabase();
+  const { user } = useAuth();
 
   // ProtectedRoute ensures user is not null, but TypeScript doesn't know this
   if (!user) return null;

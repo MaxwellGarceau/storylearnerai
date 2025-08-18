@@ -17,9 +17,9 @@ vi.mock('../../components/Layout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-// Mock the useSupabase hook
-vi.mock('../../hooks/useSupabase', () => ({
-  useSupabase: () => ({
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({
     user: null,
     signIn: vi.fn(),
     signUp: vi.fn(),

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button } from '../ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card'
 import Label from '../ui/Label'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { Alert } from '../ui/Alert'
 import { Loader2, Mail, Lock } from 'lucide-react'
 import { validateEmail } from '../../lib/utils/sanitization'
@@ -19,7 +19,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
   onSwitchToSignUp,
   onForgotPassword
 }) => {
-  const { signIn, loading, error } = useSupabase()
+  const { signIn, loading, error } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: ''

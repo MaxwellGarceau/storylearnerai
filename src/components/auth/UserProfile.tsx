@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import Label from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { useLanguages } from '../../hooks/useLanguages'
 import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
@@ -19,7 +19,7 @@ interface UserProfileProps {
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
-  const { user, signOut } = useSupabase()
+  const { user, signOut } = useAuth()
   const { languages, getLanguageName } = useLanguages()
   const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const [isEditing, setIsEditing] = useState(false)

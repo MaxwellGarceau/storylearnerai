@@ -9,7 +9,7 @@ import { cn } from '../../lib/utils';
 import { useViewport } from '../../hooks/useViewport';
 import { walkthroughService } from '../../lib/walkthroughService';
 import type { WalkthroughState } from '../../types/app/walkthrough';
-import { useSupabase } from '../../hooks/useSupabase';
+import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 
 interface WalkthroughProps {
@@ -18,7 +18,7 @@ interface WalkthroughProps {
 
 export const Walkthrough: React.FC<WalkthroughProps> = () => {
   // Ensure user state is loaded so skipIf logic in walkthrough configs is accurate
-  useSupabase();
+  useAuth();
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);

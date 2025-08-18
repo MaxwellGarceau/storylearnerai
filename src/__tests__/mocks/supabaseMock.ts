@@ -37,8 +37,8 @@ const mockSupabaseClient = {
   })),
 }
 
-// Mock useSupabase hook
-export const mockUseSupabase = vi.fn(() => ({
+// Mock useAuth hook
+export const mockUseAuth = vi.fn(() => ({
   signIn: vi.fn(),
   signUp: vi.fn(),
   signOut: vi.fn(),
@@ -190,11 +190,11 @@ const llamaHandlers = [
 // Setup MSW server
 export const server = setupServer(...supabaseHandlers, ...llamaHandlers)
 
-// Mock the useSupabase hook globally
+// Mock the useAuth hook globally
 export const setupSupabaseMocks = () => {
-  // Mock the useSupabase hook
-  vi.mock('../../hooks/useSupabase', () => ({
-    useSupabase: mockUseSupabase,
+  // Mock the useAuth hook
+  vi.mock('../../hooks/useAuth', () => ({
+    useAuth: mockUseAuth,
   }))
 
   // Mock the Supabase client

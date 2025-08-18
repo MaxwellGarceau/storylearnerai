@@ -13,8 +13,8 @@ vi.mock('../../../hooks/useSavedTranslations', () => ({
   }),
 }));
 
-vi.mock('../../../hooks/useSupabase', () => ({
-  useSupabase: () => ({
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
     user: { id: 'test-user-id' },
   }),
 }));

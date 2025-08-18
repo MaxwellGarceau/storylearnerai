@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSupabase } from './useSupabase';
+import { useAuth } from './useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
 import {
   DatabaseSavedTranslationWithDetails,
@@ -44,7 +44,7 @@ interface UseSavedTranslationsReturn {
 const ITEMS_PER_PAGE = 20;
 
 export function useSavedTranslations(): UseSavedTranslationsReturn {
-  const { user } = useSupabase();
+  const { user } = useAuth();
   const [savedTranslations, setSavedTranslations] = useState<DatabaseSavedTranslationWithDetails[]>([]);
   const [languages, setLanguages] = useState<DatabaseLanguage[]>([]);
   const [difficultyLevels, setDifficultyLevels] = useState<DatabaseDifficultyLevel[]>([]);

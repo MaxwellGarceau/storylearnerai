@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { useSupabase } from '../../hooks/useSupabase';
+import { useAuth } from '../../hooks/useAuth';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
@@ -42,7 +42,7 @@ export default function SaveTranslationButton({
   }>({});
   
   const { createSavedTranslation, isCreating } = useSavedTranslations();
-  const { user } = useSupabase();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { getLanguageCode } = useLanguages();
   const { getDifficultyLevelName } = useDifficultyLevels();

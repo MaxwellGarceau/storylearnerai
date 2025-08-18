@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js'
 import { getAuthErrorMessage, type AuthError } from '../lib/utils/authErrors'
 import type { BooleanPromise, VoidPromise } from '../types/common'
 
-interface UseSupabaseReturn {
+interface UseAuthReturn {
   user: User | null
   loading: boolean
   error: string | null
@@ -14,7 +14,7 @@ interface UseSupabaseReturn {
   resetPassword: (email: string) => BooleanPromise
 }
 
-export function useSupabase(): UseSupabaseReturn {
+export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
