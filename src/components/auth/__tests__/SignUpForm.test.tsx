@@ -131,7 +131,7 @@ describe('SignUpForm Component', () => {
   it('handles sign up error', () => {
     const errorMessage = 'Email already exists'
     
-    // Mock the error state from useSupabase
+    // Mock the error state from useAuth
     mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: mockSignUp,
@@ -157,7 +157,7 @@ describe('SignUpForm Component', () => {
   })
 
   it('disables form during loading', () => {
-    // Mock the loading state from useSupabase
+    // Mock the loading state from useAuth
     mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: mockSignUp,

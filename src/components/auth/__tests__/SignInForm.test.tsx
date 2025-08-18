@@ -79,7 +79,7 @@ describe('SignInForm Component', () => {
   it('handles sign in error', () => {
     const errorMessage = 'Invalid credentials'
     
-    // Mock the error state from useSupabase
+    // Mock the error state from useAuth
     mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
@@ -105,7 +105,7 @@ describe('SignInForm Component', () => {
   })
 
   it('disables form during loading', () => {
-    // Mock the loading state from useSupabase
+    // Mock the loading state from useAuth
     mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
