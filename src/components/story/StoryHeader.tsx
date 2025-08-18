@@ -3,11 +3,12 @@ import { TranslationResponse } from '../../lib/translationService';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import type { VoidFunction } from '../../types/common';
 
 interface StoryHeaderProps {
   translationData: TranslationResponse;
   showOriginal: boolean;
-  onToggleView: () => void;
+  onToggleView: VoidFunction;
 }
 
 const StoryHeader: React.FC<StoryHeaderProps> = ({

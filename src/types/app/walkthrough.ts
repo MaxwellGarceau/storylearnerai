@@ -1,3 +1,5 @@
+import type { VoidFunction } from '../common';
+
 export interface WalkthroughStep {
   id: string;
   title: string;
@@ -8,7 +10,7 @@ export interface WalkthroughStep {
   action?: 'click' | 'input' | 'scroll' | 'none';
   actionText?: string;
   skipIf?: () => boolean;
-  onComplete?: () => void;
+  onComplete?: VoidFunction;
 }
 
 export interface WalkthroughConfig {

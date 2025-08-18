@@ -3,6 +3,9 @@ import type { NullableString } from '../common';
 
 // Translation management types
 
+// Promise types for translation operations
+export type DatabaseTranslationInsertPromise = Promise<DatabaseTranslationInsert>;
+
 export interface DatabaseTranslationInsert {
   id?: string;
   story_id: string;

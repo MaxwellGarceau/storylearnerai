@@ -10,11 +10,12 @@ import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
 import type { DatabaseUserInsert } from '../../types/database/user'
 import type { LanguageCode } from '../../types/llm/prompts'
+import type { VoidFunction } from '../../types/common'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
 interface UserProfileProps {
-  onClose?: () => void
+  onClose?: VoidFunction
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {

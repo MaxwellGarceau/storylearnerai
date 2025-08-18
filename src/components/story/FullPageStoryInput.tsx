@@ -5,11 +5,12 @@ import { Settings, Check, X } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
+import type { VoidFunction } from '../../types/common';
 
 interface FullPageStoryInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: VoidFunction;
   isTranslating: boolean;
   placeholder?: string;
   formData: {

@@ -6,10 +6,11 @@ import { useSupabase } from '../../hooks/useSupabase'
 import { Alert } from '../ui/Alert'
 import { Loader2, Mail, Lock, User, Check, X } from 'lucide-react'
 import { validateEmail, validateUsername, validateDisplayName } from '../../lib/utils/sanitization'
+import type { VoidFunction } from '../../types/common'
 
 interface SignUpFormProps {
-  onSuccess?: () => void
-  onSwitchToSignIn?: () => void
+  onSuccess?: VoidFunction
+  onSwitchToSignIn?: VoidFunction
 }
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({

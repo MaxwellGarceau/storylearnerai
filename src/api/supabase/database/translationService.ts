@@ -1,5 +1,5 @@
 import { supabase } from '../client'
-import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database'
+import type { DatabaseTranslationInsert, DatabaseTranslationUpdate, DatabaseTranslationInsertPromise } from '../../../types/database/translation'
 import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
 
@@ -123,7 +123,7 @@ export class TranslationService {
   /**
    * Create a new translation with validation and sanitization
    */
-  static async createTranslation(data: CreateTranslationData): Promise<DatabaseTranslationInsert> {
+  static async createTranslation(data: CreateTranslationData): DatabaseTranslationInsertPromise {
     // Validate and sanitize input data
     const validation = TranslationService.validateCreateTranslationData(data);
     if (!validation.isValid) {
@@ -242,7 +242,7 @@ export class TranslationService {
   /**
    * Update a translation
    */
-  static async updateTranslation(id: string, data: UpdateTranslationData): Promise<DatabaseTranslationInsert> {
+  static async updateTranslation(id: string, data: UpdateTranslationData): DatabaseTranslationInsertPromise {
     // Validate and sanitize input data
     const validation = this.validateUpdateTranslationData(data);
     if (!validation.isValid) {

@@ -5,3 +5,10 @@
 
 // Nullable types
 export type NullableString = string | null;
+
+// Function types
+export type VoidFunction = () => void;
+
+// Promise types
+export type BooleanPromise = Promise<boolean>;
+export type VoidPromise = Promise<void>;

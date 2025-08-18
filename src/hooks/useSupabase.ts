@@ -2,15 +2,16 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { getAuthErrorMessage, type AuthError } from '../lib/utils/authErrors'
+import type { BooleanPromise, VoidPromise } from '../types/common'
 
 interface UseSupabaseReturn {
   user: User | null
   loading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<boolean>
-  signUp: (email: string, password: string) => Promise<boolean>
-  signOut: () => Promise<void>
-  resetPassword: (email: string) => Promise<boolean>
+  signIn: (email: string, password: string) => BooleanPromise
+  signUp: (email: string, password: string) => BooleanPromise
+  signOut: () => VoidPromise
+  resetPassword: (email: string) => BooleanPromise
 }
 
 export function useSupabase(): UseSupabaseReturn {
@@ -54,7 +55,7 @@ export function useSupabase(): UseSupabaseReturn {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = useCallback(async (email: string, password: string): Promise<boolean> => {
+  const signIn = useCallback(async (email: string, password: string): BooleanPromise => {
     try {
       setLoading(true)
       setError(null)
@@ -81,7 +82,7 @@ export function useSupabase(): UseSupabaseReturn {
     }
   }, [])
 
-  const signUp = useCallback(async (email: string, password: string): Promise<boolean> => {
+  const signUp = useCallback(async (email: string, password: string): BooleanPromise => {
     try {
       setLoading(true)
       setError(null)
