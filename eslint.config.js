@@ -6,14 +6,14 @@ import tseslint from 'typescript-eslint'
 import noDuplicateTypes from './eslint-rules/no-duplicate-types.js'
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'eslint-rules/**'] },
+  js.configs.recommended,
   {
-    extends: [
-      js.configs.recommended, 
-      ...tseslint.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked
-    ],
     files: ['**/*.{ts,tsx}'],
+    extends: [
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -23,6 +23,7 @@ export default tseslint.config(
       },
     },
     plugins: {
+      '@typescript-eslint': tseslint.plugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'custom': {
@@ -68,19 +69,7 @@ export default tseslint.config(
       }],
       // Encourage type exports from dedicated files
       '@typescript-eslint/prefer-namespace-keyword': 'off',
-      // Enforce consistent interface naming
-      '@typescript-eslint/naming-convention': [
-        'warn',
-        {
-          selector: 'interface',
-          format: ['PascalCase'],
-          custom: {
-            regex: '^[A-Z][a-zA-Z0-9]*$',
-            match: true
-          }
-        }
-      ],
-      // Encourage type organization through naming conventions
+      // Enforce consistent naming conventions for interfaces and type aliases
       '@typescript-eslint/naming-convention': [
         'warn',
         {
@@ -166,5 +155,12 @@ export default tseslint.config(
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/unbound-method': 'off'
     }
+  },
+  // Node.js environment for scripts and config files
+  {
+    files: ['**/*.js', 'scripts/**/*', '*.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
   }
 )
