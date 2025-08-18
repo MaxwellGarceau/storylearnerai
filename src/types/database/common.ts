@@ -28,14 +28,14 @@ export type DatabaseOperation<T> = Promise<T>;
 export type DatabaseOperationOrNull<T> = Promise<T | null>;
 
 // User-related database types
-export type UserInsertResult = Promise<any>;
-export type UserSelectResult = Promise<any | null>;
-export type UserUpdateResult = Promise<any>;
+export type UserInsertResult = Promise<unknown>;
+export type UserSelectResult = Promise<unknown>;
+export type UserUpdateResult = Promise<unknown>;
 
 // Translation-related database types
-export type TranslationInsertResult = Promise<any>;
-export type TranslationSelectResult = Promise<any | null>;
-export type TranslationUpdateResult = Promise<any>;
+export type TranslationInsertResult = Promise<unknown>;
+export type TranslationSelectResult = Promise<unknown>;
+export type TranslationUpdateResult = Promise<unknown>;
 
 // Saved translation types
-export type SavedTranslationResult = Promise<any>;
+export type SavedTranslationResult = Promise<unknown>;
