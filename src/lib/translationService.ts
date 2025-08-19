@@ -23,7 +23,7 @@ export interface TranslationResponse {
   model?: string;
 }
 
-export type TranslationResponsePromise = Promise<TranslationResponse>;
+type TranslationResponsePromise = Promise<TranslationResponse>;
 
 export interface TranslationError {
   message: string;
@@ -34,10 +34,6 @@ export interface TranslationError {
 }
 
 class TranslationService {
-  constructor() {
-    // Environment configuration is now handled by LLMServiceManager
-  }
-
   async translateStory(request: TranslationRequest): TranslationResponsePromise {
     try {
       const prompt = await this.buildTranslationPrompt(request);
