@@ -227,6 +227,8 @@ export default function SaveTranslationButton({
                   onChange={(e: TextAreaChangeEvent) => {
                     handleInputChange('title', e.target.value);
                   }}
+                  maxLength={255}
+                  showCharacterCount={true}
                 />
                 {validationErrors.title && (
                   <p className="text-sm text-red-600">{validationErrors.title}</p>
