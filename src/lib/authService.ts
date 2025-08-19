@@ -1,6 +1,6 @@
 import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
-import { getAuthErrorMessage, type AuthError } from './utils/authErrors'
+import { getAuthErrorMessage, type AuthError } from './utils/authErrorMessages'
 
 export interface AuthState {
   user: User | null
