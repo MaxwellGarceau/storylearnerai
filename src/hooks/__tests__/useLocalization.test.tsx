@@ -52,8 +52,8 @@ describe('useLocalization', () => {
 
     const supportedLanguages = result.current.getSupportedLocalizations();
     expect(supportedLanguages).toEqual([
-      { code: 'en', name: 'en', nativeName: 'en' },
-      { code: 'es', name: 'es', nativeName: 'es' }
+      { code: 'en', name: 'English', nativeName: 'English' },
+      { code: 'es', name: 'Spanish', nativeName: 'Español' }
     ]);
   });
 
@@ -63,8 +63,8 @@ describe('useLocalization', () => {
     const currentLanguage = result.current.getCurrentLocalization();
     expect(currentLanguage).toEqual({
       code: 'en',
-      name: 'en',
-      nativeName: 'en',
+      name: 'English',
+      nativeName: 'English',
     });
   });
 
@@ -88,7 +88,7 @@ describe('useLocalization', () => {
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
     const currentLanguage = result.current.getCurrentLocalization();
-    expect(currentLanguage).toEqual({ code: 'en', name: 'en', nativeName: 'en' }); // Should return first supported language
+    expect(currentLanguage).toEqual({ code: 'en', name: 'English', nativeName: 'English' }); // Should return first supported language
   });
 
   it('calls changeLanguage and stores preference in localStorage', async () => {

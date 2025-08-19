@@ -1,5 +1,5 @@
 import { supabase } from '../client'
-import type { DatabaseLanguage as Language, LanguageCode } from '../../../types'
+import type { DatabaseLanguage as Language, LanguageCode, EnglishLanguageName, NativeLanguageName } from '../../../types'
 import type { Database } from '../../../types/database'
 import { logger } from '../../../lib/logger'
 
@@ -17,7 +17,12 @@ export class LanguageService {
       throw new Error(`Failed to fetch languages: ${result.error.message}`);
     }
 
-    return (result.data as Database['public']['Tables']['languages']['Row'][]) || [];
+    // Cast the raw database types to our typed interface
+    return ((result.data as Database['public']['Tables']['languages']['Row'][]) || []).map(lang => ({
+      ...lang,
+      name: lang.name as EnglishLanguageName,
+      native_name: lang.native_name as NativeLanguageName
+    }));
   }
 
   /**
@@ -37,19 +42,28 @@ export class LanguageService {
       throw new Error(`Failed to fetch language: ${result.error.message}`);
     }
 
-    return result.data as Database['public']['Tables']['languages']['Row'] | null;
+    if (!result.data) {
+      return null;
+    }
+
+    // Cast the raw database type to our typed interface
+    return {
+      ...result.data,
+      name: result.data.name as EnglishLanguageName,
+      native_name: result.data.native_name as NativeLanguageName
+    };
   }
 
   /**
    * Get language name by code, with fallback to code if not found
    */
-  async getLanguageName(code: LanguageCode): Promise<string> {
+  async getLanguageName(code: LanguageCode): Promise<EnglishLanguageName> {
     try {
       const language = await this.getLanguageByCode(code);
-      return language?.name ?? code;
+      return language?.name ?? (code === 'en' ? 'English' : 'Spanish');
     } catch (error) {
       logger.warn('database', `Failed to fetch language name for code: ${code}`, { error });
-      return code; // Fallback to code if fetch fails
+      return code === 'en' ? 'English' : 'Spanish'; // Fallback to appropriate English name
     }
   }
 } 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
-import type { DatabaseLanguage, LanguageCode } from '../types'
+import type { DatabaseLanguage } from '../types/database'
+import type { LanguageCode, NativeLanguageName, EnglishLanguageName } from '../types/llm/prompts'
 import { logger } from '../lib/logger'
 
 export const useLanguages = () => {
@@ -10,7 +11,7 @@ export const useLanguages = () => {
 
   // Create a memoized map for quick lookups
   const languageMap = useMemo(() => {
-    const map = new Map<LanguageCode, string>()
+    const map = new Map<LanguageCode, EnglishLanguageName>()
     languages.forEach(lang => {
       map.set(lang.code, lang.name)
     })
@@ -19,21 +20,21 @@ export const useLanguages = () => {
 
   // Create a memoized map for native names
   const nativeLanguageMap = useMemo(() => {
-    const map = new Map<LanguageCode, string>()
+    const map = new Map<LanguageCode, NativeLanguageName>()
     languages.forEach(lang => {
-      map.set(lang.code, lang.native_name || lang.name)
+      map.set(lang.code, lang.native_name)
     })
     return map
   }, [languages])
 
   // Get language name with fallback
-  const getLanguageName = (code: LanguageCode): string => {
-    return languageMap.get(code) ?? code
+  const getLanguageName = (code: LanguageCode): EnglishLanguageName => {
+    return languageMap.get(code) ?? (code === 'en' ? 'English' : 'Spanish');
   }
 
   // Get native language name with fallback
-  const getNativeLanguageName = (code: LanguageCode): string => {
-    return nativeLanguageMap.get(code) ?? code
+  const getNativeLanguageName = (code: LanguageCode): NativeLanguageName => {
+    return nativeLanguageMap.get(code) ?? (code === 'en' ? 'English' : 'Español');
   }
 
   // Map language names to ISO codes

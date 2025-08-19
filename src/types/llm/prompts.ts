@@ -1,6 +1,9 @@
 // Types for the LLM prompt configuration system
 
 export type LanguageCode = 'en' | 'es';
+export type EnglishLanguageName = 'English' | 'Spanish';
+export type NativeLanguageName = 'English' | 'Español';
+
 export type NullableLanguageCode = LanguageCode | null;
 
 export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2';
