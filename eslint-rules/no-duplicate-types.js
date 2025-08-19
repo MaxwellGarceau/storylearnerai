@@ -39,7 +39,7 @@ export default {
 
   create(context) {
     const options = context.options[0] || {};
-    const ignoreTypes = new Set(options.ignoreTypes || ['string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined']);
+    const ignoreTypes = new Set(options.ignoreTypes || ['string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined', 'Record']);
     const minComplexity = options.minComplexity || 2;
     
     // Store all type definitions found in the codebase
