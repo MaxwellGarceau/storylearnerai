@@ -1,5 +1,4 @@
 // App-wide types
-export * from './app/savedStories';
 export * from './app/walkthrough';
 
 // Database types

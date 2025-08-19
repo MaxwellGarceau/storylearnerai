@@ -8,7 +8,7 @@ import savedStoriesData from '../../data/savedStories.json';
 import { useNavigate } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
-import type { SavedStory } from '../../types/app/savedStories';
+import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
 import { useViewport } from '../../hooks/useViewport';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
@@ -26,6 +26,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
   const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations();
+  
+  // Use DB type directly for sample stories
+  const sampleStories: DatabaseSavedTranslationWithDetails[] = savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
   
   // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {
@@ -46,8 +49,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   const [activeSection, setActiveSection] = useState<'stories' | 'info'>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const navigate = useNavigate();
-  const sampleStories: SavedStory[] = savedStoriesData.stories as SavedStory[];
-
+  
   // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
     try {
@@ -66,16 +68,16 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
     }
   }, [isMobile]);
 
-  const handleStoryClick = async (story: SavedStory) => {
-    setIsLoading(story.id);
+  const handleStoryClick = async (story: DatabaseSavedTranslationWithDetails) => {
+    setIsLoading(String(story.id));
     
     try {
       // Use the translation service to translate the story
       const response = await translationService.translate({
-        text: story.originalText,
-        fromLanguage: story.fromLanguage,
-        toLanguage: story.toLanguage,
-        difficulty: story.difficulty,
+        text: story.original_story,
+        fromLanguage: story.original_language.code,
+        toLanguage: story.translated_language.code,
+        difficulty: story.difficulty_level.code,
       });
 
       // Navigate to story page with the translated data
@@ -103,7 +105,13 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   };
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
-    return difficulty.toUpperCase();
+    switch (difficulty) {
+      case 'a1': return 'A1 (Beginner)';
+      case 'a2': return 'A2 (Elementary)';
+      case 'b1': return 'B1 (Intermediate)';
+      case 'b2': return 'B2 (Upper Intermediate)';
+      default: return 'Unknown';
+    }
   };
 
   return (
@@ -258,28 +266,28 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                       className={cn(
                         "cursor-pointer transition-all duration-200 hover:shadow-md",
                         "hover:border-primary/50 hover:bg-accent/50",
-                        isLoading === story.id && "opacity-50 pointer-events-none"
+                        isLoading === String(story.id) && "opacity-50 pointer-events-none"
                       )}
                       onClick={() => void handleStoryClick(story)}
                     >
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-base leading-tight">
-                            {story.title}
+                            {story.title ?? 'Untitled'}
                           </CardTitle>
                           <Badge 
                             variant="secondary" 
-                            className={cn("text-xs", getDifficultyColor(story.difficulty))}
+                            className={cn("text-xs", getDifficultyColor(story.difficulty_level.code))}
                           >
-                            {getDifficultyLabel(story.difficulty)}
+                            {getDifficultyLabel(story.difficulty_level.code)}
                           </Badge>
                         </div>
                       </CardHeader>
                       <CardContent className="pt-0">
                         <p className="text-sm text-muted-foreground line-clamp-2">
-                          {story.description}
+                          {story.notes ?? 'No description available.'}
                         </p>
-                        {isLoading === story.id && (
+                        {isLoading === String(story.id) && (
                           <div className="mt-2 text-xs text-primary">
                             Loading story...
                           </div>
