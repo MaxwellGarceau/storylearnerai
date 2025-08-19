@@ -26,7 +26,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   onChange,
   onSubmit,
   isTranslating,
-  placeholder = "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
+  placeholder,
   formData,
   onFormDataChange
 }) => {
@@ -105,7 +105,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
               data-testid="story-textarea"
               value={value}
               onChange={handleInputChange}
-              placeholder={placeholder}
+              placeholder={placeholder || t('storyInput.placeholder')}
               className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
               style={{
                 minHeight: 'calc(100vh - 300px)',
@@ -172,7 +172,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         {/* Footer info */}
         <div className="text-sm text-muted-foreground text-center">
           <p>
-            💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate
+            {t('storyInput.tip')}
           </p>
         </div>
       </div>

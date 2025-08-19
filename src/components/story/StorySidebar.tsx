@@ -13,6 +13,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { logger } from '../../lib/logger';
+import { useTranslation } from 'react-i18next';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -26,6 +27,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
   const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations();
+  const { t } = useTranslation();
   
   // Use DB type directly for sample stories
   const sampleStories: DatabaseSavedTranslationWithDetails[] = savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
@@ -124,10 +126,10 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             size="default"
             onClick={() => setIsOpen(true)}
             className="inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm"
-            aria-label="Open story library"
+            aria-label={t('storySidebar.openLibrary')}
           >
             <BookOpen className="w-4 h-4" />
-            <span className="hidden sm:inline">Story Library</span>
+            <span className="hidden sm:inline">{t('storySidebar.storyLibrary')}</span>
           </Button>
         </div>
       )}
@@ -150,14 +152,14 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold">Story Library</h2>
+                <h2 className="text-lg font-semibold">{t('storySidebar.storyLibrary')}</h2>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
                 className="h-8 w-8 p-0"
-                aria-label="Close story library"
+                aria-label={t('storySidebar.closeLibrary')}
               >
                 <X className="w-4 h-4" />
               </Button>

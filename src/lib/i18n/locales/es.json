@@ -233,6 +233,7 @@
     "targetDifficulty": "Dificultad Objetivo (CEFR)",
     "difficultyDescription": "La historia se adaptará a este nivel de competencia en {language}.",
     "done": "Listo",
+    "tip": "💡 Consejo: Puedes pegar historias largas, artículos o cualquier texto en español que quieras traducir",
     "validation": {
       "invalidInput": "Entrada inválida detectada",
       "fixInput": "Por favor corrige la entrada antes de traducir"

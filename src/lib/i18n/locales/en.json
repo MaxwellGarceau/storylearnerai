@@ -233,6 +233,7 @@
     "targetDifficulty": "Target Difficulty (CEFR)",
     "difficultyDescription": "The story will be adapted to this {language} proficiency level.",
     "done": "Done",
+    "tip": "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
     "validation": {
       "invalidInput": "Invalid input detected",
       "fixInput": "Please fix the input before translating"

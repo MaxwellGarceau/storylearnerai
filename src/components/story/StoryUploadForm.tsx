@@ -5,6 +5,7 @@ import TextArea from '../ui/TextArea';
 import Label from '../ui/Label';
 import { useLanguages } from '../../hooks/useLanguages';
 import { StoryFormData } from '../types/story';
+import { useTranslation } from 'react-i18next';
 
 interface StoryUploadFormProps {
   onSubmitStory: (storyData: { story: string; language: string; difficulty: string }) => void;
@@ -12,6 +13,7 @@ interface StoryUploadFormProps {
 
 const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const { getLanguageName } = useLanguages();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
     language: 'en', // Target language (always English for now)
@@ -53,7 +55,7 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
         name="storyUpload-story"
         value={formData.story}
         onChange={handleInputChange}
-        placeholder="Ingresa tu historia en español aquí... (Enter your Spanish story here...)"
+        placeholder={t('storyInput.placeholder')}
         required
         label={`${getLanguageName('es')} Story`}
         helperText={`Write or paste the ${getLanguageName('es')} story text you wish to translate to ${getLanguageName('en')}.`}
