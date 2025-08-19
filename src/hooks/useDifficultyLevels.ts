@@ -2,11 +2,13 @@ import { useState, useEffect, useMemo } from 'react'
 import { DifficultyLevelService } from '../api/supabase/database/difficultyLevelService'
 import type { DatabaseDifficultyLevel, DifficultyLevel, DifficultyLevelDisplay } from '../types'
 import { logger } from '../lib/logger'
+import { useTranslation } from 'react-i18next'
 
 export const useDifficultyLevels = () => {
   const [difficultyLevels, setDifficultyLevels] = useState<DatabaseDifficultyLevel[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { t } = useTranslation()
 
   // Create a memoized map for quick lookups
   const difficultyMap = useMemo(() => {
@@ -17,20 +19,20 @@ export const useDifficultyLevels = () => {
     return map
   }, [difficultyLevels])
 
-  // Create a memoized map for display names
+  // Create a memoized map for display names using translations
   const difficultyDisplayMap = useMemo(() => {
     const map = new Map<DifficultyLevel, DifficultyLevelDisplay>()
     const displayMap: Record<DifficultyLevel, DifficultyLevelDisplay> = {
-      'a1': 'A1 (Beginner)',
-      'a2': 'A2 (Elementary)', 
-      'b1': 'B1 (Intermediate)',
-      'b2': 'B2 (Upper Intermediate)'
+      'a1': t('difficultyLevels.a1.label') as DifficultyLevelDisplay,
+      'a2': t('difficultyLevels.a2.label') as DifficultyLevelDisplay,
+      'b1': t('difficultyLevels.b1.label') as DifficultyLevelDisplay,
+      'b2': t('difficultyLevels.b2.label') as DifficultyLevelDisplay
     }
     difficultyLevels.forEach(level => {
       map.set(level.code, displayMap[level.code])
     })
     return map
-  }, [difficultyLevels])
+  }, [difficultyLevels, t])
 
   // Get difficulty level name with fallback
   const getDifficultyLevelName = (code: DifficultyLevel): string => {
@@ -73,11 +75,11 @@ export const useDifficultyLevels = () => {
   // Convert display name to code
   const getDifficultyLevelCodeFromDisplay = (display: DifficultyLevelDisplay): DifficultyLevel => {
     const displayToCode: Record<DifficultyLevelDisplay, DifficultyLevel> = {
-      'A1 (Beginner)': 'a1',
-      'A2 (Elementary)': 'a2',
-      'B1 (Intermediate)': 'b1',
-      'B2 (Upper Intermediate)': 'b2'
-    }
+      [t('difficultyLevels.a1.label')]: 'a1',
+      [t('difficultyLevels.a2.label')]: 'a2',
+      [t('difficultyLevels.b1.label')]: 'b1',
+      [t('difficultyLevels.b2.label')]: 'b2'
+    } as Record<DifficultyLevelDisplay, DifficultyLevel>
     return displayToCode[display]
   }
 

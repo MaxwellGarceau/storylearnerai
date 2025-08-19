@@ -9,7 +9,7 @@ import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
-import { DifficultyLevel, LanguageCode } from '../../types/llm/prompts';
+import { DifficultyLevel, DifficultyLevelDisplay, LanguageCode } from '../../types/llm/prompts';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 
@@ -18,12 +18,12 @@ export default function SavedTranslationsList() {
   const { t } = useTranslation();
   const { getDifficultyLevelDisplay } = useDifficultyLevels();
   
-  // CEFR difficulty level options
-  const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
-    { value: 'a1', label: t('difficultyLevels.a1.label'), description: t('difficultyLevels.a1.description') },
-    { value: 'a2', label: t('difficultyLevels.a2.label'), description: t('difficultyLevels.a2.description') },
-    { value: 'b1', label: t('difficultyLevels.b1.label'), description: t('difficultyLevels.b1.description') },
-    { value: 'b2', label: t('difficultyLevels.b2.label'), description: t('difficultyLevels.b2.description') },
+  // CEFR difficulty level options using the hook
+  const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: DifficultyLevelDisplay; description: string }[] = [
+    { value: 'a1', label: getDifficultyLevelDisplay('a1'), description: t('difficultyLevels.a1.description') },
+    { value: 'a2', label: getDifficultyLevelDisplay('a2'), description: t('difficultyLevels.a2.description') },
+    { value: 'b1', label: getDifficultyLevelDisplay('b1'), description: t('difficultyLevels.b1.description') },
+    { value: 'b2', label: getDifficultyLevelDisplay('b2'), description: t('difficultyLevels.b2.description') },
   ];
 
   const {
