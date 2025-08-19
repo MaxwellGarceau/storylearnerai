@@ -1,7 +1,7 @@
 -- Create languages lookup table
 CREATE TABLE IF NOT EXISTS languages (
     id SERIAL PRIMARY KEY,
-    code VARCHAR(10) UNIQUE NOT NULL, -- ISO 639-1 language codes (e.g., 'en', 'es', 'fr')
+    code VARCHAR(2) UNIQUE NOT NULL, -- ISO 639-1 language codes (e.g., 'en', 'es', 'fr')
     name VARCHAR(100) NOT NULL, -- Full language name (e.g., 'English', 'Spanish', 'French')
     native_name VARCHAR(100), -- Name in the native language
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS languages (
 -- Create difficulty_levels lookup table
 CREATE TABLE IF NOT EXISTS difficulty_levels (
     id SERIAL PRIMARY KEY,
-    code VARCHAR(20) UNIQUE NOT NULL, -- Internal code (e.g., 'a1', 'a2', 'b1', 'b2')
+    code VARCHAR(2) UNIQUE NOT NULL, -- Internal code (e.g., 'a1', 'a2', 'b1', 'b2')
     name VARCHAR(50) NOT NULL, -- Display name (e.g., 'Beginner', 'Intermediate', 'Advanced')
     description TEXT, -- Optional description
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

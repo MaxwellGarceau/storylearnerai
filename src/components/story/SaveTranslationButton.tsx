@@ -49,10 +49,13 @@ export default function SaveTranslationButton({
 
   // Validate and sanitize input fields
   const validateAndSanitizeInput = (field: SaveFieldType, value: string) => {
-    const sanitizedValue = sanitizeText(value, { maxLength: field === 'title' ? 200 : 1000 });
+    // Align with database schema: title VARCHAR(255), notes TEXT (unlimited)
+    const sanitizedValue = sanitizeText(value, { 
+      maxLength: field === 'title' ? 255 : undefined 
+    });
     
     const validation = validateTextInput(sanitizedValue, {
-      maxLength: field === 'title' ? 200 : 1000,
+      maxLength: field === 'title' ? 255 : undefined, // title: 255 chars, notes: unlimited
       allowHTML: false,
       allowLineBreaks: true,
       trim: true,
