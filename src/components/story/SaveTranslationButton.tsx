@@ -145,7 +145,8 @@ export default function SaveTranslationButton({
       setTitle('');
       setNotes('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save translation');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save translation';
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }

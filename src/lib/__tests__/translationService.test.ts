@@ -73,7 +73,7 @@ describe('translationService', () => {
         content: 'Hola mundo',
         provider: 'gemini',
         model: 'gemini-1.5-flash'
-      })
+      } as unknown as Awaited<ReturnType<typeof llmServiceManager.generateCompletion>>)
 
       const request = {
         text: 'Hello world',

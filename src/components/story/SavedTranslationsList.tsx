@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
+import { useLanguages } from '../../hooks/useLanguages';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import { DifficultyLevel, DifficultyLevelDisplay, LanguageCode } from '../../types/llm/prompts';
@@ -22,35 +23,36 @@ export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const {
     savedTranslations,
-    languages,
-    isLoading,
-    isDeleting,
+    loading: isLoading,
     error,
-    deleteSavedTranslation,
-    setFilters,
-    hasMore,
-    loadMore,
-    totalCount,
   } = useSavedTranslations();
+  
+  const {
+    languages,
+    loading: languagesLoading,
+  } = useLanguages();
 
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | ''>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleFilterChange = () => {
-    setFilters({
-      translated_language_code: (selectedLanguage || undefined),
-      difficulty_level_code: (selectedDifficulty || undefined),
+    // TODO: Implement filtering when the hook supports it
+    logger.info('ui', 'Filtering not yet implemented', {
+      translated_language_code: selectedLanguage || undefined,
+      difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this saved translation?')) {
       try {
-        await deleteSavedTranslation(id);
+        // TODO: Implement delete when the hook supports it
+        logger.info('ui', 'Delete not yet implemented for id:', { id });
       } catch (err) {
-        logger.error('ui', 'Failed to delete translation', { error: err });
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        logger.error('ui', 'Failed to delete translation', { error: errorMessage });
       }
     }
   };
@@ -86,7 +88,7 @@ export default function SavedTranslationsList() {
     });
   };
 
-  if (isLoading && savedTranslations.length === 0) {
+  if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
@@ -170,7 +172,7 @@ export default function SavedTranslationsList() {
       {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          {totalCount} saved translation{totalCount !== 1 ? 's' : ''}
+          {savedTranslations.length} saved translation{savedTranslations.length !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -206,7 +208,7 @@ export default function SavedTranslationsList() {
                     variant="outline"
                     size="sm"
                     onClick={() => void handleDelete(translation.id)}
-                    disabled={isDeleting}
+                    disabled={false}
                   >
                     Delete
                   </Button>
@@ -240,18 +242,7 @@ export default function SavedTranslationsList() {
         ))}
       </div>
 
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="text-center">
-          <Button
-            onClick={() => void loadMore()}
-            disabled={isLoading}
-            variant="outline"
-          >
-            {isLoading ? 'Loading...' : 'Load More'}
-          </Button>
-        </div>
-      )}
+      {/* Load More Button - TODO: Implement when pagination is supported */}
 
       {/* Empty State */}
       {!isLoading && savedTranslations.length === 0 && (

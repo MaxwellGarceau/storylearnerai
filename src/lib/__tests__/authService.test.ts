@@ -239,11 +239,10 @@ describe('AuthService', () => {
 
   describe('resetPassword', () => {
     it('should return success on password reset', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
+        data: {},
         error: null
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)
+      })
 
       const result = await authService.resetPassword('test@example.com')
 
@@ -264,6 +263,7 @@ describe('AuthService', () => {
       
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
+        data: null,
         error: mockError
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
