@@ -94,5 +94,172 @@
   "languageSelector": {
     "title": "Idioma",
     "changeLanguage": "Cambiar Idioma"
+  },
+  "home": {
+    "hero": {
+      "badge": "Aprendizaje de Idiomas con IA",
+      "title": "Story Learner AI",
+      "subtitle": "Transforma cualquier historia en una poderosa herramienta de aprendizaje. Traduce, entiende y domina nuevos idiomas con asistencia de IA.",
+      "startTranslating": "Comenzar a Traducir",
+      "restartTutorial": "Reiniciar Tutorial",
+      "signUpFree": "Registrarse Gratis",
+      "myDashboard": "Mi Panel"
+    },
+    "features": {
+      "title": "¿Por qué elegir Story Learner AI?",
+      "subtitle": "Nuestra plataforma combina tecnología de IA de vanguardia con metodologías probadas de aprendizaje de idiomas",
+      "multiLanguage": {
+        "title": "Soporte Multi-idioma",
+        "description": "Traduce historias de cualquier idioma al inglés con precisión impulsada por IA"
+      },
+      "sideBySide": {
+        "title": "Lectura Lado a Lado",
+        "description": "Lee texto original y traducido simultáneamente para mejor comprensión"
+      },
+      "learningInsights": {
+        "title": "Insights de Aprendizaje",
+        "description": "Obtén explicaciones detalladas y ayuda de vocabulario para mejorar tu aprendizaje"
+      },
+      "aiPowered": {
+        "title": "Impulsado por IA",
+        "description": "Modelos de lenguaje avanzados proporcionan traducciones precisas y contextuales"
+      }
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "subtitle": "Comienza en solo tres pasos simples",
+      "step1": {
+        "title": "Sube Tu Historia",
+        "description": "Ingresa una historia en cualquier idioma del que quieras aprender"
+      },
+      "step2": {
+        "title": "Traducción con IA",
+        "description": "Nuestra IA la traduce al inglés con explicaciones detalladas"
+      },
+      "step3": {
+        "title": "Aprende y Practica",
+        "description": "Lee y aprende con traducciones lado a lado y ayuda de vocabulario"
+      }
+    },
+    "cta": {
+      "title": "¿Listo para comenzar tu viaje de aprendizaje de idiomas?",
+      "subtitleUser": "Continúa tu viaje de aprendizaje con insights personalizados y seguimiento de progreso",
+      "subtitleGuest": "Únete a miles de estudiantes que ya están mejorando sus habilidades de idiomas con Story Learner AI",
+      "startTranslating": "Comenzar a Traducir",
+      "createAccount": "Crear Cuenta Gratis",
+      "viewDashboard": "Ver Panel"
+    }
+  },
+  "dashboard": {
+    "loading": "Cargando tu panel...",
+    "welcome": "¡Bienvenido de vuelta, {name}!",
+    "subtitle": "Tu panel de aprendizaje de idiomas",
+    "profile": "Perfil",
+    "newTranslation": "Nueva Traducción",
+    "stats": {
+      "totalTranslations": "Total de Traducciones",
+      "storiesTranslated": "Historias traducidas",
+      "languages": "Idiomas",
+      "learningLevel": "Nivel de Aprendizaje",
+      "currentDifficulty": "Nivel de dificultad actual",
+      "beginner": "Principiante"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "newTranslation": {
+        "title": "Nueva Traducción",
+        "description": "Comenzar a traducir una nueva historia"
+      },
+      "viewSaved": {
+        "title": "Ver Guardadas",
+        "description": "Revisar tus traducciones guardadas"
+      },
+      "editProfile": {
+        "title": "Editar Perfil",
+        "description": "Actualizar tus preferencias"
+      }
+    },
+    "recentActivity": {
+      "title": "Actividad Reciente",
+      "noActivity": "Sin actividad reciente",
+      "noActivityDescription": "Comienza a traducir historias para ver tu actividad aquí"
+    },
+    "errors": {
+      "loadFailed": "Error al cargar los datos del panel"
+    }
+  },
+  "storyReader": {
+    "noStory": {
+      "title": "No se Encontró Historia",
+      "description": "Por favor traduce una historia primero para verla aquí.",
+      "translateStory": "Traducir una Historia",
+      "home": "Inicio"
+    },
+    "header": {
+      "savedStory": "Tu Historia Guardada",
+      "translatedStory": "Tu Historia Traducida",
+      "savedDescription": "Leyendo tu traducción guardada de tu biblioteca",
+      "translatedDescription": "¡Disfruta leyendo tu historia en inglés!",
+      "savedBadge": "Historia Guardada",
+      "debugBadge": "Modo Debug - Historia de Prueba"
+    },
+    "actions": {
+      "translateAnother": "Traducir Otra Historia",
+      "home": "Inicio"
+    }
+  },
+  "storySidebar": {
+    "storyLibrary": "Biblioteca de Historias",
+    "openLibrary": "Abrir biblioteca de historias",
+    "closeLibrary": "Cerrar biblioteca de historias",
+    "storyOptions": "Opciones de Historia",
+    "currentSettings": "Configuración actual de traducción",
+    "translation": "Traducción",
+    "targetLanguage": "Idioma Objetivo",
+    "currentlySupported": "Actualmente solo se admite traducción al inglés.",
+    "difficultyLevel": "Nivel de Dificultad",
+    "optionsEditing": "Estas son las configuraciones utilizadas para esta traducción. La edición de opciones estará disponible en una actualización futura.",
+    "difficultyLevels": {
+      "a1": "A1 (Principiante)",
+      "a2": "A2 (Elemental)",
+      "b1": "B1 (Intermedio)",
+      "b2": "B2 (Intermedio Alto)"
+    }
+  },
+  "storyInput": {
+    "placeholder": "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
+    "targetLanguage": "Idioma Objetivo",
+    "currentlySupported": "Actualmente solo se admite traducción al {language}.",
+    "targetDifficulty": "Dificultad Objetivo (CEFR)",
+    "difficultyDescription": "La historia se adaptará a este nivel de competencia en {language}.",
+    "done": "Listo",
+    "validation": {
+      "invalidInput": "Entrada inválida detectada",
+      "fixInput": "Por favor corrige la entrada antes de traducir"
+    }
+  },
+  "savedTranslations": {
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar esta traducción guardada?",
+    "noTranslations": "Aún no hay traducciones guardadas",
+    "filterNotImplemented": "Filtrado aún no implementado",
+    "deleteNotImplemented": "Eliminación aún no implementada"
+  },
+  "difficultyLevels": {
+    "a1": {
+      "label": "A1 (Principiante)",
+      "description": "Nivel básico - Puede entender y usar expresiones cotidianas familiares"
+    },
+    "a2": {
+      "label": "A2 (Elemental)",
+      "description": "Nivel elemental - Puede comunicarse en tareas simples y rutinarias"
+    },
+    "b1": {
+      "label": "B1 (Intermedio)",
+      "description": "Nivel intermedio - Puede manejar la mayoría de situaciones mientras viaja"
+    },
+    "b2": {
+      "label": "B2 (Intermedio Alto)",
+      "description": "Nivel intermedio alto - Puede interactuar con fluidez y espontaneidad"
+    }
   }
 }
