@@ -58,7 +58,7 @@ describe('translationService', () => {
 
       expect(result).toEqual({
         originalText: 'Hello world',
-        translatedText: expect.stringContaining('[TRANSLATED FROM SPANISH - a1 LEVEL]'),
+        translatedText: expect.stringContaining('[TRANSLATED FROM SPANISH - a1 LEVEL]') as string,
         fromLanguage: 'en',
         toLanguage: 'es',
         difficulty: 'a1',

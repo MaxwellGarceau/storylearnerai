@@ -3,12 +3,12 @@ import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useAuth } from '../../hooks/useAuth';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
 import type { DifficultyLevel } from '../../types/llm/prompts';
@@ -41,8 +41,8 @@ export default function SaveTranslationButton({
     notes?: string;
   }>({});
   
-  const { createSavedTranslation, isCreating } = useSavedTranslations();
   const { user } = useAuth();
+  const savedTranslationService = new SavedTranslationService();
   const { toast } = useToast();
   const { getLanguageCode } = useLanguages();
   const { getDifficultyLevelName } = useDifficultyLevels();
@@ -123,7 +123,7 @@ export default function SaveTranslationButton({
         return;
       }
 
-      await createSavedTranslation({
+      await savedTranslationService.createSavedTranslation({
         original_story: originalStory,
         translated_story: translationData.translatedText,
         original_language_code: originalLanguageCode,
@@ -131,7 +131,7 @@ export default function SaveTranslationButton({
         difficulty_level_code: difficultyLevel,
         title: sanitizedTitle ?? undefined,
         notes: sanitizedNotes ?? undefined,
-      });
+      }, user.id);
 
       // Show success toast
       toast({
@@ -221,7 +221,9 @@ export default function SaveTranslationButton({
                   label="Title (optional)"
                   placeholder="Enter a title for this translation..."
                   value={title}
-                  onChange={(e: TextAreaChangeEvent) => handleInputChange('title', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => {
+                    handleInputChange('title', e.target.value);
+                  }}
                 />
                 {validationErrors.title && (
                   <p className="text-sm text-red-600">{validationErrors.title}</p>
@@ -235,7 +237,9 @@ export default function SaveTranslationButton({
                   label="Notes (optional)"
                   placeholder="Add any notes about this translation..."
                   value={notes}
-                  onChange={(e: TextAreaChangeEvent) => handleInputChange('notes', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => {
+                    handleInputChange('notes', e.target.value);
+                  }}
                 />
                 {validationErrors.notes && (
                   <p className="text-sm text-red-600">{validationErrors.notes}</p>
@@ -264,15 +268,15 @@ export default function SaveTranslationButton({
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={() => void handleSave()}
-                  disabled={isSaving || isCreating}
+                  disabled={isSaving}
                   className="flex-1"
                 >
-                  {isSaving || isCreating ? 'Saving...' : 'Save Translation'}
+                  {isSaving ? 'Saving...' : 'Save Translation'}
                 </Button>
                 <Button
                   onClick={handleCancel}
                   variant="outline"
-                  disabled={isSaving || isCreating}
+                  disabled={isSaving}
                 >
                   Cancel
                 </Button>

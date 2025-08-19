@@ -307,6 +307,7 @@ describe('AuthService', () => {
       
       vi.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
         authChangeCallback = callback as (event: string, session: unknown) => void
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
           data: { subscription: mockSubscription }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
