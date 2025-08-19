@@ -1,6 +1,6 @@
-import { LoggerConfig, LogEntry } from './types';
+import { LoggerConfig, LogEntry } from '@app/logger';
 import { getLoggerConfigWithOverrides } from './config';
-import { LogLevel, LogChannel } from './types';
+import { LogLevel, LogChannel } from '@app/logger';
 
 // Simple browser-compatible logger
 class ConsoleWrapper {

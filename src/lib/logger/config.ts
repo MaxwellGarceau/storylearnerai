@@ -1,4 +1,4 @@
-import { LoggerConfig, LogLevel } from './types';
+import { LoggerConfig, LogLevel } from '@app/logger';
 
 // Browser-safe environment detection
 const getEnvironment = (): string => {

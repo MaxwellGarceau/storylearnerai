@@ -1,4 +1,4 @@
-import { Logger, LogLevel, LogChannel, LogEntry, LoggerConfig } from './types';
+import { Logger, LogLevel, LogChannel, LogEntry, LoggerConfig } from '@app/logger';
 import { createLogger } from './ConsoleWrapper';
 import { getLoggerConfigWithOverrides } from './config';
 
