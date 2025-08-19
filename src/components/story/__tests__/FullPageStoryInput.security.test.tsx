@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { vi } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
-import type { LanguageCode, DifficultyLevel } from '../../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
 
 // Mock the sanitization utilities
 vi.mock('../../../lib/utils/sanitization', () => ({

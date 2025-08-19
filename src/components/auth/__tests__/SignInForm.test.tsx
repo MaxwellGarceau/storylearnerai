@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { vi } from 'vitest'
 import { SignInForm } from '../SignInForm'
-import { setupSupabaseMocks, mockUseSupabase } from '../../../__tests__/mocks/supabaseMock'
+import { setupSupabaseMocks, mockUseAuth } from '../../../__tests__/mocks/supabaseMock'
 
 // Setup Supabase mocks
 setupSupabaseMocks()
@@ -15,7 +15,7 @@ describe('SignInForm Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     cleanup()
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
       signOut: vi.fn(),
@@ -76,11 +76,11 @@ describe('SignInForm Component', () => {
     })
   })
 
-  it('handles sign in error', async () => {
+  it('handles sign in error', () => {
     const errorMessage = 'Invalid credentials'
     
-    // Mock the error state from useSupabase
-    mockUseSupabase.mockReturnValue({
+    // Mock the error state from useAuth
+    mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
       signOut: vi.fn(),
@@ -104,9 +104,9 @@ describe('SignInForm Component', () => {
     expect(mockOnSwitchToSignUp).toHaveBeenCalled()
   })
 
-  it('disables form during loading', async () => {
-    // Mock the loading state from useSupabase
-    mockUseSupabase.mockReturnValue({
+  it('disables form during loading', () => {
+    // Mock the loading state from useAuth
+    mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
       signOut: vi.fn(),

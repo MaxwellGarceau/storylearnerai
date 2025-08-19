@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GeminiService } from '../providers/GeminiService';
-import { GeminiConfig } from '../../types/llm';
+import { GeminiConfig } from '../../../types/llm/providers';
+
+// Type alias to avoid duplicate type definition
+type MockFunction = ReturnType<typeof vi.fn>;
 
 // Mock the @google/genai module
 vi.mock('@google/genai', () => ({
@@ -13,7 +16,7 @@ vi.mock('@google/genai', () => ({
 
 describe('GeminiService', () => {
   let service: GeminiService;
-  let mockGenerateContent: ReturnType<typeof vi.fn>;
+  let mockGenerateContent: MockFunction;
   
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,7 +32,7 @@ describe('GeminiService', () => {
     };
     
     service = new GeminiService(config);
-    mockGenerateContent = (service as unknown as { genAI: { models: { generateContent: ReturnType<typeof vi.fn> } } }).genAI.models.generateContent;
+    mockGenerateContent = (service as unknown as { genAI: { models: { generateContent: MockFunction } } }).genAI.models.generateContent;
   });
 
   it('should generate completion with Gemini format', async () => {
@@ -55,7 +58,7 @@ describe('GeminiService', () => {
 
     expect(mockGenerateContent).toHaveBeenCalledWith({
       model: 'gemini-1.5-flash',
-      contents: 'Hello',
+      contents: [{ text: 'Hello' }],
       config: {
         temperature: 0.7,
         maxOutputTokens: 100,
@@ -107,7 +110,7 @@ describe('GeminiService', () => {
 
     expect(mockGenerateContent).toHaveBeenCalledWith({
       model: 'gemini-1.5-flash', // Should use config default
-      contents: 'Hello',
+      contents: [{ text: 'Hello' }],
       config: {
         temperature: 0.7,
         maxOutputTokens: 2000,
@@ -140,7 +143,7 @@ describe('GeminiService', () => {
 
     expect(mockGenerateContent).toHaveBeenCalledWith({
       model: 'gemini-1.5-pro',
-      contents: 'Hello',
+      contents: [{ text: 'Hello' }],
       config: {
         temperature: 0.9,
         maxOutputTokens: 500,
@@ -196,7 +199,7 @@ describe('GeminiService', () => {
     expect(isHealthy).toBe(true);
     expect(mockGenerateContent).toHaveBeenCalledWith({
       model: 'gemini-1.5-flash',
-      contents: 'ping',
+      contents: [{ text: 'ping' }],
       config: {
         temperature: 0,
         maxOutputTokens: 1,

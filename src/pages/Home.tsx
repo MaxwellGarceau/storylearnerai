@@ -6,11 +6,11 @@ import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { useSupabase } from '../hooks/useSupabase';
+import { useAuth } from '../hooks/useAuth';
 import { useWalkthrough } from '../hooks/useWalkthrough';
 
 const Home: React.FC = () => {
-  const { user } = useSupabase();
+  const { user } = useAuth();
   const { startWalkthroughById, resetWalkthrough } = useWalkthrough();
 
   const features = [

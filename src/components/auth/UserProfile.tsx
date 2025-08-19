@@ -4,21 +4,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import Label from '../ui/Label'
 import { Badge } from '../ui/Badge'
 import { Alert } from '../ui/Alert'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { useLanguages } from '../../hooks/useLanguages'
-import { UserService } from '../../api/supabase'
+import { UserService } from '../../api/supabase/database/userProfileService'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../lib/utils/sanitization'
+import type { DatabaseUserInsert } from '../../types/database/user'
+import type { LanguageCode } from '../../types/llm/prompts'
+import type { VoidFunction } from '../../types/common'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
 
 interface UserProfileProps {
-  onClose?: () => void
+  onClose?: VoidFunction
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
-  const { user, signOut } = useSupabase()
+  const { user, signOut } = useAuth()
   const { languages, getLanguageName } = useLanguages()
-  const [profile, setProfile] = useState<{ id: string; username?: string | null; display_name?: string | null; avatar_url?: string | null; preferred_language?: string; created_at?: string; updated_at?: string } | null>(null)
+  const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -27,7 +30,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     username?: string
     display_name?: string
   }>({})
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    username: string
+    display_name: string
+    preferred_language: LanguageCode
+  }>({
     username: '',
     display_name: '',
     preferred_language: 'en'
@@ -39,14 +46,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     try {
       setLoading(true)
       const userProfile = await UserService.getOrCreateUser(user.id, {
-        username: user.email?.split('@')[0] || '',
-        display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || ''
+        username: user.email?.split('@')[0] ?? '',
+        display_name: (user.user_metadata as { display_name?: string })?.display_name ?? user.email?.split('@')[0] ?? ''
       })
       setProfile(userProfile)
       setFormData({
-        username: userProfile.username || '',
-        display_name: userProfile.display_name || '',
-        preferred_language: userProfile.preferred_language || 'en'
+        username: userProfile.username ?? '',
+        display_name: userProfile.display_name ?? '',
+        preferred_language: userProfile.preferred_language ?? 'en'
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load profile')
@@ -57,7 +64,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
   useEffect(() => {
     if (user) {
-      loadProfile()
+      void loadProfile()
     }
   }, [user, loadProfile])
 
@@ -128,9 +135,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
   const handleCancel = () => {
     setFormData({
-      username: profile?.username || '',
-      display_name: profile?.display_name || '',
-      preferred_language: profile?.preferred_language || 'en'
+      username: profile?.username ?? '',
+      display_name: profile?.display_name ?? '',
+      preferred_language: profile?.preferred_language ?? 'en'
     })
     setIsEditing(false)
     setError(null)
@@ -251,7 +258,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               </div>
             ) : (
               <h3 className="text-lg font-semibold">
-                {profile.display_name || 'No display name'}
+                {profile.display_name ?? 'No display name'}
               </h3>
             )}
             {isEditing ? (
@@ -271,7 +278,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                @{profile.username || 'username'}
+                @{profile.username ?? 'username'}
               </p>
             )}
           </div>
@@ -306,9 +313,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               ))}
             </select>
           ) : (
-            <Badge variant="secondary">
-              {getLanguageName(profile.preferred_language)}
-            </Badge>
+            profile.preferred_language && (
+              <Badge variant="secondary">
+                {getLanguageName(profile.preferred_language)}
+              </Badge>
+            )
           )}
         </div>
 
@@ -325,7 +334,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         {isEditing ? (
           <div className="flex gap-2 pt-4">
             <Button
-              onClick={handleSave}
+              onClick={() => void handleSave()}
               disabled={saving || Object.keys(validationErrors).some(key => validationErrors[key as keyof typeof validationErrors])}
               className="flex-1"
             >
@@ -353,7 +362,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <div className="pt-4">
             <Button
               variant="outline"
-              onClick={handleSignOut}
+              onClick={() => void handleSignOut()}
               className="w-full"
             >
               Sign Out

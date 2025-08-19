@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import { translationService, TranslationResponse, TranslationError } from '../../lib/translationService';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import { StoryFormData } from '../types/story';
+import { logger } from '../../lib/logger';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -56,7 +57,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
       // Trigger the view switch to story reader page
       onStoryTranslated(response);
     } catch (error) {
-      console.error('Translation failed:', error);
+      logger.error('translation', 'Translation failed', { error });
       
       // Handle TranslationError type
       if (error && typeof error === 'object' && 'code' in error) {
@@ -79,7 +80,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
         <div className="font-medium">Translation Error:</div>
         <div className="text-sm">{error.message}</div>
         
-        {(error.provider || error.statusCode || (error.code && error.code !== 'UNKNOWN_ERROR')) && (
+        {(error.provider ?? error.statusCode ?? (error.code && error.code !== 'UNKNOWN_ERROR')) && (
           <div className="text-xs text-muted-foreground space-y-1">
             {error.provider && (
               <div>Provider: {error.provider}</div>
@@ -103,7 +104,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({ onStoryTranslated }) =>
         <FullPageStoryInput
           value={formData.story}
           onChange={handleStoryChange}
-          onSubmit={handleSubmit}
+          onSubmit={() => void handleSubmit()}
           isTranslating={isTranslating}
           formData={formData}
           onFormDataChange={handleFormDataChange}

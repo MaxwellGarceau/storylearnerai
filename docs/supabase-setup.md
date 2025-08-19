@@ -136,7 +136,6 @@ src/
 │   ├── index.ts                     # Centralized exports
 │   └── database/
 │       ├── userService.ts           # User database operations
-│       ├── storyService.ts          # Story database operations
 │       └── translationService.ts    # Translation database operations
 ├── components/auth/
 │   ├── SignInForm.tsx               # User sign-in component
@@ -186,30 +185,7 @@ const updatedUser = await UserService.updateUser('user-uuid', {
 const isAvailable = await UserService.isUsernameAvailable('john_doe')
 ```
 
-### StoryService
 
-Handles all story-related operations:
-
-```typescript
-import { StoryService } from '@/api/supabase'
-
-// Create a new story
-const story = await StoryService.createStory({
-  title: 'The Little Red Hen',
-  content: 'Once upon a time...',
-  language: 'en',
-  difficulty_level: 'beginner'
-})
-
-// Get stories with filters
-const stories = await StoryService.getStories({
-  language: 'en',
-  difficulty_level: 'beginner'
-})
-
-// Search stories
-const results = await StoryService.searchStories('hen')
-```
 
 ### TranslationService
 

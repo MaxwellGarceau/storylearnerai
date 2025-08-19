@@ -5,6 +5,20 @@ import { vi } from 'vitest';
 import TranslatePage from '../TranslatePage';
 import { TranslationResponse } from '../../lib/translationService';
 
+// Mock the LLMServiceManager to prevent initialization issues
+vi.mock('../../lib/llm/LLMServiceManager', () => ({
+  llmServiceManager: {
+    generateCompletion: vi.fn(),
+    healthCheck: vi.fn(),
+    getProvider: vi.fn(),
+    getModel: vi.fn(),
+    getConfig: vi.fn(),
+    getAvailableProviders: vi.fn(),
+    getProviderDisplayNames: vi.fn(),
+    getProviderDescriptions: vi.fn(),
+  },
+}));
+
 // Mock the Walkthrough component
 vi.mock('../../components/walkthrough/Walkthrough', () => ({
   Walkthrough: () => null,

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { LanguageService } from '../api/supabase/database/languageService'
-import type { DatabaseLanguage } from '../lib/types/database'
-import type { LanguageCode } from '../lib/types/prompt'
+import type { DatabaseLanguage, LanguageCode } from '../types'
+import { logger } from '../lib/logger'
 
 export const useLanguages = () => {
   const [languages, setLanguages] = useState<DatabaseLanguage[]>([])
@@ -12,14 +12,14 @@ export const useLanguages = () => {
   const languageMap = useMemo(() => {
     const map = new Map<LanguageCode, string>()
     languages.forEach(lang => {
-      map.set(lang.code as LanguageCode, lang.name)
+      map.set(lang.code, lang.name)
     })
     return map
   }, [languages])
 
   // Get language name with fallback
   const getLanguageName = (code: LanguageCode): string => {
-    return languageMap.get(code) || code
+    return languageMap.get(code) ?? code
   }
 
   // Map language names to ISO codes
@@ -57,13 +57,13 @@ export const useLanguages = () => {
         setLanguages(languagesData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load languages')
-        console.error('Failed to load languages:', err)
+        logger.error('general', 'Failed to load languages', { error: err })
       } finally {
         setLoading(false)
       }
     }
 
-    loadLanguages()
+    void loadLanguages()
   }, [])
 
   return {

@@ -3,8 +3,8 @@ import { render, screen, waitFor, act } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { DashboardPage } from '../DashboardPage'
-import { useSupabase } from '../../hooks/useSupabase'
-import { UserService } from '../../api/supabase'
+import { useAuth } from '../../hooks/useAuth'
+import { UserService } from '../../api/supabase/database/userProfileService'
 import type { RenderResult } from '@testing-library/react'
 
 // Mock the useLanguages hook
@@ -30,18 +30,18 @@ vi.mock('../../hooks/useLanguages', () => ({
   })
 }))
 
-// Mock the useSupabase hook
-vi.mock('../../hooks/useSupabase')
+// Mock the useAuth hook
+vi.mock('../../hooks/useAuth')
 
 // Mock the UserService
-vi.mock('../../api/supabase', () => ({
+vi.mock('../../api/supabase/database/userProfileService', () => ({
   UserService: {
     getUser: vi.fn()
   }
 }))
 
-const mockUseSupabase = useSupabase as vi.MockedFunction<typeof useSupabase>
-const mockUserService = UserService as vi.Mocked<typeof UserService>
+const mockUseAuth = vi.mocked(useAuth)
+const mockUserService = vi.mocked(UserService)
 
 // Mock react-router-dom hooks
 const mockNavigate = vi.fn()
@@ -54,16 +54,16 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const renderWithRouter = async (component: React.ReactElement): Promise<RenderResult> => {
+const renderWithRouter = (component: React.ReactElement): RenderResult => {
   let result: RenderResult;
-  await act(async () => {
+  act(() => {
     result = render(
       <BrowserRouter>
         {component}
       </BrowserRouter>
     )
   })
-  return result!
+  return result
 }
 
 describe('DashboardPage Component', () => {
@@ -86,7 +86,7 @@ describe('DashboardPage Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
@@ -98,25 +98,23 @@ describe('DashboardPage Component', () => {
   })
 
   it('renders quick actions section', async () => {
-    await await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
       expect(screen.getByText('Quick Actions')).toBeInTheDocument()
-      expect(screen.getAllByText('New Translation')).toHaveLength(2) // Header button and quick action card
+      expect(screen.getAllByText('New Translation')).toHaveLength(2)
       expect(screen.getByText('View Saved')).toBeInTheDocument()
       expect(screen.getByText('Edit Profile')).toBeInTheDocument()
     })
   })
 
   it('renders stats cards with correct information', async () => {
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
       expect(screen.getAllByText('Total Translations')[0]).toBeInTheDocument()
       expect(screen.getAllByText('Languages')[0]).toBeInTheDocument()
       expect(screen.getAllByText('Learning Level')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('0')[0]).toBeInTheDocument() // Total translations
-      expect(screen.getAllByText('1')[0]).toBeInTheDocument() // Languages count
+      expect(screen.getAllByText('0')[0]).toBeInTheDocument()
+      expect(screen.getAllByText('1')[0]).toBeInTheDocument()
       expect(screen.getAllByText(/Beginner/i).length).toBeGreaterThanOrEqual(1)
     })
   })
@@ -127,9 +125,7 @@ describe('DashboardPage Component', () => {
       preferred_language: 'es'
     }
     mockUserService.getUser.mockResolvedValue(spanishProfile)
-
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
       expect(screen.getByText('Spanish')).toBeInTheDocument()
     })
@@ -141,20 +137,16 @@ describe('DashboardPage Component', () => {
       preferred_language: 'xx'
     }
     mockUserService.getUser.mockResolvedValue(unknownLanguageProfile)
-
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
-      expect(screen.getByText('xx')).toBeInTheDocument() // Shows the code as-is
+      expect(screen.getByText('xx')).toBeInTheDocument()
     })
   })
 
   it('renders recent activity section', async () => {
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
       expect(screen.getAllByText('Recent Activity')).toBeTruthy()
-      // Find the specific "No recent activity" text by looking for the h3 element within the Recent Activity section
       const recentActivitySections = screen.getAllByText('Recent Activity')
       const recentActivitySection = recentActivitySections[0].closest('div')
       const noActivityHeading = recentActivitySection?.querySelector('h3')
@@ -164,14 +156,13 @@ describe('DashboardPage Component', () => {
   })
 
   it('calls getUser with correct user ID', async () => {
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     await waitFor(() => {
       expect(mockUserService.getUser).toHaveBeenCalledWith('user-123')
     })
   })
 
-  it('handles loading state correctly', async () => {
+  it('handles loading state correctly', () => {
     // Create a promise that we can control
     let resolveUserPromise: ((value: typeof mockProfile) => void) | null = null
     const userPromise = new Promise<typeof mockProfile>((resolve) => {
@@ -179,37 +170,30 @@ describe('DashboardPage Component', () => {
     })
     
     mockUserService.getUser.mockReturnValue(userPromise)
-
-    await renderWithRouter(<DashboardPage />)
-
+    void renderWithRouter(<DashboardPage />)
     // Check that loading state is shown initially
     expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument()
-    
     // Now resolve the promise
     if (resolveUserPromise) {
       resolveUserPromise(mockProfile)
     }
-    
     // Wait for the loading to finish
-    await waitFor(() => {
+    void waitFor(() => {
       expect(screen.queryByText('Loading your dashboard...')).not.toBeInTheDocument()
     })
   })
 
-  it('displays error alert when there is an error', async () => {
+  it('displays error alert when there is an error', () => {
     mockUserService.getUser.mockRejectedValue(new Error('Database error'))
-
-    await renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
+    void renderWithRouter(<DashboardPage />)
+    void waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument()
     })
   })
 
-  it('displays welcome message with user name', async () => {
-    await renderWithRouter(<DashboardPage />)
-
-    await waitFor(() => {
+  it('displays welcome message with user name', () => {
+    void renderWithRouter(<DashboardPage />)
+    void waitFor(() => {
       expect(screen.getAllByText('Welcome back, Test User!')).toBeTruthy()
       // Check that the dashboard subtitle is present
       expect(screen.getAllByText('Your language learning dashboard')).toBeTruthy()

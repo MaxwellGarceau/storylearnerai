@@ -3,13 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import { ProtectedRoute } from '../ProtectedRoute'
-import { useSupabase } from '../../../hooks/useSupabase'
+import { useAuth } from '../../../hooks/useAuth'
 import type { User } from '@supabase/supabase-js'
 
-// Mock the useSupabase hook
-vi.mock('../../../hooks/useSupabase')
+// Mock the useAuth hook
+vi.mock('../../../hooks/useAuth')
 
-const mockUseSupabase = useSupabase as jest.MockedFunction<typeof useSupabase>
+const mockUseAuth = vi.mocked(useAuth)
 
 // Mock react-router-dom's useNavigate
 const mockNavigate = vi.fn()
@@ -27,7 +27,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('should show loading spinner when checking authentication', () => {
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: null,
       loading: true,
       error: null,
@@ -50,7 +50,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('should redirect unauthenticated users to homepage', async () => {
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: null,
       loading: false,
       error: null,
@@ -88,7 +88,7 @@ describe('ProtectedRoute', () => {
       factors: []
     }
     
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: mockUser,
       loading: false,
       error: null,
@@ -111,7 +111,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('should not redirect when loading', () => {
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: null,
       loading: true,
       error: null,

@@ -1,21 +1,14 @@
 import { supabase } from '../client'
-import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../lib/types/database'
+import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user'
+import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
+import type { LanguageCode } from '../../../types/llm/prompts'
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { VoidPromise } from '../../../types/common';
 
-export interface CreateUserData {
-  id: string
-  username?: string
-  display_name?: string
-  avatar_url?: string
-  preferred_language?: string
-}
-
-export interface UpdateUserData {
-  username?: string
-  display_name?: string
-  avatar_url?: string
-  preferred_language?: string
-}
+// Use existing database types for consistency
+export type CreateUserData = Omit<DatabaseUserInsert, 'created_at' | 'updated_at'>
+export type UpdateUserData = Omit<DatabaseUserUpdate, 'id' | 'created_at' | 'updated_at'>
 
 interface ValidationError {
   field: string
@@ -36,9 +29,11 @@ export class UserService {
     }
 
     // Validate and sanitize username (optional)
-    if (data.username !== undefined && data.username !== null) {
+    if (data.username !== undefined) {
       if (typeof data.username !== 'string') {
         errors.push({ field: 'username', message: 'Username must be a string' })
+      } else if (data.username.trim().length === 0) {
+        errors.push({ field: 'username', message: 'Username cannot be empty' })
       } else {
         const sanitizedUsername = sanitizeText(data.username, { maxLength: 30 })
         const usernameValidation = validateUsername(sanitizedUsername)
@@ -51,9 +46,11 @@ export class UserService {
     }
 
     // Validate and sanitize display name (optional)
-    if (data.display_name !== undefined && data.display_name !== null) {
+    if (data.display_name !== undefined) {
       if (typeof data.display_name !== 'string') {
         errors.push({ field: 'display_name', message: 'Display name must be a string' })
+      } else if (data.display_name.trim().length === 0) {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' })
       } else {
         const sanitizedDisplayName = sanitizeText(data.display_name, { maxLength: 50 })
         const displayNameValidation = validateDisplayName(sanitizedDisplayName)
@@ -85,8 +82,8 @@ export class UserService {
     if (data.preferred_language !== undefined && data.preferred_language !== null) {
       if (typeof data.preferred_language !== 'string') {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!/^[a-z]{2}$/.test(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a valid ISO 639-1 code' })
+      } else if (!['en', 'es'].includes(data.preferred_language)) {
+        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
         sanitizedData.preferred_language = data.preferred_language
       }
@@ -107,9 +104,11 @@ export class UserService {
     const sanitizedData: UpdateUserData = { ...data }
 
     // Validate and sanitize username (optional)
-    if (data.username !== undefined && data.username !== null) {
+    if (data.username !== undefined) {
       if (typeof data.username !== 'string') {
         errors.push({ field: 'username', message: 'Username must be a string' })
+      } else if (data.username.trim().length === 0) {
+        errors.push({ field: 'username', message: 'Username cannot be empty' })
       } else {
         const sanitizedUsername = sanitizeText(data.username, { maxLength: 30 })
         const usernameValidation = validateUsername(sanitizedUsername)
@@ -122,9 +121,11 @@ export class UserService {
     }
 
     // Validate and sanitize display name (optional)
-    if (data.display_name !== undefined && data.display_name !== null) {
+    if (data.display_name !== undefined) {
       if (typeof data.display_name !== 'string') {
         errors.push({ field: 'display_name', message: 'Display name must be a string' })
+      } else if (data.display_name.trim().length === 0) {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' })
       } else {
         const sanitizedDisplayName = sanitizeText(data.display_name, { maxLength: 50 })
         const displayNameValidation = validateDisplayName(sanitizedDisplayName)
@@ -156,8 +157,8 @@ export class UserService {
     if (data.preferred_language !== undefined && data.preferred_language !== null) {
       if (typeof data.preferred_language !== 'string') {
         errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!/^[a-z]{2}$/.test(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a valid ISO 639-1 code' })
+      } else if (!['en', 'es'].includes(data.preferred_language)) {
+        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
       } else {
         sanitizedData.preferred_language = data.preferred_language
       }
@@ -173,12 +174,12 @@ export class UserService {
   /**
    * Get user by user ID
    */
-  static async getUser(userId: string): Promise<DatabaseUserInsert | null> {
+  static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -187,13 +188,13 @@ export class UserService {
       throw new Error(`Failed to fetch user: ${error.message}`)
     }
 
-    return user
+    return user;
   }
 
   /**
    * Create a new user
    */
-  static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
+  static async createUser(data: CreateUserData): DatabaseUserInsertPromise {
     // Validate and sanitize input data
     const validation = UserService.validateCreateUserData(data)
     if (!validation.isValid) {
@@ -204,7 +205,7 @@ export class UserService {
     const sanitizedData = validation.sanitizedData
 
     // Check username availability if username is provided
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const isAvailable = await this.isUsernameAvailable(sanitizedData.username)
       if (!isAvailable) {
         throw new Error('Username is already taken')
@@ -218,24 +219,24 @@ export class UserService {
         username: sanitizedData.username,
         display_name: sanitizedData.display_name,
         avatar_url: sanitizedData.avatar_url,
-        preferred_language: sanitizedData.preferred_language || 'en',
+        preferred_language: sanitizedData.preferred_language ?? 'en',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .select()
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
     }
 
-    return user
+    return user;
   }
 
   /**
    * Update user
    */
-  static async updateUser(userId: string, data: UpdateUserData): Promise<DatabaseUserInsert> {
+  static async updateUser(userId: string, data: UpdateUserData): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -251,7 +252,7 @@ export class UserService {
     const sanitizedData = validation.sanitizedData
 
     // Check username availability if username is being updated
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const existingUser = await this.getUserByUsername(sanitizedData.username)
       if (existingUser && existingUser.id !== userId) {
         throw new Error('Username is already taken')
@@ -268,19 +269,19 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
     }
 
-    return user
+    return user;
   }
 
   /**
    * Delete user
    */
-  static async deleteUser(userId: string): Promise<void> {
+  static async deleteUser(userId: string): VoidPromise {
     const { error } = await supabase
       .from('users')
       .delete()
@@ -324,7 +325,7 @@ export class UserService {
   /**
    * Get user by username
    */
-  static async getUserByUsername(username: string): Promise<DatabaseUserInsert | null> {
+  static async getUserByUsername(username: string): DatabaseUserInsertOrNullPromise {
     // Validate username input
     if (!username || typeof username !== 'string' || username.trim().length === 0) {
       throw new Error('Valid username is required')
@@ -339,7 +340,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', username)
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -348,13 +349,13 @@ export class UserService {
       throw new Error(`Failed to fetch user by username: ${error.message}`)
     }
 
-    return user
+    return user;
   }
 
   /**
    * Update user's preferred language
    */
-  static async updatePreferredLanguage(userId: string, language: string): Promise<DatabaseUserInsert> {
+  static async updatePreferredLanguage(userId: string, language: string): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -362,17 +363,17 @@ export class UserService {
     if (!language || typeof language !== 'string' || language.trim().length === 0) {
       throw new Error('Valid language is required')
     }
-    if (!/^[a-z]{2}$/.test(language)) {
-      throw new Error('Language must be a valid ISO 639-1 code')
+    if (!['en', 'es'].includes(language)) {
+      throw new Error('Language must be one of: en, es')
     }
 
-    return this.updateUser(userId, { preferred_language: language })
+    return this.updateUser(userId, { preferred_language: language as LanguageCode })
   }
 
   /**
    * Update user's avatar URL
    */
-  static async updateAvatarUrl(userId: string, avatarUrl: string): Promise<DatabaseUserInsert> {
+  static async updateAvatarUrl(userId: string, avatarUrl: string): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -394,7 +395,7 @@ export class UserService {
   /**
    * Get or create user (useful for ensuring user exists)
    */
-  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): Promise<DatabaseUserInsert> {
+  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): DatabaseUserInsertPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -402,16 +403,14 @@ export class UserService {
 
     let user = await this.getUser(userId)
     
-    if (!user) {
-      user = await this.createUser({
-        id: userId,
-        username: userData?.username,
-        display_name: userData?.display_name,
-        avatar_url: userData?.avatar_url,
-        preferred_language: userData?.preferred_language
-      })
-    }
+    user ??= await this.createUser({
+      id: userId,
+      username: userData?.username,
+      display_name: userData?.display_name,
+      avatar_url: userData?.avatar_url,
+      preferred_language: userData?.preferred_language
+    });
 
-    return user
+    return user;
   }
 } 

@@ -3,21 +3,23 @@ import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { useSupabase } from '../../hooks/useSupabase';
+import { useAuth } from '../../hooks/useAuth';
 import { TranslationResponse } from '../../lib/translationService';
 import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
+import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
-import type { DifficultyLevel, DifficultyLevelDisplay } from '../../lib/types/prompt';
+import type { DifficultyLevel } from '../../types/llm/prompts';
+import type { SaveFieldType, TextAreaChangeEvent } from '../../types/common';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
   originalStory: string;
   originalLanguage: string;
   translatedLanguage: string;
-  difficultyLevel: DifficultyLevelDisplay;
+  difficultyLevel: DifficultyLevel;
   isSavedStory?: boolean;
 }
 
@@ -39,25 +41,21 @@ export default function SaveTranslationButton({
     notes?: string;
   }>({});
   
-  const { createSavedTranslation, isCreating } = useSavedTranslations();
-  const { user } = useSupabase();
+  const { user } = useAuth();
+  const savedTranslationService = new SavedTranslationService();
   const { toast } = useToast();
   const { getLanguageCode } = useLanguages();
-
-
-
-  // Convert difficulty level to CEFR format (database expects CEFR codes)
-  const getDifficultyCode = (difficultyLevel: DifficultyLevelDisplay): DifficultyLevel => {
-    // Ensure the difficulty level is in lowercase CEFR format
-    return difficultyLevel.toLowerCase() as DifficultyLevel;
-  };
+  const { getDifficultyLevelName } = useDifficultyLevels();
 
   // Validate and sanitize input fields
-  const validateAndSanitizeInput = (field: 'title' | 'notes', value: string) => {
-    const sanitizedValue = sanitizeText(value, { maxLength: field === 'title' ? 200 : 1000 });
+  const validateAndSanitizeInput = (field: SaveFieldType, value: string) => {
+    // Align with database schema: title VARCHAR(255), notes TEXT (unlimited)
+    const sanitizedValue = sanitizeText(value, { 
+      maxLength: field === 'title' ? 255 : undefined 
+    });
     
     const validation = validateTextInput(sanitizedValue, {
-      maxLength: field === 'title' ? 200 : 1000,
+      maxLength: field === 'title' ? 255 : undefined, // title: 255 chars, notes: unlimited
       allowHTML: false,
       allowLineBreaks: true,
       trim: true,
@@ -79,7 +77,7 @@ export default function SaveTranslationButton({
   };
 
   // Handle input changes with validation
-  const handleInputChange = (field: 'title' | 'notes', value: string) => {
+  const handleInputChange = (field: SaveFieldType, value: string) => {
     if (field === 'title') {
       setTitle(value);
     } else {
@@ -128,15 +126,15 @@ export default function SaveTranslationButton({
         return;
       }
 
-      await createSavedTranslation({
+      await savedTranslationService.createSavedTranslation({
         original_story: originalStory,
         translated_story: translationData.translatedText,
         original_language_code: originalLanguageCode,
         translated_language_code: translatedLanguageCode,
-        difficulty_level_code: getDifficultyCode(difficultyLevel),
-        title: sanitizedTitle || undefined,
-        notes: sanitizedNotes || undefined,
-      });
+        difficulty_level_code: difficultyLevel,
+        title: sanitizedTitle ?? undefined,
+        notes: sanitizedNotes ?? undefined,
+      }, user.id);
 
       // Show success toast
       toast({
@@ -150,7 +148,8 @@ export default function SaveTranslationButton({
       setTitle('');
       setNotes('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save translation');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save translation';
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -225,7 +224,11 @@ export default function SaveTranslationButton({
                   label="Title (optional)"
                   placeholder="Enter a title for this translation..."
                   value={title}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('title', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => {
+                    handleInputChange('title', e.target.value);
+                  }}
+                  maxLength={255}
+                  showCharacterCount={true}
                 />
                 {validationErrors.title && (
                   <p className="text-sm text-red-600">{validationErrors.title}</p>
@@ -239,7 +242,9 @@ export default function SaveTranslationButton({
                   label="Notes (optional)"
                   placeholder="Add any notes about this translation..."
                   value={notes}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('notes', e.target.value)}
+                  onChange={(e: TextAreaChangeEvent) => {
+                    handleInputChange('notes', e.target.value);
+                  }}
                 />
                 {validationErrors.notes && (
                   <p className="text-sm text-red-600">{validationErrors.notes}</p>
@@ -254,7 +259,7 @@ export default function SaveTranslationButton({
                   <span className="font-medium">Translated Language:</span> {translatedLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty Level:</span> {difficultyLevel.toUpperCase()}
+                  <span className="font-medium">Difficulty Level:</span> {getDifficultyLevelName(difficultyLevel)}
                 </div>
               </div>
 
@@ -267,16 +272,16 @@ export default function SaveTranslationButton({
 
               <div className="flex gap-2 pt-2">
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving || isCreating}
+                  onClick={() => void handleSave()}
+                  disabled={isSaving}
                   className="flex-1"
                 >
-                  {isSaving || isCreating ? 'Saving...' : 'Save Translation'}
+                  {isSaving ? 'Saving...' : 'Save Translation'}
                 </Button>
                 <Button
                   onClick={handleCancel}
                   variant="outline"
-                  disabled={isSaving || isCreating}
+                  disabled={isSaving}
                 >
                   Cancel
                 </Button>

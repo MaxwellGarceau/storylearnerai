@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import { vi } from 'vitest'
 import { UserProfile } from '../UserProfile'
-import { setupSupabaseMocks, mockUseSupabase } from '../../../__tests__/mocks/supabaseMock'
+import { setupSupabaseMocks, mockUseAuth } from '../../../__tests__/mocks/supabaseMock'
 import type { User } from '@supabase/supabase-js'
 
 // Mock the useLanguages hook
@@ -32,7 +32,7 @@ vi.mock('../../../hooks/useLanguages', () => ({
 setupSupabaseMocks()
 
 // Mock UserService
-vi.mock('../../../api/supabase', () => ({
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
   UserService: {
     getOrCreateUser: vi.fn(),
     updateUser: vi.fn(),
@@ -41,7 +41,7 @@ vi.mock('../../../api/supabase', () => ({
 }))
 
 // Import the mocked UserService
-import { UserService } from '../../../api/supabase'
+import { UserService } from '../../../api/supabase/database/userProfileService'
 
 describe('UserProfile Component', () => {
   const mockUser: User = {
@@ -67,7 +67,7 @@ describe('UserProfile Component', () => {
     cleanup()
     
     // Setup default mocks
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),

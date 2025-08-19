@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { TranslationService, CreateTranslationData, UpdateTranslationData } from '../translationService'
 
@@ -16,14 +15,12 @@ vi.mock('../../client', () => {
 import { supabase } from '../../client'
 
 // Type the mocked supabase
-const mockedSupabase = vi.mocked(supabase) as any
+const mockedSupabase = vi.mocked(supabase)
 
 describe('TranslationService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
-
-
 
   describe('Input Validation and Sanitization', () => {
     describe('createTranslation', () => {
@@ -37,10 +34,13 @@ describe('TranslationService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
+        const mockSingle = vi.fn().mockResolvedValue({ data: mockTranslation, error: null })
+        const mockSelect = vi.fn().mockReturnValue({ single: mockSingle })
+        const mockInsert = vi.fn().mockReturnValue({ select: mockSelect })
         const mockQuery = {
-          insert: vi.fn().mockReturnThis(),
-          select: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+          insert: mockInsert,
+          select: mockSelect,
+          single: mockSingle,
         }
 
         mockedSupabase.from.mockReturnValue(mockQuery)
@@ -58,11 +58,11 @@ describe('TranslationService', () => {
           story_id: 'story123',
           target_language: 'es',
           translated_content: 'Hola mundo',
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
+          created_at: expect.any(String) as string,
+          updated_at: expect.any(String) as string,
         })
-        expect(mockQuery.select).toHaveBeenCalled()
-        expect(mockQuery.single).toHaveBeenCalled()
+        expect(mockQuery.select).toHaveBeenCalledWith()
+        expect(mockQuery.single).toHaveBeenCalledWith()
         expect(result).toEqual(mockTranslation)
       })
 
@@ -126,16 +126,17 @@ describe('TranslationService', () => {
           updated_at: '2024-01-01T00:00:00Z'
         }
 
-        const mockSupabase = supabase as any
-        mockSupabase.from.mockReturnValue({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: mockTranslation,
-                error: null
-              })
+        const mockSupabase = vi.mocked(supabase)
+        const mockInsert = vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockTranslation,
+              error: null
             })
           })
+        })
+        mockSupabase.from.mockReturnValue({
+          insert: mockInsert
         })
 
         const translationData: CreateTranslationData = {
@@ -167,11 +168,15 @@ describe('TranslationService', () => {
           updated_at: '2024-01-02T00:00:00Z'
         }
 
+        const mockSingle = vi.fn().mockResolvedValue({ data: mockTranslation, error: null })
+        const mockSelect = vi.fn().mockReturnValue({ single: mockSingle })
+        const mockEq = vi.fn().mockReturnValue({ select: mockSelect })
+        const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq })
         const mockQuery = {
-          update: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockReturnThis(),
-          select: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+          update: mockUpdate,
+          eq: mockEq,
+          select: mockSelect,
+          single: mockSingle,
         }
 
         mockedSupabase.from.mockReturnValue(mockQuery)
@@ -187,11 +192,11 @@ describe('TranslationService', () => {
         expect(mockQuery.update).toHaveBeenCalledWith({
           target_language: 'fr',
           translated_content: 'Bonjour le monde',
-          updated_at: expect.any(String),
+          updated_at: expect.any(String) as string,
         })
         expect(mockQuery.eq).toHaveBeenCalledWith('id', 'trans123')
-        expect(mockQuery.select).toHaveBeenCalled()
-        expect(mockQuery.single).toHaveBeenCalled()
+        expect(mockQuery.select).toHaveBeenCalledWith()
+        expect(mockQuery.single).toHaveBeenCalledWith()
         expect(result).toEqual(mockTranslation)
       })
 
@@ -220,7 +225,7 @@ describe('TranslationService', () => {
       })
 
       it('should reject non-string translation ID', async () => {
-        await expect(TranslationService.getTranslationById(null as any)).rejects.toThrow('Invalid translation ID provided')
+        await expect(TranslationService.getTranslationById(null as unknown as string)).rejects.toThrow('Invalid translation ID provided')
       })
     })
 
@@ -292,10 +297,13 @@ describe('TranslationService', () => {
         updated_at: '2024-01-01T00:00:00Z'
       }
 
+      const mockSingle = vi.fn().mockResolvedValue({ data: mockTranslation, error: null })
+      const mockSelect = vi.fn().mockReturnValue({ single: mockSingle })
+      const mockInsert = vi.fn().mockReturnValue({ select: mockSelect })
       const mockQuery = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+        insert: mockInsert,
+        select: mockSelect,
+        single: mockSingle,
       }
 
       mockedSupabase.from.mockReturnValue(mockQuery)
@@ -327,10 +335,13 @@ describe('TranslationService', () => {
         updated_at: '2024-01-01T00:00:00Z'
       }
 
+      const mockSingle = vi.fn().mockResolvedValue({ data: mockTranslation, error: null })
+      const mockSelect = vi.fn().mockReturnValue({ single: mockSingle })
+      const mockInsert = vi.fn().mockReturnValue({ select: mockSelect })
       const mockQuery = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockTranslation, error: null }),
+        insert: mockInsert,
+        select: mockSelect,
+        single: mockSingle,
       }
 
       mockedSupabase.from.mockReturnValue(mockQuery)
@@ -355,13 +366,16 @@ describe('TranslationService', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
+      const mockSingle = vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'Database connection failed' }
+      })
+      const mockSelect = vi.fn().mockReturnValue({ single: mockSingle })
+      const mockInsert = vi.fn().mockReturnValue({ select: mockSelect })
       const mockQuery = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Database connection failed' }
-        }),
+        insert: mockInsert,
+        select: mockSelect,
+        single: mockSingle,
       }
 
       mockedSupabase.from.mockReturnValue(mockQuery)
@@ -376,13 +390,16 @@ describe('TranslationService', () => {
     })
 
     it('should handle translation not found errors', async () => {
+      const mockSingle = vi.fn().mockResolvedValue({
+        data: null,
+        error: { code: 'PGRST116' }
+      })
+      const mockEq = vi.fn().mockReturnValue({ single: mockSingle })
+      const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
       const mockQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: { code: 'PGRST116' }
-        }),
+        select: mockSelect,
+        eq: mockEq,
+        single: mockSingle,
       }
 
       mockedSupabase.from.mockReturnValue(mockQuery)

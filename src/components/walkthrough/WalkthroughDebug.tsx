@@ -3,7 +3,7 @@ import { useWalkthrough } from '../../hooks/useWalkthrough';
 import { walkthroughConfigs } from '../../lib/walkthroughConfigs';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import type { WalkthroughId } from '../../lib/types/walkthrough';
+import type { WalkthroughId } from '../../types/app/walkthrough';
 
 interface WalkthroughDebugProps {
   show?: boolean;
@@ -37,8 +37,8 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
           <div className="bg-gray-100 p-2 rounded">
             <div>Active: {state.isActive ? '✅' : '❌'}</div>
             <div>Step: {state.currentStepIndex + 1}</div>
-            <div>Config: {currentConfig?.id || 'None'}</div>
-            <div>Title: {currentConfig?.title || 'N/A'}</div>
+            <div>Config: {currentConfig?.id ?? 'None'}</div>
+            <div>Title: {currentConfig?.title ?? 'N/A'}</div>
           </div>
         </div>
 

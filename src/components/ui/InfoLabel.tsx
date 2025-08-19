@@ -29,7 +29,7 @@ const infoLabelVariants = cva(
   }
 )
 
-export interface InfoLabelProps
+interface InfoLabelProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof infoLabelVariants> {}
 

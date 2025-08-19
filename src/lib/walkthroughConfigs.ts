@@ -1,4 +1,5 @@
-import type { WalkthroughConfig } from './types/walkthrough';
+import type { WalkthroughConfig } from '../types/app/walkthrough';
+import { logger } from './logger';
 
 export const homeWalkthrough: WalkthroughConfig = {
   id: 'home-walkthrough',
@@ -21,7 +22,7 @@ export const homeWalkthrough: WalkthroughConfig = {
   allowSkip: true,
 };
 
-export const translateWalkthrough: WalkthroughConfig = {
+const translateWalkthrough: WalkthroughConfig = {
   id: 'translate-walkthrough',
   title: 'Translate Your Story',
   description: 'Learn how to translate stories with AI assistance.',
@@ -70,7 +71,7 @@ function isUserSignedIn() {
   );
   const hasAuthData = supabaseKeys.length > 0;
   
-  console.log(`🔐 isUserSignedIn check:`, {
+  logger.debug('walkthrough', 'isUserSignedIn check', {
     supabaseKeys,
     hasAuthData,
     allLocalStorageKeys: Object.keys(localStorage).filter(key => key.includes('supabase'))
@@ -79,7 +80,7 @@ function isUserSignedIn() {
   return hasAuthData;
 }
 
-export const storyWalkthrough: WalkthroughConfig = {
+const storyWalkthrough: WalkthroughConfig = {
   id: 'story-walkthrough',
   title: 'Save Your Translation',
   description: 'Learn how to save translations and create an account.',

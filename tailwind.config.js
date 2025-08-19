@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import { blue } from 'tailwindcss/colors';
-
+/* eslint-env node */
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],

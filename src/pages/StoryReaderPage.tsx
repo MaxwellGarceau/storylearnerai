@@ -5,26 +5,27 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
-import CombinedSidebar from '../components/story/CombinedSidebar';
+import StorySidebar from '../components/story/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const translationData = location.state?.translationData as TranslationResponse | undefined;
-  const isSavedStory = location.state?.isSavedStory as boolean | undefined;
+  const state = location.state as { translationData?: TranslationResponse; isSavedStory?: boolean } | null;
+  const translationData = state?.translationData;
+  const isSavedStory = state?.isSavedStory;
   // const savedTranslationId = location.state?.savedTranslationId as string | undefined;
 
   // Use test data if in debug mode and no translation data
   const isDebugMode = window.location.search.includes('debug=walkthrough');
-  const finalTranslationData = translationData || (isDebugMode ? testWalkthroughTranslationData : undefined);
+  const finalTranslationData = translationData ?? (isDebugMode ? testWalkthroughTranslationData : undefined);
 
   const handleTranslateAnother = () => {
-    navigate('/translate');
+    void navigate('/translate');
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    void navigate('/');
   };
 
   // If no translation data is available, show a message
@@ -113,7 +114,7 @@ const StoryReaderPage: React.FC = () => {
       </div>
 
       {/* Combined Sidebar */}
-      <CombinedSidebar translationData={finalTranslationData} />
+      <StorySidebar translationData={finalTranslationData} />
     </div>
   );
 };

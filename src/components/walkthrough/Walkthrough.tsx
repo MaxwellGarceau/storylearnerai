@@ -8,8 +8,9 @@ import { cn } from '../../lib/utils';
 
 import { useViewport } from '../../hooks/useViewport';
 import { walkthroughService } from '../../lib/walkthroughService';
-import type { WalkthroughState } from '../../lib/types/walkthrough';
-import { useSupabase } from '../../hooks/useSupabase';
+import type { WalkthroughState } from '../../types/app/walkthrough';
+import { useAuth } from '../../hooks/useAuth';
+import { logger } from '../../lib/logger';
 
 interface WalkthroughProps {
   className?: string;
@@ -17,7 +18,7 @@ interface WalkthroughProps {
 
 export const Walkthrough: React.FC<WalkthroughProps> = () => {
   // Ensure user state is loaded so skipIf logic in walkthrough configs is accurate
-  useSupabase();
+  useAuth();
   const [state, setState] = useState<WalkthroughState>(walkthroughService.getState());
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +37,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
 
   // Update spotlight effect when scrolling
   const updateSpotlight = useCallback((forceUpdate = false, elementOverride?: HTMLElement | null) => {
-    const element = elementOverride || targetElement;
+    const element = elementOverride ?? targetElement;
     if (!element || !overlayRef.current) return;
 
     const rect = element.getBoundingClientRect();
@@ -120,7 +121,7 @@ export const Walkthrough: React.FC<WalkthroughProps> = () => {
         updateSpotlight(true, element);
       }
     } else {
-      console.warn(`Target element not found: ${currentStep.targetSelector}`);
+      logger.warn('ui', `Target element not found: ${currentStep.targetSelector}`);
       // Auto-advance if target not found (similar to Joyride behavior)
       setTimeout(() => {
         walkthroughService.nextStep();

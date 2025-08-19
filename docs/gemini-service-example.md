@@ -54,6 +54,7 @@ const config: GeminiConfig = {
 ```typescript
 import { GeminiService } from './src/lib/llm/providers/GeminiService';
 import { GeminiConfig } from './src/lib/types/llm';
+import { logger } from './src/lib/logger';
 
 const config: GeminiConfig = {
   provider: 'gemini',
@@ -73,7 +74,7 @@ const response = await service.generateCompletion({
   maxTokens: 500,
 });
 
-console.log(response.content);
+logger.info('llm', 'Generated completion', { content: response.content });
 ```
 
 ### Using the LLMServiceManager
@@ -81,6 +82,7 @@ console.log(response.content);
 ```typescript
 import { LLMServiceManager } from './src/lib/llm/LLMServiceManager';
 import { GeminiConfig } from './src/lib/types/llm';
+import { logger } from './src/lib/logger';
 
 const config: GeminiConfig = {
   provider: 'gemini',
@@ -97,7 +99,7 @@ const response = await service.generateCompletion({
   prompt: 'Explain quantum computing in simple terms.',
 });
 
-console.log(response.content);
+logger.info('llm', 'Generated completion', { content: response.content });
 ```
 
 ## Supported Models
@@ -120,7 +122,7 @@ const response = await service.generateCompletion({
   prompt: 'Write a haiku about technology.',
 });
 
-console.log('Token usage:', response.tokenUsage);
+logger.info('llm', 'Token usage', { tokenUsage: response.tokenUsage });
 // Output: { promptTokens: 10, completionTokens: 25, totalTokens: 35 }
 ```
 
@@ -128,7 +130,7 @@ console.log('Token usage:', response.tokenUsage);
 
 ```typescript
 const isHealthy = await service.healthCheck();
-console.log('Service is healthy:', isHealthy);
+logger.info('llm', 'Service health check', { isHealthy });
 ```
 
 ### Error Handling
@@ -142,9 +144,9 @@ try {
   });
 } catch (error) {
   if (error.code === 'GEMINI_ERROR') {
-    console.error('Gemini API error:', error.message);
+    logger.error('llm', 'Gemini API error', { error: error.message });
   } else {
-    console.error('Unexpected error:', error);
+    logger.error('llm', 'Unexpected error', { error });
   }
 }
 ```
@@ -252,6 +254,8 @@ const service = new GeminiService({
 ### Story Generation
 
 ```typescript
+import { logger } from './src/lib/logger';
+
 const storyPrompt = `
 Write a short story about a time traveler who discovers that changing the past 
 has unexpected consequences. The story should be engaging and thought-provoking.
@@ -264,12 +268,14 @@ const response = await service.generateCompletion({
   maxTokens: 1000,
 });
 
-console.log('Generated story:', response.content);
+logger.info('llm', 'Generated story', { content: response.content });
 ```
 
 ### Educational Content
 
 ```typescript
+import { logger } from './src/lib/logger';
+
 const educationPrompt = `
 Explain the concept of photosynthesis in a way that a 10-year-old would understand.
 Use simple language and relatable examples.
@@ -282,5 +288,5 @@ const response = await service.generateCompletion({
   maxTokens: 500,
 });
 
-console.log('Educational content:', response.content);
+logger.info('llm', 'Educational content', { content: response.content });
 ``` 

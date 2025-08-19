@@ -18,10 +18,10 @@ describe('LLMServiceManager', () => {
     
     // Mock environment configuration
     vi.mocked(EnvironmentConfig.getLLMConfig).mockReturnValue({
-      provider: 'openai',
+      provider: 'gemini',
       apiKey: 'test-api-key',
-      endpoint: 'https://api.openai.com/v1',
-      model: 'gpt-4o-mini',
+      endpoint: 'https://generativelanguage.googleapis.com',
+      model: 'gemini-pro',
       maxTokens: 2000,
       temperature: 0.7,
     });
@@ -37,7 +37,7 @@ describe('LLMServiceManager', () => {
     // Reset singleton instance safely
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (LLMServiceManager as any).instance = undefined;
+      ((LLMServiceManager as any) as { instance: undefined }).instance = undefined;
     } catch {
       // Ignore errors during cleanup
     }
@@ -55,8 +55,8 @@ describe('LLMServiceManager', () => {
       const manager = LLMServiceManager.getInstance();
       
       expect(EnvironmentConfig.getLLMConfig).toHaveBeenCalled();
-      expect(manager.getProvider()).toBe('openai');
-      expect(manager.getModel()).toBe('gpt-4o-mini');
+      expect(manager.getProvider()).toBe('gemini');
+      expect(manager.getModel()).toBe('gemini-pro');
     });
   });
 
@@ -65,10 +65,8 @@ describe('LLMServiceManager', () => {
       const manager = LLMServiceManager.getInstance();
       const providers = manager.getAvailableProviders();
       
-      expect(providers).toContain('openai');
-      expect(providers).toContain('anthropic');
       expect(providers).toContain('gemini');
-      expect(providers).toContain('custom');
+      expect(providers).toEqual(['gemini']);
     });
   });
 
@@ -77,10 +75,8 @@ describe('LLMServiceManager', () => {
       const manager = LLMServiceManager.getInstance();
       const displayNames = manager.getProviderDisplayNames();
       
-      expect(displayNames['openai']).toBe('OpenAI GPT');
-      expect(displayNames['anthropic']).toBe('Anthropic Claude');
       expect(displayNames['gemini']).toBe('Google Gemini');
-      expect(displayNames['custom']).toBe('Custom API');
+      expect(Object.keys(displayNames)).toEqual(['gemini']);
     });
   });
 
@@ -89,9 +85,9 @@ describe('LLMServiceManager', () => {
       const manager = LLMServiceManager.getInstance();
       const config = manager.getConfig();
       
-      expect(config.provider).toBe('openai');
+      expect(config.provider).toBe('gemini');
       expect(config.apiKey).toBe('test-api-key');
-      expect(config.model).toBe('gpt-4o-mini');
+      expect(config.model).toBe('gemini-pro');
       
       // Should be a copy, not the original
       config.apiKey = 'modified';

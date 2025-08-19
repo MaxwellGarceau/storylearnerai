@@ -104,7 +104,7 @@ vi.mock('../../../lib/utils/sanitization', () => ({
     }
   }),
   sanitizeText: vi.fn((input: string, options?: { maxLength?: number }) => {
-    const maxLength = options?.maxLength || 100
+    const maxLength = options?.maxLength ?? 100
     const sanitized = input.replace(/<script[^>]*>.*?<\/script>/gi, '')
     return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized
   })
@@ -140,7 +140,7 @@ describe('UserService Validation', () => {
       }
 
       await expect(UserService.createUser(invalidData))
-        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be a valid ISO 639-1 code')
+        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be one of: en, es')
     })
 
     it('should reject invalid avatar URL', async () => {
@@ -171,7 +171,7 @@ describe('UserService Validation', () => {
       }
 
       await expect(UserService.updateUser('test-user-id', invalidData))
-        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be a valid ISO 639-1 code')
+        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be one of: en, es')
     })
   })
 
@@ -197,7 +197,7 @@ describe('UserService Validation', () => {
   describe('updatePreferredLanguage', () => {
     it('should validate language code format', async () => {
       await expect(UserService.updatePreferredLanguage('test-user-id', 'invalid'))
-        .rejects.toThrow('Language must be a valid ISO 639-1 code')
+        .rejects.toThrow('Language must be one of: en, es')
     })
 
     it('should reject empty language', async () => {

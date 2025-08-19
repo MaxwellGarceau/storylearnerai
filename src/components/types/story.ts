@@ -1,4 +1,4 @@
-import { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 
 export interface StoryFormData {
   story: string;

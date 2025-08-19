@@ -49,7 +49,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value="Test content" />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe('Test content');
   });
 
@@ -65,7 +65,7 @@ describe('TextArea Component', () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
     // Just check that the event was called with a SyntheticEvent-like object
     expect(handleChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: expect.any(Object),
+      target: expect.any(Object) as HTMLElement,
       type: 'change'
     }));
   });
@@ -199,7 +199,7 @@ describe('TextArea Component', () => {
     // Test interaction
     fireEvent.change(textarea, { target: { value: 'New story content' } });
     expect(handleChange).toHaveBeenCalledWith(expect.objectContaining({
-      target: expect.any(Object),
+      target: expect.any(Object) as HTMLElement,
       type: 'change'
     }));
   });
@@ -209,7 +209,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value="" />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe('');
   });
 
@@ -219,7 +219,7 @@ describe('TextArea Component', () => {
       <TextArea {...defaultProps} value={multilineContent} />
     );
     
-    const textarea = within(container).getByRole('textbox') as HTMLTextAreaElement;
+    const textarea = within(container).getByRole('textbox');
     expect(textarea.value).toBe(multilineContent);
   });
 }); 

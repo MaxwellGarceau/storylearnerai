@@ -8,11 +8,12 @@ import {
   NativeToTargetInstructions,
   LanguageCode,
   DifficultyLevel
-} from '../types/prompt';
+} from '../../types/llm/prompts';
 import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
 import templateConfigData from './config/template.json';
+import type { VoidPromise } from '../../types/common';
 
 /**
  * General Prompt Configuration Service
@@ -36,54 +37,62 @@ class GeneralPromptConfigService {
   private generalConfig: GeneralPromptConfig;
   private templateConfig: TemplateConfig;
   private nativeToTargetConfig: NativeToTargetLanguageConfig;
+  private configLoadingPromise: VoidPromise | null = null;
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
     this.generalConfig = generalConfigData as GeneralPromptConfig;
     this.templateConfig = templateConfigData as TemplateConfig;
     this.nativeToTargetConfig = {} as NativeToTargetLanguageConfig;
-    this.loadNativeToTargetConfigs();
+    this.configLoadingPromise = this.loadNativeToTargetConfigs();
   }
 
   /**
    * Dynamically load native-to-target configurations
    */
-  private loadNativeToTargetConfigs(): void {
+  private async loadNativeToTargetConfigs(): VoidPromise {
     try {
       logger.time('prompts', 'load-native-to-target-configs');
       
-      // Load English speaker configurations
-      import('./config/native-to-target/en/es.json').then(englishConfig => {
-        const config = this.nativeToTargetConfig as Record<string, unknown>;
-        config['en'] = {
-          'es': englishConfig.default
-        };
-        logger.debug('prompts', 'Loaded English speaker configurations');
-      }).catch(error => {
-        logger.error('prompts', 'Failed to load English speaker configurations', { error });
-      });
+      // Load configurations in parallel for better performance
+      const [englishConfig, spanishConfig] = await Promise.all([
+        import('./config/native-to-target/en/es.json'),
+        import('./config/native-to-target/es/en.json')
+      ]);
 
-      // Load Spanish speaker configurations
-      import('./config/native-to-target/es/en.json').then(spanishConfig => {
-        const config = this.nativeToTargetConfig as Record<string, unknown>;
-        config['es'] = {
-          'en': spanishConfig.default
-        };
-        logger.debug('prompts', 'Loaded Spanish speaker configurations');
-      }).catch(error => {
-        logger.error('prompts', 'Failed to load Spanish speaker configurations', { error });
-      });
-      
+      // Update configurations with proper type assertions
+      const config = this.nativeToTargetConfig as Record<string, unknown>;
+      config['en'] = {
+        'es': englishConfig.default as Record<string, unknown>
+      };
+      config['es'] = {
+        'en': spanishConfig.default as Record<string, unknown>
+      };
+
+      logger.debug('prompts', 'Loaded all native-to-target configurations');
       logger.timeEnd('prompts', 'load-native-to-target-configs');
     } catch (error) {
       logger.error('prompts', 'Failed to load native-to-target configurations', { error });
+      // Re-throw the error so consumers know loading failed
+      throw error;
+    }
+  }
+
+  /**
+   * Wait for configurations to be loaded
+   */
+  private async waitForConfigs(): Promise<void> {
+    if (this.configLoadingPromise) {
+      await this.configLoadingPromise;
     }
   }
 
   /**
    * Get native-to-target specific instructions for a given native language and target language
    */
-  getNativeToTargetInstructions(fromLanguage: LanguageCode, targetLanguage: LanguageCode, difficulty: DifficultyLevel): NativeToTargetInstructions | null {
+  async getNativeToTargetInstructions(fromLanguage: LanguageCode, targetLanguage: LanguageCode, difficulty: DifficultyLevel): Promise<NativeToTargetInstructions | null> {
+    // Wait for configs to be loaded
+    await this.waitForConfigs();
     logger.debug('prompts', 'Getting native-to-target instructions', { 
       fromLanguage, 
       targetLanguage, 
@@ -166,20 +175,11 @@ class GeneralPromptConfigService {
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
-  getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions {
     const config = this.languageConfig as Record<string, unknown>;
-    const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
-    if (!language) {
-      console.warn(`No prompt configuration found for language: ${languageCode}`);
-      return null;
-    }
-
-    const difficultyLevel = language[difficulty.toLowerCase()] as PromptInstructions | undefined;
-    if (!difficultyLevel) {
-      logger.warn('prompts', 'No prompt configuration found for difficulty', { difficulty, languageCode });
-      return null;
-    }
-
+    const language = config[languageCode.toLowerCase()] as Record<string, unknown>;
+    const difficultyLevel = language[difficulty.toLowerCase()] as PromptInstructions;
+    
     return difficultyLevel;
   }
 
@@ -188,7 +188,7 @@ class GeneralPromptConfigService {
    * For now, this delegates to the single language configuration since we don't have
    * comprehensive user background customization yet
    */
-  getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions {
     // For now, use the single language configuration
     // In the future, this can be enhanced with user background considerations
     return this.getLanguageInstructions(toLanguageCode, difficulty);
@@ -211,7 +211,7 @@ class GeneralPromptConfigService {
   /**
    * Build a complete prompt from the template and context
    */
-  buildPrompt(context: PromptBuildContext): string {
+  async buildPrompt(context: PromptBuildContext): Promise<string> {
     logger.time('prompts', 'build-prompt');
     
     try {
@@ -226,18 +226,10 @@ class GeneralPromptConfigService {
 
       // Get language-specific instructions
       const languageInstructions = this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
-      if (!languageInstructions) {
-        logger.warn('prompts', 'No language instructions found', { 
-          fromLanguage, 
-          toLanguage, 
-          difficulty 
-        });
-        return this.buildFallbackPrompt(context);
-      }
 
       // Get native-to-target specific instructions if native language is provided
       let nativeToTargetInstructions = '';
-      const nativeInstructions = this.getNativeToTargetInstructions(fromLanguage, toLanguage, difficulty);
+      const nativeInstructions = await this.getNativeToTargetInstructions(fromLanguage, toLanguage, difficulty);
       if (nativeInstructions) {
         nativeToTargetInstructions = this.buildNativeToTargetInstructionsText(nativeInstructions);
         logger.debug('prompts', 'Added native-to-target instructions', { 
@@ -341,8 +333,6 @@ Please provide only the ${toLanguage} translation.`;
 let _instance: GeneralPromptConfigService | null = null;
 
 export const generalPromptConfigService = (() => {
-  if (!_instance) {
-    _instance = new GeneralPromptConfigService();
-  }
+  _instance ??= new GeneralPromptConfigService();
   return _instance;
 })(); 

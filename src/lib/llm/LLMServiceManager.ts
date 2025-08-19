@@ -1,7 +1,8 @@
 import { LLMService } from './LLMService';
 import { LLMServiceFactory } from './LLMServiceFactory';
 import { EnvironmentConfig } from '../config/env';
-import { LLMRequest, LLMResponse, ProviderConfig } from '../types/llm';
+import { LLMRequest, LLMResponse, ProviderConfig } from '../../types/llm/providers';
+import type { RecordString } from '../../types/common';
 
 export class LLMServiceManager {
   private static instance: LLMServiceManager;
@@ -77,14 +78,14 @@ export class LLMServiceManager {
   /**
    * Get provider display names for UI
    */
-  getProviderDisplayNames(): Record<string, string> {
+  getProviderDisplayNames(): RecordString {
     return LLMServiceFactory.getProviderDisplayNames();
   }
 
   /**
    * Get provider descriptions for UI
    */
-  getProviderDescriptions(): Record<string, string> {
+  getProviderDescriptions(): RecordString {
     return LLMServiceFactory.getProviderDescriptions();
   }
 }

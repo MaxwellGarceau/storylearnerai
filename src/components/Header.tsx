@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { useSupabase } from '../hooks/useSupabase';
+import { useAuth } from '../hooks/useAuth';
 import { Button } from './ui/Button';
 import { 
   User, 
@@ -14,10 +14,11 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { logger } from '../lib/logger';
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const { user, signOut } = useSupabase();
+  const { user, signOut } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -31,7 +32,7 @@ const Header: React.FC = () => {
       setShowUserMenu(false);
       setShowMobileMenu(false);
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('auth', 'Error signing out', { error });
     }
   };
 
@@ -112,7 +113,7 @@ const Header: React.FC = () => {
                   <User className="h-4 w-4 text-primary" />
                 </div>
                 <span className="hidden sm:inline">
-                  {user.email?.split('@')[0] || 'User'}
+                  {user.email?.split('@')[0] ?? 'User'}
                 </span>
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -144,7 +145,7 @@ const Header: React.FC = () => {
                     Profile
                   </Link>
                   <button
-                    onClick={handleSignOut}
+                    onClick={() => void handleSignOut()}
                     className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent/50 transition-colors"
                   >
                     <LogIn className="h-4 w-4 mr-2" />
@@ -264,7 +265,7 @@ const Header: React.FC = () => {
                   Profile
                 </Link>
                 <button
-                  onClick={handleSignOut}
+                  onClick={() => void handleSignOut()}
                   className="flex items-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors rounded-md"
                 >
                   <LogIn className="h-4 w-4 mr-2" />

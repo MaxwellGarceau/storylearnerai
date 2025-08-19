@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSupabase } from '../hooks/useSupabase'
+import { useAuth } from '../hooks/useAuth'
 import { useLanguages } from '../hooks/useLanguages'
 import { useSavedTranslations } from '../hooks/useSavedTranslations'
-import { UserService } from '../api/supabase'
+import { UserService } from '../api/supabase/database/userProfileService'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
@@ -15,15 +15,16 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import type { User } from '../lib/types/database'
+import type { DatabaseUser as User } from '../types/database'
+import type { NullableString } from '../types/common'
 
 export const DashboardPage: React.FC = () => {
-  const { user } = useSupabase()
+  const { user } = useAuth()
   const { getLanguageName } = useLanguages()
   const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<NullableString>(null)
   const [profile, setProfile] = useState<User | null>(null)
 
   const loadDashboardData = useCallback(async () => {
@@ -45,7 +46,7 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      loadDashboardData()
+      void loadDashboardData()
     } else {
       setLoading(false)
     }
@@ -85,20 +86,20 @@ export const DashboardPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {profile?.display_name || user.email?.split('@')[0]}!</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {profile?.display_name ?? user.email?.split('@')[0]}!</h1>
             <p className="text-muted-foreground">Your language learning dashboard</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => navigate('/auth?mode=profile')}
+              onClick={() => void navigate('/auth?mode=profile')}
               className="flex items-center gap-2"
             >
               <UserIcon className="h-4 w-4" />
               Profile
             </Button>
             <Button
-              onClick={() => navigate('/translate')}
+              onClick={() => void navigate('/translate')}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -136,7 +137,7 @@ export const DashboardPage: React.FC = () => {
             <CardContent>
               <div className="text-2xl font-bold">1</div>
               <p className="text-xs text-muted-foreground">
-                {getLanguageName(profile?.preferred_language || 'en')}
+                {getLanguageName(profile?.preferred_language ?? 'en')}
               </p>
             </CardContent>
           </Card>
@@ -159,7 +160,7 @@ export const DashboardPage: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/translate')}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => void navigate('/translate')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plus className="h-5 w-5" />
@@ -171,7 +172,7 @@ export const DashboardPage: React.FC = () => {
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/saved-translations')}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => void navigate('/saved-translations')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
@@ -183,7 +184,7 @@ export const DashboardPage: React.FC = () => {
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/auth?mode=profile')}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => void navigate('/auth?mode=profile')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserIcon className="h-5 w-5" />

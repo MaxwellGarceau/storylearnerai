@@ -1,42 +1,43 @@
 import { supabase } from '../client'
-import type { Language } from '../../../lib/types/database'
-import type { LanguageCode } from '../../../lib/types/prompt'
+import type { DatabaseLanguage as Language, LanguageCode } from '../../../types'
+import type { Database } from '../../../types/database'
+import { logger } from '../../../lib/logger'
 
 export class LanguageService {
   /**
    * Get all languages supported by the application
    */
   async getLanguages(): Promise<Language[]> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('languages')
       .select('*')
       .order('name');
 
-    if (error) {
-      throw new Error(`Failed to fetch languages: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to fetch languages: ${result.error.message}`);
     }
 
-    return data || [];
+    return (result.data as Database['public']['Tables']['languages']['Row'][]) || [];
   }
 
   /**
    * Get a language by its code
    */
   async getLanguageByCode(code: LanguageCode): Promise<Language | null> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('languages')
       .select('*')
       .eq('code', code)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null; // No rows returned
       }
-      throw new Error(`Failed to fetch language: ${error.message}`);
+      throw new Error(`Failed to fetch language: ${result.error.message}`);
     }
 
-    return data;
+    return result.data as Database['public']['Tables']['languages']['Row'] | null;
   }
 
   /**
@@ -45,9 +46,9 @@ export class LanguageService {
   async getLanguageName(code: LanguageCode): Promise<string> {
     try {
       const language = await this.getLanguageByCode(code);
-      return language?.name || code;
+      return language?.name ?? code;
     } catch (error) {
-      console.warn(`Failed to fetch language name for code: ${code}`, error);
+      logger.warn('database', `Failed to fetch language name for code: ${code}`, { error });
       return code; // Fallback to code if fetch fails
     }
   }

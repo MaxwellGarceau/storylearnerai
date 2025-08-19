@@ -1,8 +1,8 @@
 -- Create users table to store additional user information
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    username VARCHAR(50) UNIQUE,
-    display_name VARCHAR(100),
+    username VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
     avatar_url TEXT,
     preferred_language VARCHAR(10) DEFAULT 'en',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

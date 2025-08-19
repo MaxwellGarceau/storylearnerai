@@ -1,5 +1,9 @@
 import { supabase } from '../client'
-import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../lib/types/database'
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { DatabaseUserInsert } from '../../../types/database/user';
+import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
+import type { LanguageCode } from '../../../types/llm/prompts'
+import type { NullableString, VoidPromise } from '../../../types/common'
 import { 
   validateUsername, 
   validateDisplayName
@@ -7,20 +11,20 @@ import {
 
 export interface CreateUserData {
   id: string
-  username?: string | null
-  display_name?: string | null
-  avatar_url?: string | null
+  username?: string
+  display_name?: string
+  avatar_url?: NullableString
   preferred_language?: string
 }
 
 export interface UpdateUserData {
-  username?: string | null
-  display_name?: string | null
-  avatar_url?: string | null
+  username?: string
+  display_name?: string
+  avatar_url?: NullableString
   preferred_language?: string
 }
 
-export interface ValidationError {
+interface ValidationError {
   field: string
   message: string
 }
@@ -44,9 +48,8 @@ export class UserService {
 
     // Validate and sanitize username if provided
     if (data.username !== undefined) {
-      if (data.username === null || data.username === '') {
-        // Username is optional, so null/empty is valid
-        sanitizedData.username = null;
+      if (data.username === '') {
+        errors.push({ field: 'username', message: 'Username cannot be empty' });
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
@@ -62,9 +65,8 @@ export class UserService {
 
     // Validate and sanitize display name if provided
     if (data.display_name !== undefined) {
-      if (data.display_name === null || data.display_name === '') {
-        // Display name is optional, so null/empty is valid
-        sanitizedData.display_name = null;
+      if (data.display_name === '') {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' });
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
@@ -129,9 +131,8 @@ export class UserService {
 
     // Validate and sanitize username if provided
     if (data.username !== undefined) {
-      if (data.username === null || data.username === '') {
-        // Username can be set to null/empty
-        sanitizedData.username = null;
+      if (data.username === '') {
+        errors.push({ field: 'username', message: 'Username cannot be empty' });
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
@@ -147,9 +148,8 @@ export class UserService {
 
     // Validate and sanitize display name if provided
     if (data.display_name !== undefined) {
-      if (data.display_name === null || data.display_name === '') {
-        // Display name can be set to null/empty
-        sanitizedData.display_name = null;
+      if (data.display_name === '') {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' });
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
@@ -207,7 +207,7 @@ export class UserService {
   /**
    * Get user by user ID
    */
-  static async getUser(userId: string): Promise<DatabaseUserInsert | null> {
+  static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
@@ -217,7 +217,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -232,7 +232,7 @@ export class UserService {
   /**
    * Create a new user with validation and sanitization
    */
-  static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
+  static async createUser(data: CreateUserData): DatabaseUserInsertPromise {
     // Validate and sanitize input data
     const validation = this.validateCreateUserData(data);
     if (!validation.isValid) {
@@ -243,7 +243,7 @@ export class UserService {
     const { sanitizedData } = validation;
 
     // Check username availability if username is provided
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const isAvailable = await this.isUsernameAvailable(sanitizedData.username);
       if (!isAvailable) {
         throw new Error('Username is already taken');
@@ -257,12 +257,12 @@ export class UserService {
         username: sanitizedData.username,
         display_name: sanitizedData.display_name,
         avatar_url: sanitizedData.avatar_url,
-        preferred_language: sanitizedData.preferred_language || 'en',
+        preferred_language: (sanitizedData.preferred_language ?? 'en') as LanguageCode,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .select()
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
@@ -274,7 +274,7 @@ export class UserService {
   /**
    * Update user with validation and sanitization
    */
-  static async updateUser(userId: string, data: UpdateUserData): Promise<DatabaseUserInsert> {
+  static async updateUser(userId: string, data: UpdateUserData): DatabaseUserInsertPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
@@ -290,15 +290,16 @@ export class UserService {
     const { sanitizedData } = validation;
 
     // Check username availability if username is being updated
-    if (sanitizedData.username !== undefined && sanitizedData.username !== null) {
+    if (sanitizedData.username !== undefined && sanitizedData.username !== '') {
       const existingUser = await this.getUserByUsername(sanitizedData.username);
       if (existingUser && existingUser.id !== userId) {
         throw new Error('Username is already taken');
       }
     }
 
-    const updateData: DatabaseUserUpdate = {
+    const updateData: DatabaseUserInsert = {
       ...sanitizedData,
+      preferred_language: sanitizedData.preferred_language as LanguageCode | null | undefined,
       updated_at: new Date().toISOString()
     }
 
@@ -307,7 +308,7 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
@@ -319,7 +320,7 @@ export class UserService {
   /**
    * Delete user
    */
-  static async deleteUser(userId: string): Promise<void> {
+  static async deleteUser(userId: string): VoidPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
@@ -375,7 +376,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', usernameValidation.sanitizedText)
-      .single()
+      .single() as { data: DatabaseUserInsert; error: PostgrestError };
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -390,33 +391,31 @@ export class UserService {
   /**
    * Update user's preferred language
    */
-  static async updatePreferredLanguage(userId: string, language: string): Promise<DatabaseUserInsert> {
+  static async updatePreferredLanguage(userId: string, language: string): DatabaseUserInsertPromise {
     return this.updateUser(userId, { preferred_language: language })
   }
 
   /**
    * Update user's avatar URL
    */
-  static async updateAvatarUrl(userId: string, avatarUrl: string): Promise<DatabaseUserInsert> {
+  static async updateAvatarUrl(userId: string, avatarUrl: string): DatabaseUserInsertPromise {
     return this.updateUser(userId, { avatar_url: avatarUrl })
   }
 
   /**
    * Get or create user (useful for ensuring user exists)
    */
-  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): Promise<DatabaseUserInsert> {
+  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): DatabaseUserInsertPromise {
     let user = await this.getUser(userId)
     
-    if (!user) {
-      user = await this.createUser({
-        id: userId,
-        username: userData?.username,
-        display_name: userData?.display_name,
-        avatar_url: userData?.avatar_url,
-        preferred_language: userData?.preferred_language
-      })
-    }
+    user ??= await this.createUser({
+      id: userId,
+      username: userData?.username,
+      display_name: userData?.display_name,
+      avatar_url: userData?.avatar_url,
+      preferred_language: userData?.preferred_language
+    });
 
-    return user
+    return user;
   }
 } 

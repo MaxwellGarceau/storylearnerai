@@ -2,21 +2,22 @@ import React, { useState } from 'react'
 import { Button } from '../ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card'
 import Label from '../ui/Label'
-import { useSupabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import { Alert } from '../ui/Alert'
 import { Loader2, Mail, Lock, User, Check, X } from 'lucide-react'
 import { validateEmail, validateUsername, validateDisplayName } from '../../lib/utils/sanitization'
+import type { VoidFunction } from '../../types/common'
 
 interface SignUpFormProps {
-  onSuccess?: () => void
-  onSwitchToSignIn?: () => void
+  onSuccess?: VoidFunction
+  onSwitchToSignIn?: VoidFunction
 }
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({
   onSuccess,
   onSwitchToSignIn
 }) => {
-  const { signUp, loading, error } = useSupabase()
+  const { signUp, loading, error } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -137,7 +138,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           {error && (
             <Alert variant="destructive">
               <p>{error}</p>

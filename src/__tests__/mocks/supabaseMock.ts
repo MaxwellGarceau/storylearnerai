@@ -2,17 +2,8 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import type { User } from '@supabase/supabase-js'
 
-// Mock TranslationOptionsSidebar to prevent DOM issues in tests
-// Only mock it when not testing the component itself
-const isTranslationSidebarTest = process.env.VITEST_POOL_ID?.includes('TranslationOptionsSidebar')
-if (!isTranslationSidebarTest) {
-  vi.mock('../../components/story/TranslationOptionsSidebar', () => ({
-    default: () => null,
-  }))
-}
-
 // Mock Supabase client
-export const mockSupabaseClient = {
+const mockSupabaseClient = {
   auth: {
     signUp: vi.fn(),
     signInWithPassword: vi.fn(),
@@ -46,8 +37,8 @@ export const mockSupabaseClient = {
   })),
 }
 
-// Mock useSupabase hook
-export const mockUseSupabase = vi.fn(() => ({
+// Mock useAuth hook
+export const mockUseAuth = vi.fn(() => ({
   signIn: vi.fn(),
   signUp: vi.fn(),
   signOut: vi.fn(),
@@ -58,7 +49,7 @@ export const mockUseSupabase = vi.fn(() => ({
 }))
 
 // MSW handlers for Supabase REST API
-export const supabaseHandlers = [
+const supabaseHandlers = [
   // Auth endpoints
   http.post('*/auth/v1/signup', () => {
     return HttpResponse.json({
@@ -134,7 +125,7 @@ export const supabaseHandlers = [
 ]
 
 // MSW handlers for Llama service
-export const llamaHandlers = [
+const llamaHandlers = [
   http.post('https://api.groq.com/openai/v1/chat/completions', () => {
     return HttpResponse.json({
       choices: [
@@ -199,11 +190,11 @@ export const llamaHandlers = [
 // Setup MSW server
 export const server = setupServer(...supabaseHandlers, ...llamaHandlers)
 
-// Mock the useSupabase hook globally
+// Mock the useAuth hook globally
 export const setupSupabaseMocks = () => {
-  // Mock the useSupabase hook
-  vi.mock('../../hooks/useSupabase', () => ({
-    useSupabase: mockUseSupabase,
+  // Mock the useAuth hook
+  vi.mock('../../hooks/useAuth', () => ({
+    useAuth: mockUseAuth,
   }))
 
   // Mock the Supabase client
@@ -220,40 +211,3 @@ export const setupSupabaseMocks = () => {
     },
   }))
 }
-
-// Helper functions for common mock scenarios
-export const mockAuthUser = (user: User | null = null) => {
-  mockUseSupabase.mockReturnValue({
-    signIn: vi.fn(),
-    signUp: vi.fn(),
-    signOut: vi.fn(),
-    resetPassword: vi.fn(),
-    user,
-    loading: false,
-    error: null,
-  })
-}
-
-export const mockAuthLoading = () => {
-  mockUseSupabase.mockReturnValue({
-    signIn: vi.fn(),
-    signUp: vi.fn(),
-    signOut: vi.fn(),
-    resetPassword: vi.fn(),
-    user: null,
-    loading: true,
-    error: null,
-  })
-}
-
-export const mockAuthError = (error = 'Authentication failed') => {
-  mockUseSupabase.mockReturnValue({
-    signIn: vi.fn(),
-    signUp: vi.fn(),
-    signOut: vi.fn(),
-    resetPassword: vi.fn(),
-    user: null,
-    loading: false,
-    error,
-  })
-} 

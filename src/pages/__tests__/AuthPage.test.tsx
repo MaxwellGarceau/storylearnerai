@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import { AuthPage } from '../AuthPage'
-import { setupSupabaseMocks, mockUseSupabase } from '../../__tests__/mocks/supabaseMock'
+import { setupSupabaseMocks, mockUseAuth } from '../../__tests__/mocks/supabaseMock'
 import { MemoryRouter } from 'react-router-dom'
 
 // Setup Supabase mocks
@@ -26,7 +26,7 @@ describe('AuthPage Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockSearchParams = new URLSearchParams()
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
@@ -67,7 +67,7 @@ describe('AuthPage Component', () => {
   })
 
   it('shows loading state while checking authentication', () => {
-    mockUseSupabase.mockReturnValue({
+    mockUseAuth.mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),

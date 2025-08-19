@@ -1,4 +1,5 @@
-import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../types/llm';
+import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../../types/llm/providers';
+import type { RecordString } from '../../types/common';
 
 export abstract class LLMService {
   protected config: ProviderConfig;
@@ -46,7 +47,7 @@ export abstract class LLMService {
   /**
    * Build request headers for API calls
    */
-  protected buildHeaders(): Record<string, string> {
+  protected buildHeaders(): RecordString {
     return {
       'Content-Type': 'application/json',
       'User-Agent': 'StoryLearnerAI/1.0',
@@ -60,20 +61,16 @@ export abstract class LLMService {
   protected async handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
       const errorText = await response.text();
-      throw this.createError(
-        `API request failed: ${response.status} ${response.statusText}. ${errorText}`,
-        'API_ERROR',
-        response.status
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}. ${errorText}`
       );
     }
 
     try {
       return await response.json();
     } catch {
-      throw this.createError(
-        'Failed to parse API response',
-        'PARSE_ERROR',
-        response.status
+      throw new Error(
+        'Failed to parse API response'
       );
     }
   }

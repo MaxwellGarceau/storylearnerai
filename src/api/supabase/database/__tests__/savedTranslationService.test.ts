@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SavedTranslationService } from '../savedTranslationService';
-import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../lib/types/database';
+import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../types/database';
 
 // Import the actual validation functions for direct testing
 import { validateStoryText } from '../../../../lib/utils/sanitization';
 
 // Mock the sanitization utilities for service tests, but use real ones for direct validation tests
 vi.mock('../../../../lib/utils/sanitization', async () => {
-  const actual = await vi.importActual('../../../../lib/utils/sanitization') as Record<string, unknown>;
+  const actual = await vi.importActual('../../../../lib/utils/sanitization');
   return {
     ...actual,
     // Keep the real functions for direct testing
@@ -211,12 +211,12 @@ describe('SavedTranslationService', () => {
 
   describe('deleteSavedTranslation', () => {
     it('should throw error for missing translation ID', async () => {
-      await expect(service.deleteSavedTranslation('', 'test-user-id'))
+      await expect(service.deleteSavedTranslation(0, 'test-user-id'))
         .rejects.toThrow('Valid translation ID is required');
     });
 
     it('should throw error for missing user ID', async () => {
-      await expect(service.deleteSavedTranslation('1', ''))
+      await expect(service.deleteSavedTranslation(1, ''))
         .rejects.toThrow('Valid user ID is required');
     });
   });

@@ -37,7 +37,8 @@ The LLM Service System provides a unified interface for interacting with multipl
 ### Basic Usage
 
 ```typescript
-import { llmServiceManager } from '@/lib/llm';
+import { llmServiceManager } from '@/lib/llm/LLMServiceManager';
+import { logger } from '@/lib/logger';
 
 // Generate text completion
 const response = await llmServiceManager.generateCompletion({
@@ -46,9 +47,8 @@ const response = await llmServiceManager.generateCompletion({
   temperature: 0.7
 });
 
-console.log(response.content); // Generated text
-console.log(response.provider); // Provider used
-console.log(response.model); // Model used
+logger.info('llm', 'Generated text', { content: response.content });
+logger.info('llm', 'Response details', { provider: response.provider, model: response.model });
 ```
 
 ### Health Check
@@ -56,7 +56,7 @@ console.log(response.model); // Model used
 ```typescript
 const isHealthy = await llmServiceManager.healthCheck();
 if (!isHealthy) {
-  console.error('LLM service is not available');
+  logger.error('llm', 'LLM service is not available');
 }
 ```
 

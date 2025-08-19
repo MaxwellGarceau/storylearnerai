@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, within } from '@testing-library/react';
 import { vi } from 'vitest';
 import StoryHeader from '../StoryHeader';
@@ -9,6 +8,36 @@ vi.mock('../../ui/InfoButton', () => ({
   InfoButton: ({ onClick }: { onClick: () => void }) => (
     <button onClick={onClick}>Show translation info</button>
   ),
+}));
+
+// Mock the useDifficultyLevels hook
+vi.mock('../../../hooks/useDifficultyLevels', () => ({
+  useDifficultyLevels: () => ({
+    difficultyLevels: [
+      { code: 'a1', name: 'Beginner' },
+      { code: 'a2', name: 'Elementary' },
+      { code: 'b1', name: 'Intermediate' },
+      { code: 'b2', name: 'Upper Intermediate' }
+    ],
+    getDifficultyLevelDisplay: (code: string) => {
+      const displayMap: Record<string, string> = {
+        'a1': 'A1 (Beginner)',
+        'a2': 'A2 (Elementary)',
+        'b1': 'B1 (Intermediate)',
+        'b2': 'B2 (Upper Intermediate)'
+      };
+      return displayMap[code] || code;
+    },
+    getDifficultyLevelCodeFromDisplay: (display: string) => {
+      const codeMap: Record<string, string> = {
+        'A1 (Beginner)': 'a1',
+        'A2 (Elementary)': 'a2',
+        'B1 (Intermediate)': 'b1',
+        'B2 (Upper Intermediate)': 'b2'
+      };
+      return codeMap[display] || display;
+    }
+  })
 }));
 
 const mockTranslationData: TranslationResponse = {
@@ -59,7 +88,7 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const difficultyBadge = within(container).getByText('A1 Level');
+    const difficultyBadge = within(container).getByText('A1 (Beginner)');
     expect(difficultyBadge).toBeInTheDocument();
   });
 
@@ -72,7 +101,7 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    expect(within(container).queryByText('A1 Level')).not.toBeInTheDocument();
+    expect(within(container).queryByText('A1 (Beginner)')).not.toBeInTheDocument();
   });
 
   it('renders toggle button with correct text based on current view', () => {
@@ -169,7 +198,7 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const difficultyBadge = within(container).getByText('A1 Level');
+    const difficultyBadge = within(container).getByText('A1 (Beginner)');
     const toggleButton = within(container).getByRole('button', { name: 'Show original story' });
 
     expect(difficultyBadge).toHaveClass('order-1', 'sm:order-2');

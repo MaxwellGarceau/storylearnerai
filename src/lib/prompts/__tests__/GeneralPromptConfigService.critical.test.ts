@@ -1,5 +1,5 @@
 import { generalPromptConfigService } from '../GeneralPromptConfigService';
-import { PromptBuildContext } from '../../types/prompt';
+import { PromptBuildContext } from '../../../types/llm/prompts';
 import { vi } from 'vitest';
 
 // Mock the dynamic imports for native-to-target configurations
@@ -42,8 +42,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       text: 'Hola, ¿cómo estás?'
     };
 
-    it('should build a complete prompt with all placeholders replaced', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should build a complete prompt with all placeholders replaced', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('es');
@@ -62,8 +62,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       expect(prompt).not.toContain('{text}');
     });
 
-    it('should include all general instructions', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include all general instructions', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for all general instructions
       expect(prompt).toContain('Maintain the story\'s meaning and narrative flow');
@@ -72,8 +72,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       expect(prompt).toContain('Provide only the translation without additional commentary');
     });
 
-    it('should include all language-specific instruction types', () => {
-      const prompt = generalPromptConfigService.buildPrompt(mockContext);
+    it('should include all language-specific instruction types', async () => {
+      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
       
       // Check for all instruction types
       expect(prompt).toContain('Vocabulary:');
@@ -85,7 +85,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
   });
 
   describe('Critical User Input Handling', () => {
-    it('should handle special characters in text properly', () => {
+    it('should handle special characters in text properly', async () => {
       const contextWithSpecialChars: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -94,14 +94,14 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
         nativeLanguage: 'es'
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(contextWithSpecialChars);
+      const prompt = await generalPromptConfigService.buildPrompt(contextWithSpecialChars);
       
       // Should preserve special characters
       expect(prompt).toContain('¿cómo estás?');
       expect(prompt).toContain('¡Qué tal!');
     });
 
-    it('should handle multi-line text properly', () => {
+    it('should handle multi-line text properly', async () => {
       const contextWithMultiLine: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
@@ -110,7 +110,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
         nativeLanguage: 'es'
       };
 
-      const prompt = generalPromptConfigService.buildPrompt(contextWithMultiLine);
+      const prompt = await generalPromptConfigService.buildPrompt(contextWithMultiLine);
       
       // Should preserve line breaks in the story text
       expect(prompt).toContain('Hola, ¿cómo estás?\nMe llamo María.\nTengo veinte años.');
@@ -118,7 +118,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
   });
 
   describe('Critical Error Handling', () => {
-    it('should handle unsupported language gracefully', () => {
+    it('should handle unsupported language gracefully', async () => {
       const unsupportedContext: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'unsupported',
@@ -126,7 +126,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
         text: 'Hola, ¿cómo estás?'
       };
       
-      const prompt = generalPromptConfigService.buildPrompt(unsupportedContext);
+      const prompt = await generalPromptConfigService.buildPrompt(unsupportedContext);
       
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('es story to unsupported');
@@ -143,8 +143,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
     nativeLanguage: 'es'
   };
 
-  it('should have correct section ordering in the prompt', () => {
-    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+  it('should have correct section ordering in the prompt', async () => {
+    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
     
     // Split prompt into lines to check ordering
     const lines = prompt.split('\n');
@@ -165,8 +165,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
     expect(storyIndex).toBeLessThan(footerIndex);
   });
 
-  it('should have proper formatting with line breaks between sections', () => {
-    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+  it('should have proper formatting with line breaks between sections', async () => {
+    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
     
     // Check for proper spacing between major sections
     expect(prompt).toMatch(/Instructions:\n/);
@@ -174,15 +174,15 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
     expect(prompt).toMatch(/es Story:\n/);
   });
 
-  it('should have correct header format', () => {
-    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+  it('should have correct header format', async () => {
+    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
     
     // Check header format
     expect(prompt).toMatch(/^Translate the following es story to en, adapted for a1 CEFR level:/);
   });
 
-  it('should have correct footer format', () => {
-    const prompt = generalPromptConfigService.buildPrompt(mockContext);
+  it('should have correct footer format', async () => {
+    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
     
     // Check footer format
     expect(prompt).toMatch(/Please provide only the en translation\.$/);

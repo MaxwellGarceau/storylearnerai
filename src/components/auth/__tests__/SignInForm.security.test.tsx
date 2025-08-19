@@ -2,16 +2,16 @@ import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/re
 import { vi } from 'vitest';
 import { SignInForm } from '../SignInForm';
 
-// Mock the useSupabase hook
+// Mock the useAuth hook
 const mockSignIn = vi.fn();
-const mockUseSupabase = vi.fn(() => ({
+const mockUseAuth = vi.fn(() => ({
   signIn: mockSignIn,
   loading: false,
   error: null,
 }));
 
-vi.mock('../../../hooks/useSupabase', () => ({
-  useSupabase: () => mockUseSupabase(),
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => mockUseAuth(),
 }));
 
 describe('SignInForm Security', () => {

@@ -6,14 +6,26 @@ import {
   SavedTranslationFilters,
   DatabaseLanguage,
   DatabaseDifficultyLevel,
-} from '../../../lib/types/database';
-import type { LanguageCode } from '../../../lib/types/prompt';
+} from '../../../types/database';
+import type { DatabaseSavedTranslationWithDetailsPromise } from '../../../types/database/promise';
+import type { Database } from '../../../types/database';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
+import type { VoidPromise } from '../../../types/common';
 
 interface ValidationError {
   field: string;
   message: string;
 }
+
+/**
+ * Type for saved translation filters with optional language codes
+ * Makes original_language_code and translated_language_code optional while keeping other filters required
+ */
+type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & {
+  original_language_code?: LanguageCode;
+  translated_language_code?: LanguageCode;
+};
 
 export class SavedTranslationService {
   /**
@@ -159,7 +171,7 @@ export class SavedTranslationService {
   }
 
   /**
-   * Get all languages supported by the application
+   * Get all languages
    */
   async getLanguages(): Promise<DatabaseLanguage[]> {
     const { data, error } = await supabase
@@ -171,7 +183,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch languages: ${error.message}`);
     }
 
-    return data || [];
+    return (data as Database['public']['Tables']['languages']['Row'][]) ?? [];
   }
 
   /**
@@ -187,47 +199,47 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
     }
 
-    return data || [];
+    return (data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? [];
   }
 
   /**
    * Get a language by its code
    */
   async getLanguageByCode(code: LanguageCode): Promise<DatabaseLanguage | null> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('languages')
       .select('*')
       .eq('code', code)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null; // No rows returned
       }
-      throw new Error(`Failed to fetch language: ${error.message}`);
+      throw new Error(`Failed to fetch language: ${result.error.message}`);
     }
 
-    return data;
+    return result.data as Database['public']['Tables']['languages']['Row'] | null;
   }
 
   /**
    * Get a difficulty level by its code
    */
   async getDifficultyLevelByCode(code: string): Promise<DatabaseDifficultyLevel | null> {
-    const { data, error } = await supabase
+    const result = await supabase
       .from('difficulty_levels')
       .select('*')
       .eq('code', code)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null; // No rows returned
       }
-      throw new Error(`Failed to fetch difficulty level: ${error.message}`);
+      throw new Error(`Failed to fetch difficulty level: ${result.error.message}`);
     }
 
-    return data;
+    return result.data as Database['public']['Tables']['difficulty_levels']['Row'] | null;
   }
 
   /**
@@ -236,7 +248,7 @@ export class SavedTranslationService {
   async createSavedTranslation(
     request: CreateSavedTranslationRequest,
     userId: string
-  ): Promise<DatabaseSavedTranslationWithDetails> {
+  ): DatabaseSavedTranslationWithDetailsPromise {
     // Validate and sanitize input data
     const validation = SavedTranslationService.validateCreateSavedTranslationData(request, userId);
     if (!validation.isValid) {
@@ -263,7 +275,7 @@ export class SavedTranslationService {
       throw new Error(`Difficulty level not found: ${sanitizedRequest.difficulty_level_code}`);
     }
 
-    const { data, error } = await supabase
+    const result = await supabase
       .from('saved_translations')
       .insert({
         user_id: userId,
@@ -283,11 +295,11 @@ export class SavedTranslationService {
       `)
       .single();
 
-    if (error) {
-      throw new Error(`Failed to create saved translation: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to create saved translation: ${result.error.message}`);
     }
 
-    return data as DatabaseSavedTranslationWithDetails;
+    return result.data as DatabaseSavedTranslationWithDetails;
   }
 
   /**
@@ -295,7 +307,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslations(
     userId: string,
-    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
+    filters: SavedTranslationFiltersWithOptionalLanguages = {}
   ): Promise<DatabaseSavedTranslationWithDetails[]> {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
@@ -350,16 +362,16 @@ export class SavedTranslationService {
     }
 
     if (filters.offset) {
-      query = query.range(filters.offset, filters.offset + (filters.limit || 50) - 1);
+      query = query.range(filters.offset, filters.offset + (filters.limit ?? 50) - 1);
     }
 
-    const { data, error } = await query;
+    const result = await query;
 
-    if (error) {
-      throw new Error(`Failed to fetch saved translations: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to fetch saved translations: ${result.error.message}`);
     }
 
-    return (data || []) as DatabaseSavedTranslationWithDetails[];
+    return (result.data ?? []) as DatabaseSavedTranslationWithDetails[];
   }
 
   /**
@@ -376,7 +388,7 @@ export class SavedTranslationService {
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required');
     }
-    const { data, error } = await supabase
+    const result = await supabase
       .from('saved_translations')
       .select(`
         *,
@@ -388,14 +400,14 @@ export class SavedTranslationService {
       .eq('user_id', userId)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null; // No rows returned
       }
-      throw new Error(`Failed to fetch saved translation: ${error.message}`);
+      throw new Error(`Failed to fetch saved translation: ${result.error.message}`);
     }
 
-    return data as DatabaseSavedTranslationWithDetails;
+    return result.data as unknown as DatabaseSavedTranslationWithDetails;
   }
 
   /**
@@ -405,7 +417,7 @@ export class SavedTranslationService {
     translationId: string,
     userId: string,
     updates: UpdateSavedTranslationRequest
-  ): Promise<DatabaseSavedTranslationWithDetails> {
+  ): DatabaseSavedTranslationWithDetailsPromise {
     // Validate input parameters
     if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
       throw new Error('Valid translation ID is required');
@@ -423,7 +435,7 @@ export class SavedTranslationService {
 
     const sanitizedUpdates = validation.sanitizedData;
 
-    const { data, error } = await supabase
+    const result = await supabase
       .from('saved_translations')
       .update(sanitizedUpdates)
       .eq('id', translationId)
@@ -436,32 +448,32 @@ export class SavedTranslationService {
       `)
       .single();
 
-    if (error) {
-      throw new Error(`Failed to update saved translation: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to update saved translation: ${result.error.message}`);
     }
 
-    return data as DatabaseSavedTranslationWithDetails;
+    return result.data as unknown as DatabaseSavedTranslationWithDetails;
   }
 
   /**
    * Delete a saved translation
    */
-  async deleteSavedTranslation(translationId: string, userId: string): Promise<void> {
+  async deleteSavedTranslation(translationId: number, userId: string): VoidPromise {
     // Validate input parameters
-    if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
+    if (!translationId || typeof translationId !== 'number' || translationId <= 0) {
       throw new Error('Valid translation ID is required');
     }
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required');
     }
-    const { error } = await supabase
+    const result = await supabase
       .from('saved_translations')
       .delete()
       .eq('id', translationId)
       .eq('user_id', userId);
 
-    if (error) {
-      throw new Error(`Failed to delete saved translation: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to delete saved translation: ${result.error.message}`);
     }
   }
 
@@ -470,7 +482,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslationsCount(
     userId: string,
-    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
+    filters: SavedTranslationFiltersWithOptionalLanguages = {}
   ): Promise<number> {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
@@ -514,12 +526,12 @@ export class SavedTranslationService {
       );
     }
 
-    const { count, error } = await query;
+    const result = await query;
 
-    if (error) {
-      throw new Error(`Failed to get saved translations count: ${error.message}`);
+    if (result.error) {
+      throw new Error(`Failed to get saved translations count: ${result.error.message}`);
     }
 
-    return count || 0;
+    return result.count ?? 0;
   }
 } 

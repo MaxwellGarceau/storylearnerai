@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
 import { Settings, Check, X } from 'lucide-react';
-import { useLanguageDisplay } from '../../hooks/useLanguageDisplay';
+import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
-import type { LanguageCode, DifficultyLevel } from '../../lib/types/prompt';
+import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
+import type { VoidFunction } from '../../types/common';
 
 interface FullPageStoryInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: VoidFunction;
   isTranslating: boolean;
   placeholder?: string;
   formData: {
@@ -31,7 +32,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const { getLanguageName } = useLanguageDisplay();
+  const { getLanguageName } = useLanguages();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;

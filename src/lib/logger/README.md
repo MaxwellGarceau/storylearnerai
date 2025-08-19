@@ -9,7 +9,7 @@ A comprehensive Winston-based logging system for React TypeScript applications w
 - ✅ **Environment Control**: Development, Production, Test configurations
 - ✅ **Multiple Outputs**: Console, File, Remote API
 - ✅ **Performance Monitoring**: Timing, memory usage
-- ✅ **React Hooks**: Easy integration with React components
+- ✅ **React Integration**: Easy integration with React components
 - ✅ **TypeScript Support**: Full type safety
 - ✅ **Structured Logging**: JSON format for production
 
@@ -95,37 +95,30 @@ logger.setSessionId('session-456');
 logger.setRequestId('req-789');
 ```
 
-### React Hook Usage
+### React Component Usage
 
 ```typescript
-import { useLogger, useApiLogger, useAuthLogger, useUILogger, usePromptLogger } from '@/lib/logger';
+import { logger } from '@/lib/logger';
 
 function MyComponent() {
-  // Basic logger
-  const logger = useLogger();
-  
-  // Specialized loggers
-  const apiLogger = useApiLogger();
-  const authLogger = useAuthLogger();
-  const uiLogger = useUILogger();
-  const promptLogger = usePromptLogger();
-
   useEffect(() => {
     logger.info('ui', 'Component mounted');
     
     // API logging
-    apiLogger.logRequest('GET', '/api/users');
-    apiLogger.logResponse('GET', '/api/users', 200);
+    logger.logApiRequest('api', 'GET', '/api/users');
+    logger.logApiResponse('api', 'GET', '/api/users', 200);
     
     // Auth logging
-    authLogger.logLogin('email', { email: 'user@example.com' });
+    logger.info('auth', 'User login attempt', { email: 'user@example.com' });
     
     // UI logging
-    uiLogger.logEvent('button_click', { buttonId: 'submit' });
-    uiLogger.logPerformance('render', 150);
+    logger.info('ui', 'Button clicked', { buttonId: 'submit' });
+    logger.time('performance', 'render');
+    // ... render logic
+    logger.timeEnd('performance', 'render');
     
     // Prompt logging
-    promptLogger.logPromptBuild({ fromLanguage: 'es', toLanguage: 'en' });
+    logger.info('prompts', 'Prompt built', { fromLanguage: 'es', toLanguage: 'en' });
   }, []);
 
   return <div>My Component</div>;
@@ -135,30 +128,28 @@ function MyComponent() {
 ### Service Integration
 
 ```typescript
-import { useApiLogger } from '@/lib/logger';
+import { logger } from '@/lib/logger';
 
 class ApiService {
-  private logger = useApiLogger();
-
   async fetchUsers() {
-    this.logger.time('api', 'fetch-users');
+    logger.time('api', 'fetch-users');
     
     try {
-      this.logger.logRequest('GET', '/api/users');
+      logger.logApiRequest('api', 'GET', '/api/users');
       
       const response = await fetch('/api/users');
       const data = await response.json();
       
-      this.logger.logResponse('GET', '/api/users', response.status, { 
+      logger.logApiResponse('api', 'GET', '/api/users', response.status, { 
         userCount: data.length 
       });
       
       return data;
     } catch (error) {
-      this.logger.logError(error as Error, { endpoint: '/api/users' });
+      logger.logError('api', error as Error, { endpoint: '/api/users' });
       throw error;
     } finally {
-      this.logger.timeEnd('api', 'fetch-users');
+      logger.timeEnd('api', 'fetch-users');
     }
   }
 }
@@ -409,10 +400,4 @@ console.log('Logger config:', logger.config);
 - `logger.disableChannel(channel)`
 - `logger.isChannelEnabled(channel)`
 
-### React Hooks
-
-- `useLogger()`: Basic logger hook
-- `useApiLogger()`: API-specific logger hook
-- `useAuthLogger()`: Authentication logger hook
-- `useUILogger()`: UI events logger hook
-- `usePromptLogger()`: Prompt processing logger hook 
+ 

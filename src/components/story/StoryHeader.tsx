@@ -2,11 +2,13 @@ import React from 'react';
 import { TranslationResponse } from '../../lib/translationService';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import type { VoidFunction } from '../../types/common';
 
 interface StoryHeaderProps {
   translationData: TranslationResponse;
   showOriginal: boolean;
-  onToggleView: () => void;
+  onToggleView: VoidFunction;
 }
 
 const StoryHeader: React.FC<StoryHeaderProps> = ({
@@ -14,6 +16,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
   showOriginal,
   onToggleView
 }) => {
+  const { getDifficultyLevelDisplay } = useDifficultyLevels();
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4">
       <h3 className={`text-lg font-semibold transition-colors duration-300 lg:flex-shrink-0 ${
@@ -32,7 +35,7 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
               variant="info"
               className="order-1 sm:order-2"
             >
-              {translationData.difficulty.toUpperCase()} Level
+              {getDifficultyLevelDisplay(translationData.difficulty)}
             </Badge>
           </>
         )}

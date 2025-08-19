@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { DatabaseSavedTranslationWithDetails } from '../../lib/types/database';
+import { useLanguages } from '../../hooks/useLanguages';
+import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
-import { DifficultyLevel, LanguageCode } from '../../lib/types/prompt';
+import { DifficultyLevel, DifficultyLevelDisplay, LanguageCode } from '../../types/llm/prompts';
+import { logger } from '../../lib/logger';
 
 // CEFR difficulty level options
-const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
+const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: DifficultyLevelDisplay; description: string }[] = [
   { value: 'a1', label: 'A1 (Beginner)', description: 'Basic level - Can understand and use familiar everyday expressions' },
   { value: 'a2', label: 'A2 (Elementary)', description: 'Elementary level - Can communicate in simple and routine tasks' },
   { value: 'b1', label: 'B1 (Intermediate)', description: 'Intermediate level - Can deal with most situations while traveling' },
@@ -21,35 +23,36 @@ export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const {
     savedTranslations,
-    languages,
-    isLoading,
-    isDeleting,
+    loading: isLoading,
     error,
-    deleteSavedTranslation,
-    setFilters,
-    hasMore,
-    loadMore,
-    totalCount,
   } = useSavedTranslations();
+  
+  const {
+    languages,
+    loading: languagesLoading,
+  } = useLanguages();
 
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | ''>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | ''>('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleFilterChange = () => {
-    setFilters({
-      translated_language_code: (selectedLanguage || undefined) as LanguageCode | undefined,
-      difficulty_level_code: (selectedDifficulty || undefined) as DifficultyLevel | undefined,
+    // TODO: Implement filtering when the hook supports it
+    logger.info('ui', 'Filtering not yet implemented', {
+      translated_language_code: selectedLanguage || undefined,
+      difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this saved translation?')) {
       try {
-        await deleteSavedTranslation(id);
+        // TODO: Implement delete when the hook supports it
+        logger.info('ui', 'Delete not yet implemented for id:', { id });
       } catch (err) {
-        console.error('Failed to delete translation:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        logger.error('ui', 'Failed to delete translation', { error: errorMessage });
       }
     }
   };
@@ -58,9 +61,9 @@ export default function SavedTranslationsList() {
     return {
       originalText: savedTranslation.original_story,
       translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.code as LanguageCode,
-      toLanguage: savedTranslation.translated_language.code as LanguageCode,
-      difficulty: savedTranslation.difficulty_level.code as DifficultyLevel,
+      fromLanguage: savedTranslation.original_language.code,
+      toLanguage: savedTranslation.translated_language.code,
+      difficulty: savedTranslation.difficulty_level.code,
       provider: 'saved',
       model: 'saved-translation',
     };
@@ -68,7 +71,7 @@ export default function SavedTranslationsList() {
 
   const handleViewStory = (savedTranslation: DatabaseSavedTranslationWithDetails) => {
     const translationData = convertToTranslationResponse(savedTranslation);
-    navigate('/story', { 
+    void navigate('/story', { 
       state: { 
         translationData,
         isSavedStory: true,
@@ -85,7 +88,7 @@ export default function SavedTranslationsList() {
     });
   };
 
-  if (isLoading && savedTranslations.length === 0) {
+  if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
@@ -169,7 +172,7 @@ export default function SavedTranslationsList() {
       {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          {totalCount} saved translation{totalCount !== 1 ? 's' : ''}
+          {savedTranslations.length} saved translation{savedTranslations.length !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -185,7 +188,7 @@ export default function SavedTranslationsList() {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-lg">
-                    {translation.title || 'Untitled Translation'}
+                    {translation.title ?? 'Untitled Translation'}
                   </CardTitle>
                   <CardDescription>
                     {formatDate(translation.created_at)} •{' '}
@@ -204,8 +207,8 @@ export default function SavedTranslationsList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(translation.id)}
-                    disabled={isDeleting}
+                    onClick={() => void handleDelete(translation.id)}
+                    disabled={false}
                   >
                     Delete
                   </Button>
@@ -239,18 +242,7 @@ export default function SavedTranslationsList() {
         ))}
       </div>
 
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="text-center">
-          <Button
-            onClick={loadMore}
-            disabled={isLoading}
-            variant="outline"
-          >
-            {isLoading ? 'Loading...' : 'Load More'}
-          </Button>
-        </div>
-      )}
+      {/* Load More Button - TODO: Implement when pagination is supported */}
 
       {/* Empty State */}
       {!isLoading && savedTranslations.length === 0 && (

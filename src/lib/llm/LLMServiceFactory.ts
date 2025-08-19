@@ -1,10 +1,7 @@
 import { LLMService } from './LLMService';
-import { ProviderConfig, OpenAIConfig, AnthropicConfig, GeminiConfig, LlamaConfig, CustomConfig } from '../types/llm';
-import { OpenAIService } from './providers/OpenAIService';
-import { AnthropicService } from './providers/AnthropicService';
+import { ProviderConfig } from '../../types/llm/providers';
 import { GeminiService } from './providers/GeminiService';
-import { LlamaService } from './providers/LlamaService';
-import { CustomService } from './providers/CustomService';
+import type { RecordString } from '../../types/common';
 
 export class LLMServiceFactory {
   /**
@@ -12,23 +9,13 @@ export class LLMServiceFactory {
    */
   static createService(config: ProviderConfig): LLMService {
     switch (config.provider) {
-      case 'openai':
-        return new OpenAIService(config as OpenAIConfig);
-      
-      case 'anthropic':
-        return new AnthropicService(config as AnthropicConfig);
-      
       case 'gemini':
-        return new GeminiService(config as GeminiConfig);
+        return new GeminiService(config);
       
-      case 'llama':
-        return new LlamaService(config as LlamaConfig);
-      
-      case 'custom':
-        return new CustomService(config as CustomConfig);
-      
-      default:
-        throw new Error(`Unsupported LLM provider: ${(config as ProviderConfig).provider}`);
+      default: {
+        const provider = (config as { provider: string }).provider;
+        throw new Error(`Unsupported LLM provider: ${provider}`);
+      }
     }
   }
 
@@ -36,32 +23,24 @@ export class LLMServiceFactory {
    * Get available providers
    */
   static getAvailableProviders(): string[] {
-    return ['openai', 'anthropic', 'gemini', 'llama', 'custom'];
+    return ['gemini'];
   }
 
   /**
    * Get provider display names for UI
    */
-  static getProviderDisplayNames(): Record<string, string> {
+  static getProviderDisplayNames(): RecordString {
     return {
-      openai: 'OpenAI GPT',
-      anthropic: 'Anthropic Claude',
       gemini: 'Google Gemini',
-      llama: 'Meta Llama',
-      custom: 'Custom API',
     };
   }
 
   /**
    * Get provider descriptions for UI
    */
-  static getProviderDescriptions(): Record<string, string> {
+  static getProviderDescriptions(): RecordString {
     return {
-      openai: 'OpenAI GPT models including GPT-4, GPT-3.5, and GPT-4o',
-      anthropic: 'Anthropic Claude models including Claude-3 Haiku, Sonnet, and Opus',
       gemini: 'Google Gemini models via Google GenAI SDK including Gemini Pro, Flash, and Ultra',
-      llama: 'Meta Llama models via Ollama, Groq, Together AI, Replicate, or custom endpoints',
-      custom: 'Custom API endpoint for other LLM providers',
     };
   }
 } 
