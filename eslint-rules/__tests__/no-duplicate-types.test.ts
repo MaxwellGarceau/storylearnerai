@@ -70,4 +70,15 @@ describe('custom/no-duplicate-types', () => {
     const messages = result.messages.filter(m => m.ruleId === 'testCustom/no-duplicate-types')
     expect(messages.length).toBe(1)
   })
+
+  it('does not report duplicate Record types', async () => {
+    const code = `
+      const x: Record<string, string> = { a: '1', b: '2' };
+      const y: Record<string, string> = { c: '3', d: '4' };
+    `
+
+    const result = await runLint(code)
+    const messages = result.messages.filter(m => m.ruleId === 'testCustom/no-duplicate-types')
+    expect(messages.length).toBe(0)
+  })
 })

@@ -113,7 +113,7 @@ export default tseslint.config(
       // Custom rule to prevent duplicate type definitions
       'custom/no-duplicate-types': ['warn', {
         ignoreTypes: [
-          'string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined',
+          'string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined', 'Record',
           'LanguageCode', 'DifficultyLevel',
           // Common types
           'NullableString', 'NullableNumber', 'NullableBoolean',
