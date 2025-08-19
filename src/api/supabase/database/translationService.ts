@@ -1,6 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database/translation'
-import type { DatabaseTranslationInsertPromise } from '../../../types/database/promise'
+import type { DatabaseTranslationInsertPromise, DatabaseTranslationInsertOrNullPromise, DatabaseTranslationInsertArrayPromise } from '../../../types/database/promise'
 import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
 import type { VoidPromise } from '../../../types/common'
@@ -157,7 +157,7 @@ export class TranslationService {
   /**
    * Get a translation by ID
    */
-  static async getTranslationById(id: string): Promise<DatabaseTranslationInsert | null> {
+  static async getTranslationById(id: string): DatabaseTranslationInsertOrNullPromise {
     // Validate ID
     if (!id || typeof id !== 'string') {
       throw new Error('Invalid translation ID provided');
@@ -182,7 +182,7 @@ export class TranslationService {
   /**
    * Get translations for a specific story
    */
-  static async getTranslationsByStoryId(storyId: string): Promise<DatabaseTranslationInsert[]> {
+  static async getTranslationsByStoryId(storyId: string): DatabaseTranslationInsertArrayPromise {
     // Validate story ID
     if (!storyId || typeof storyId !== 'string') {
       throw new Error('Invalid story ID provided');
@@ -207,7 +207,7 @@ export class TranslationService {
   static async getTranslationByStoryAndLanguage(
     storyId: string, 
     targetLanguage: string
-  ): Promise<DatabaseTranslationInsert | null> {
+  ): DatabaseTranslationInsertOrNullPromise {
     // Validate story ID
     if (!storyId || typeof storyId !== 'string') {
       throw new Error('Invalid story ID provided');
@@ -317,7 +317,7 @@ export class TranslationService {
   static async getTranslations(filters?: {
     story_id?: string
     target_language?: string
-  }): Promise<DatabaseTranslationInsert[]> {
+  }): DatabaseTranslationInsertArrayPromise {
     // Validate filters if provided
     if (filters?.story_id && (typeof filters.story_id !== 'string' || !filters.story_id)) {
       throw new Error('Invalid story ID in filters');

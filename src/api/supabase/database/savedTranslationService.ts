@@ -7,6 +7,7 @@ import {
   DatabaseLanguage,
   DatabaseDifficultyLevel,
 } from '../../../types/database';
+import type { DatabaseSavedTranslationWithDetailsPromise } from '../../../types/database/promise';
 import type { Database } from '../../../types/database';
 import type { LanguageCode } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
@@ -238,7 +239,7 @@ export class SavedTranslationService {
   async createSavedTranslation(
     request: CreateSavedTranslationRequest,
     userId: string
-  ): Promise<DatabaseSavedTranslationWithDetails> {
+  ): DatabaseSavedTranslationWithDetailsPromise {
     // Validate and sanitize input data
     const validation = SavedTranslationService.validateCreateSavedTranslationData(request, userId);
     if (!validation.isValid) {
@@ -407,7 +408,7 @@ export class SavedTranslationService {
     translationId: string,
     userId: string,
     updates: UpdateSavedTranslationRequest
-  ): Promise<DatabaseSavedTranslationWithDetails> {
+  ): DatabaseSavedTranslationWithDetailsPromise {
     // Validate input parameters
     if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
       throw new Error('Valid translation ID is required');

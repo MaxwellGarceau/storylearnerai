@@ -42,9 +42,5 @@ export type TranslationUpdateResult = Promise<unknown>;
 // Saved translation types
 export type SavedTranslationResult = Promise<unknown>;
 
-// Specific database promise types
-export type DatabaseUserInsertPromise = Promise<DatabaseUserInsert>;
-export type DatabaseUserInsertOrNullPromise = Promise<DatabaseUserInsert | null>;
-export type DatabaseTranslationInsertOrNullPromise = Promise<DatabaseTranslationInsert | null>;
-export type DatabaseTranslationInsertArrayPromise = Promise<DatabaseTranslationInsert[]>;
-export type DatabaseSavedTranslationWithDetailsPromise = Promise<DatabaseSavedTranslationWithDetails>;
+// Specific database promise types are now in promise.ts
+// Import from '../../../types/database/promise' instead

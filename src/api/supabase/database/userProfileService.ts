@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user'
+import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { PostgrestError } from '@supabase/supabase-js';
@@ -165,7 +166,7 @@ export class UserService {
   /**
    * Get user by user ID
    */
-  static async getUser(userId: string): Promise<DatabaseUserInsert | null> {
+  static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -185,7 +186,7 @@ export class UserService {
   /**
    * Create a new user
    */
-  static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
+  static async createUser(data: CreateUserData): DatabaseUserInsertPromise {
     // Validate and sanitize input data
     const validation = UserService.validateCreateUserData(data)
     if (!validation.isValid) {
@@ -227,7 +228,7 @@ export class UserService {
   /**
    * Update user
    */
-  static async updateUser(userId: string, data: UpdateUserData): Promise<DatabaseUserInsert> {
+  static async updateUser(userId: string, data: UpdateUserData): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -316,7 +317,7 @@ export class UserService {
   /**
    * Get user by username
    */
-  static async getUserByUsername(username: string): Promise<DatabaseUserInsert | null> {
+  static async getUserByUsername(username: string): DatabaseUserInsertOrNullPromise {
     // Validate username input
     if (!username || typeof username !== 'string' || username.trim().length === 0) {
       throw new Error('Valid username is required')
@@ -346,7 +347,7 @@ export class UserService {
   /**
    * Update user's preferred language
    */
-  static async updatePreferredLanguage(userId: string, language: string): Promise<DatabaseUserInsert> {
+  static async updatePreferredLanguage(userId: string, language: string): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -364,7 +365,7 @@ export class UserService {
   /**
    * Update user's avatar URL
    */
-  static async updateAvatarUrl(userId: string, avatarUrl: string): Promise<DatabaseUserInsert> {
+  static async updateAvatarUrl(userId: string, avatarUrl: string): DatabaseUserInsertPromise {
     // Validate input parameters
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')
@@ -386,7 +387,7 @@ export class UserService {
   /**
    * Get or create user (useful for ensuring user exists)
    */
-  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): Promise<DatabaseUserInsert> {
+  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): DatabaseUserInsertPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
       throw new Error('Valid user ID is required')

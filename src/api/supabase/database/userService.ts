@@ -1,6 +1,7 @@
 import { supabase } from '../client'
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { DatabaseUserInsert } from '../../../types/database/user';
+import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { NullableString, VoidPromise } from '../../../types/common'
 import { 
@@ -210,7 +211,7 @@ export class UserService {
   /**
    * Get user by user ID
    */
-  static async getUser(userId: string): Promise<DatabaseUserInsert | null> {
+  static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
@@ -235,7 +236,7 @@ export class UserService {
   /**
    * Create a new user with validation and sanitization
    */
-  static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
+  static async createUser(data: CreateUserData): DatabaseUserInsertPromise {
     // Validate and sanitize input data
     const validation = this.validateCreateUserData(data);
     if (!validation.isValid) {
@@ -277,7 +278,7 @@ export class UserService {
   /**
    * Update user with validation and sanitization
    */
-  static async updateUser(userId: string, data: UpdateUserData): Promise<DatabaseUserInsert> {
+  static async updateUser(userId: string, data: UpdateUserData): DatabaseUserInsertPromise {
     // Validate user ID
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid user ID provided');
@@ -394,21 +395,21 @@ export class UserService {
   /**
    * Update user's preferred language
    */
-  static async updatePreferredLanguage(userId: string, language: string): Promise<DatabaseUserInsert> {
+  static async updatePreferredLanguage(userId: string, language: string): DatabaseUserInsertPromise {
     return this.updateUser(userId, { preferred_language: language })
   }
 
   /**
    * Update user's avatar URL
    */
-  static async updateAvatarUrl(userId: string, avatarUrl: string): Promise<DatabaseUserInsert> {
+  static async updateAvatarUrl(userId: string, avatarUrl: string): DatabaseUserInsertPromise {
     return this.updateUser(userId, { avatar_url: avatarUrl })
   }
 
   /**
    * Get or create user (useful for ensuring user exists)
    */
-  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): Promise<DatabaseUserInsert> {
+  static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): DatabaseUserInsertPromise {
     let user = await this.getUser(userId)
     
     user ??= await this.createUser({
