@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, within } from '@testing-library/react';
 import { vi } from 'vitest';
 import StoryHeader from '../StoryHeader';
