@@ -41,6 +41,26 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "signInWithGoogle": "Iniciar sesión con Google",
     "signUpWithGoogle": "Registrarse con Google",
+    "userProfile": {
+      "title": "Perfil de Usuario",
+      "welcomeBack": "¡Bienvenido de vuelta, {name}!",
+      "description": "Gestiona la configuración y preferencias de tu cuenta",
+      "editProfile": "Editar Perfil",
+      "saveChanges": "Guardar Cambios",
+      "cancel": "Cancelar",
+      "signOut": "Cerrar Sesión",
+      "username": "Nombre de Usuario",
+      "displayName": "Nombre para Mostrar",
+      "preferredLanguage": "Idioma Preferido",
+      "loading": "Cargando perfil...",
+      "saving": "Guardando...",
+      "errors": {
+        "loadFailed": "Error al cargar el perfil",
+        "saveFailed": "Error al guardar el perfil",
+        "invalidUsername": "Nombre de usuario inválido",
+        "invalidDisplayName": "Nombre para mostrar inválido"
+      }
+    },
     "errors": {
       "invalidEmail": "Por favor ingresa una dirección de correo válida",
       "passwordRequired": "La contraseña es requerida",
@@ -234,12 +254,31 @@
     "difficultyDescription": "La historia se adaptará a este nivel de competencia en {language}.",
     "done": "Listo",
     "tip": "💡 Consejo: Puedes pegar historias largas, artículos o cualquier texto en español que quieras traducir",
+    "optionsModal": {
+      "title": "Opciones de Historia",
+      "languageLabel": "Idioma Objetivo",
+      "difficultyLabel": "Dificultad Objetivo (CEFR)",
+      "a1": "A1 (Principiante)",
+      "a2": "A2 (Elemental)",
+      "b1": "B1 (Intermedio)",
+      "b2": "B2 (Intermedio Alto)"
+    },
+    "confirmationModal": {
+      "title": "Confirmar Opciones de Traducción",
+      "from": "Desde:",
+      "to": "Hacia:",
+      "difficulty": "Dificultad:",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar y Traducir"
+    },
     "validation": {
       "invalidInput": "Entrada inválida detectada",
       "fixInput": "Por favor corrige la entrada antes de traducir"
     }
   },
   "savedTranslations": {
+    "title": "Traducciones Guardadas",
+    "subtitle": "Ver y gestionar tus traducciones de historias guardadas",
     "deleteConfirm": "¿Estás seguro de que quieres eliminar esta traducción guardada?",
     "noTranslations": "Aún no hay traducciones guardadas",
     "filterNotImplemented": "Filtrado aún no implementado",

@@ -41,6 +41,26 @@
     "alreadyHaveAccount": "Already have an account?",
     "signInWithGoogle": "Sign in with Google",
     "signUpWithGoogle": "Sign up with Google",
+    "userProfile": {
+      "title": "User Profile",
+      "welcomeBack": "Welcome back, {name}!",
+      "editProfile": "Edit Profile",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "signOut": "Sign Out",
+      "username": "Username",
+      "displayName": "Display Name",
+      "preferredLanguage": "Preferred Language",
+      "description": "Manage your account settings and preferences",
+      "loading": "Loading profile...",
+      "saving": "Saving...",
+      "errors": {
+        "loadFailed": "Failed to load profile",
+        "saveFailed": "Failed to save profile",
+        "invalidUsername": "Invalid username",
+        "invalidDisplayName": "Invalid display name"
+      }
+    },
     "errors": {
       "invalidEmail": "Please enter a valid email address",
       "passwordRequired": "Password is required",
@@ -234,12 +254,31 @@
     "difficultyDescription": "The story will be adapted to this {language} proficiency level.",
     "done": "Done",
     "tip": "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
+    "optionsModal": {
+      "title": "Story Options",
+      "languageLabel": "Target Language",
+      "difficultyLabel": "Target Difficulty (CEFR)",
+      "a1": "A1 (Beginner)",
+      "a2": "A2 (Elementary)",
+      "b1": "B1 (Intermediate)",
+      "b2": "B2 (Upper Intermediate)"
+    },
+    "confirmationModal": {
+      "title": "Confirm Translation Options",
+      "from": "From:",
+      "to": "To:",
+      "difficulty": "Difficulty:",
+      "cancel": "Cancel",
+      "confirm": "Confirm & Translate"
+    },
     "validation": {
       "invalidInput": "Invalid input detected",
       "fixInput": "Please fix the input before translating"
     }
   },
   "savedTranslations": {
+    "title": "Saved Translations",
+    "subtitle": "View and manage your saved story translations",
     "deleteConfirm": "Are you sure you want to delete this saved translation?",
     "noTranslations": "No saved translations yet",
     "filterNotImplemented": "Filtering not yet implemented",

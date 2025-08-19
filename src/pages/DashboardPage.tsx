@@ -88,7 +88,7 @@ export const DashboardPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{t('dashboard.welcome', { name: profile?.display_name ?? user.email?.split('@')[0] })}</h1>
+            <h1 className="text-3xl font-bold">{t('auth.userProfile.welcomeBack', { name: profile?.display_name ?? user.email?.split('@')[0] })}</h1>
             <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">

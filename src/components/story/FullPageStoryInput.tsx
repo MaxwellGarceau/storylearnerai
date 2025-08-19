@@ -182,7 +182,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{t('storySidebar.storyOptions')}</h3>
+              <h3 className="text-lg font-semibold">{t('storyInput.optionsModal.title')}</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -196,7 +196,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             <div className="space-y-4">
               {/* Language Selection */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Target Language</label>
+                <label className="text-sm font-medium">{t('storyInput.optionsModal.languageLabel')}</label>
                 <select
                   value={formData.language}
                   onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
@@ -205,25 +205,25 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                   <option value="en">{getLanguageName('en')}</option>
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  Currently only {getLanguageName('en')} translation is supported.
+                  {t('storyInput.currentlySupported', { language: getLanguageName('en') })}
                 </p>
               </div>
 
               {/* Difficulty Selection */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Target Difficulty (CEFR)</label>
+                <label className="text-sm font-medium">{t('storyInput.optionsModal.difficultyLabel')}</label>
                 <select
                   value={formData.difficulty}
                   onChange={(e) => onFormDataChange('difficulty', e.target.value as DifficultyLevel)}
                   className="w-full p-2 border rounded-md bg-background"
                 >
-                  <option value="a1">A1 (Beginner)</option>
-                  <option value="a2">A2 (Elementary)</option>
-                  <option value="b1">B1 (Intermediate)</option>
-                  <option value="b2">B2 (Upper Intermediate)</option>
+                  <option value="a1">{t('storyInput.optionsModal.a1')}</option>
+                  <option value="a2">{t('storyInput.optionsModal.a2')}</option>
+                  <option value="b1">{t('storyInput.optionsModal.b1')}</option>
+                  <option value="b2">{t('storyInput.optionsModal.b2')}</option>
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  The story will be adapted to this {getLanguageName('en')} proficiency level.
+                  {t('storyInput.difficultyDescription', { language: getLanguageName('en') })}
                 </p>
               </div>
             </div>
@@ -233,7 +233,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 onClick={() => setShowOptions(false)}
                 className="px-6"
               >
-                Done
+                {t('storyInput.done')}
               </Button>
             </div>
           </div>
@@ -244,19 +244,19 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       {showConfirmation && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Confirm Translation Options</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('storyInput.confirmationModal.title')}</h3>
             
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">From:</span>
+                <span className="text-muted-foreground">{t('storyInput.confirmationModal.from')}</span>
                 <span className="font-medium">{getLanguageName('es')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">To:</span>
+                <span className="text-muted-foreground">{t('storyInput.confirmationModal.to')}</span>
                 <span className="font-medium">{getLanguageName(formData.language)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Difficulty:</span>
+                <span className="text-muted-foreground">{t('storyInput.confirmationModal.difficulty')}</span>
                 <span className="font-medium">{getDifficultyLabel(formData.difficulty)}</span>
               </div>
             </div>
@@ -268,14 +268,14 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 className="flex-1"
               >
                 <X className="w-4 h-4 mr-2" />
-                Cancel
+                {t('storyInput.confirmationModal.cancel')}
               </Button>
               <Button
                 onClick={handleConfirmTranslation}
                 className="flex-1"
               >
                 <Check className="w-4 h-4 mr-2" />
-                Confirm & Translate
+                {t('storyInput.confirmationModal.confirm')}
               </Button>
             </div>
           </div>
