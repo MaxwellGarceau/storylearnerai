@@ -18,6 +18,15 @@ interface ValidationError {
   message: string;
 }
 
+/**
+ * Type for saved translation filters with optional language codes
+ * Makes original_language_code and translated_language_code optional while keeping other filters required
+ */
+type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & {
+  original_language_code?: LanguageCode;
+  translated_language_code?: LanguageCode;
+};
+
 export class SavedTranslationService {
   /**
    * Validate and sanitize saved translation data
@@ -298,7 +307,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslations(
     userId: string,
-    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
+    filters: SavedTranslationFiltersWithOptionalLanguages = {}
   ): Promise<DatabaseSavedTranslationWithDetails[]> {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
@@ -473,7 +482,7 @@ export class SavedTranslationService {
    */
   async getSavedTranslationsCount(
     userId: string,
-    filters: Omit<SavedTranslationFilters, 'original_language_code' | 'translated_language_code'> & { original_language_code?: LanguageCode, translated_language_code?: LanguageCode } = {}
+    filters: SavedTranslationFiltersWithOptionalLanguages = {}
   ): Promise<number> {
     // Validate user ID
     if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
