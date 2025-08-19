@@ -1,5 +1,5 @@
 import { supabase } from '../client'
-import type { DatabaseTranslationInsert, DatabaseTranslationUpdate } from '../../../types/database/translation'
+import type { DatabaseTranslationUpdate } from '../../../types/database/translation'
 import type { DatabaseTranslationInsertPromise, DatabaseTranslationInsertOrNullPromise, DatabaseTranslationInsertArrayPromise } from '../../../types/database/promise'
 import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
