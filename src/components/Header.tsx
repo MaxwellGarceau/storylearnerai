@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { useAuth } from '../hooks/useAuth';
 import { Button } from './ui/Button';
+import { LanguageSelector } from './ui/LanguageSelector';
 import { 
   User, 
   LogIn, 
@@ -15,10 +16,12 @@ import {
   X
 } from 'lucide-react';
 import { logger } from '../lib/logger';
+import { useTranslation } from 'react-i18next';
 
 const Header: React.FC = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -45,7 +48,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo - responsive sizing */}
         <Link to="/" className="text-lg sm:text-xl font-bold text-foreground hover:text-primary transition-colors">
-          Story Learner AI
+          {t('header.appName')}
         </Link>
         
         {/* Desktop Navigation */}
@@ -59,7 +62,7 @@ const Header: React.FC = () => {
                 : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
             )}
           >
-            Home
+            {t('navigation.home')}
           </Link>
           <Link 
             to="/translate" 
@@ -70,7 +73,7 @@ const Header: React.FC = () => {
                 : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
             )}
           >
-            Translate
+            {t('navigation.translate')}
           </Link>
           
           {user && (
@@ -84,7 +87,7 @@ const Header: React.FC = () => {
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 )}
               >
-                Dashboard
+                {t('navigation.dashboard')}
               </Link>
               <Link 
                 to="/saved-translations" 
@@ -95,7 +98,7 @@ const Header: React.FC = () => {
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 )}
               >
-                Saved
+                {t('navigation.saved')}
               </Link>
             </>
           )}
@@ -103,6 +106,7 @@ const Header: React.FC = () => {
 
         {/* Desktop User Menu */}
         <div className="hidden md:flex items-center space-x-4">
+          <LanguageSelector variant="button" />
           {user ? (
             <div className="relative">
               <button
@@ -126,7 +130,7 @@ const Header: React.FC = () => {
                     onClick={() => setShowUserMenu(false)}
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
-                    Dashboard
+                    {t('navigation.dashboard')}
                   </Link>
                   <Link
                     to="/saved-translations"
@@ -134,7 +138,7 @@ const Header: React.FC = () => {
                     onClick={() => setShowUserMenu(false)}
                   >
                     <Save className="h-4 w-4 mr-2" />
-                    Saved Translations
+                    {t('story.savedTranslations')}
                   </Link>
                   <Link
                     to="/auth?mode=profile"
@@ -142,14 +146,14 @@ const Header: React.FC = () => {
                     onClick={() => setShowUserMenu(false)}
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    Profile
+                    {t('navigation.profile')}
                   </Link>
                   <button
                     onClick={() => void handleSignOut()}
                     className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent/50 transition-colors"
                   >
                     <LogIn className="h-4 w-4 mr-2" />
-                    Sign Out
+                    {t('navigation.signOut')}
                   </button>
                 </div>
               )}
@@ -163,7 +167,7 @@ const Header: React.FC = () => {
               >
                 <Link to="/auth?mode=signin" data-testid="sign-in-link">
                   <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
+                  {t('navigation.signIn')}
                 </Link>
               </Button>
               <Button
@@ -172,7 +176,7 @@ const Header: React.FC = () => {
               >
                 <Link to="/auth?mode=signup" data-testid="sign-up-link">
                   <User className="h-4 w-4 mr-2" />
-                  Sign Up
+                  {t('navigation.signUp')}
                 </Link>
               </Button>
             </div>
@@ -181,6 +185,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-2">
+          <LanguageSelector variant="button" />
           {user && (
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
               <User className="h-4 w-4 text-primary" />
@@ -189,7 +194,7 @@ const Header: React.FC = () => {
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             className="p-2 rounded-md text-foreground hover:bg-accent/50 transition-colors"
-            aria-label="Toggle mobile menu"
+            aria-label={t('header.toggleMobileMenu')}
           >
             {showMobileMenu ? (
               <X className="h-5 w-5" />
@@ -215,7 +220,7 @@ const Header: React.FC = () => {
               )}
               onClick={closeMobileMenu}
             >
-              Home
+              {t('navigation.home')}
             </Link>
             <Link 
               to="/translate" 
@@ -227,7 +232,7 @@ const Header: React.FC = () => {
               )}
               onClick={closeMobileMenu}
             >
-              Translate
+              {t('navigation.translate')}
             </Link>
             
             {user && (
@@ -242,7 +247,7 @@ const Header: React.FC = () => {
                   )}
                   onClick={closeMobileMenu}
                 >
-                  Dashboard
+                  {t('navigation.dashboard')}
                 </Link>
                 <Link 
                   to="/saved-translations" 
@@ -254,7 +259,7 @@ const Header: React.FC = () => {
                   )}
                   onClick={closeMobileMenu}
                 >
-                  Saved Translations
+                  {t('story.savedTranslations')}
                 </Link>
                 <Link
                   to="/auth?mode=profile"
@@ -262,14 +267,14 @@ const Header: React.FC = () => {
                   onClick={closeMobileMenu}
                 >
                   <Settings className="h-4 w-4 mr-2" />
-                  Profile
+                  {t('navigation.profile')}
                 </Link>
                 <button
                   onClick={() => void handleSignOut()}
                   className="flex items-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors rounded-md"
                 >
                   <LogIn className="h-4 w-4 mr-2" />
-                  Sign Out
+                  {t('navigation.signOut')}
                 </button>
               </>
             )}
@@ -285,7 +290,7 @@ const Header: React.FC = () => {
                 >
                   <Link to="/auth?mode=signin" data-testid="sign-in-link" onClick={closeMobileMenu}>
                     <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
+                    {t('navigation.signIn')}
                   </Link>
                 </Button>
                 <Button
@@ -295,7 +300,7 @@ const Header: React.FC = () => {
                 >
                   <Link to="/auth?mode=signup" data-testid="sign-up-link" onClick={closeMobileMenu}>
                     <User className="h-4 w-4 mr-2" />
-                    Sign Up
+                    {t('navigation.signUp')}
                   </Link>
                 </Button>
               </div>

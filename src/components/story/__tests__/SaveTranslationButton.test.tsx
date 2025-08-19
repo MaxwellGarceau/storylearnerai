@@ -52,7 +52,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -71,7 +71,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={true}
         />
       </TooltipProvider>
@@ -90,7 +90,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={true}
         />
       </TooltipProvider>
@@ -111,7 +111,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -132,7 +132,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -141,7 +141,7 @@ describe('SaveTranslationButton Component', () => {
     // Click the Save Translation button (the trigger button, not the modal button)
     // Use getAllByText to handle potential multiple elements and click the first one
     const triggerButtons = screen.getAllByText('Save Translation');
-    const triggerButton = triggerButtons.find(button => !button.disabled);
+    const triggerButton = triggerButtons.find(button => !(button as HTMLButtonElement).disabled);
     expect(triggerButton).toBeDefined();
     if (triggerButton) {
       fireEvent.click(triggerButton);
@@ -158,7 +158,7 @@ describe('SaveTranslationButton Component', () => {
           originalStory="Esta es una historia de prueba."
           originalLanguage="Spanish"
           translatedLanguage="English"
-          difficultyLevel="A1"
+          difficultyLevel="a1"
           isSavedStory={true}
         />
       </TooltipProvider>

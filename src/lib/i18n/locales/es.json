@@ -1,0 +1,98 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "submit": "Enviar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "translate": "Traducir",
+    "dashboard": "Panel",
+    "saved": "Guardado",
+    "profile": "Perfil",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar Sesión"
+  },
+  "header": {
+    "appName": "Story Learner AI",
+    "toggleMobileMenu": "Alternar menú móvil"
+  },
+  "auth": {
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "signInTitle": "Iniciar Sesión",
+    "signUpTitle": "Registrarse",
+    "profileTitle": "Perfil",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signUpWithGoogle": "Registrarse con Google",
+    "errors": {
+      "invalidEmail": "Por favor ingresa una dirección de correo válida",
+      "passwordRequired": "La contraseña es requerida",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "emailRequired": "El correo electrónico es requerido",
+      "firstNameRequired": "El nombre es requerido",
+      "lastNameRequired": "El apellido es requerido"
+    }
+  },
+  "story": {
+    "uploadTitle": "Subir Historia",
+    "uploadDescription": "Sube un archivo de historia o pega texto para comenzar",
+    "uploadButton": "Subir Archivo",
+    "pasteText": "Pegar Texto",
+    "textPlaceholder": "Pega el texto de tu historia aquí...",
+    "difficultyLevel": "Nivel de Dificultad",
+    "targetLanguage": "Idioma Objetivo",
+    "translateButton": "Traducir Historia",
+    "saveTranslation": "Guardar Traducción",
+    "savedTranslations": "Traducciones Guardadas",
+    "noSavedTranslations": "Aún no hay traducciones guardadas",
+    "loadingTranslation": "Traduciendo tu historia...",
+    "translationComplete": "¡Traducción completada!",
+    "errors": {
+      "fileRequired": "Por favor sube un archivo o pega texto",
+      "textRequired": "Por favor ingresa algún texto para traducir",
+      "translationFailed": "La traducción falló. Por favor intenta de nuevo."
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Bienvenido de vuelta",
+    "recentActivity": "Actividad Reciente",
+    "quickActions": "Acciones Rápidas",
+    "stats": {
+      "storiesTranslated": "Historias Traducidas",
+      "wordsLearned": "Palabras Aprendidas",
+      "timeSpent": "Tiempo Dedicado"
+    }
+  },
+  "languages": {
+    "en": "Inglés",
+    "es": "Español"
+  },
+  "difficultyLevels": {
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado"
+  },
+  "languageSelector": {
+    "title": "Idioma",
+    "changeLanguage": "Cambiar Idioma"
+  }
+}

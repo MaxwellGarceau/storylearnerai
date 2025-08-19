@@ -1,0 +1,98 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "navigation": {
+    "home": "Home",
+    "translate": "Translate",
+    "dashboard": "Dashboard",
+    "saved": "Saved",
+    "profile": "Profile",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "header": {
+    "appName": "Story Learner AI",
+    "toggleMobileMenu": "Toggle mobile menu"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "signInTitle": "Sign In",
+    "signUpTitle": "Sign Up",
+    "profileTitle": "Profile",
+    "forgotPassword": "Forgot Password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInWithGoogle": "Sign in with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "emailRequired": "Email is required",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required"
+    }
+  },
+  "story": {
+    "uploadTitle": "Upload Story",
+    "uploadDescription": "Upload a story file or paste text to get started",
+    "uploadButton": "Upload File",
+    "pasteText": "Paste Text",
+    "textPlaceholder": "Paste your story text here...",
+    "difficultyLevel": "Difficulty Level",
+    "targetLanguage": "Target Language",
+    "translateButton": "Translate Story",
+    "saveTranslation": "Save Translation",
+    "savedTranslations": "Saved Translations",
+    "noSavedTranslations": "No saved translations yet",
+    "loadingTranslation": "Translating your story...",
+    "translationComplete": "Translation complete!",
+    "errors": {
+      "fileRequired": "Please upload a file or paste text",
+      "textRequired": "Please enter some text to translate",
+      "translationFailed": "Translation failed. Please try again."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "stats": {
+      "storiesTranslated": "Stories Translated",
+      "wordsLearned": "Words Learned",
+      "timeSpent": "Time Spent"
+    }
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish"
+  },
+  "difficultyLevels": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "languageSelector": {
+    "title": "Language",
+    "changeLanguage": "Change Language"
+  }
+}

@@ -4,6 +4,7 @@ import { vi } from 'vitest'
 import { UserProfile } from '../UserProfile'
 import { setupSupabaseMocks, mockUseAuth } from '../../../__tests__/mocks/supabaseMock'
 import type { User } from '@supabase/supabase-js'
+import type { LanguageCode } from '../../../types/llm/prompts'
 
 // Mock the useLanguages hook
 vi.mock('../../../hooks/useLanguages', () => ({
@@ -15,11 +16,11 @@ vi.mock('../../../hooks/useLanguages', () => ({
     loading: false,
     error: null,
     getLanguageName: (code: string) => {
-      const languageMap: Record<string, string> = {
+      const languageMap: Record<LanguageCode, string> = {
         'en': 'English',
         'es': 'Spanish'
       }
-      return languageMap[code] || code
+      return languageMap[code as LanguageCode] || code
     },
     languageMap: new Map([
       ['en', 'English'],
@@ -57,7 +58,7 @@ describe('UserProfile Component', () => {
     id: 'test-user-id',
     username: 'testuser',
     display_name: 'Test User',
-    preferred_language: 'en',
+    preferred_language: 'en' as LanguageCode,
     created_at: '2023-01-01T00:00:00Z',
     updated_at: '2023-01-01T00:00:00Z'
   }
@@ -143,7 +144,7 @@ describe('UserProfile Component', () => {
       ...mockProfile, 
       username: 'newusername', 
       display_name: 'New User Name',
-      preferred_language: 'es'  // Make sure the mock returns the updated language
+      preferred_language: 'es' as LanguageCode  // Make sure the mock returns the updated language
     }
     vi.mocked(UserService.updateUser).mockResolvedValue(updatedProfile)
 
@@ -172,7 +173,7 @@ describe('UserProfile Component', () => {
       expect(UserService.updateUser).toHaveBeenCalledWith('test-user-id', {
         username: 'newusername',
         display_name: 'New User Name',
-        preferred_language: 'es'
+        preferred_language: 'es' as LanguageCode
       })
     })
 

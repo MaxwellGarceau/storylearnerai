@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+# Testing
+- This project uses vitest
