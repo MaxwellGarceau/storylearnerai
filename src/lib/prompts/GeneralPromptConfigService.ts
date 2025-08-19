@@ -175,20 +175,11 @@ class GeneralPromptConfigService {
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
-  private getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions {
     const config = this.languageConfig as Record<string, unknown>;
-    const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
-    if (!language) {
-      logger.warn('prompts', `No prompt configuration found for language: ${languageCode}`);
-      return null;
-    }
-
-    const difficultyLevel = language[difficulty.toLowerCase()] as PromptInstructions | undefined;
-    if (!difficultyLevel) {
-      logger.warn('prompts', 'No prompt configuration found for difficulty', { difficulty, languageCode });
-      return null;
-    }
-
+    const language = config[languageCode.toLowerCase()] as Record<string, unknown>;
+    const difficultyLevel = language[difficulty.toLowerCase()] as PromptInstructions;
+    
     return difficultyLevel;
   }
 
@@ -197,7 +188,7 @@ class GeneralPromptConfigService {
    * For now, this delegates to the single language configuration since we don't have
    * comprehensive user background customization yet
    */
-  private getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions {
     // For now, use the single language configuration
     // In the future, this can be enhanced with user background considerations
     return this.getLanguageInstructions(toLanguageCode, difficulty);
@@ -235,14 +226,6 @@ class GeneralPromptConfigService {
 
       // Get language-specific instructions
       const languageInstructions = this.getLanguagePairInstructions(fromLanguage, toLanguage, difficulty);
-      if (!languageInstructions) {
-        logger.warn('prompts', 'No language instructions found', { 
-          fromLanguage, 
-          toLanguage, 
-          difficulty 
-        });
-        return this.buildFallbackPrompt(context);
-      }
 
       // Get native-to-target specific instructions if native language is provided
       let nativeToTargetInstructions = '';
