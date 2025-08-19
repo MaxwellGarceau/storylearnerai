@@ -4,9 +4,8 @@ import type { NullableString } from "../common";
 // User management types
 export interface DatabaseUser {
   id: string;
-  // NullableString so we can clear these fields when needed
-  username: NullableString;
-  display_name: NullableString;
+  username: string;
+  display_name: string;
   avatar_url: NullableString;
   preferred_language: LanguageCode;
   created_at: string;
@@ -15,9 +14,8 @@ export interface DatabaseUser {
 
 export interface DatabaseUserInsert {
   id: string;
-  // NullableString so we can clear these fields when needed
-  username?: NullableString;
-  display_name?: NullableString;
+  username?: string;
+  display_name?: string;
   avatar_url?: NullableString;
   preferred_language?: LanguageCode;
   created_at: string;
@@ -26,9 +24,8 @@ export interface DatabaseUserInsert {
 
 export interface DatabaseUserUpdate {
   id?: string;
-  // NullableString so we can clear these fields when needed
-  username?: NullableString;
-  display_name?: NullableString;
+  username?: string;
+  display_name?: string;
   avatar_url?: NullableString;
   preferred_language?: LanguageCode;
   created_at?: string;

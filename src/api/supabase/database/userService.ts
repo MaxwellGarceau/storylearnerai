@@ -11,15 +11,15 @@ import {
 
 export interface CreateUserData {
   id: string
-  username?: NullableString
-  display_name?: NullableString
+  username?: string
+  display_name?: string
   avatar_url?: NullableString
   preferred_language?: string
 }
 
 export interface UpdateUserData {
-  username?: NullableString
-  display_name?: NullableString
+  username?: string
+  display_name?: string
   avatar_url?: NullableString
   preferred_language?: string
 }
@@ -48,9 +48,8 @@ export class UserService {
 
     // Validate and sanitize username if provided
     if (data.username !== undefined) {
-      if (data.username === null || data.username === '') {
-        // Username is optional, so null/empty is valid
-        sanitizedData.username = null;
+      if (data.username === '') {
+        errors.push({ field: 'username', message: 'Username cannot be empty' });
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
@@ -66,9 +65,8 @@ export class UserService {
 
     // Validate and sanitize display name if provided
     if (data.display_name !== undefined) {
-      if (data.display_name === null || data.display_name === '') {
-        // Display name is optional, so null/empty is valid
-        sanitizedData.display_name = null;
+      if (data.display_name === '') {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' });
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
@@ -133,9 +131,8 @@ export class UserService {
 
     // Validate and sanitize username if provided
     if (data.username !== undefined) {
-      if (data.username === null || data.username === '') {
-        // Username can be set to null/empty
-        sanitizedData.username = null;
+      if (data.username === '') {
+        errors.push({ field: 'username', message: 'Username cannot be empty' });
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
@@ -151,9 +148,8 @@ export class UserService {
 
     // Validate and sanitize display name if provided
     if (data.display_name !== undefined) {
-      if (data.display_name === null || data.display_name === '') {
-        // Display name can be set to null/empty
-        sanitizedData.display_name = null;
+      if (data.display_name === '') {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' });
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
@@ -247,7 +243,7 @@ export class UserService {
     const { sanitizedData } = validation;
 
     // Check username availability if username is provided
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const isAvailable = await this.isUsernameAvailable(sanitizedData.username);
       if (!isAvailable) {
         throw new Error('Username is already taken');
@@ -294,7 +290,7 @@ export class UserService {
     const { sanitizedData } = validation;
 
     // Check username availability if username is being updated
-    if (sanitizedData.username !== undefined && sanitizedData.username !== null) {
+    if (sanitizedData.username !== undefined && sanitizedData.username !== '') {
       const existingUser = await this.getUserByUsername(sanitizedData.username);
       if (existingUser && existingUser.id !== userId) {
         throw new Error('Username is already taken');

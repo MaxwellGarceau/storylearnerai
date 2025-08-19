@@ -29,9 +29,11 @@ export class UserService {
     }
 
     // Validate and sanitize username (optional)
-    if (data.username !== undefined && data.username !== null) {
+    if (data.username !== undefined) {
       if (typeof data.username !== 'string') {
         errors.push({ field: 'username', message: 'Username must be a string' })
+      } else if (data.username.trim().length === 0) {
+        errors.push({ field: 'username', message: 'Username cannot be empty' })
       } else {
         const sanitizedUsername = sanitizeText(data.username, { maxLength: 30 })
         const usernameValidation = validateUsername(sanitizedUsername)
@@ -44,9 +46,11 @@ export class UserService {
     }
 
     // Validate and sanitize display name (optional)
-    if (data.display_name !== undefined && data.display_name !== null) {
+    if (data.display_name !== undefined) {
       if (typeof data.display_name !== 'string') {
         errors.push({ field: 'display_name', message: 'Display name must be a string' })
+      } else if (data.display_name.trim().length === 0) {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' })
       } else {
         const sanitizedDisplayName = sanitizeText(data.display_name, { maxLength: 50 })
         const displayNameValidation = validateDisplayName(sanitizedDisplayName)
@@ -100,9 +104,11 @@ export class UserService {
     const sanitizedData: UpdateUserData = { ...data }
 
     // Validate and sanitize username (optional)
-    if (data.username !== undefined && data.username !== null) {
+    if (data.username !== undefined) {
       if (typeof data.username !== 'string') {
         errors.push({ field: 'username', message: 'Username must be a string' })
+      } else if (data.username.trim().length === 0) {
+        errors.push({ field: 'username', message: 'Username cannot be empty' })
       } else {
         const sanitizedUsername = sanitizeText(data.username, { maxLength: 30 })
         const usernameValidation = validateUsername(sanitizedUsername)
@@ -115,9 +121,11 @@ export class UserService {
     }
 
     // Validate and sanitize display name (optional)
-    if (data.display_name !== undefined && data.display_name !== null) {
+    if (data.display_name !== undefined) {
       if (typeof data.display_name !== 'string') {
         errors.push({ field: 'display_name', message: 'Display name must be a string' })
+      } else if (data.display_name.trim().length === 0) {
+        errors.push({ field: 'display_name', message: 'Display name cannot be empty' })
       } else {
         const sanitizedDisplayName = sanitizeText(data.display_name, { maxLength: 50 })
         const displayNameValidation = validateDisplayName(sanitizedDisplayName)
@@ -197,7 +205,7 @@ export class UserService {
     const sanitizedData = validation.sanitizedData
 
     // Check username availability if username is provided
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const isAvailable = await this.isUsernameAvailable(sanitizedData.username)
       if (!isAvailable) {
         throw new Error('Username is already taken')
@@ -244,7 +252,7 @@ export class UserService {
     const sanitizedData = validation.sanitizedData
 
     // Check username availability if username is being updated
-    if (sanitizedData.username && sanitizedData.username !== null) {
+    if (sanitizedData.username && sanitizedData.username !== '') {
       const existingUser = await this.getUserByUsername(sanitizedData.username)
       if (existingUser && existingUser.id !== userId) {
         throw new Error('Username is already taken')

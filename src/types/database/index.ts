@@ -61,8 +61,8 @@ export interface Database {
       users: {
         Row: {
           id: string
-          username: NullableString
-          display_name: NullableString
+          username: string
+          display_name: string
           avatar_url: NullableString
           preferred_language: LanguageCode
           created_at: string
@@ -70,8 +70,8 @@ export interface Database {
         }
         Insert: {
           id: string
-          username?: NullableString
-          display_name?: NullableString
+          username?: string
+          display_name?: string
           avatar_url?: NullableString
           preferred_language?: LanguageCode
           created_at?: string
@@ -79,8 +79,8 @@ export interface Database {
         }
         Update: {
           id?: string
-          username?: NullableString
-          display_name?: NullableString
+          username?: string
+          display_name?: string
           avatar_url?: NullableString
           preferred_language?: LanguageCode
           created_at?: string

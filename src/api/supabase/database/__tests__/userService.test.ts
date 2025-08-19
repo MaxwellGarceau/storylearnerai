@@ -146,11 +146,11 @@ describe('UserService', () => {
         await expect(UserService.createUser(userData)).rejects.toThrow('Validation failed: preferred_language: Invalid language code format (use ISO 639-1)')
       })
 
-      it('should handle null/empty optional fields', async () => {
+      it('should handle empty optional fields', async () => {
         const mockUser = {
           id: 'user123',
-          username: null,
-          display_name: null,
+          username: 'testuser',
+          display_name: 'Test User',
           avatar_url: null,
           preferred_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
@@ -179,8 +179,8 @@ describe('UserService', () => {
 
         const userData: CreateUserData = {
           id: 'user123',
-          username: null,
-          display_name: null,
+          username: 'testuser',
+          display_name: 'Test User',
           avatar_url: null
         }
 
@@ -252,11 +252,11 @@ describe('UserService', () => {
         await expect(UserService.updateUser('user123', updateData)).rejects.toThrow('Validation failed: username: Input contains potentially dangerous content')
       })
 
-      it('should handle setting fields to null', async () => {
+      it('should handle setting avatar_url to null', async () => {
         const mockUser = {
           id: 'user123',
-          username: null,
-          display_name: null,
+          username: 'testuser',
+          display_name: 'Test User',
           avatar_url: null,
           preferred_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
@@ -286,8 +286,6 @@ describe('UserService', () => {
         })
 
         const updateData: UpdateUserData = {
-          username: null,
-          display_name: null,
           avatar_url: null
         }
 
