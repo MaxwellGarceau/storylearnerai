@@ -109,21 +109,21 @@ export default function SavedTranslationsList() {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
+          <CardTitle>{t('savedTranslations.filters.title')}</CardTitle>
           <CardDescription>
-            Filter your saved translations by target language, difficulty, or search terms
+            {t('savedTranslations.filters.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Target Language</label>
+              <label className="text-sm font-medium mb-2 block">{t('savedTranslations.filters.targetLanguage')}</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value as LanguageCode | '')}
               >
-                <option value="">All Languages</option>
+                <option value="">{t('savedTranslations.filters.allLanguages')}</option>
                 {languages.map((language) => (
                   <option key={language.id} value={language.code}>
                     {language.name}
@@ -133,13 +133,13 @@ export default function SavedTranslationsList() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Difficulty Level (CEFR)</label>
+              <label className="text-sm font-medium mb-2 block">{t('savedTranslations.filters.difficultyLevel')}</label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value as DifficultyLevel | '')}
               >
-                <option value="">All Levels</option>
+                <option value="">{t('savedTranslations.filters.allLevels')}</option>
                 {CEFR_DIFFICULTY_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value} title={option.description}>
                     {option.label}
@@ -149,10 +149,10 @@ export default function SavedTranslationsList() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Search</label>
+              <label className="text-sm font-medium mb-2 block">{t('savedTranslations.filters.search')}</label>
               <input
                 type="text"
-                placeholder="Search in titles, notes, or content..."
+                placeholder={t('savedTranslations.filters.searchPlaceholder')}
                 className="w-full p-2 border rounded-md"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -161,7 +161,7 @@ export default function SavedTranslationsList() {
           </div>
 
           <Button onClick={handleFilterChange} className="w-full md:w-auto">
-            Apply Filters
+            {t('savedTranslations.filters.applyFilters')}
           </Button>
         </CardContent>
       </Card>
@@ -177,7 +177,7 @@ export default function SavedTranslationsList() {
       {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          {savedTranslations.length} saved translation{savedTranslations.length !== 1 ? 's' : ''}
+          {t('savedTranslations.results.count', { count: savedTranslations.length })}
         </p>
       </div>
 
@@ -193,7 +193,7 @@ export default function SavedTranslationsList() {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-lg">
-                    {translation.title ?? 'Untitled Translation'}
+                    {translation.title ?? t('savedTranslations.results.untitled')}
                   </CardTitle>
                   <CardDescription>
                     {formatDate(translation.created_at)} •{' '}
@@ -207,7 +207,7 @@ export default function SavedTranslationsList() {
                     size="sm"
                     onClick={() => handleViewStory(translation)}
                   >
-                    View Story
+                    {t('savedTranslations.results.viewStory')}
                   </Button>
                   <Button
                     variant="outline"
@@ -215,7 +215,7 @@ export default function SavedTranslationsList() {
                     onClick={() => void handleDelete(translation.id)}
                     disabled={false}
                   >
-                    Delete
+                    {t('savedTranslations.results.delete')}
                   </Button>
                 </div>
               </div>
@@ -223,20 +223,20 @@ export default function SavedTranslationsList() {
             <CardContent className="space-y-4">
               {translation.notes && (
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Notes</h4>
+                  <h4 className="font-medium text-sm mb-2">{t('savedTranslations.content.notes')}</h4>
                   <p className="text-sm text-muted-foreground">{translation.notes}</p>
                 </div>
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Original Story</h4>
+                  <h4 className="font-medium text-sm mb-2">{t('savedTranslations.content.originalStory')}</h4>
                   <div className="text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2">
                     {translation.original_story}
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Translated Story</h4>
+                  <h4 className="font-medium text-sm mb-2">{t('savedTranslations.content.translatedStory')}</h4>
                   <div className="text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2">
                     {translation.translated_story}
                   </div>
@@ -267,9 +267,9 @@ export default function SavedTranslationsList() {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <h3 className="text-lg font-medium mb-2">No saved translations yet</h3>
+              <h3 className="text-lg font-medium mb-2">{t('savedTranslations.emptyState.title')}</h3>
               <p className="text-sm">
-                Start translating stories and save them to see them here.
+                {t('savedTranslations.emptyState.description')}
               </p>
             </div>
           </CardContent>

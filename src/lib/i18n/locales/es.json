@@ -282,7 +282,33 @@
     "deleteConfirm": "¿Estás seguro de que quieres eliminar esta traducción guardada?",
     "noTranslations": "Aún no hay traducciones guardadas",
     "filterNotImplemented": "Filtrado aún no implementado",
-    "deleteNotImplemented": "Eliminación aún no implementada"
+    "deleteNotImplemented": "Eliminación aún no implementada",
+    "filters": {
+      "title": "Filtros",
+      "description": "Filtra tus traducciones guardadas por idioma objetivo, dificultad o términos de búsqueda",
+      "targetLanguage": "Idioma Objetivo",
+      "allLanguages": "Todos los Idiomas",
+      "difficultyLevel": "Nivel de Dificultad (CEFR)",
+      "allLevels": "Todos los Niveles",
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar en títulos, notas o contenido...",
+      "applyFilters": "Aplicar Filtros"
+    },
+    "results": {
+      "count": "{count} traducción guardada{count, plural, one {} other {s}}",
+      "viewStory": "Ver Historia",
+      "delete": "Eliminar",
+      "untitled": "Traducción Sin Título"
+    },
+    "content": {
+      "notes": "Notas",
+      "originalStory": "Historia Original",
+      "translatedStory": "Historia Traducida"
+    },
+    "emptyState": {
+      "title": "Aún no hay traducciones guardadas",
+      "description": "Comienza a traducir historias y guárdalas para verlas aquí."
+    }
   },
   "difficultyLevels": {
     "a1": {

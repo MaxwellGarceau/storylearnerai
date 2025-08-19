@@ -282,7 +282,33 @@
     "deleteConfirm": "Are you sure you want to delete this saved translation?",
     "noTranslations": "No saved translations yet",
     "filterNotImplemented": "Filtering not yet implemented",
-    "deleteNotImplemented": "Delete not yet implemented"
+    "deleteNotImplemented": "Delete not yet implemented",
+    "filters": {
+      "title": "Filters",
+      "description": "Filter your saved translations by target language, difficulty, or search terms",
+      "targetLanguage": "Target Language",
+      "allLanguages": "All Languages",
+      "difficultyLevel": "Difficulty Level (CEFR)",
+      "allLevels": "All Levels",
+      "search": "Search",
+      "searchPlaceholder": "Search in titles, notes, or content...",
+      "applyFilters": "Apply Filters"
+    },
+    "results": {
+      "count": "{count} saved translation{count, plural, one {} other {s}}",
+      "viewStory": "View Story",
+      "delete": "Delete",
+      "untitled": "Untitled Translation"
+    },
+    "content": {
+      "notes": "Notes",
+      "originalStory": "Original Story",
+      "translatedStory": "Translated Story"
+    },
+    "emptyState": {
+      "title": "No saved translations yet",
+      "description": "Start translating stories and save them to see them here."
+    }
   },
   "difficultyLevels": {
     "a1": {
