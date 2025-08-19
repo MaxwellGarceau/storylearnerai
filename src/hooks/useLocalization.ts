@@ -13,7 +13,7 @@ export const SUPPORTED_LANGUAGES: LanguageCode[] = ['en', 'es'];
 
 export const useLocalization = () => {
   const { i18n, t } = useTranslation();
-  const { getLanguageName } = useLanguages();
+  const { getLanguageName, getNativeLanguageName } = useLanguages();
 
   const currentLanguage = i18n.language;
   const isLanguageLoaded = i18n.hasResourceBundle ? i18n.hasResourceBundle(currentLanguage, 'translation') : true;
@@ -30,20 +30,21 @@ export const useLocalization = () => {
 
   const getCurrentLocalization = useCallback((): LocalizationInfo => {
     const name = getLanguageName(currentLanguage as LanguageCode);
+    const nativeName = getNativeLanguageName(currentLanguage as LanguageCode);
     return {
       code: currentLanguage as LanguageCode,
       name: name,
-      nativeName: name
+      nativeName: nativeName
     };
-  }, [currentLanguage, getLanguageName]);
+  }, [currentLanguage, getLanguageName, getNativeLanguageName]);
 
   const getSupportedLocalizations = useCallback((): LocalizationInfo[] => {
     return SUPPORTED_LANGUAGES.map(code => ({
       code,
       name: getLanguageName(code),
-      nativeName: getLanguageName(code)
+      nativeName: getNativeLanguageName(code)
     }));
-  }, [getLanguageName]);
+  }, [getLanguageName, getNativeLanguageName]);
 
   return {
     currentLocalization: currentLanguage,

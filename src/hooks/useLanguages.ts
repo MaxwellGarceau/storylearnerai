@@ -17,9 +17,23 @@ export const useLanguages = () => {
     return map
   }, [languages])
 
+  // Create a memoized map for native names
+  const nativeLanguageMap = useMemo(() => {
+    const map = new Map<LanguageCode, string>()
+    languages.forEach(lang => {
+      map.set(lang.code, lang.native_name || lang.name)
+    })
+    return map
+  }, [languages])
+
   // Get language name with fallback
   const getLanguageName = (code: LanguageCode): string => {
     return languageMap.get(code) ?? code
+  }
+
+  // Get native language name with fallback
+  const getNativeLanguageName = (code: LanguageCode): string => {
+    return nativeLanguageMap.get(code) ?? code
   }
 
   // Map language names to ISO codes
@@ -71,6 +85,7 @@ export const useLanguages = () => {
     loading,
     error,
     getLanguageName,
+    getNativeLanguageName,
     getLanguageCode,
     languageMap
   }
