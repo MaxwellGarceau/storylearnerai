@@ -6,21 +6,26 @@ import { Badge } from '../ui/Badge';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
+import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
-import { DifficultyLevel, DifficultyLevelDisplay, LanguageCode } from '../../types/llm/prompts';
+import { DifficultyLevel, LanguageCode } from '../../types/llm/prompts';
 import { logger } from '../../lib/logger';
-
-// CEFR difficulty level options
-const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: DifficultyLevelDisplay; description: string }[] = [
-  { value: 'a1', label: 'A1 (Beginner)', description: 'Basic level - Can understand and use familiar everyday expressions' },
-  { value: 'a2', label: 'A2 (Elementary)', description: 'Elementary level - Can communicate in simple and routine tasks' },
-  { value: 'b1', label: 'B1 (Intermediate)', description: 'Intermediate level - Can deal with most situations while traveling' },
-  { value: 'b2', label: 'B2 (Upper Intermediate)', description: 'Upper intermediate level - Can interact with fluency and spontaneity' },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { getDifficultyLevelDisplay } = useDifficultyLevels();
+  
+  // CEFR difficulty level options
+  const CEFR_DIFFICULTY_OPTIONS: { value: DifficultyLevel; label: string; description: string }[] = [
+    { value: 'a1', label: t('difficultyLevels.a1.label'), description: t('difficultyLevels.a1.description') },
+    { value: 'a2', label: t('difficultyLevels.a2.label'), description: t('difficultyLevels.a2.description') },
+    { value: 'b1', label: t('difficultyLevels.b1.label'), description: t('difficultyLevels.b1.description') },
+    { value: 'b2', label: t('difficultyLevels.b2.label'), description: t('difficultyLevels.b2.description') },
+  ];
+
   const {
     savedTranslations,
     loading: isLoading,
@@ -46,7 +51,7 @@ export default function SavedTranslationsList() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this saved translation?')) {
+    if (confirm(t('savedTranslations.deleteConfirm'))) {
       try {
         // TODO: Implement delete when the hook supports it
         logger.info('ui', 'Delete not yet implemented for id:', { id });
@@ -93,7 +98,7 @@ export default function SavedTranslationsList() {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading saved translations...</p>
+          <p className="text-muted-foreground">{t('story.loadingTranslation')}</p>
         </div>
       </div>
     );

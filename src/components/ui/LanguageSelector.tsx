@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Button } from './Button';
 import { Globe } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface LanguageSelectorProps {
   variant?: 'button' | 'select';
@@ -14,12 +15,13 @@ export const LanguageSelector = React.forwardRef<
   HTMLButtonElement,
   LanguageSelectorProps
 >(({ variant = 'select', className, ...props }, ref) => {
-  const { 
-    currentLocalization, 
-    changeLocalization, 
-    getCurrentLocalization, 
-    getSupportedLocalizations 
+  const {
+    currentLocalization,
+    changeLocalization,
+    getCurrentLocalization,
+    getSupportedLocalizations
   } = useLocalization();
+  const { t } = useTranslation();
 
   const currentLang = getCurrentLocalization();
   const supportedLanguages = getSupportedLocalizations();
@@ -52,7 +54,7 @@ export const LanguageSelector = React.forwardRef<
     >
       <SelectTrigger className={cn('w-[140px]', className)}>
         <Globe className="h-4 w-4 mr-2" />
-        <SelectValue placeholder="Language" />
+        <SelectValue placeholder={t('languageSelector.title')} />
       </SelectTrigger>
       <SelectContent>
         {supportedLanguages.map((language) => (
