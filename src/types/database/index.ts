@@ -95,7 +95,7 @@ export interface Database {
           content: string
           language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id: NullableString // Foreign key reference to users.id
+          user_id: string // Foreign key reference to users.id (UUID)
           created_at: string
           updated_at: string
         }
@@ -105,7 +105,7 @@ export interface Database {
           content: string
           language: LanguageCode
           difficulty_level: DifficultyLevel
-          user_id?: NullableString // Foreign key reference to users.id
+          user_id?: string // Foreign key reference to users.id (UUID)
           created_at?: string
           updated_at?: string
         }
@@ -115,7 +115,7 @@ export interface Database {
           content?: string
           language?: LanguageCode
           difficulty_level?: DifficultyLevel
-          user_id?: NullableString // Foreign key reference to users.id
+          user_id?: string // Foreign key reference to users.id (UUID)
           created_at?: string
           updated_at?: string
         }
@@ -150,7 +150,7 @@ export interface Database {
       saved_translations: {
         Row: {
           id: number
-          user_id: string // Foreign key reference to users.id
+          user_id: string // Foreign key reference to users.id (UUID)
           original_story: string
           translated_story: string
           original_language_id: number // Foreign key reference to languages.id
@@ -163,7 +163,7 @@ export interface Database {
         }
         Insert: {
           id?: number
-          user_id: string // Foreign key reference to users.id
+          user_id: string // Foreign key reference to users.id (UUID)
           original_story: string
           translated_story: string
           original_language_id: number // Foreign key reference to languages.id
@@ -176,7 +176,7 @@ export interface Database {
         }
         Update: {
           id?: number
-          user_id?: string // Foreign key reference to users.id
+          user_id?: string // Foreign key reference to users.id (UUID)
           original_story?: string
           translated_story?: string
           original_language_id?: number // Foreign key reference to languages.id
