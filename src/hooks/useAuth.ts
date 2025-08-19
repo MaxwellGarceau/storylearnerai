@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
-import { getAuthErrorMessage, type AuthError } from '../lib/utils/authErrors'
+import { authService, type AuthState } from '../lib/authService'
 import type { BooleanPromise, VoidPromise } from '../types/common'
 
 interface UseAuthReturn {
@@ -19,134 +18,57 @@ export function useAuth(): UseAuthReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const updateState = useCallback((state: AuthState) => {
+    setUser(state.user)
+    setLoading(state.loading)
+    setError(state.error)
+  }, [])
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-        if (error) {
-          const authError: AuthError = {
-            message: error.message,
-            code: error.name,
-            status: error.status
-          }
-          setError(getAuthErrorMessage(authError))
-        } else {
-          setUser(session?.user ?? null)
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-        setError(getAuthErrorMessage({ message: errorMessage }))
-      } finally {
-        setLoading(false)
-      }
+      const state = await authService.getInitialSession()
+      updateState(state)
     }
 
     void getInitialSession()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
+    const unsubscribe = authService.onAuthStateChange(updateState)
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return unsubscribe
+  }, [updateState])
 
   const signIn = useCallback(async (email: string, password: string): BooleanPromise => {
-    try {
-      setLoading(true)
-      setError(null)
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) {
-        const authError: AuthError = {
-          message: error.message,
-          code: error.name,
-          status: error.status
-        }
-        setError(getAuthErrorMessage(authError))
-        return false
-      }
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-      setError(getAuthErrorMessage({ message: errorMessage }))
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    setLoading(true)
+    setError(null)
+    const state = await authService.signIn(email, password)
+    updateState(state)
+    return !state.error
+  }, [updateState])
 
   const signUp = useCallback(async (email: string, password: string): BooleanPromise => {
-    try {
-      setLoading(true)
-      setError(null)
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
-      if (error) {
-        const authError: AuthError = {
-          message: error.message,
-          code: error.name,
-          status: error.status
-        }
-        setError(getAuthErrorMessage(authError))
-        return false
-      }
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-      setError(getAuthErrorMessage({ message: errorMessage }))
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    setLoading(true)
+    setError(null)
+    const state = await authService.signUp(email, password)
+    updateState(state)
+    return !state.error
+  }, [updateState])
 
   const signOut = useCallback(async (): VoidPromise => {
-    try {
-      setLoading(true)
-      setError(null)
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        setError(error.message)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    setLoading(true)
+    setError(null)
+    const state = await authService.signOut()
+    updateState(state)
+  }, [updateState])
 
   const resetPassword = useCallback(async (email: string): BooleanPromise => {
-    try {
-      setLoading(true)
-      setError(null)
-      const { error } = await supabase.auth.resetPasswordForEmail(email)
-      if (error) {
-        const authError: AuthError = {
-          message: error.message,
-          code: error.name,
-          status: error.status
-        }
-        setError(getAuthErrorMessage(authError))
-        return false
-      }
-      return true
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-      setError(getAuthErrorMessage({ message: errorMessage }))
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    setLoading(true)
+    setError(null)
+    const state = await authService.resetPassword(email)
+    updateState(state)
+    return !state.error
+  }, [updateState])
 
   return {
     user,
