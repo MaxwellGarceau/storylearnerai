@@ -8,49 +8,51 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/Badge';
 import { useAuth } from '../hooks/useAuth';
 import { useWalkthrough } from '../hooks/useWalkthrough';
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
   const { startWalkthroughById, resetWalkthrough } = useWalkthrough();
+  const { t } = useTranslation();
 
   const features = [
     {
       icon: <Languages className="h-6 w-6" />,
-      title: "Multi-Language Support",
-      description: "Translate stories from any language to English with AI-powered accuracy"
+      title: t('home.features.multiLanguage.title'),
+      description: t('home.features.multiLanguage.description')
     },
     {
       icon: <BookOpen className="h-6 w-6" />,
-      title: "Side-by-Side Reading",
-      description: "Read original and translated text simultaneously for better comprehension"
+      title: t('home.features.sideBySide.title'),
+      description: t('home.features.sideBySide.description')
     },
     {
       icon: <Lightbulb className="h-6 w-6" />,
-      title: "Learning Insights",
-      description: "Get detailed explanations and vocabulary help to enhance your learning"
+      title: t('home.features.learningInsights.title'),
+      description: t('home.features.learningInsights.description')
     },
     {
       icon: <Sparkles className="h-6 w-6" />,
-      title: "AI-Powered",
-      description: "Advanced language models provide accurate and contextual translations"
+      title: t('home.features.aiPowered.title'),
+      description: t('home.features.aiPowered.description')
     }
   ];
 
   const steps = [
     {
       number: "1",
-      title: "Upload Your Story",
-      description: "Enter a story in any language you want to learn from"
+      title: t('home.howItWorks.step1.title'),
+      description: t('home.howItWorks.step1.description')
     },
     {
       number: "2", 
-      title: "AI Translation",
-      description: "Our AI translates it to English with detailed explanations"
+      title: t('home.howItWorks.step2.title'),
+      description: t('home.howItWorks.step2.description')
     },
     {
       number: "3",
-      title: "Learn & Practice",
-      description: "Read and learn with side-by-side translations and vocabulary help"
+      title: t('home.howItWorks.step3.title'),
+      description: t('home.howItWorks.step3.description')
     }
   ];
 
@@ -60,19 +62,19 @@ const Home: React.FC = () => {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <Badge variant="secondary" className="mb-4">
-            AI-Powered Language Learning
+            {t('home.hero.badge')}
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Story Learner AI
+            {t('home.hero.title')}
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            Transform any story into a powerful learning tool. Translate, understand, and master new languages with AI assistance.
+            {t('home.hero.subtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/translate" data-testid="start-translating-link">
               <Button size="lg" className="text-lg px-8 py-6" data-testid="start-translating-button">
-                Start Translating
+                {t('home.hero.startTranslating')}
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
@@ -86,13 +88,13 @@ const Home: React.FC = () => {
               className="text-lg px-8 py-6"
             >
               <HelpCircle className="h-5 w-5 mr-2" />
-              Restart Tutorial
+              {t('home.hero.restartTutorial')}
             </Button>
             {!user && (
               <Link to="/auth?mode=signup">
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                   <User className="h-5 w-5 mr-2" />
-                  Sign Up Free
+                  {t('home.hero.signUpFree')}
                 </Button>
               </Link>
             )}
@@ -100,7 +102,7 @@ const Home: React.FC = () => {
               <Link to="/dashboard">
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                   <BookOpen className="h-5 w-5 mr-2" />
-                  My Dashboard
+                  {t('home.hero.myDashboard')}
                 </Button>
               </Link>
             )}
@@ -111,10 +113,10 @@ const Home: React.FC = () => {
         <div className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose Story Learner AI?
+              {t('home.features.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our platform combines cutting-edge AI technology with proven language learning methodologies
+              {t('home.features.subtitle')}
             </p>
           </div>
           
@@ -143,10 +145,10 @@ const Home: React.FC = () => {
         <div className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              How It Works
+              {t('home.howItWorks.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Get started in just three simple steps
+              {t('home.howItWorks.subtitle')}
             </p>
           </div>
           
@@ -178,18 +180,18 @@ const Home: React.FC = () => {
         <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
           <CardContent className="text-center py-12">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Ready to Start Your Language Learning Journey?
+              {t('home.cta.title')}
             </h3>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               {user 
-                ? "Continue your learning journey with personalized insights and progress tracking"
-                : "Join thousands of learners who are already improving their language skills with Story Learner AI"
+                ? t('home.cta.subtitleUser')
+                : t('home.cta.subtitleGuest')
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/translate">
                 <Button size="lg" className="text-lg px-8 py-6">
-                  Start Translating
+                  {t('home.cta.startTranslating')}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
@@ -197,7 +199,7 @@ const Home: React.FC = () => {
                 <Link to="/auth?mode=signup">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                     <User className="h-5 w-5 mr-2" />
-                    Create Free Account
+                    {t('home.cta.createAccount')}
                   </Button>
                 </Link>
               )}
@@ -205,7 +207,7 @@ const Home: React.FC = () => {
                 <Link to="/dashboard">
                   <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                     <BookOpen className="h-5 w-5 mr-2" />
-                    View Dashboard
+                    {t('home.cta.viewDashboard')}
                   </Button>
                 </Link>
               )}

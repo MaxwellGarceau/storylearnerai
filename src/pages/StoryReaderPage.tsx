@@ -7,10 +7,12 @@ import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
 import StorySidebar from '../components/story/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
+import { useTranslation } from 'react-i18next';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const state = location.state as { translationData?: TranslationResponse; isSavedStory?: boolean } | null;
   const translationData = state?.translationData;
   const isSavedStory = state?.isSavedStory;
@@ -34,8 +36,8 @@ const StoryReaderPage: React.FC = () => {
       <div className="h-full flex items-center justify-center">
         <div className="max-w-2xl mx-auto text-center p-8">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-4">No Story Found</h2>
-            <p className="text-muted-foreground text-lg">Please translate a story first to view it here.</p>
+            <h2 className="text-3xl font-bold mb-4">{t('storyReader.noStory.title')}</h2>
+            <p className="text-muted-foreground text-lg">{t('storyReader.noStory.description')}</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -43,14 +45,14 @@ const StoryReaderPage: React.FC = () => {
               onClick={handleTranslateAnother}
               size="lg"
             >
-              Translate a Story
+              {t('storyReader.noStory.translateStory')}
             </Button>
             <Button 
               onClick={handleGoHome}
               variant="secondary"
               size="lg"
             >
-              Home
+              {t('storyReader.noStory.home')}
             </Button>
           </div>
         </div>
@@ -63,22 +65,22 @@ const StoryReaderPage: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          {isSavedStory ? 'Your Saved Story' : 'Your Translated Story'}
+          {isSavedStory ? t('storyReader.header.savedStory') : t('storyReader.header.translatedStory')}
         </h1>
         <p className="text-muted-foreground text-lg">
           {isSavedStory 
-            ? 'Reading your saved translation from your library' 
-            : 'Enjoy reading your story in English!'
+            ? t('storyReader.header.savedDescription')
+            : t('storyReader.header.translatedDescription')
           }
         </p>
         {isSavedStory && (
           <div className="mt-2">
-            <Badge variant="secondary">Saved Story</Badge>
+            <Badge variant="secondary">{t('storyReader.header.savedBadge')}</Badge>
           </div>
         )}
         {isDebugMode && !translationData && (
           <div className="mt-2">
-            <Badge variant="outline">Debug Mode - Test Story</Badge>
+            <Badge variant="outline">{t('storyReader.header.debugBadge')}</Badge>
           </div>
         )}
       </div>
@@ -102,14 +104,14 @@ const StoryReaderPage: React.FC = () => {
           onClick={handleTranslateAnother}
           size="lg"
         >
-            Translate Another Story
+            {t('storyReader.actions.translateAnother')}
         </Button>
         <Button 
           onClick={handleGoHome}
           variant="secondary"
           size="lg"
         >
-            Home
+            {t('storyReader.actions.home')}
         </Button>
       </div>
 

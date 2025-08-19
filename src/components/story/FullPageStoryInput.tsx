@@ -6,6 +6,7 @@ import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import type { VoidFunction } from '../../types/common';
+import { useTranslation } from 'react-i18next';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -33,6 +34,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguages();
+  const { t } = useTranslation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -46,7 +48,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       onChange(validation.sanitizedText);
     } else {
       // Show validation error but still allow editing
-      setValidationError(validation.errors[0] || 'Invalid input detected');
+      setValidationError(validation.errors[0] || t('storyInput.validation.invalidInput'));
       // Still update with sanitized text to prevent malicious content
       onChange(validation.sanitizedText);
     }
@@ -57,7 +59,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     const validation = validateStoryText(value);
     
     if (!validation.isValid) {
-      setValidationError(validation.errors[0] || 'Please fix the input before translating');
+      setValidationError(validation.errors[0] || t('storyInput.validation.fixInput'));
       return;
     }
     
@@ -76,10 +78,10 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
     switch (difficulty) {
-      case 'a1': return 'A1 (Beginner)';
-      case 'a2': return 'A2 (Elementary)';
-      case 'b1': return 'B1 (Intermediate)';
-      case 'b2': return 'B2 (Upper Intermediate)';
+      case 'a1': return t('storySidebar.difficultyLevels.a1');
+      case 'a2': return t('storySidebar.difficultyLevels.a2');
+      case 'b1': return t('storySidebar.difficultyLevels.b1');
+      case 'b2': return t('storySidebar.difficultyLevels.b2');
     }
   };
 
@@ -87,9 +89,9 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Translate Your Story</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-2">{t('story.uploadTitle')}</h2>
         <p className="text-muted-foreground text-lg">
-          Enter a story in Spanish and we'll translate it to English
+          {t('story.uploadDescription')}
         </p>
       </div>
 
@@ -129,7 +131,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
             data-testid="options-button"
           >
             <Settings className="w-5 h-5 mr-2" />
-            Options
+            {t('common.edit')}
           </Button>
 
           {/* Translate Button */}
@@ -151,7 +153,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 <span>Translating...</span>
               </div>
             ) : (
-              'Translate Story'
+              t('story.translateButton')
             )}
           </Button>
         </div>
@@ -180,7 +182,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Translation Options</h3>
+              <h3 className="text-lg font-semibold">{t('storySidebar.storyOptions')}</h3>
               <Button
                 variant="ghost"
                 size="sm"
