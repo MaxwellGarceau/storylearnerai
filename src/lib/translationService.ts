@@ -23,6 +23,8 @@ export interface TranslationResponse {
   model?: string;
 }
 
+export type TranslationResponsePromise = Promise<TranslationResponse>;
+
 export interface TranslationError {
   message: string;
   code: string;
@@ -36,7 +38,7 @@ class TranslationService {
     // Environment configuration is now handled by LLMServiceManager
   }
 
-  async translateStory(request: TranslationRequest): Promise<TranslationResponse> {
+  async translateStory(request: TranslationRequest): TranslationResponsePromise {
     try {
       const prompt = await this.buildTranslationPrompt(request);
       
@@ -174,7 +176,7 @@ class TranslationService {
 
 
   // Mock translation for development/testing
-  async mockTranslateStory(request: TranslationRequest): Promise<TranslationResponse> {
+  async mockTranslateStory(request: TranslationRequest): TranslationResponsePromise {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
@@ -193,7 +195,7 @@ class TranslationService {
   }
 
   // Smart translation method that chooses between mock and real based on environment
-  async translate(request: TranslationRequest): Promise<TranslationResponse> {
+  async translate(request: TranslationRequest): TranslationResponsePromise {
     if (EnvironmentConfig.isMockTranslationEnabled()) {
       return this.mockTranslateStory(request);
     } else {
