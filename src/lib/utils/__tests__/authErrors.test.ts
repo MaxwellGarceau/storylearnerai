@@ -3,15 +3,6 @@ import { getAuthErrorMessage, isInvalidCredentialsError, isRateLimitError, type 
 
 describe('Auth Error Utilities', () => {
   describe('getAuthErrorMessage', () => {
-    it('should return empty string for null error', () => {
-      expect(getAuthErrorMessage(null)).toBe('')
-    })
-
-    it('should return string error as is', () => {
-      const error = 'Some error message'
-      expect(getAuthErrorMessage(error)).toBe(error)
-    })
-
     it('should map invalid credentials error', () => {
       const error: AuthError = {
         message: 'Invalid login credentials',
@@ -89,10 +80,6 @@ describe('Auth Error Utilities', () => {
   })
 
   describe('isInvalidCredentialsError', () => {
-    it('should return false for null error', () => {
-      expect(isInvalidCredentialsError(null)).toBe(false)
-    })
-
     it('should detect invalid credentials error code', () => {
       const error: AuthError = {
         message: 'Invalid login credentials',
@@ -109,10 +96,6 @@ describe('Auth Error Utilities', () => {
       expect(isInvalidCredentialsError(error)).toBe(true)
     })
 
-    it('should detect invalid credentials in string message', () => {
-      expect(isInvalidCredentialsError('Invalid credentials provided')).toBe(true)
-    })
-
     it('should return false for other error types', () => {
       const error: AuthError = {
         message: 'Server error',
@@ -123,10 +106,6 @@ describe('Auth Error Utilities', () => {
   })
 
   describe('isRateLimitError', () => {
-    it('should return false for null error', () => {
-      expect(isRateLimitError(null)).toBe(false)
-    })
-
     it('should detect too many requests error code', () => {
       const error: AuthError = {
         message: 'Too many requests',
@@ -141,10 +120,6 @@ describe('Auth Error Utilities', () => {
         status: 429
       }
       expect(isRateLimitError(error)).toBe(true)
-    })
-
-    it('should detect rate limit in string message', () => {
-      expect(isRateLimitError('Rate limit exceeded')).toBe(true)
     })
 
     it('should return false for other error types', () => {

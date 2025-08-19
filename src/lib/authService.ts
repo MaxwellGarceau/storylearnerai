@@ -44,11 +44,15 @@ class AuthServiceImpl implements AuthService {
         error: null
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      const authError: AuthError = {
+        message: err instanceof Error ? err.message : 'An error occurred',
+        code: 'unknown_error',
+        status: 500
+      }
       return {
         user: null,
         loading: false,
-        error: getAuthErrorMessage({ message: errorMessage })
+        error: getAuthErrorMessage(authError)
       }
     }
   }
@@ -77,11 +81,15 @@ class AuthServiceImpl implements AuthService {
         error: null
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      const authError: AuthError = {
+        message: err instanceof Error ? err.message : 'An error occurred',
+        code: 'unknown_error',
+        status: 500
+      }
       return {
         user: null,
         loading: false,
-        error: getAuthErrorMessage({ message: errorMessage })
+        error: getAuthErrorMessage(authError)
       }
     }
   }
@@ -110,11 +118,15 @@ class AuthServiceImpl implements AuthService {
         error: null
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      const authError: AuthError = {
+        message: err instanceof Error ? err.message : 'An error occurred',
+        code: 'unknown_error',
+        status: 500
+      }
       return {
         user: null,
         loading: false,
-        error: getAuthErrorMessage({ message: errorMessage })
+        error: getAuthErrorMessage(authError)
       }
     }
   }
@@ -123,10 +135,15 @@ class AuthServiceImpl implements AuthService {
     try {
       const { error } = await supabase.auth.signOut()
       if (error) {
+        const authError: AuthError = {
+          message: error.message,
+          code: error.name,
+          status: error.status
+        }
         return {
           user: null,
           loading: false,
-          error: error.message
+          error: getAuthErrorMessage(authError)
         }
       }
       return {
@@ -135,10 +152,15 @@ class AuthServiceImpl implements AuthService {
         error: null
       }
     } catch (err) {
+      const authError: AuthError = {
+        message: err instanceof Error ? err.message : 'An error occurred',
+        code: 'unknown_error',
+        status: 500
+      }
       return {
         user: null,
         loading: false,
-        error: err instanceof Error ? err.message : 'An error occurred'
+        error: getAuthErrorMessage(authError)
       }
     }
   }
@@ -164,11 +186,15 @@ class AuthServiceImpl implements AuthService {
         error: null
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      const authError: AuthError = {
+        message: err instanceof Error ? err.message : 'An error occurred',
+        code: 'unknown_error',
+        status: 500
+      }
       return {
         user: null,
         loading: false,
-        error: getAuthErrorMessage({ message: errorMessage })
+        error: getAuthErrorMessage(authError)
       }
     }
   }

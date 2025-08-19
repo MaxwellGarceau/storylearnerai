@@ -94,7 +94,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         user: null,
         loading: false,
-        error: expect.stringContaining('Network error')
+        error: 'Server error. Please try again later.'
       })
     })
   })
@@ -232,7 +232,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         user: null,
         loading: false,
-        error: 'Sign out failed'
+        error: 'Server error. Please try again later.'
       })
     })
   })

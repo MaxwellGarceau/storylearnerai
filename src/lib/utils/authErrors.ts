@@ -8,14 +8,7 @@ export interface AuthError {
   status?: number
 }
 
-export function getAuthErrorMessage(error: AuthError | string | null): string {
-  if (!error) return ''
-  
-  // If error is a string, return it as is
-  if (typeof error === 'string') {
-    return error
-  }
-
+export function getAuthErrorMessage(error: AuthError): string {
   const { message, code, status } = error
 
   // Handle specific error codes and status codes
@@ -79,16 +72,7 @@ export function getAuthErrorMessage(error: AuthError | string | null): string {
 /**
  * Checks if an error is related to invalid credentials
  */
-export function isInvalidCredentialsError(error: AuthError | string | null): boolean {
-  if (!error) return false
-  
-  if (typeof error === 'string') {
-    return error.toLowerCase().includes('invalid') && 
-           (error.toLowerCase().includes('credentials') || 
-            error.toLowerCase().includes('email') || 
-            error.toLowerCase().includes('password'))
-  }
-
+export function isInvalidCredentialsError(error: AuthError): boolean {
   const { code, status } = error
   
   return code === 'invalid_credentials' || 
@@ -100,14 +84,7 @@ export function isInvalidCredentialsError(error: AuthError | string | null): boo
 /**
  * Checks if an error is related to rate limiting
  */
-export function isRateLimitError(error: AuthError | string | null): boolean {
-  if (!error) return false
-  
-  if (typeof error === 'string') {
-    return error.toLowerCase().includes('too many') || 
-           error.toLowerCase().includes('rate limit')
-  }
-
+export function isRateLimitError(error: AuthError): boolean {
   const { code, status } = error
   
   return code === 'too_many_requests' || status === 429
