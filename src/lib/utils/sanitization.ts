@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import type { SanitizationOptions, ValidationResult } from '@app/validation';
 
 /**
  * Sanitization utility for text input security
@@ -10,20 +11,7 @@ import DOMPurify from 'dompurify';
  * - Other malicious content
  */
 
-interface SanitizationOptions {
-  /** Whether to allow HTML tags (default: false) */
-  allowHTML?: boolean;
-  /** Whether to allow line breaks (default: true) */
-  allowLineBreaks?: boolean;
-  /** Maximum length of input (default: 10000 characters) */
-  maxLength?: number;
-  /** Whether to trim whitespace (default: true) */
-  trim?: boolean;
-  /** Custom allowed HTML tags if allowHTML is true */
-  allowedTags?: string[];
-  /** Custom allowed HTML attributes if allowHTML is true */
-  allowedAttributes?: string[];
-}
+// Types moved to @app/validation
 
 /**
  * Default sanitization options for story input
@@ -141,11 +129,7 @@ export function sanitizeText(input: string, options: SanitizationOptions = {}): 
  * @param options - Validation options
  * @returns Object with validation result and any errors
  */
-export function validateTextInput(input: string, options: SanitizationOptions = {}): {
-  isValid: boolean;
-  errors: string[];
-  sanitizedText: string;
-} {
+export function validateTextInput(input: string, options: SanitizationOptions = {}): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_STORY_OPTIONS, ...options };
 
@@ -203,11 +187,7 @@ export function sanitizeStoryText(input: string): string {
  * @param input - The story text to validate
  * @returns Validation result
  */
-export function validateStoryText(input: string): {
-  isValid: boolean;
-  errors: string[];
-  sanitizedText: string;
-} {
+export function validateStoryText(input: string): ValidationResult {
   return validateTextInput(input, DEFAULT_STORY_OPTIONS);
 }
 
@@ -227,11 +207,7 @@ export function sanitizeEmail(input: string): string {
  * @param input - The email to validate
  * @returns Validation result
  */
-export function validateEmail(input: string): {
-  isValid: boolean;
-  errors: string[];
-  sanitizedText: string;
-} {
+export function validateEmail(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_EMAIL_OPTIONS };
   
@@ -270,11 +246,7 @@ export function sanitizeUsername(input: string): string {
  * @param input - The username to validate
  * @returns Validation result
  */
-export function validateUsername(input: string): {
-  isValid: boolean;
-  errors: string[];
-  sanitizedText: string;
-} {
+export function validateUsername(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_USERNAME_OPTIONS };
   
@@ -313,11 +285,7 @@ export function sanitizeDisplayName(input: string): string {
  * @param input - The display name to validate
  * @returns Validation result
  */
-export function validateDisplayName(input: string): {
-  isValid: boolean;
-  errors: string[];
-  sanitizedText: string;
-} {
+export function validateDisplayName(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_AUTH_OPTIONS };
   
