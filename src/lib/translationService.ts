@@ -151,18 +151,6 @@ class TranslationService {
       case 'GEMINI_ERROR':
         return `Google Gemini service error: ${message}`;
       
-      case 'OPENAI_ERROR':
-        return `OpenAI service error: ${message}`;
-      
-      case 'ANTHROPIC_ERROR':
-        return `Anthropic service error: ${message}`;
-      
-      case 'LLAMA_ERROR':
-        return `Llama service error: ${message}`;
-      
-      case 'CUSTOM_ERROR':
-        return `Custom LLM service error: ${message}`;
-      
       case 'PARSE_ERROR':
         return `Failed to process response from ${provider ?? 'translation service'}. Please try again.`;
       

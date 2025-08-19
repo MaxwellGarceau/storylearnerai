@@ -25,7 +25,7 @@ interface StorySidebarProps {
 const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData }) => {
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
-  const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations();
+  const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations();
   
   // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {

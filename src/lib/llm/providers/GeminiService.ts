@@ -18,7 +18,7 @@ export class GeminiService extends LLMService {
       
       const response = await this.genAI.models.generateContent({
         model: model,
-        contents: request.prompt,
+        contents: [{ text: request.prompt }],
         config: {
           temperature: request.temperature ?? geminiConfig.temperature,
           maxOutputTokens: request.maxTokens ?? geminiConfig.maxTokens,
@@ -55,7 +55,7 @@ export class GeminiService extends LLMService {
       
       const response = await this.genAI.models.generateContent({
         model: model,
-        contents: 'ping',
+        contents: [{ text: 'ping' }],
         config: {
           temperature: 0,
           maxOutputTokens: 1,

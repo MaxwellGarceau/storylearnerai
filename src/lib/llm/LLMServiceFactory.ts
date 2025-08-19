@@ -12,8 +12,10 @@ export class LLMServiceFactory {
       case 'gemini':
         return new GeminiService(config);
       
-      default:
-        throw new Error(`Unsupported LLM provider: ${(config).provider}`);
+      default: {
+        const provider = (config as { provider: string }).provider;
+        throw new Error(`Unsupported LLM provider: ${provider}`);
+      }
     }
   }
 

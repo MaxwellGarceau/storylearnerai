@@ -1,254 +1,62 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from './useAuth';
-import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import {
-  DatabaseSavedTranslationWithDetails,
-  CreateSavedTranslationRequest,
-  UpdateSavedTranslationRequest,
-  SavedTranslationFilters,
-  DatabaseLanguage,
-  DatabaseDifficultyLevel,
-} from '../types/database';
-import type { VoidPromise } from '../types/common';
+import { useState, useEffect, useCallback } from 'react'
+import { SavedTranslationService } from '../api/supabase/database/savedTranslationService'
+import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation'
+import type { VoidPromise } from '../types/common'
+import { useAuth } from './useAuth'
+
+// Type alias to avoid duplicate type definition
+type LoadTranslationsFunction = () => VoidPromise
 
 interface UseSavedTranslationsReturn {
-  // Data
-  savedTranslations: DatabaseSavedTranslationWithDetails[];
-  languages: DatabaseLanguage[];
-  difficultyLevels: DatabaseDifficultyLevel[];
-  
-  // Loading states
-  isLoading: boolean;
-  isCreating: boolean;
-  isUpdating: boolean;
-  isDeleting: boolean;
-  isLoadingLanguages: boolean;
-  isLoadingDifficultyLevels: boolean;
-  
-  // Error states
-  error: string | null;
-  
-  // Actions
-  createSavedTranslation: (request: CreateSavedTranslationRequest) => VoidPromise;
-  updateSavedTranslation: (id: string, updates: UpdateSavedTranslationRequest) => VoidPromise;
-  deleteSavedTranslation: (id: number) => VoidPromise;
-  refreshSavedTranslations: () => VoidPromise;
-  setFilters: (filters: SavedTranslationFilters) => void;
-  
-  // Pagination
-  totalCount: number;
-  hasMore: boolean;
-  loadMore: () => VoidPromise;
+  savedTranslations: DatabaseSavedTranslationWithDetails[]
+  loading: boolean
+  error: string | null
+  loadTranslations: LoadTranslationsFunction
+  refreshTranslations: LoadTranslationsFunction
 }
 
-const ITEMS_PER_PAGE = 20;
+// Create a singleton instance of the service
+const savedTranslationService = new SavedTranslationService()
 
 export function useSavedTranslations(): UseSavedTranslationsReturn {
-  const { user } = useAuth();
-  const [savedTranslations, setSavedTranslations] = useState<DatabaseSavedTranslationWithDetails[]>([]);
-  const [languages, setLanguages] = useState<DatabaseLanguage[]>([]);
-  const [difficultyLevels, setDifficultyLevels] = useState<DatabaseDifficultyLevel[]>([]);
-  const [filters, setFilters] = useState<SavedTranslationFilters>({});
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentOffset, setCurrentOffset] = useState(0);
-  
-  // Loading states
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoadingLanguages, setIsLoadingLanguages] = useState(false);
-  const [isLoadingDifficultyLevels, setIsLoadingDifficultyLevels] = useState(false);
-  
-  // Error state
-  const [error, setError] = useState<string | null>(null);
-  
-  const service = useMemo(() => new SavedTranslationService(), []);
-  
-  // Load languages and difficulty levels on mount
+  const { user } = useAuth()
+  const [savedTranslations, setSavedTranslations] = useState<DatabaseSavedTranslationWithDetails[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const loadTranslations = useCallback(async () => {
+    if (!user) {
+      setSavedTranslations([])
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      const translations = await savedTranslationService.getSavedTranslations(user.id)
+      setSavedTranslations(translations)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load saved translations'
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  const refreshTranslations = useCallback(async () => {
+    await loadTranslations()
+  }, [loadTranslations])
+
   useEffect(() => {
-    const loadLookupData = async () => {
-      if (!user) return;
-      
-      try {
-        setIsLoadingLanguages(true);
-        setIsLoadingDifficultyLevels(true);
-        
-        const [languagesData, difficultyLevelsData] = await Promise.all([
-          service.getLanguages(),
-          service.getDifficultyLevels(),
-        ]);
-        
-        setLanguages(languagesData);
-        setDifficultyLevels(difficultyLevelsData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load lookup data');
-      } finally {
-        setIsLoadingLanguages(false);
-        setIsLoadingDifficultyLevels(false);
-      }
-    };
-    
-    void loadLookupData();
-  }, [user, service]);
-  
-  // Load saved translations when user or filters change
-  useEffect(() => {
-    const loadSavedTranslations = async () => {
-      if (!user) return;
-      
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const [translationsData, count] = await Promise.all([
-          service.getSavedTranslations(user.id, { ...filters, limit: ITEMS_PER_PAGE }),
-          service.getSavedTranslationsCount(user.id, filters),
-        ]);
-        
-        setSavedTranslations(translationsData);
-        setTotalCount(count);
-        setCurrentOffset(ITEMS_PER_PAGE);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load saved translations');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    void loadSavedTranslations();
-  }, [user, filters, service]);
-  
-  const createSavedTranslation = useCallback(async (request: CreateSavedTranslationRequest) => {
-    if (!user) throw new Error('User not authenticated');
-    
-    try {
-      setIsCreating(true);
-      setError(null);
-      
-      const newTranslation = await service.createSavedTranslation(request, user.id);
-      setSavedTranslations(prev => [newTranslation, ...prev]);
-      setTotalCount(prev => prev + 1);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create saved translation');
-      throw err;
-    } finally {
-      setIsCreating(false);
-    }
-  }, [user, service]);
-  
-  const updateSavedTranslation = useCallback(async (id: string, updates: UpdateSavedTranslationRequest) => {
-    if (!user) throw new Error('User not authenticated');
-    
-    try {
-      setIsUpdating(true);
-      setError(null);
-      
-      const updatedTranslation = await service.updateSavedTranslation(id, user.id, updates);
-      setSavedTranslations(prev => 
-        prev.map(translation => 
-          translation.id === parseInt(id) ? updatedTranslation : translation
-        )
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update saved translation');
-      throw err;
-    } finally {
-      setIsUpdating(false);
-    }
-  }, [user, service]);
-  
-  const deleteSavedTranslation = useCallback(async (id: number) => {
-    if (!user) throw new Error('User not authenticated');
-    
-    try {
-      setIsDeleting(true);
-      setError(null);
-      
-      await service.deleteSavedTranslation(id, user.id);
-      setSavedTranslations(prev => prev.filter(translation => translation.id !== id));
-      setTotalCount(prev => prev - 1);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete saved translation');
-      throw err;
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [user, service]);
-  
-  const refreshSavedTranslations = useCallback(async () => {
-    if (!user) return;
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const [translationsData, count] = await Promise.all([
-        service.getSavedTranslations(user.id, { ...filters, limit: ITEMS_PER_PAGE }),
-        service.getSavedTranslationsCount(user.id, filters),
-      ]);
-      
-      setSavedTranslations(translationsData);
-      setTotalCount(count);
-      setCurrentOffset(ITEMS_PER_PAGE);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh saved translations');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, filters, service]);
-  
-  const loadMore = useCallback(async () => {
-    if (!user || isLoading || savedTranslations.length >= totalCount) return;
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const additionalTranslations = await service.getSavedTranslations(user.id, {
-        ...filters,
-        limit: ITEMS_PER_PAGE,
-        offset: currentOffset,
-      });
-      
-      setSavedTranslations(prev => [...prev, ...additionalTranslations]);
-      setCurrentOffset(prev => prev + ITEMS_PER_PAGE);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load more translations');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, isLoading, savedTranslations.length, totalCount, filters, currentOffset, service]);
-  
-  const hasMore = savedTranslations.length < totalCount;
-  
+    void loadTranslations()
+  }, [loadTranslations])
+
   return {
-    // Data
     savedTranslations,
-    languages,
-    difficultyLevels,
-    
-    // Loading states
-    isLoading,
-    isCreating,
-    isUpdating,
-    isDeleting,
-    isLoadingLanguages,
-    isLoadingDifficultyLevels,
-    
-    // Error state
+    loading,
     error,
-    
-    // Actions
-    createSavedTranslation,
-    updateSavedTranslation,
-    deleteSavedTranslation,
-    refreshSavedTranslations,
-    setFilters,
-    
-    // Pagination
-    totalCount,
-    hasMore,
-    loadMore,
-  };
+    loadTranslations,
+    refreshTranslations,
+  }
 } 
