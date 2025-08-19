@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { useLanguages } from './useLanguages';
-import { LanguageCode } from '../types/llm/prompts';
+import { LanguageCode, EnglishLanguageName, NativeLanguageName } from '../types/llm/prompts';
 
 export interface LocalizationInfo {
   code: LanguageCode;
-  name: string;
-  nativeName: string;
+  name: EnglishLanguageName;
+  nativeName: NativeLanguageName;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageCode[] = ['en', 'es'];
@@ -15,7 +15,7 @@ export const useLocalization = () => {
   const { i18n, t } = useTranslation();
   const { getLanguageName, getNativeLanguageName } = useLanguages();
 
-  const currentLanguage = i18n.language;
+  const currentLanguage = i18n.language as LanguageCode;
   const isLanguageLoaded = i18n.hasResourceBundle ? i18n.hasResourceBundle(currentLanguage, 'translation') : true;
 
   const changeLanguage = useCallback(async (languageCode: string) => {
@@ -29,10 +29,10 @@ export const useLocalization = () => {
   }, [i18n]);
 
   const getCurrentLocalization = useCallback((): LocalizationInfo => {
-    const name = getLanguageName(currentLanguage as LanguageCode);
-    const nativeName = getNativeLanguageName(currentLanguage as LanguageCode);
+    const name = getLanguageName(currentLanguage);
+    const nativeName = getNativeLanguageName(currentLanguage);
     return {
-      code: currentLanguage as LanguageCode,
+      code: currentLanguage,
       name: name,
       nativeName: nativeName
     };
