@@ -13,7 +13,7 @@ export class LLMServiceFactory {
         return new GeminiService(config);
       
       default:
-        throw new Error(`Unsupported LLM provider: ${(config as ProviderConfig).provider}`);
+        throw new Error(`Unsupported LLM provider: ${(config).provider}`);
     }
   }
 

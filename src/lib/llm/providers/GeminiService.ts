@@ -13,7 +13,7 @@ export class GeminiService extends LLMService {
 
   async generateCompletion(request: LLMRequest): Promise<LLMResponse> {
     try {
-      const geminiConfig = this.config as GeminiConfig;
+      const geminiConfig = this.config;
       const model = request.model ?? geminiConfig.model;
       
       const response = await this.genAI.models.generateContent({
@@ -50,7 +50,7 @@ export class GeminiService extends LLMService {
 
   async healthCheck(): Promise<boolean> {
     try {
-      const geminiConfig = this.config as GeminiConfig;
+      const geminiConfig = this.config;
       const model = geminiConfig.model;
       
       const response = await this.genAI.models.generateContent({

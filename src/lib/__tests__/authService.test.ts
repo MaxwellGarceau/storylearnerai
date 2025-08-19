@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { authService, type AuthState } from '../authService'
+import { authService } from '../authService'
 import { supabase } from '../../api/supabase/client'
 
 // Mock Supabase client
@@ -30,9 +30,11 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' }
       const mockSession = { user: mockUser }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: mockSession },
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.getInitialSession()
@@ -45,9 +47,11 @@ describe('AuthService', () => {
     })
 
     it('should return null user when no session exists', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: null },
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.getInitialSession()
@@ -66,9 +70,11 @@ describe('AuthService', () => {
         status: 401
       }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: null },
         error: mockError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.getInitialSession()
@@ -98,9 +104,11 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' }
       const mockSession = { user: mockUser }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signIn('test@example.com', 'password')
@@ -123,9 +131,11 @@ describe('AuthService', () => {
         status: 400
       }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: null, session: null },
         error: mockError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signIn('test@example.com', 'wrong-password')
@@ -143,9 +153,11 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' }
       const mockSession = { user: mockUser }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signUp).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signUp('test@example.com', 'password')
@@ -168,9 +180,11 @@ describe('AuthService', () => {
         status: 400
       }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signUp).mockResolvedValue({
         data: { user: null, session: null },
         error: mockError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signUp('existing@example.com', 'password')
@@ -185,8 +199,10 @@ describe('AuthService', () => {
 
   describe('signOut', () => {
     it('should return null user on successful sign out', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signOut).mockResolvedValue({
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signOut()
@@ -205,8 +221,10 @@ describe('AuthService', () => {
         status: 500
       }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signOut).mockResolvedValue({
         error: mockError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.signOut()
@@ -221,8 +239,10 @@ describe('AuthService', () => {
 
   describe('resetPassword', () => {
     it('should return success on password reset', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
         error: null
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.resetPassword('test@example.com')
@@ -242,8 +262,10 @@ describe('AuthService', () => {
         status: 404
       }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
         error: mockError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const result = await authService.resetPassword('nonexistent@example.com')
@@ -262,8 +284,10 @@ describe('AuthService', () => {
       const mockUnsubscribe = vi.fn()
       const mockSubscription = { unsubscribe: mockUnsubscribe }
       
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.onAuthStateChange).mockReturnValue({
         data: { subscription: mockSubscription }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       const unsubscribe = authService.onAuthStateChange(mockCallback)
@@ -279,19 +303,22 @@ describe('AuthService', () => {
       const mockUnsubscribe = vi.fn()
       const mockSubscription = { unsubscribe: mockUnsubscribe }
       
-      let authChangeCallback: any
+      let authChangeCallback: ((event: string, session: unknown) => void) | undefined
       
       vi.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
-        authChangeCallback = callback
+        authChangeCallback = callback as (event: string, session: unknown) => void
         return {
           data: { subscription: mockSubscription }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any
       })
 
       authService.onAuthStateChange(mockCallback)
       
       // Simulate auth state change
-      authChangeCallback!('SIGNED_IN', mockSession)
+      if (authChangeCallback) {
+        authChangeCallback('SIGNED_IN', mockSession)
+      }
 
       expect(mockCallback).toHaveBeenCalledWith({
         user: mockUser,

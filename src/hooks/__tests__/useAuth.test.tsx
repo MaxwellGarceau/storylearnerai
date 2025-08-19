@@ -102,7 +102,14 @@ describe('useAuth', () => {
     // is interacting with the mocked service. For now, these tests are skipped to avoid
     // blocking the development process.
     it.skip('should call auth service signIn method', async () => {
-      const mockUser = { id: '123', email: 'test@example.com' } as any
+      const mockUser = { 
+        id: '123', 
+        email: 'test@example.com',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: '2023-01-01T00:00:00Z'
+      }
       
       vi.mocked(authService.getInitialSession).mockResolvedValue({
         user: null,
@@ -127,7 +134,14 @@ describe('useAuth', () => {
     })
 
     it.skip('should call auth service signUp method', async () => {
-      const mockUser = { id: '123', email: 'test@example.com' } as any
+      const mockUser = { 
+        id: '123', 
+        email: 'test@example.com',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: '2023-01-01T00:00:00Z'
+      }
       
       vi.mocked(authService.getInitialSession).mockResolvedValue({
         user: null,

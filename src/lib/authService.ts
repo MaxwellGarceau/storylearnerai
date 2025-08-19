@@ -1,7 +1,6 @@
 import { supabase } from '../api/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { getAuthErrorMessage, type AuthError } from './utils/authErrors'
-import type { BooleanPromise, VoidPromise } from '../types/common'
 
 export interface AuthState {
   user: User | null
@@ -9,17 +8,22 @@ export interface AuthState {
   error: string | null
 }
 
+// Type aliases to avoid duplicate type definitions
+type AuthStatePromise = Promise<AuthState>
+type AuthStateCallback = (state: AuthState) => void
+type UnsubscribeFunction = () => void
+
 export interface AuthService {
-  getInitialSession(): Promise<AuthState>
-  signIn(email: string, password: string): Promise<AuthState>
-  signUp(email: string, password: string): Promise<AuthState>
-  signOut(): Promise<AuthState>
-  resetPassword(email: string): Promise<AuthState>
-  onAuthStateChange(callback: (state: AuthState) => void): () => void
+  getInitialSession(): AuthStatePromise
+  signIn(email: string, password: string): AuthStatePromise
+  signUp(email: string, password: string): AuthStatePromise
+  signOut(): AuthStatePromise
+  resetPassword(email: string): AuthStatePromise
+  onAuthStateChange(callback: AuthStateCallback): UnsubscribeFunction
 }
 
 class AuthServiceImpl implements AuthService {
-  async getInitialSession(): Promise<AuthState> {
+  async getInitialSession(): AuthStatePromise {
     try {
       const { data: { session }, error } = await supabase.auth.getSession()
       if (error) {
@@ -49,7 +53,7 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  async signIn(email: string, password: string): Promise<AuthState> {
+  async signIn(email: string, password: string): AuthStatePromise {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -82,7 +86,7 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  async signUp(email: string, password: string): Promise<AuthState> {
+  async signUp(email: string, password: string): AuthStatePromise {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -115,7 +119,7 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  async signOut(): Promise<AuthState> {
+  async signOut(): AuthStatePromise {
     try {
       const { error } = await supabase.auth.signOut()
       if (error) {
@@ -139,7 +143,7 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  async resetPassword(email: string): Promise<AuthState> {
+  async resetPassword(email: string): AuthStatePromise {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email)
       if (error) {
@@ -169,7 +173,7 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  onAuthStateChange(callback: (state: AuthState) => void): () => void {
+  onAuthStateChange(callback: AuthStateCallback): UnsubscribeFunction {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         const state: AuthState = {
