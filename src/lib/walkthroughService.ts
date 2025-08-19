@@ -9,7 +9,7 @@ import { logger } from './logger';
 
 class WalkthroughService {
   private static instance: WalkthroughService;
-  private currentWalkthrough: WalkthroughConfig | null = null;
+  private currentWalkthrough: WalkthroughConfig;
   private state: WalkthroughState = {
     isActive: false,
     currentStepIndex: 0,
@@ -19,6 +19,13 @@ class WalkthroughService {
   private listeners: Set<(state: WalkthroughState) => void> = new Set();
 
   private constructor() {
+    // Initialize with a default empty config - this will never be used when isActive is false
+    this.currentWalkthrough = {
+      id: 'default' as WalkthroughId,
+      title: '',
+      description: '',
+      steps: []
+    };
     this.loadStorage();
   }
 
@@ -111,7 +118,7 @@ class WalkthroughService {
   }
 
   nextStep(): void {
-    if (!this.currentWalkthrough || !this.state.isActive) return;
+    if (!this.state.isActive) return;
 
     const currentStep = this.currentWalkthrough.steps[this.state.currentStepIndex];
     if (currentStep?.onComplete) {
@@ -136,7 +143,7 @@ class WalkthroughService {
   }
 
   previousStep(): void {
-    if (!this.currentWalkthrough || !this.state.isActive) return;
+    if (!this.state.isActive) return;
 
     let prevIndex = this.state.currentStepIndex - 1;
     // Skip steps with skipIf returning true (going backwards)
@@ -154,7 +161,7 @@ class WalkthroughService {
   }
 
   skipWalkthrough(): void {
-    if (!this.currentWalkthrough || !this.state.isActive) return;
+    if (!this.state.isActive) return;
 
     this.state.isSkipped = true;
     this.state.isActive = false;
@@ -164,11 +171,10 @@ class WalkthroughService {
     this.saveStorage(storage);
     
     this.notifyListeners();
-    this.currentWalkthrough = null;
   }
 
   completeWalkthrough(): void {
-    if (!this.currentWalkthrough || !this.state.isActive) return;
+    if (!this.state.isActive) return;
 
     this.state = {
       ...this.state,
@@ -182,17 +188,15 @@ class WalkthroughService {
     this.saveStorage(storage);
     
     this.notifyListeners();
-    this.currentWalkthrough = null;
   }
 
   stopWalkthrough(): void {
     this.state.isActive = false;
-    this.currentWalkthrough = null;
     this.notifyListeners();
   }
 
   getCurrentStep(): WalkthroughStep | null {
-    if (!this.currentWalkthrough || !this.state.isActive) return null;
+    if (!this.state.isActive) return null;
     
     const currentStep = this.currentWalkthrough.steps[this.state.currentStepIndex];
     
@@ -205,7 +209,7 @@ class WalkthroughService {
   }
 
   getCurrentConfig(): WalkthroughConfig | null {
-    return this.currentWalkthrough;
+    return this.state.isActive ? this.currentWalkthrough : null;
   }
 
   getState(): WalkthroughState {
