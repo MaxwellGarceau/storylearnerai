@@ -175,7 +175,7 @@ class GeneralPromptConfigService {
   /**
    * Get language-specific prompt instructions for a given difficulty level
    */
-  getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguageInstructions(languageCode: string, difficulty: DifficultyLevel): PromptInstructions | null {
     const config = this.languageConfig as Record<string, unknown>;
     const language = config[languageCode.toLowerCase()] as Record<string, unknown> | undefined;
     if (!language) {
@@ -197,7 +197,7 @@ class GeneralPromptConfigService {
    * For now, this delegates to the single language configuration since we don't have
    * comprehensive user background customization yet
    */
-  getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions | null {
+  private getLanguagePairInstructions(fromLanguageCode: LanguageCode, toLanguageCode: LanguageCode, difficulty: DifficultyLevel): PromptInstructions | null {
     // For now, use the single language configuration
     // In the future, this can be enhanced with user background considerations
     return this.getLanguageInstructions(toLanguageCode, difficulty);

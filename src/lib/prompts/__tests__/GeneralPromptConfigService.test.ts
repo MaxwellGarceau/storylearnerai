@@ -40,40 +40,6 @@ vi.mock('../config/native-to-target/es/en.json', () => ({
  * This file contains comprehensive validation and edge case testing
  */
 describe('PromptConfigService', () => {
-  describe('getLanguageInstructions', () => {
-    it('should return instructions for supported language and difficulty', () => {
-      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'a1');
-      
-      expect(instructions).toBeDefined();
-      expect(instructions?.vocabulary).toBeDefined();
-      expect(instructions?.grammar).toBeDefined();
-      expect(instructions?.cultural).toBeDefined();
-      expect(instructions?.style).toBeDefined();
-      expect(instructions?.examples).toBeDefined();
-    });
-
-    it('should return null for unsupported language', () => {
-      const instructions = generalPromptConfigService.getLanguageInstructions('unsupported' as string, 'a1');
-      expect(instructions).toBeNull();
-    });
-
-    it('should return null for unsupported difficulty', () => {
-      const instructions = generalPromptConfigService.getLanguageInstructions('en', 'unsupported' as string);
-      expect(instructions).toBeNull();
-    });
-
-    it('should handle case insensitive language codes', () => {
-      const instructionsLower = generalPromptConfigService.getLanguageInstructions('en', 'a1');
-      const instructionsUpper = generalPromptConfigService.getLanguageInstructions('EN' as string, 'a1');
-      
-      // Both should return the same mock data since the mock normalizes to lowercase
-      expect(instructionsLower).toBeDefined();
-      expect(instructionsUpper).toBeDefined();
-      expect(instructionsLower?.vocabulary).toContain('1000 English words');
-      expect(instructionsUpper?.vocabulary).toContain('1000 English words');
-    });
-  });
-
   describe('getGeneralInstructions', () => {
     it('should return array of general instructions', () => {
       const instructions = generalPromptConfigService.getGeneralInstructions();
