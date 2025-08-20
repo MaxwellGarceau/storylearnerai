@@ -6,6 +6,9 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 // Reusable type alias for the loading task returned by getDocument
 type PDFLoadingTask = ReturnType<typeof pdfjsLib.getDocument>;
 
+// Type alias for the private fixPunctuationSpacing method signature
+type FixPunctuationSpacingMethod = (text: string) => string;
+
 // Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
   getDocument: vi.fn().mockReturnValue({
@@ -627,7 +630,7 @@ describe('PDFService', () => {
       const expected = 'Hello, world. She said "hello" and left. The end!';
       
       // Access the private method for testing
-      const result = (PDFService as any).fixPunctuationSpacing(input);
+      const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -636,7 +639,7 @@ describe('PDFService', () => {
       const input = 'She moved to Detroit(as mentioned)and then Boston.';
       const expected = 'She moved to Detroit (as mentioned) and then Boston.';
       
-      const result = (PDFService as any).fixPunctuationSpacing(input);
+      const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -645,7 +648,7 @@ describe('PDFService', () => {
       const input = 'She said"hello"and"goodbye"then left.';
       const expected = 'She said "hello" and "goodbye" then left.';
       
-      const result = (PDFService as any).fixPunctuationSpacing(input);
+      const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -654,7 +657,7 @@ describe('PDFService', () => {
       const input = 'Hello, world. She said "hello" and left. The end!';
       const expected = 'Hello, world. She said "hello" and left. The end!';
       
-      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -663,7 +666,7 @@ describe('PDFService', () => {
       const input = 'She said"hello"then"goodbye"and left.';
       const expected = 'She said "hello" then "goodbye" and left.';
       
-      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -701,7 +704,7 @@ describe('PDFService', () => {
       ];
 
       testCases.forEach(({ input, description }) => {
-        const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+        const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
         
         // Check that there are no spaces immediately after opening quotes
         // But we need to be careful - we're looking for opening quotes followed by spaces
