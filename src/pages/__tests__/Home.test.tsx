@@ -3,6 +3,35 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import Home from '../Home';
+// Mock i18n translations used on Home page
+vi.mock('react-i18next', async () => {
+  const actual = await vi.importActual('react-i18next');
+  const dict: Record<string, string> = {
+    'home.hero.badge': 'AI-Powered Language Learning',
+    'home.hero.title': 'Story Learner AI',
+    'home.hero.subtitle': 'Transform any story into a powerful learning tool',
+    'home.hero.startTranslating': 'Start Translating',
+    'home.hero.signUpFree': 'Sign Up Free',
+    'home.features.title': 'Why Choose Story Learner AI?',
+    'home.features.multiLanguage.title': 'Multi-Language Support',
+    'home.features.sideBySide.title': 'Side-by-Side Reading',
+    'home.features.learningInsights.title': 'Learning Insights',
+    'home.features.aiPowered.title': 'AI-Powered',
+    'home.howItWorks.title': 'How It Works',
+    'home.howItWorks.step1.title': 'Upload Your Story',
+    'home.howItWorks.step2.title': 'AI Translation',
+    'home.howItWorks.step3.title': 'Learn & Practice',
+    'home.cta.title': 'Ready to Start Your Language Learning Journey?',
+    'home.cta.startTranslating': 'Start Translating',
+    'home.cta.createAccount': 'Create Free Account',
+  };
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string) => dict[key] || key,
+    }),
+  };
+});
 
 // Mock react-router-dom
 vi.mock('react-router-dom', async () => {

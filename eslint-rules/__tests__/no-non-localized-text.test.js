@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { ESLint } from 'eslint'
 
-async function runLint(code: string) {
+async function runLint(code) {
   const eslint = new ESLint({
     // Use the test-specific config
     overrideConfigFile: './eslint-rules/__tests__/test-eslint-localization.config.js',

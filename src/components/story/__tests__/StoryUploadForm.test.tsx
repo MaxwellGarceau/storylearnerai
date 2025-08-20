@@ -19,6 +19,10 @@ vi.mock('react-i18next', () => ({
         'storyInput.proficiencyLevel': 'proficiency level.',
         'storyInput.translateStory': 'Translate Story',
         'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'difficultyLevels.a1.label': 'A1 (Beginner)',
+        'difficultyLevels.a2.label': 'A2 (Elementary)',
+        'difficultyLevels.b1.label': 'B1 (Intermediate)',
+        'difficultyLevels.b2.label': 'B2 (Upper Intermediate)',
       };
       return translations[key] || key;
     },

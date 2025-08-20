@@ -16,9 +16,12 @@ export const useLocalization = () => {
   const { getLanguageName, getNativeLanguageName } = useLanguages();
 
   const currentLanguage = i18n.language as LanguageCode;
+  const effectiveLanguage: LanguageCode = (SUPPORTED_LANGUAGES as string[]).includes(currentLanguage)
+    ? currentLanguage
+    : SUPPORTED_LANGUAGES[0];
   const isLanguageLoaded = i18n.hasResourceBundle ? i18n.hasResourceBundle(currentLanguage, 'translation') : true;
 
-  const changeLanguage = useCallback(async (languageCode: string) => {
+  const changeLanguage = useCallback(async (languageCode: LanguageCode) => {
     try {
       await i18n.changeLanguage(languageCode);
       // Store the language preference in localStorage
@@ -29,14 +32,15 @@ export const useLocalization = () => {
   }, [i18n]);
 
   const getCurrentLocalization = useCallback((): LocalizationInfo => {
-    const name = getLanguageName(currentLanguage);
-    const nativeName = getNativeLanguageName(currentLanguage);
+    const name = getLanguageName(effectiveLanguage);
+    const nativeName = getNativeLanguageName(effectiveLanguage);
     return {
-      code: currentLanguage,
+      code: effectiveLanguage,
       name: name,
       nativeName: nativeName
     };
-  }, [currentLanguage, getLanguageName, getNativeLanguageName]);
+  // Depend only on the language code so the reference remains stable across rerenders
+  }, [effectiveLanguage]);
 
   const getSupportedLocalizations = useCallback((): LocalizationInfo[] => {
     return SUPPORTED_LANGUAGES.map(code => ({
@@ -44,7 +48,8 @@ export const useLocalization = () => {
       name: getLanguageName(code),
       nativeName: getNativeLanguageName(code)
     }));
-  }, [getLanguageName, getNativeLanguageName]);
+  // Keep reference stable
+  }, []);
 
   return {
     currentLocalization: currentLanguage,

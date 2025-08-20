@@ -5,31 +5,51 @@ import i18n from '../../lib/i18n';
 import { vi } from 'vitest';
 
 // Mock i18next
+const mockChangeLanguage = vi.fn();
+const baseI18n = {
+  language: 'en',
+  changeLanguage: mockChangeLanguage,
+  hasResourceBundle: () => true,
+};
+
 vi.mock('react-i18next', async () => {
   const actual = await vi.importActual('react-i18next');
   return {
     ...actual,
     useTranslation: () => ({
-      i18n: {
-        language: 'en',
-        changeLanguage: vi.fn(),
-        isLanguageLoadedToLocale: vi.fn().mockReturnValue(true),
-      },
-      t: vi.fn((key: string) => key),
+      i18n: baseI18n,
+      t: (key: string) => key,
     }),
   };
 });
 
+// Mock useLanguages to avoid side effects (Supabase) in full suite runs
+vi.mock('../useLanguages', () => ({
+  useLanguages: () => ({
+    languages: [
+      { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2023-01-01T00:00:00Z' },
+      { id: '2', code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2023-01-01T00:00:00Z' },
+    ],
+    loading: false,
+    error: null,
+    getLanguageName: (code: string) => (code === 'en' ? 'English' : code === 'es' ? 'Spanish' : code),
+    getNativeLanguageName: (code: string) => (code === 'en' ? 'English' : code === 'es' ? 'Español' : code),
+    languageMap: new Map([
+      ['en', 'English'],
+      ['es', 'Spanish'],
+    ]),
+  }),
+}));
+
 describe('useLocalization', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <I18nextProvider i18n={i18n}>
-      {children}
-    </I18nextProvider>
+    <>{children}</>
   );
 
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+    mockChangeLanguage.mockReset();
   });
 
   afterEach(() => {
@@ -70,20 +90,7 @@ describe('useLocalization', () => {
 
   it('returns fallback language when current language is not supported', () => {
     // Mock i18next to return an unsupported language
-    vi.doMock('react-i18next', async () => {
-      const actual = await vi.importActual('react-i18next');
-      return {
-        ...actual,
-        useTranslation: () => ({
-          i18n: {
-            language: 'fr', // Unsupported language
-            changeLanguage: vi.fn(),
-            isLanguageLoadedToLocale: vi.fn().mockReturnValue(true),
-          },
-          t: vi.fn((key: string) => key),
-        }),
-      };
-    });
+    baseI18n.language = 'fr';
 
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
@@ -92,54 +99,25 @@ describe('useLocalization', () => {
   });
 
   it('calls changeLanguage and stores preference in localStorage', async () => {
-    const mockChangeLanguage = vi.fn();
-    const mockI18n = {
-      language: 'en',
-      changeLanguage: mockChangeLanguage,
-      isLanguageLoadedToLocale: vi.fn().mockReturnValue(true),
-    };
-
-    vi.doMock('react-i18next', async () => {
-      const actual = await vi.importActual('react-i18next');
-      return {
-        ...actual,
-        useTranslation: () => ({
-          i18n: mockI18n,
-          t: vi.fn((key: string) => key),
-        }),
-      };
+    mockChangeLanguage.mockImplementation(async (code: string) => {
+      baseI18n.language = code;
+      return undefined;
     });
-
+    baseI18n.language = 'en';
     const { result } = renderHook(() => useLocalization(), { wrapper });
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
 
     await act(async () => {
       await result.current.changeLocalization('es');
     });
 
     expect(mockChangeLanguage).toHaveBeenCalledWith('es');
-    expect(localStorage.getItem('i18nextLng')).toBe('es');
+    expect(setItemSpy).toHaveBeenCalledWith('i18nextLng', 'es');
   });
 
   it('handles changeLanguage errors gracefully', async () => {
-    const mockChangeLanguage = vi.fn().mockRejectedValue(new Error('Language change failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const mockI18n = {
-      language: 'en',
-      changeLanguage: mockChangeLanguage,
-      isLanguageLoadedToLocale: vi.fn().mockReturnValue(true),
-    };
-
-    vi.doMock('react-i18next', async () => {
-      const actual = await vi.importActual('react-i18next');
-      return {
-        ...actual,
-        useTranslation: () => ({
-          i18n: mockI18n,
-          t: vi.fn((key: string) => key),
-        }),
-      };
-    });
+    mockChangeLanguage.mockRejectedValueOnce(new Error('Language change failed'));
 
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
