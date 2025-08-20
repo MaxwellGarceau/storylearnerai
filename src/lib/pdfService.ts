@@ -368,17 +368,20 @@ export class PDFService {
     fixedText = fixedText.replace(/([a-zA-Z])\(/g, '$1 ('); // Add space before opening parenthesis
     fixedText = fixedText.replace(/\)([a-zA-Z])/g, ') $1'); // Add space after closing parenthesis
     
-    // Fix spacing around quotes - focus on the main issue
+    // Fix spacing around quotes with clear rules:
+    // 1. Quotes should only appear as pairs
+    // 2. An opening quote should have no space directly after it  
+    // 3. An ending quote should have no space directly before it
+    
+    // Step 1: Add proper spacing OUTSIDE quotes (but this may create internal spaces)
     // Add space before opening quote when preceded by a letter
     fixedText = fixedText.replace(/([a-zA-Z])"/g, '$1 "');
-    // Add space after closing quote when followed by a letter  
+    // Add space after closing quote when followed by a letter
     fixedText = fixedText.replace(/"([a-zA-Z])/g, '" $1');
     
-    // Clean up any spaces that ended up inside quotes due to the above replacements
-    fixedText = fixedText.replace(/" ([^"]*) "/g, '"$1"'); // Remove spaces inside complete quote pairs
-    // Remove spaces after opening quotes, but be careful not to remove spaces after closing quotes
-    fixedText = fixedText.replace(/"\s+([^"]*)"([a-zA-Z])/g, '"$1" $2'); // Fix case where space after opening quote but before closing quote
-    fixedText = fixedText.replace(/"\s+([^"]*)"(?=\s|[.!?;:,]|$)/g, '"$1"'); // Fix case where space after opening quote at end
+    // Step 2: Clean up any spaces INSIDE quotes that were created by step 1
+    // This handles complete quote pairs and removes internal spaces
+    fixedText = fixedText.replace(/"\s*([^"]*?)\s*"/g, '"$1"');
     
     // Clean up any double spaces that might have been introduced
     fixedText = fixedText.replace(/  +/g, ' ');

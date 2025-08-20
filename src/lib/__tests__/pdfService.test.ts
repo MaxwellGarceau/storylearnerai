@@ -704,13 +704,30 @@ describe('PDFService', () => {
         const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
         
         // Check that there are no spaces immediately after opening quotes
-        const openingQuotePattern = /"\s+/g;
-        const matches = result.match(openingQuotePattern);
+        // But we need to be careful - we're looking for opening quotes followed by spaces
+        // The pattern should match a quote that starts a quoted string, not any quote
+        // We'll check for quotes followed by space where the space is the first character of the content
+        const problematicSpaces: string[] = [];
         
-        if (matches) {
+        // Find all quote pairs and check if they have spaces at the start or end of content
+        const quotePairs = result.match(/"[^"]*"/g);
+        if (quotePairs) {
+          quotePairs.forEach(pair => {
+            // Check if content starts with space: "hello" is good, " hello" is bad
+            if (pair.match(/^"\s/)) {
+              problematicSpaces.push(pair);
+            }
+            // Check if content ends with space: "hello" is good, "hello " is bad  
+            if (pair.match(/\s"$/)) {
+              problematicSpaces.push(pair);
+            }
+          });
+        }
+        
+        if (problematicSpaces.length > 0) {
           throw new Error(
-            `Found spaces after opening quotes in "${description}": "${input}" -> "${result}". ` +
-            `Matches found: ${matches.map(m => `"${m}"`).join(', ')}`
+            `Found spaces inside quotes in "${description}": "${input}" -> "${result}". ` +
+            `Problematic quotes: ${problematicSpaces.join(', ')}`
           );
         }
         
