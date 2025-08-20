@@ -40,7 +40,7 @@ export const useLocalization = () => {
       nativeName: nativeName
     };
   // Depend only on the language code so the reference remains stable across rerenders
-  }, [effectiveLanguage]);
+  }, [effectiveLanguage, getLanguageName, getNativeLanguageName]);
 
   const getSupportedLocalizations = useCallback((): LocalizationInfo[] => {
     return SUPPORTED_LANGUAGES.map(code => ({

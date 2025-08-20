@@ -1,7 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
 import { useLocalization } from '../useLocalization';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../../lib/i18n';
 import { vi } from 'vitest';
 
 // Mock i18next
@@ -99,9 +97,9 @@ describe('useLocalization', () => {
   });
 
   it('calls changeLanguage and stores preference in localStorage', async () => {
-    mockChangeLanguage.mockImplementation(async (code: string) => {
+    mockChangeLanguage.mockImplementation((code: string) => {
       baseI18n.language = code;
-      return undefined;
+      return Promise.resolve(undefined);
     });
     baseI18n.language = 'en';
     const { result } = renderHook(() => useLocalization(), { wrapper });

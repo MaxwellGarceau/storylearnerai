@@ -10,39 +10,39 @@ import type { RenderResult } from '@testing-library/react'
 // Mock react-i18next
 vi.mock('react-i18next', () => {
   const translations: Record<string, string> = {
-        // Headers
-        'auth.userProfile.welcomeBack': 'Welcome back, {{name}}!',
-        'dashboard.subtitle': 'Your language learning dashboard',
+    // Headers
+    'auth.userProfile.welcomeBack': 'Welcome back, {{name}}!',
+    'dashboard.subtitle': 'Your language learning dashboard',
 
-        // Loading & errors
-        'dashboard.loading': 'Loading your dashboard...',
-        'dashboard.errors.loadFailed': 'Error loading dashboard data',
+    // Loading & errors
+    'dashboard.loading': 'Loading your dashboard...',
+    'dashboard.errors.loadFailed': 'Error loading dashboard data',
 
-        // Header actions
-        'dashboard.profile': 'Profile',
-        'dashboard.newTranslation': 'New Translation',
+    // Header actions
+    'dashboard.profile': 'Profile',
+    'dashboard.newTranslation': 'New Translation',
 
-        // Stats
-        'dashboard.stats.totalTranslations': 'Total Translations',
-        'dashboard.stats.storiesTranslated': 'Stories translated',
-        'dashboard.stats.languages': 'Languages',
-        'dashboard.stats.learningLevel': 'Learning Level',
-        'dashboard.stats.beginner': 'Beginner',
-        'dashboard.stats.currentDifficulty': 'Your current difficulty',
+    // Stats
+    'dashboard.stats.totalTranslations': 'Total Translations',
+    'dashboard.stats.storiesTranslated': 'Stories translated',
+    'dashboard.stats.languages': 'Languages',
+    'dashboard.stats.learningLevel': 'Learning Level',
+    'dashboard.stats.beginner': 'Beginner',
+    'dashboard.stats.currentDifficulty': 'Your current difficulty',
 
-        // Quick actions
-        'dashboard.quickActions.title': 'Quick Actions',
-        'dashboard.quickActions.newTranslation.title': 'New Translation',
-        'dashboard.quickActions.newTranslation.description': 'Translate a new story',
-        'dashboard.quickActions.viewSaved.title': 'View Saved',
-        'dashboard.quickActions.viewSaved.description': 'Browse saved translations',
-        'dashboard.quickActions.editProfile.title': 'Edit Profile',
-        'dashboard.quickActions.editProfile.description': 'Update your profile',
+    // Quick actions
+    'dashboard.quickActions.title': 'Quick Actions',
+    'dashboard.quickActions.newTranslation.title': 'New Translation',
+    'dashboard.quickActions.newTranslation.description': 'Translate a new story',
+    'dashboard.quickActions.viewSaved.title': 'View Saved',
+    'dashboard.quickActions.viewSaved.description': 'Browse saved translations',
+    'dashboard.quickActions.editProfile.title': 'Edit Profile',
+    'dashboard.quickActions.editProfile.description': 'Update your profile',
 
-        // Recent activity
-        'dashboard.recentActivity.title': 'Recent Activity',
-        'dashboard.recentActivity.noActivity': 'No recent activity',
-        'dashboard.recentActivity.noActivityDescription': 'Start translating stories to see your activity here',
+    // Recent activity
+    'dashboard.recentActivity.title': 'Recent Activity',
+    'dashboard.recentActivity.noActivity': 'No recent activity',
+    'dashboard.recentActivity.noActivityDescription': 'Start translating stories to see your activity here',
   };
 
   const stableT = (key: string, options?: any) => {
