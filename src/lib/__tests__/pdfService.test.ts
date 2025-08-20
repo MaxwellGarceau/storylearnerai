@@ -658,5 +658,14 @@ describe('PDFService', () => {
       
       expect(result).toBe(expected);
     });
+
+    it('should handle quotes without adding internal spaces', () => {
+      const input = 'She said"hello"then"goodbye"and left.';
+      const expected = 'She said "hello" then "goodbye" and left.';
+      
+      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      
+      expect(result).toBe(expected);
+    });
   });
 });

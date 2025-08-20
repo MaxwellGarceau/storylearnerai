@@ -368,13 +368,14 @@ export class PDFService {
     fixedText = fixedText.replace(/([a-zA-Z])\(/g, '$1 ('); // Add space before opening parenthesis
     fixedText = fixedText.replace(/\)([a-zA-Z])/g, ') $1'); // Add space after closing parenthesis
     
-    // Fix spacing around quotes - process complete quoted strings to avoid internal spacing issues
-    // Pattern: word"quoted text"word -> word "quoted text" word
-    fixedText = fixedText.replace(/([a-zA-Z])"([^"]*)"([a-zA-Z])/g, '$1 "$2" $3');
-    // Pattern: word"quoted text" (at end or before punctuation)
-    fixedText = fixedText.replace(/([a-zA-Z])"([^"]*)"(?=\s|[.!?;:,]|$)/g, '$1 "$2"');
-    // Pattern: "quoted text"word (at start or after punctuation) 
-    fixedText = fixedText.replace(/(?<=^|\s|[.!?;:,])"([^"]*)"([a-zA-Z])/g, '"$1" $2');
+    // Fix spacing around quotes - focus on the main issue
+    // Add space before opening quote when preceded by a letter
+    fixedText = fixedText.replace(/([a-zA-Z])"/g, '$1 "');
+    // Add space after closing quote when followed by a letter  
+    fixedText = fixedText.replace(/"([a-zA-Z])/g, '" $1');
+    
+    // Clean up any spaces that ended up inside quotes due to the above replacements
+    fixedText = fixedText.replace(/" ([^"]*) "/g, '"$1"'); // Remove spaces inside complete quote pairs
     
     // Clean up any double spaces that might have been introduced
     fixedText = fixedText.replace(/  +/g, ' ');
