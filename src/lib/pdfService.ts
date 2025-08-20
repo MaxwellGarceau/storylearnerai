@@ -45,6 +45,9 @@ export interface PDFTextItem {
   hasEOL: boolean;
 }
 
+// Type alias for PDF.js text item structure
+type PDFJSTextItem = { str: string; dir: string; transform: number[]; width: number; height: number; fontName: string; hasEOL: boolean };
+
 // Type alias for methods that return PDF extraction results
 type PDFExtractionPromise = Promise<PDFExtractionResult>;
 
@@ -123,16 +126,8 @@ export class PDFService {
         
         // Filter and process text items with position information
         const filteredItems = textContent.items
-          .filter((item): item is { str: string; dir: string; transform: number[]; width: number; height: number; fontName: string; hasEOL: boolean } => 'str' in item)
-          .map((item) => ({
-            text: item.str,
-            y: item.transform[5], // Y position on page
-            x: item.transform[4], // X position on page
-            fontName: item.fontName,
-            width: item.width,
-            height: item.height,
-            hasEOL: item.hasEOL
-          }))
+          .filter((item): item is PDFJSTextItem => 'str' in item)
+          .map((item) => this.mapToPDFTextItem(item))
           .filter((item) => this.isStoryContent(item, pageHeight));
         
         // Reconstruct text with proper line breaks
@@ -170,6 +165,23 @@ export class PDFService {
         error: 'pdfUpload.errors.processingFailed'
       };
     }
+  }
+
+  /**
+   * Maps PDF.js text item to our domain model
+   */
+  private static mapToPDFTextItem(
+    item: PDFJSTextItem
+  ): PDFTextItem {
+    return {
+      text: item.str,
+      y: item.transform[5], // Y position on page
+      x: item.transform[4], // X position on page
+      fontName: item.fontName,
+      width: item.width,
+      height: item.height,
+      hasEOL: item.hasEOL
+    };
   }
 
   /**
