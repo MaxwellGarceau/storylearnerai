@@ -33,6 +33,11 @@ vi.mock('react-i18next', () => ({
         'pdfUpload.errors.tooManyPages': `PDF has ${params?.actualPages ?? 0} pages, maximum allowed is ${params?.maxPages ?? 10}`,
         'pdfUpload.errors.noTextFound': 'No text content found in the PDF',
         'pdfUpload.errors.processingFailed': 'Failed to process PDF. Please try again.',
+        'pdfUpload.bestPractices.title': 'Best Practices for Best Results',
+        'pdfUpload.bestPractices.extractableText': 'Use PDFs with selectable text (not scanned images)',
+        'pdfUpload.bestPractices.storyContent': 'Upload PDFs that contain primarily story content',
+        'pdfUpload.bestPractices.avoidImages': 'Avoid PDFs that are mostly images or scanned documents',
+        'pdfUpload.bestPractices.cleanFormat': 'Clean, well-formatted text works best for translation',
         'common.cancel': 'Cancel'
       };
       return translations[key] || key;
@@ -78,6 +83,16 @@ describe('PDFUploadModal Component', () => {
     expect(screen.getByText(/Maximum pages: 10/)).toBeInTheDocument();
     expect(screen.getByText(/PDF files only/)).toBeInTheDocument();
     expect(screen.getByText(/Must contain extractable text/)).toBeInTheDocument();
+  });
+
+  it('shows best practices guide', () => {
+    render(<PDFUploadModal {...defaultProps} />);
+    
+    expect(screen.getByText('Best Practices for Best Results')).toBeInTheDocument();
+    expect(screen.getByText(/Use PDFs with selectable text/)).toBeInTheDocument();
+    expect(screen.getByText(/Upload PDFs that contain primarily story content/)).toBeInTheDocument();
+    expect(screen.getByText(/Avoid PDFs that are mostly images/)).toBeInTheDocument();
+    expect(screen.getByText(/Clean, well-formatted text works best/)).toBeInTheDocument();
   });
 
   it('opens file dialog when upload area is clicked', () => {

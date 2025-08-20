@@ -367,8 +367,15 @@
       "invalidFileType": "Por favor selecciona un archivo PDF válido",
       "fileTooLarge": "El tamaño del archivo excede el límite de {{maxSize}}MB",
       "tooManyPages": "El PDF tiene {{actualPages}} páginas, máximo permitido es {{maxPages}}",
-      "noTextFound": "No se encontró contenido de texto en el PDF",
-      "processingFailed": "Error al procesar el PDF. Por favor intenta de nuevo."
-    }
-  }
+                      "noTextFound": "No se encontró contenido de texto en el PDF",
+                "processingFailed": "Error al procesar el PDF. Por favor intenta de nuevo."
+              },
+              "bestPractices": {
+                "title": "Mejores Prácticas para Mejores Resultados",
+                "extractableText": "Usa PDFs con texto seleccionable (no imágenes escaneadas)",
+                "storyContent": "Sube PDFs que contengan principalmente contenido de historia",
+                "avoidImages": "Evita PDFs que sean principalmente imágenes o documentos escaneados",
+                "cleanFormat": "El texto limpio y bien formateado funciona mejor para la traducción"
+              }
+            }
 }

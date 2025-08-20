@@ -205,6 +205,26 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
             </div>
           </div>
 
+          {/* Best Practices Guide */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <div className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-sm text-green-800">
+                <div className="font-medium mb-1">{t('pdfUpload.bestPractices.title')}</div>
+                <ul className="space-y-1 text-xs">
+                  <li>• {t('pdfUpload.bestPractices.extractableText')}</li>
+                  <li>• {t('pdfUpload.bestPractices.storyContent')}</li>
+                  <li>• {t('pdfUpload.bestPractices.avoidImages')}</li>
+                  <li>• {t('pdfUpload.bestPractices.cleanFormat')}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <Button
