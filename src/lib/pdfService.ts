@@ -131,8 +131,8 @@ export class PDFService {
         }
       }
       
-      // Combine all page texts
-      const extractedText = pageTexts.join('\n\n');
+      // Combine all page texts with single line breaks
+      const extractedText = pageTexts.join('\n');
       
       // Check if text was extracted
       if (!extractedText || extractedText.trim().length === 0) {
@@ -263,6 +263,7 @@ export class PDFService {
     let currentLine = '';
     let lastY = sortedItems[0].y;
     const lineTolerance = 5; // Tolerance for considering text on the same line
+    const paragraphTolerance = 15; // Tolerance for detecting paragraph breaks
     
     for (let i = 0; i < sortedItems.length; i++) {
       const item = sortedItems[i];
@@ -272,6 +273,11 @@ export class PDFService {
       if (yDiff > lineTolerance && currentLine.trim()) {
         result += currentLine.trim() + '\n';
         currentLine = '';
+        
+        // Check if this is a paragraph break (larger gap)
+        if (yDiff > paragraphTolerance) {
+          result += '\n'; // Add extra line break for paragraph separation
+        }
       }
       
       // Add text to current line
@@ -329,7 +335,7 @@ export class PDFService {
       filteredText = filteredText.replace(pattern, '');
     });
     
-    // Remove excessive line breaks (more than 2 consecutive)
+    // Normalize paragraph breaks (ensure exactly 2 line breaks between paragraphs)
     filteredText = filteredText.replace(/\n\s*\n\s*\n+/g, '\n\n');
     
     // Remove leading/trailing whitespace from each line
@@ -337,6 +343,10 @@ export class PDFService {
     
     // Remove empty lines at the beginning and end
     filteredText = filteredText.replace(/^\s*\n+/, '').replace(/\n+\s*$/, '');
+    
+    // Remove single line breaks that might be page boundaries (convert to paragraph breaks)
+    // This helps clean up the transition between pages
+    filteredText = filteredText.replace(/\n\s*\n/g, '\n\n');
     
     return filteredText;
   }

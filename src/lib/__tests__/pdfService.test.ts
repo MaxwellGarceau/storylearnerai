@@ -73,15 +73,26 @@ describe('PDFService', () => {
     it('should extract text from a valid PDF', async () => {
       const mockPage = {
         getTextContent: vi.fn().mockResolvedValue({
-          items: [{ 
-            str: 'Extracted text content',
-            dir: 'ltr',
-            transform: [1, 0, 0, 1, 50, 400], // X=50, Y=400 (middle of page)
-            width: 100,
-            height: 12,
-            fontName: 'Arial',
-            hasEOL: false
-          }]
+          items: [
+            { 
+              str: 'First paragraph text',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // X=50, Y=400
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Second paragraph text',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 350], // X=50, Y=350 (paragraph break)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
         }),
         getViewport: vi.fn().mockReturnValue({
           height: 800
@@ -101,7 +112,7 @@ describe('PDFService', () => {
       const result = await PDFService.extractText(file, 10);
       
       expect(result.success).toBe(true);
-      expect(result.text).toBe('Extracted text content\n\nExtracted text content');
+      expect(result.text).toBe('First paragraph text\n\nSecond paragraph text\nFirst paragraph text\n\nSecond paragraph text');
       expect(result.pageCount).toBe(2);
     });
 
