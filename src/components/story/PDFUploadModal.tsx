@@ -2,9 +2,12 @@ import React, { useState, useRef } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import { Upload, FileText, X, Check, AlertTriangle } from 'lucide-react';
+import { Upload, FileText, X, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PDFService, PDFFileInfo } from '../../lib/pdfService';
+import { RequirementsInfoBox } from './RequirementsInfoBox';
+import { BestPracticesInfoBox } from './BestPracticesInfoBox';
+import { CleanupNoticeInfoBox } from './CleanupNoticeInfoBox';
 
 interface PDFUploadModalProps {
   isOpen: boolean;
@@ -190,55 +193,13 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
           )}
 
           {/* File Requirements Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-800">
-                <div className="font-medium mb-1">{t('pdfUpload.requirements.title')}</div>
-                <ul className="space-y-1 text-xs">
-                  <li>• {t('pdfUpload.requirements.maxSize', { maxSize: maxFileSize })}</li>
-                  <li>• {t('pdfUpload.requirements.maxPages', { maxPages })}</li>
-                  <li>• {t('pdfUpload.requirements.pdfOnly')}</li>
-                  <li>• {t('pdfUpload.requirements.textContent')}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <RequirementsInfoBox maxFileSize={maxFileSize} maxPages={maxPages} />
 
           {/* Best Practices Guide */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <div className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="text-sm text-green-800">
-                <div className="font-medium mb-1">{t('pdfUpload.bestPractices.title')}</div>
-                <ul className="space-y-1 text-xs">
-                  <li>• {t('pdfUpload.bestPractices.extractableText')}</li>
-                  <li>• {t('pdfUpload.bestPractices.storyContent')}</li>
-                  <li>• {t('pdfUpload.bestPractices.avoidImages')}</li>
-                  <li>• {t('pdfUpload.bestPractices.cleanFormat')}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <BestPracticesInfoBox />
 
           {/* Cleanup Notice */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <div className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <div className="text-sm text-amber-800">
-                <div className="font-bold mb-1">{t('pdfUpload.cleanupNotice.title')}</div>
-                <p className="text-xs">{t('pdfUpload.cleanupNotice.description')}</p>
-              </div>
-            </div>
-          </div>
+          <CleanupNoticeInfoBox />
         </CardContent>
 
         {/* Action Buttons - Sticky at bottom */}
