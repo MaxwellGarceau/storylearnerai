@@ -38,6 +38,8 @@ vi.mock('react-i18next', () => ({
         'pdfUpload.bestPractices.storyContent': 'Upload PDFs that contain primarily story content',
         'pdfUpload.bestPractices.avoidImages': 'Avoid PDFs that are mostly images or scanned documents',
         'pdfUpload.bestPractices.cleanFormat': 'Clean, well-formatted text works best for translation',
+        'pdfUpload.cleanupNotice.title': 'Important: Text Cleanup May Be Required',
+        'pdfUpload.cleanupNotice.description': 'Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements.',
         'common.cancel': 'Cancel'
       };
       return translations[key] || key;
@@ -93,6 +95,14 @@ describe('PDFUploadModal Component', () => {
     expect(screen.getByText(/Upload PDFs that contain primarily story content/)).toBeInTheDocument();
     expect(screen.getByText(/Avoid PDFs that are mostly images/)).toBeInTheDocument();
     expect(screen.getByText(/Clean, well-formatted text works best/)).toBeInTheDocument();
+  });
+
+  it('shows cleanup notice', () => {
+    render(<PDFUploadModal {...defaultProps} />);
+    
+    expect(screen.getByText('Important: Text Cleanup May Be Required')).toBeInTheDocument();
+    expect(screen.getByText(/Our system tries to identify story content/)).toBeInTheDocument();
+    expect(screen.getByText(/You may need to review and clean up/)).toBeInTheDocument();
   });
 
   it('opens file dialog when upload area is clicked', () => {

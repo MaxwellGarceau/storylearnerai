@@ -374,8 +374,12 @@
                 "title": "Mejores Prácticas para Mejores Resultados",
                 "extractableText": "Usa PDFs con texto seleccionable (no imágenes escaneadas)",
                 "storyContent": "Sube PDFs que contengan principalmente contenido de historia",
-                "avoidImages": "Evita PDFs que sean principalmente imágenes o documentos escaneados",
-                "cleanFormat": "El texto limpio y bien formateado funciona mejor para la traducción"
+                                  "avoidImages": "Evita PDFs que sean principalmente imágenes o documentos escaneados",
+                  "cleanFormat": "El texto limpio y bien formateado funciona mejor para la traducción"
+                }
+              },
+              "cleanupNotice": {
+                "title": "Importante: Puede ser necesario limpiar el texto",
+                "description": "Nuestro sistema intenta identificar el contenido de la historia, pero los PDFs pueden contener varios elementos de texto. Es posible que necesites revisar y limpiar el texto extraído para eliminar cualquier contenido no relacionado, encabezados, notas al pie u otros elementos que no sean parte de la historia."
               }
             }
-}

@@ -224,6 +224,21 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Cleanup Notice */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <div className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div className="text-sm text-amber-800">
+                <div className="font-bold mb-1">{t('pdfUpload.cleanupNotice.title')}</div>
+                <p className="text-xs">{t('pdfUpload.cleanupNotice.description')}</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
 
         {/* Action Buttons - Sticky at bottom */}
