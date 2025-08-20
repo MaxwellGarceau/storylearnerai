@@ -242,7 +242,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               </svg>
             }
           >
-            <p className="text-xs font-bold">{t('pdfUpload.cleanupNotice.description')}</p>
+            <p className="text-xs">{t('pdfUpload.cleanupNotice.description')}</p>
           </InfoBox>
         </CardContent>
 
