@@ -4,13 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { Upload, FileText, X, Check, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString();
+import { PDFService, PDFFileInfo } from '../../lib/pdfService';
 
 interface PDFUploadModalProps {
   isOpen: boolean;
@@ -32,11 +26,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileInfo, setFileInfo] = useState<{
-    name: string;
-    size: string;
-    pages?: number;
-  } | null>(null);
+  const [fileInfo, setFileInfo] = useState<PDFFileInfo | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -46,24 +36,25 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     setSelectedFile(file);
     setFileInfo({
       name: file.name,
-      size: formatFileSize(file.size),
+      size: PDFService.formatFileSize(file.size),
     });
 
-    // Validate file type
-    if (file.type !== 'application/pdf') {
-      setError(t('pdfUpload.errors.invalidFileType'));
+    // Validate file using PDF service
+    const validation = PDFService.validateFile(file, maxFileSize, maxPages);
+    if (!validation.isValid) {
+      // Handle specific error messages that need parameters
+      if (validation.error === 'pdfUpload.errors.fileTooLarge') {
+        setError(t(validation.error, { maxSize: maxFileSize }));
+      } else {
+        setError(t(validation.error!));
+      }
       setSelectedFile(null);
       setFileInfo(null);
       return;
     }
 
-    // Validate file size
-    if (file.size > maxFileSize * 1024 * 1024) {
-      setError(t('pdfUpload.errors.fileTooLarge', { maxSize: maxFileSize }));
-      setSelectedFile(null);
-      setFileInfo(null);
-      return;
-    }
+    // Update file info with validated data
+    setFileInfo(validation.fileInfo!);
   };
 
   const handleUploadClick = () => {
@@ -77,44 +68,29 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     setError(null);
 
     try {
-      // Read the file as ArrayBuffer
-      const arrayBuffer = await selectedFile.arrayBuffer();
+      // Process PDF using PDF service
+      const result = await PDFService.processPDF(selectedFile, maxFileSize, maxPages);
       
-      // Load the PDF document using pdfjs-dist
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
-      
-      // Check page count
-      if (pdf.numPages > maxPages) {
-        setError(t('pdfUpload.errors.tooManyPages', { 
-          actualPages: pdf.numPages, 
-          maxPages 
-        }));
+      if (!result.success) {
+        // Handle specific error messages that need parameters
+        if (result.error === 'pdfUpload.errors.tooManyPages' && result.pageCount) {
+          setError(t(result.error, { actualPages: result.pageCount, maxPages }));
+        } else if (result.error === 'pdfUpload.errors.fileTooLarge') {
+          setError(t(result.error, { maxSize: maxFileSize }));
+        } else {
+          setError(t(result.error!));
+        }
+        if (result.pageCount) {
+          setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
+        }
         return;
       }
 
       // Update file info with page count
-      setFileInfo(prev => prev ? { ...prev, pages: pdf.numPages } : null);
-
-      // Extract text from all pages
-      let extractedText = '';
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: any) => item.str)
-          .join(' ');
-        extractedText += pageText + '\n';
-      }
-      
-      // Check if text was extracted
-      if (!extractedText || extractedText.trim().length === 0) {
-        setError(t('pdfUpload.errors.noTextFound'));
-        return;
-      }
+      setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
 
       // Pass the extracted text to parent component
-      onTextExtracted(extractedText.trim());
+      onTextExtracted(result.text!);
       onClose();
       
     } catch (err) {
@@ -133,13 +109,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     onClose();
   };
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+
 
   if (!isOpen) return null;
 

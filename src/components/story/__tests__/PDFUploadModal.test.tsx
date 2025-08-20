@@ -2,11 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import PDFUploadModal from '../PDFUploadModal';
-import * as pdfjsLib from 'pdfjs-dist';
+import { PDFService } from '../../../lib/pdfService';
 
-// Mock pdfjs-dist
-vi.mock('pdfjs-dist', () => ({
-  getDocument: vi.fn()
+// Mock PDFService
+vi.mock('../../../lib/pdfService', () => ({
+  PDFService: {
+    validateFile: vi.fn(),
+    processPDF: vi.fn(),
+    formatFileSize: vi.fn()
+  }
 }));
 
 // Mock react-i18next
@@ -72,8 +76,8 @@ describe('PDFUploadModal Component', () => {
     expect(screen.getByText('File Requirements')).toBeInTheDocument();
     expect(screen.getByText(/Maximum file size: 5MB/)).toBeInTheDocument();
     expect(screen.getByText(/Maximum pages: 10/)).toBeInTheDocument();
-    expect(screen.getByText('PDF files only')).toBeInTheDocument();
-    expect(screen.getByText('Must contain extractable text')).toBeInTheDocument();
+    expect(screen.getByText(/PDF files only/)).toBeInTheDocument();
+    expect(screen.getByText(/Must contain extractable text/)).toBeInTheDocument();
   });
 
   it('opens file dialog when upload area is clicked', () => {
@@ -108,6 +112,11 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows error for invalid file type', async () => {
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: false,
+      error: 'pdfUpload.errors.invalidFileType'
+    });
+
     render(<PDFUploadModal {...defaultProps} />);
     
     const fileInput = screen.getByTestId('pdf-file-input');
@@ -122,6 +131,11 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows error for file too large', async () => {
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: false,
+      error: 'pdfUpload.errors.fileTooLarge'
+    });
+
     render(<PDFUploadModal {...defaultProps} maxFileSize={1} />);
     
     const fileInput = screen.getByTestId('pdf-file-input');
@@ -144,6 +158,14 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('enables extract button when valid file is selected', async () => {
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
     render(<PDFUploadModal {...defaultProps} />);
     
     const fileInput = screen.getByTestId('pdf-file-input');
@@ -159,6 +181,14 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows file info when valid file is selected', async () => {
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
     render(<PDFUploadModal {...defaultProps} />);
     
     const fileInput = screen.getByTestId('pdf-file-input');
@@ -169,24 +199,23 @@ describe('PDFUploadModal Component', () => {
     
     await waitFor(() => {
       expect(screen.getByText('test.pdf')).toBeInTheDocument();
-      expect(screen.getByText(/0.01 KB/)).toBeInTheDocument();
+      expect(screen.getByText('12 Bytes')).toBeInTheDocument();
     });
   });
 
   it('processes PDF and extracts text successfully', async () => {
-    const mockPage = {
-      getTextContent: vi.fn().mockResolvedValue({
-        items: [{ str: 'Extracted text content' }]
-      })
-    };
-    
-    const mockPdf = {
-      numPages: 2,
-      getPage: vi.fn().mockResolvedValue(mockPage)
-    };
-    
-    vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-      promise: Promise.resolve(mockPdf)
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
+    vi.mocked(PDFService.processPDF).mockResolvedValue({
+      success: true,
+      text: 'Extracted text content',
+      pageCount: 2
     });
 
     render(<PDFUploadModal {...defaultProps} />);
@@ -209,19 +238,18 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows error when PDF has too many pages', async () => {
-    const mockPage = {
-      getTextContent: vi.fn().mockResolvedValue({
-        items: [{ str: 'Extracted text content' }]
-      })
-    };
-    
-    const mockPdf = {
-      numPages: 15,
-      getPage: vi.fn().mockResolvedValue(mockPage)
-    };
-    
-    vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-      promise: Promise.resolve(mockPdf)
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
+    vi.mocked(PDFService.processPDF).mockResolvedValue({
+      success: false,
+      error: 'pdfUpload.errors.tooManyPages',
+      pageCount: 15
     });
 
     render(<PDFUploadModal {...defaultProps} maxPages={10} />);
@@ -243,19 +271,18 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows error when no text is found in PDF', async () => {
-    const mockPage = {
-      getTextContent: vi.fn().mockResolvedValue({
-        items: [] // No text items
-      })
-    };
-    
-    const mockPdf = {
-      numPages: 1,
-      getPage: vi.fn().mockResolvedValue(mockPage)
-    };
-    
-    vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-      promise: Promise.resolve(mockPdf)
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
+    vi.mocked(PDFService.processPDF).mockResolvedValue({
+      success: false,
+      error: 'pdfUpload.errors.noTextFound',
+      pageCount: 1
     });
 
     render(<PDFUploadModal {...defaultProps} />);
@@ -277,8 +304,17 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows error when PDF processing fails', async () => {
-    vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-      promise: Promise.reject(new Error('Processing failed'))
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
+    });
+
+    vi.mocked(PDFService.processPDF).mockResolvedValue({
+      success: false,
+      error: 'pdfUpload.errors.processingFailed'
     });
 
     render(<PDFUploadModal {...defaultProps} />);
@@ -300,20 +336,21 @@ describe('PDFUploadModal Component', () => {
   });
 
   it('shows processing state during PDF extraction', async () => {
-    const mockPage = {
-      getTextContent: vi.fn().mockResolvedValue({
-        items: [{ str: 'Extracted text content' }]
-      })
-    };
-    
-    const mockPdf = {
-      numPages: 1,
-      getPage: vi.fn().mockResolvedValue(mockPage)
-    };
-    
-    vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-      promise: new Promise(resolve => setTimeout(() => resolve(mockPdf), 100))
+    vi.mocked(PDFService.validateFile).mockReturnValue({
+      isValid: true,
+      fileInfo: {
+        name: 'test.pdf',
+        size: '12 Bytes'
+      }
     });
+
+    vi.mocked(PDFService.processPDF).mockImplementation(() => 
+      new Promise(resolve => setTimeout(() => resolve({
+        success: true,
+        text: 'Extracted text content',
+        pageCount: 1
+      }), 100))
+    );
 
     render(<PDFUploadModal {...defaultProps} />);
     
