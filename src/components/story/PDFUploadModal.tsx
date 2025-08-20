@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
-import { Upload, FileText, X, Check, AlertTriangle } from 'lucide-react';
+import { FileText, X, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PDFService, PDFFileInfo } from '../../lib/pdfService';
 import { InfoBox } from '../ui/InfoBox';
+import { FileUploadArea } from '../ui/FileUploadArea';
 
 interface PDFUploadModalProps {
   isOpen: boolean;
@@ -23,16 +24,12 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
   maxFileSize = 5 // 5MB default
 }) => {
   const { t } = useTranslation();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileInfo, setFileInfo] = useState<PDFFileInfo | null>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const handleFileSelect = (file: File) => {
     setError(null);
     setSelectedFile(file);
     setFileInfo({
@@ -58,10 +55,6 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     if (validation.fileInfo) {
       setFileInfo(validation.fileInfo);
     }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleProcessFile = async () => {
@@ -142,45 +135,16 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
         
         <CardContent className="space-y-4 flex-1 overflow-y-auto">
           {/* File Upload Area */}
-          <div className="space-y-3">
-            <div
-              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                selectedFile 
-                  ? 'border-green-300 bg-green-50' 
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
-              onClick={handleUploadClick}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf"
-                onChange={handleFileSelect}
-                className="hidden"
-                disabled={isProcessing}
-                data-testid="pdf-file-input"
-              />
-              
-              {selectedFile ? (
-                <div className="space-y-2">
-                  <Check className="w-8 h-8 text-green-600 mx-auto" />
-                  <div className="font-medium text-green-800">{fileInfo?.name}</div>
-                  <div className="text-sm text-green-600">
-                    {fileInfo?.size}
-                    {fileInfo?.pages && ` • ${fileInfo.pages} pages`}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto" />
-                  <div className="font-medium">{t('pdfUpload.uploadPrompt')}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {t('pdfUpload.fileRequirements', { maxSize: maxFileSize, maxPages })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <FileUploadArea
+            accept=".pdf"
+            maxFileSize={maxFileSize}
+            maxPages={maxPages}
+            onFileSelect={handleFileSelect}
+            onValidationError={(error) => setError(error)}
+            isProcessing={isProcessing}
+            selectedFile={selectedFile}
+            fileInfo={fileInfo}
+          />
 
           {/* Error Display */}
           {error && (
