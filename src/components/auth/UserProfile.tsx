@@ -13,6 +13,7 @@ import type { LanguageCode } from '../../types/llm/prompts'
 import type { VoidFunction } from '../../types/common'
 
 import { Loader2, User, Mail, Globe, Edit, Save, X, Camera } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface UserProfileProps {
   onClose?: VoidFunction
@@ -20,7 +21,8 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useAuth()
-  const { languages, getLanguageName } = useLanguages()
+  const { languages } = useLanguages()
+  const { t } = useTranslation()
   const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -160,7 +162,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex items-center justify-center p-6">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading profile...</span>
+          <span className="ml-2">{t('auth.userProfile.loading')}</span>
         </CardContent>
       </Card>
     )
@@ -171,7 +173,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-6">
           <Alert variant="destructive">
-            <p>Failed to load user profile</p>
+            <p>{t('auth.userProfile.errors.loadFailed')}</p>
           </Alert>
         </CardContent>
       </Card>
@@ -182,7 +184,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-2xl font-bold">Profile</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t('auth.userProfile.title')}</CardTitle>
           <div className="flex items-center gap-2">
             {!isEditing && (
               <Button
@@ -192,7 +194,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                 className="flex items-center gap-2"
               >
                 <Edit className="h-4 w-4" />
-                Edit
+                {t('auth.userProfile.editProfile')}
               </Button>
             )}
             {onClose && (
@@ -203,13 +205,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                 className="flex items-center gap-2"
               >
                 <X className="h-4 w-4" />
-                Close
+                {t('auth.userProfile.cancel')}
               </Button>
             )}
           </div>
         </div>
         <CardDescription>
-          Manage your account settings and preferences
+          {t('auth.userProfile.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -242,7 +244,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           <div>
             {isEditing ? (
               <div>
-                <h3 className="text-lg font-semibold mb-2">Display Name</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('auth.userProfile.displayName')}</h3>
                 <input
                   type="text"
                   value={formData.display_name}
@@ -250,7 +252,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                   className={`w-full px-2 py-1 border rounded bg-background text-sm ${
                     validationErrors.display_name ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder="Display name"
+                  placeholder={t('auth.userProfile.displayName')}
                 />
                 {validationErrors.display_name && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors.display_name}</p>
@@ -270,7 +272,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                   className={`w-full px-2 py-1 border rounded bg-background text-sm ${
                     validationErrors.username ? 'border-red-500' : 'border-input'
                   }`}
-                  placeholder="Username"
+                  placeholder={t('auth.userProfile.username')}
                 />
                 {validationErrors.username && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors.username}</p>
@@ -288,7 +290,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         <div className="space-y-2">
           <Label htmlFor="email">
             <Mail className="h-4 w-4 inline mr-2" />
-            Email
+            {t('auth.email')}
           </Label>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
@@ -297,7 +299,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         <div className="space-y-2">
           <Label htmlFor="language">
             <Globe className="h-4 w-4 inline mr-2" />
-            Preferred Language
+            {t('auth.userProfile.preferredLanguage')}
           </Label>
           {isEditing ? (
             <select
@@ -308,14 +310,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             >
               {languages.map((language) => (
                 <option key={language.code} value={language.code}>
-                  {language.name}
+                  {t(`languages.${language.code}`)}
                 </option>
               ))}
             </select>
           ) : (
             profile.preferred_language && (
               <Badge variant="secondary">
-                {getLanguageName(profile.preferred_language)}
+                {t(`languages.${profile.preferred_language}`)}
               </Badge>
             )
           )}
@@ -323,10 +325,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
         {/* Account Info */}
         <div className="space-y-2">
-          <Label htmlFor="account-info">Account Information</Label>
+          <Label htmlFor="account-info">{t('auth.userProfile.accountInformation')}</Label>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>Member since: {new Date(profile.created_at).toLocaleDateString()}</p>
-            <p>Last updated: {new Date(profile.updated_at).toLocaleDateString()}</p>
+            <p>{t('auth.userProfile.memberSince')}: {new Date(profile.created_at).toLocaleDateString()}</p>
+            <p>{t('auth.userProfile.lastUpdated')}: {new Date(profile.updated_at).toLocaleDateString()}</p>
           </div>
         </div>
 
@@ -341,12 +343,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('auth.userProfile.saving')}
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+                  {t('auth.userProfile.saveChanges')}
                 </>
               )}
             </Button>
@@ -355,7 +357,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               onClick={handleCancel}
               disabled={saving}
             >
-              Cancel
+              {t('auth.userProfile.cancel')}
             </Button>
           </div>
         ) : (
@@ -365,7 +367,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               onClick={() => void handleSignOut()}
               className="w-full"
             >
-              Sign Out
+              {t('auth.userProfile.signOut')}
             </Button>
           </div>
         )}

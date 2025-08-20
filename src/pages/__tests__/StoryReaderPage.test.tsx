@@ -6,6 +6,29 @@ import StoryReaderPage from '../StoryReaderPage';
 import { TranslationResponse } from '../../lib/translationService';
 import { TooltipProvider } from '../../components/ui/Tooltip';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'storyReader.noStory.title': 'No Story Found',
+        'storyReader.noStory.description': 'Please translate a story first to view it here.',
+        'storyReader.noStory.translateStory': 'Translate a Story',
+        'storyReader.noStory.home': 'Home',
+        'storyReader.header.translatedStory': 'Your Translated Story',
+        'storyReader.header.translatedDescription': 'Enjoy reading your story in English!',
+        'storyReader.header.savedStory': 'Your Saved Story',
+        'storyReader.header.savedDescription': 'Enjoy reading your saved story!',
+        'storyReader.header.savedBadge': 'Saved',
+        'storyReader.header.debugBadge': 'Debug Mode',
+        'storyReader.actions.translateAnother': 'Translate Another Story',
+        'storyReader.actions.home': 'Home',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 // Mock the LLMServiceManager to prevent initialization issues
 vi.mock('../../lib/llm/LLMServiceManager', () => ({
   llmServiceManager: {
@@ -121,9 +144,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };
@@ -141,9 +164,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };
@@ -163,9 +186,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };

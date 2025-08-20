@@ -23,6 +23,23 @@ vi.mock('react-router-dom', async () => {
 })
 
 describe('AuthPage Component', () => {
+  vi.mock('react-i18next', async () => {
+    const actual = await vi.importActual('react-i18next')
+    return {
+      ...actual,
+      useTranslation: () => ({
+        t: (key: string) => {
+          const dict: Record<string, string> = {
+            'common.loading': 'Loading...',
+            'common.backToHome': 'Back to Home',
+            'auth.signIn.title': 'Sign In',
+            'auth.signUp.title': 'Create Account',
+          }
+          return dict[key] || key
+        },
+      }),
+    }
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     mockSearchParams = new URLSearchParams()

@@ -4,6 +4,23 @@ import { vi } from 'vitest'
 import { UserProfile } from '../UserProfile'
 import { setupSupabaseMocks, mockUseAuth } from '../../../__tests__/mocks/supabaseMock'
 import type { User } from '@supabase/supabase-js'
+import type { LanguageCode } from '../../../types/llm/prompts'
+
+// Mock react-i18next
+vi.mock('react-i18next', async () => {
+  const actual = await vi.importActual('react-i18next');
+  return {
+    ...actual,
+    useTranslation: () => ({
+      i18n: {
+        language: 'en',
+        changeLanguage: vi.fn(),
+        isLanguageLoadedToLocale: vi.fn().mockReturnValue(true),
+      },
+      t: vi.fn((key: string) => key),
+    }),
+  };
+});
 
 // Mock the useLanguages hook
 vi.mock('../../../hooks/useLanguages', () => ({
@@ -15,11 +32,11 @@ vi.mock('../../../hooks/useLanguages', () => ({
     loading: false,
     error: null,
     getLanguageName: (code: string) => {
-      const languageMap: Record<string, string> = {
+      const languageMap: Record<LanguageCode, string> = {
         'en': 'English',
         'es': 'Spanish'
       }
-      return languageMap[code] || code
+      return languageMap[code as LanguageCode] || code
     },
     languageMap: new Map([
       ['en', 'English'],
@@ -57,7 +74,7 @@ describe('UserProfile Component', () => {
     id: 'test-user-id',
     username: 'testuser',
     display_name: 'Test User',
-    preferred_language: 'en',
+    preferred_language: 'en' as LanguageCode,
     created_at: '2023-01-01T00:00:00Z',
     updated_at: '2023-01-01T00:00:00Z'
   }
@@ -93,8 +110,8 @@ describe('UserProfile Component', () => {
       expect(screen.getByText('Test User')).toBeInTheDocument()
     })
     expect(screen.getByText('@testuser')).toBeInTheDocument()
-    expect(screen.getByText('English')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /edit/i })[0]).toBeInTheDocument()
+    expect(screen.getByText('languages.en')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /auth\.userProfile\.editProfile/i })[0]).toBeInTheDocument()
   })
 
   it('switches to edit mode when edit button is clicked', async () => {
@@ -110,8 +127,8 @@ describe('UserProfile Component', () => {
     expect(screen.getByDisplayValue('Test User')).toBeInTheDocument()
     expect(screen.getByDisplayValue('testuser')).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /save changes/i })[0]).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /cancel/i })[0]).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /auth\.userProfile\.saveChanges/i })[0]).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /auth\.userProfile\.cancel/i })[0]).toBeInTheDocument()
   })
 
   it('handles form input changes in edit mode', async () => {
@@ -143,7 +160,7 @@ describe('UserProfile Component', () => {
       ...mockProfile, 
       username: 'newusername', 
       display_name: 'New User Name',
-      preferred_language: 'es'  // Make sure the mock returns the updated language
+      preferred_language: 'es' as LanguageCode  // Make sure the mock returns the updated language
     }
     vi.mocked(UserService.updateUser).mockResolvedValue(updatedProfile)
 
@@ -154,13 +171,13 @@ describe('UserProfile Component', () => {
     })
 
     // Switch to edit mode
-    const editButton = screen.getAllByRole('button', { name: /edit/i })[0]
+    const editButton = screen.getAllByRole('button', { name: /auth\.userProfile\.editProfile/i })[0]
     fireEvent.click(editButton)
 
     const usernameInput = screen.getByDisplayValue('testuser')
     const displayNameInput = screen.getByDisplayValue('Test User')
     const languageSelect = screen.getByRole('combobox')
-    const saveButton = screen.getAllByRole('button', { name: /save changes/i })[0]
+    const saveButton = screen.getAllByRole('button', { name: /auth\.userProfile\.saveChanges/i })[0]
 
     fireEvent.change(usernameInput, { target: { value: 'newusername' } })
     fireEvent.change(displayNameInput, { target: { value: 'New User Name' } })
@@ -172,14 +189,14 @@ describe('UserProfile Component', () => {
       expect(UserService.updateUser).toHaveBeenCalledWith('test-user-id', {
         username: 'newusername',
         display_name: 'New User Name',
-        preferred_language: 'es'
+        preferred_language: 'es' as LanguageCode
       })
     })
 
     await waitFor(() => {
       expect(screen.getByText('New User Name')).toBeInTheDocument()
       expect(screen.getByText('@newusername')).toBeInTheDocument()
-      expect(screen.getByText('Spanish')).toBeInTheDocument()
+      expect(screen.getByText('languages.es')).toBeInTheDocument()
     })
   })
 
@@ -191,12 +208,12 @@ describe('UserProfile Component', () => {
     })
 
     // Switch to edit mode
-    const editButton = screen.getAllByRole('button', { name: /edit/i })[0]
+    const editButton = screen.getAllByRole('button', { name: /auth\.userProfile\.editProfile/i })[0]
     fireEvent.click(editButton)
 
     const usernameInput = screen.getByDisplayValue('testuser')
     const displayNameInput = screen.getByDisplayValue('Test User')
-    const cancelButton = screen.getAllByRole('button', { name: /cancel/i })[0]
+    const cancelButton = screen.getAllByRole('button', { name: /auth\.userProfile\.cancel/i })[0]
 
     fireEvent.change(usernameInput, { target: { value: 'newusername' } })
     fireEvent.change(displayNameInput, { target: { value: 'New User Name' } })
@@ -218,14 +235,14 @@ describe('UserProfile Component', () => {
     })
 
     // Switch to edit mode
-    const editButton = screen.getAllByRole('button', { name: /edit/i })[0]
+    const editButton = screen.getAllByRole('button', { name: /auth\.userProfile\.editProfile/i })[0]
     fireEvent.click(editButton)
 
-    const saveButton = screen.getAllByRole('button', { name: /save changes/i })[0]
+    const saveButton = screen.getAllByRole('button', { name: /auth\.userProfile\.saveChanges/i })[0]
     fireEvent.click(saveButton)
 
     expect(saveButton).toBeDisabled()
-    expect(screen.getByText(/saving/i)).toBeInTheDocument()
+    expect(screen.getByText(/auth\.userProfile\.saving/i)).toBeInTheDocument()
   })
 
   it('handles save errors', async () => {
@@ -239,11 +256,11 @@ describe('UserProfile Component', () => {
     })
 
     // Switch to edit mode
-    const editButton = screen.getAllByRole('button', { name: /edit/i })[0]
+    const editButton = screen.getAllByRole('button', { name: /auth\.userProfile\.editProfile/i })[0]
     fireEvent.click(editButton)
 
     const usernameInput = screen.getByDisplayValue('testuser')
-    const saveButton = screen.getAllByRole('button', { name: /save changes/i })[0]
+    const saveButton = screen.getAllByRole('button', { name: /auth\.userProfile\.saveChanges/i })[0]
 
     fireEvent.change(usernameInput, { target: { value: 'existinguser' } })
     fireEvent.click(saveButton)

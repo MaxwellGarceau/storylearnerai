@@ -12,6 +12,7 @@ import { TooltipProvider } from './components/ui/Tooltip';
 import { Walkthrough } from './components/walkthrough/Walkthrough';
 import { WalkthroughDebug } from './components/walkthrough/WalkthroughDebug';
 import { useWalkthrough } from './hooks/useWalkthrough';
+import './lib/i18n';
 
 function App() {
   return (

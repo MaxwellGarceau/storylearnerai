@@ -3,6 +3,47 @@ import { vi } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
 import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'story.uploadTitle': 'Upload Story',
+        'story.uploadDescription': 'Upload a story file or paste text to get started',
+        'story.translateButton': 'Translate Story',
+        'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'storyInput.tip': '💡 Tip: You can paste long stories, articles, or any Spanish text you\'d like to translate',
+        'common.edit': 'Edit',
+        'storyInput.validation.securityWarning': '⚠️ Security Warning',
+        'storyInput.validation.maliciousContentRemoved': 'Malicious content has been automatically removed for your safety.',
+        'storyInput.validation.invalidInput': 'Invalid input detected',
+        'storyInput.validation.fixInput': 'Please fix the input before translating',
+        'storyInput.optionsModal.title': 'Story Options',
+        'storyInput.optionsModal.languageLabel': 'Target Language',
+        'storyInput.optionsModal.difficultyLabel': 'Target Difficulty (CEFR)',
+        'storyInput.optionsModal.a1': 'A1 (Beginner)',
+        'storyInput.optionsModal.a2': 'A2 (Elementary)',
+        'storyInput.optionsModal.b1': 'B1 (Intermediate)',
+        'storyInput.optionsModal.b2': 'B2 (Upper Intermediate)',
+        'storyInput.currentlySupported': 'Currently only {language} translation is supported.',
+        'storyInput.difficultyDescription': 'The story will be adapted to this {language} proficiency level.',
+        'storyInput.done': 'Done',
+        'storyInput.confirmationModal.title': 'Confirm Translation Options',
+        'storyInput.confirmationModal.from': 'From:',
+        'storyInput.confirmationModal.to': 'To:',
+        'storyInput.confirmationModal.difficulty': 'Difficulty:',
+        'storyInput.confirmationModal.cancel': 'Cancel',
+        'storyInput.confirmationModal.confirm': 'Confirm & Translate',
+        'storySidebar.difficultyLevels.a1': 'A1 (Beginner)',
+        'storySidebar.difficultyLevels.a2': 'A2 (Elementary)',
+        'storySidebar.difficultyLevels.b1': 'B1 (Intermediate)',
+        'storySidebar.difficultyLevels.b2': 'B2 (Upper Intermediate)',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 // Mock the sanitization utilities
 vi.mock('../../../lib/utils/sanitization', () => ({
   sanitizeStoryText: vi.fn((input: string) => {

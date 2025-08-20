@@ -5,6 +5,7 @@ import TextArea from '../ui/TextArea';
 import Label from '../ui/Label';
 import { useLanguages } from '../../hooks/useLanguages';
 import { StoryFormData } from '../types/story';
+import { useTranslation } from 'react-i18next';
 
 interface StoryUploadFormProps {
   onSubmitStory: (storyData: { story: string; language: string; difficulty: string }) => void;
@@ -12,6 +13,7 @@ interface StoryUploadFormProps {
 
 const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const { getLanguageName } = useLanguages();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
     language: 'en', // Target language (always English for now)
@@ -41,10 +43,10 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
     <form onSubmit={handleSubmit} className="p-4 space-y-4 bg-white shadow-lg rounded-lg">
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
         <p className="text-sm text-blue-800">
-          <strong>Translation:</strong> {getLanguageName('es')} → {getLanguageName('en')}
+          <strong>{t('storyInput.translation')}</strong> {getLanguageName('es')} → {getLanguageName('en')}
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          Enter your {getLanguageName('es')} story below, and it will be translated to {getLanguageName('en')} at your selected difficulty level.
+          {t('storyInput.enterYour')} {getLanguageName('es')} {t('storyInput.storyBelowAndItWillBeTranslatedTo')} {getLanguageName('en')} {t('storyInput.atYourSelectedDifficultyLevel')}
         </p>
       </div>
 
@@ -53,14 +55,14 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
         name="storyUpload-story"
         value={formData.story}
         onChange={handleInputChange}
-        placeholder="Ingresa tu historia en español aquí... (Enter your Spanish story here...)"
+        placeholder={t('storyInput.placeholder')}
         required
         label={`${getLanguageName('es')} Story`}
         helperText={`Write or paste the ${getLanguageName('es')} story text you wish to translate to ${getLanguageName('en')}.`}
       />
 
       <div>
-        <Label htmlFor="storyUpload-language">Target Language</Label>
+        <Label htmlFor="storyUpload-language">{t('storyInput.targetLanguage')}</Label>
         <Select name="storyUpload-language" value={formData.language} onValueChange={(value) => handleSelectChange('language', value)}>
           <SelectTrigger
             id="storyUpload-language"
@@ -74,7 +76,7 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">
-          Currently only {getLanguageName('en')} translation is supported.
+          {t('storyInput.currentlyOnly')} {getLanguageName('en')} {t('storyInput.translationIsSupported')}
         </p>
       </div>
 
@@ -89,19 +91,19 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
             {formData.difficulty}
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="a1">A1 (Beginner)</SelectItem>
-            <SelectItem value="a2">A2 (Elementary)</SelectItem>
-            <SelectItem value="b1">B1 (Intermediate)</SelectItem>
-            <SelectItem value="b2">B2 (Upper Intermediate)</SelectItem>
+            <SelectItem value="a1">{t('difficultyLevels.a1.label')}</SelectItem>
+            <SelectItem value="a2">{t('difficultyLevels.a2.label')}</SelectItem>
+            <SelectItem value="b1">{t('difficultyLevels.b1.label')}</SelectItem>
+            <SelectItem value="b2">{t('difficultyLevels.b2.label')}</SelectItem>
           </SelectContent>
         </Select>
         <p className="text-xs text-gray-500 mt-1">
-          The story will be adapted to this {getLanguageName('en')} proficiency level.
+          {t('storyInput.theStoryWillBeAdaptedToThis')} {getLanguageName('en')} {t('storyInput.proficiencyLevel')}
         </p>
       </div>
 
       <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-300">
-        Translate Story
+        {t('storyInput.translateStory')}
       </Button>
     </form>
   );

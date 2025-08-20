@@ -13,6 +13,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { logger } from '../../lib/logger';
+import { useTranslation } from 'react-i18next';
 
 import Label from '../ui/Label';
 import { TranslationResponse } from '../../lib/translationService';
@@ -26,6 +27,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
   const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations();
+  const { t } = useTranslation();
   
   // Use DB type directly for sample stories
   const sampleStories: DatabaseSavedTranslationWithDetails[] = savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
@@ -105,13 +107,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   };
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
-    switch (difficulty) {
-      case 'a1': return 'A1 (Beginner)';
-      case 'a2': return 'A2 (Elementary)';
-      case 'b1': return 'B1 (Intermediate)';
-      case 'b2': return 'B2 (Upper Intermediate)';
-      default: return 'Unknown';
-    }
+    return t(`difficultyLevels.${difficulty}.label`);
   };
 
   return (
@@ -124,10 +120,10 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             size="default"
             onClick={() => setIsOpen(true)}
             className="inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm"
-            aria-label="Open story library"
+            aria-label={t('storySidebar.openLibrary')}
           >
             <BookOpen className="w-4 h-4" />
-            <span className="hidden sm:inline">Story Library</span>
+            <span className="hidden sm:inline">{t('storySidebar.storyLibrary')}</span>
           </Button>
         </div>
       )}
@@ -150,14 +146,14 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold">Story Library</h2>
+                <h2 className="text-lg font-semibold">{t('storySidebar.storyLibrary')}</h2>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
                 className="h-8 w-8 p-0"
-                aria-label="Close story library"
+                aria-label={t('storySidebar.closeLibrary')}
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -172,7 +168,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                 className="flex-1"
               >
                 <BookOpen className="w-4 h-4 mr-2" />
-                Stories
+                {t('storySidebar.stories')}
               </Button>
               <Button
                 variant={activeSection === 'info' ? 'default' : 'ghost'}
@@ -181,7 +177,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                 className="flex-1"
               >
                 <Settings className="w-4 h-4 mr-2" />
-                Info
+                {t('storySidebar.info')}
               </Button>
             </div>
           </div>
@@ -192,17 +188,17 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
               <div className="p-4 space-y-6">
                 {/* Help Text */}
                 <p className="text-sm text-muted-foreground text-center">
-                  Click on a story to read it
+                  {t('storySidebar.clickOnStoryToRead')}
                 </p>
 
                 {/* Saved Stories Section */}
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-foreground border-b pb-2">
-                    Saved Stories
+                    {t('storySidebar.savedStories')}
                   </h3>
                   {isLoadingSavedTranslations ? (
                     <div className="text-sm text-muted-foreground text-center py-4">
-                      Loading saved stories...
+                      {t('storySidebar.loadingSavedStories')}
                     </div>
                   ) : savedTranslations.length > 0 ? (
                     savedTranslations.map((savedTranslation) => (
@@ -231,7 +227,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                         <CardHeader className="pb-2">
                           <div className="flex items-start justify-between">
                             <CardTitle className="text-base leading-tight">
-                              {savedTranslation.title ?? 'Untitled Story'}
+                              {savedTranslation.title ?? t('storySidebar.untitledStory')}
                             </CardTitle>
                             <Badge 
                               variant="secondary" 
@@ -250,7 +246,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                     ))
                   ) : (
                     <div className="text-sm text-muted-foreground text-center py-4">
-                      No saved stories yet. Translate a story to save it here.
+                      {t('storySidebar.noSavedStoriesYet')}
                     </div>
                   )}
                 </div>
@@ -258,7 +254,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                 {/* Sample Stories Section */}
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-foreground border-b pb-2">
-                    Sample Stories
+                    {t('storySidebar.sampleStories')}
                   </h3>
                   {sampleStories.map((story) => (
                     <Card
@@ -273,7 +269,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-base leading-tight">
-                            {story.title ?? 'Untitled'}
+                            {story.title ?? t('storySidebar.untitled')}
                           </CardTitle>
                           <Badge 
                             variant="secondary" 
@@ -285,11 +281,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                       </CardHeader>
                       <CardContent className="pt-0">
                         <p className="text-sm text-muted-foreground line-clamp-2">
-                          {story.notes ?? 'No description available.'}
+                          {story.notes ?? t('storySidebar.noDescriptionAvailable')}
                         </p>
                         {isLoading === String(story.id) && (
                           <div className="mt-2 text-xs text-primary">
-                            Loading story...
+                            {t('storySidebar.loadingStory')}
                           </div>
                         )}
                       </CardContent>
@@ -303,39 +299,39 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
               <div className="p-4 space-y-6">
                 {/* Header */}
                 <div className="border-b pb-4">
-                  <h3 className="text-lg font-semibold text-foreground">Story Options</h3>
-                  <p className="text-sm text-muted-foreground mt-1">Current translation settings</p>
+                  <h3 className="text-lg font-semibold text-foreground">{t('storySidebar.storyOptions')}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{t('storySidebar.currentSettings')}</p>
                 </div>
 
                 {/* Info Box */}
                 <Card variant="outline" className="bg-accent/50">
                   <CardContent className="p-3">
                     <p className="text-sm text-accent-foreground">
-                      <strong>Translation:</strong> {getLanguageName(translationData.fromLanguage)} → {getLanguageName(translationData.toLanguage)}
+                      <strong>{t('storySidebar.translation')}:</strong> {getLanguageName(translationData.fromLanguage)} → {getLanguageName(translationData.toLanguage)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      These are the settings used for this translation. Options editing will be available in a future update.
+                      {t('storySidebar.optionsEditing')}
                     </p>
                   </CardContent>
                 </Card>
 
                 {/* Language Display */}
                 <div className="space-y-2">
-                  <Label htmlFor="target-language">Target Language</Label>
+                  <Label htmlFor="target-language">{t('storySidebar.targetLanguage')}</Label>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-sm">
                       {getLanguageName(translationData.toLanguage)}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Currently only English translation is supported.
+                    {t('storySidebar.currentlySupported')}
                   </p>
                 </div>
 
                 {/* Difficulty Selection (Disabled) */}
                 <div className="space-y-2">
                   <Label htmlFor="story-difficulty">
-                    Target Difficulty (CEFR)
+                    {t('storySidebar.difficultyLevel')} (CEFR)
                   </Label>
                   <div className="flex items-center gap-2">
                     <Badge 
@@ -346,7 +342,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    The story was adapted to this English proficiency level.
+                    {t('storySidebar.storyAdaptedToLevel')}
                   </p>
                 </div>
               </div>
@@ -355,7 +351,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             {activeSection === 'info' && !translationData && (
               <div className="p-4 text-center">
                 <p className="text-muted-foreground">
-                  No translation data available to display.
+                  {t('storySidebar.noTranslationData')}
                 </p>
               </div>
             )}
@@ -364,7 +360,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
           {/* Footer */}
           <div className="p-4 border-t bg-muted/30">
             <p className="text-xs text-muted-foreground text-center">
-              {activeSection === 'stories' ? 'Demo stories • Spanish to English' : 'Translation settings'}
+              {activeSection === 'stories' ? t('storySidebar.demoStories') : t('storySidebar.translationSettings')}
             </p>
           </div>
         </div>

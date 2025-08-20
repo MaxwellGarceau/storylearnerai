@@ -15,17 +15,19 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import type { DatabaseUser as User } from '../types/database'
+import type { DatabaseUserInsert } from '../types/database'
 import type { NullableString } from '../types/common'
+import { useTranslation } from 'react-i18next'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth()
   const { getLanguageName } = useLanguages()
-  const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations()
+  const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<NullableString>(null)
-  const [profile, setProfile] = useState<User | null>(null)
+  const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
+  const { t } = useTranslation()
 
   const loadDashboardData = useCallback(async () => {
     if (!user) return
@@ -38,11 +40,11 @@ export const DashboardPage: React.FC = () => {
       const userProfile = await UserService.getUser(user.id)
       setProfile(userProfile)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data')
+      setError(err instanceof Error ? err.message : t('dashboard.errors.loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [user])
+  }, [user, t])
 
   useEffect(() => {
     if (user) {
@@ -61,7 +63,7 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading your dashboard...</p>
+              <p className="text-muted-foreground">{t('dashboard.loading')}</p>
             </div>
           </div>
         </div>
@@ -86,8 +88,8 @@ export const DashboardPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {profile?.display_name ?? user.email?.split('@')[0]}!</h1>
-            <p className="text-muted-foreground">Your language learning dashboard</p>
+            <h1 className="text-3xl font-bold">{t('auth.userProfile.welcomeBack', { name: profile?.display_name ?? user.email?.split('@')[0] })}</h1>
+            <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -96,14 +98,14 @@ export const DashboardPage: React.FC = () => {
               className="flex items-center gap-2"
             >
               <UserIcon className="h-4 w-4" />
-              Profile
+              {t('dashboard.profile')}
             </Button>
             <Button
               onClick={() => void navigate('/translate')}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              New Translation
+              {t('dashboard.newTranslation')}
             </Button>
           </div>
         </div>
@@ -112,7 +114,7 @@ export const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Translations</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.stats.totalTranslations')}</CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -124,14 +126,14 @@ export const DashboardPage: React.FC = () => {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Stories translated
+                {t('dashboard.stats.storiesTranslated')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Languages</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.stats.languages')}</CardTitle>
               <Globe className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -144,13 +146,13 @@ export const DashboardPage: React.FC = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Learning Level</CardTitle>
-              <Badge variant="secondary">Beginner</Badge>
+              <CardTitle className="text-sm font-medium">{t('dashboard.stats.learningLevel')}</CardTitle>
+              <Badge variant="secondary">{t('dashboard.stats.beginner')}</Badge>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Beginner</div>
+              <div className="text-2xl font-bold">{t('dashboard.stats.beginner')}</div>
               <p className="text-xs text-muted-foreground">
-                Current difficulty level
+                {t('dashboard.stats.currentDifficulty')}
               </p>
             </CardContent>
           </Card>
@@ -158,16 +160,16 @@ export const DashboardPage: React.FC = () => {
 
         {/* Quick Actions */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Quick Actions</h2>
+          <h2 className="text-xl font-semibold">{t('dashboard.quickActions.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => void navigate('/translate')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plus className="h-5 w-5" />
-                  New Translation
+                  {t('dashboard.quickActions.newTranslation.title')}
                 </CardTitle>
                 <CardDescription>
-                  Start translating a new story
+                  {t('dashboard.quickActions.newTranslation.description')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -176,10 +178,10 @@ export const DashboardPage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
-                  View Saved
+                  {t('dashboard.quickActions.viewSaved.title')}
                 </CardTitle>
                 <CardDescription>
-                  Review your saved translations
+                  {t('dashboard.quickActions.viewSaved.description')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -188,10 +190,10 @@ export const DashboardPage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserIcon className="h-5 w-5" />
-                   Edit Profile
+                  {t('dashboard.quickActions.editProfile.title')}
                 </CardTitle>
                 <CardDescription>
-                   Update your preferences
+                  {t('dashboard.quickActions.editProfile.description')}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -200,12 +202,12 @@ export const DashboardPage: React.FC = () => {
 
         {/* Recent Activity */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Recent Activity</h2>
+          <h2 className="text-xl font-semibold">{t('dashboard.recentActivity.title')}</h2>
           <Card>
             <CardHeader>
-              <CardTitle>No recent activity</CardTitle>
+              <CardTitle>{t('dashboard.recentActivity.noActivity')}</CardTitle>
               <CardDescription>
-                Start translating stories to see your activity here
+                {t('dashboard.recentActivity.noActivityDescription')}
               </CardDescription>
             </CardHeader>
           </Card>

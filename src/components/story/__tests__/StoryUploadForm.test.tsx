@@ -3,6 +3,32 @@ import '@testing-library/jest-dom';
 import StoryUploadForm from '../StoryUploadForm';
 import { vi, afterEach } from 'vitest';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'storyInput.translation': 'Translation:',
+        'storyInput.enterYour': 'Enter your',
+        'storyInput.storyBelowAndItWillBeTranslatedTo': 'story below, and it will be translated to',
+        'storyInput.atYourSelectedDifficultyLevel': 'at your selected difficulty level.',
+        'storyInput.targetLanguage': 'Target Language',
+        'storyInput.currentlyOnly': 'Currently only',
+        'storyInput.translationIsSupported': 'translation is supported.',
+        'storyInput.theStoryWillBeAdaptedToThis': 'The story will be adapted to this',
+        'storyInput.proficiencyLevel': 'proficiency level.',
+        'storyInput.translateStory': 'Translate Story',
+        'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'difficultyLevels.a1.label': 'A1 (Beginner)',
+        'difficultyLevels.a2.label': 'A2 (Elementary)',
+        'difficultyLevels.b1.label': 'B1 (Intermediate)',
+        'difficultyLevels.b2.label': 'B2 (Upper Intermediate)',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 // Mock the useLanguages hook
 vi.mock('../../hooks/useLanguages', () => ({
   useLanguages: () => ({
@@ -38,11 +64,11 @@ describe('StoryUploadForm', () => {
 
     // Check for Spanish to English translation info within this container
     expect(within(container).getByText('Translation:')).toBeInTheDocument();
-    expect(within(container).getByText('es → en')).toBeInTheDocument();
-    expect(within(container).getByText(/Enter your es story below/)).toBeInTheDocument();
+    expect(within(container).getByText('Spanish → English')).toBeInTheDocument();
+    expect(within(container).getByText(/Enter your Spanish story below/)).toBeInTheDocument();
 
     // Check form elements
-    expect(within(container).getByRole('textbox', { name: /es Story/i })).toBeInTheDocument();
+    expect(within(container).getByRole('textbox', { name: /Spanish Story/i })).toBeInTheDocument();
     expect(within(container).getByLabelText(/Target Language/i)).toBeInTheDocument();
     expect(within(container).getByLabelText(/Target Difficulty \(CEFR\)/i)).toBeInTheDocument();
     expect(within(container).getByRole('button', { name: /Translate Story/i })).toBeInTheDocument();
@@ -50,14 +76,14 @@ describe('StoryUploadForm', () => {
 
   it('has correct placeholder text for Spanish input', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
 
     expect(textArea).toHaveAttribute('placeholder', 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)');
   });
 
   it('allows the user to type in the textarea', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
-    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Una historia de ejemplo' } });
 
@@ -67,7 +93,7 @@ describe('StoryUploadForm', () => {
   it('triggers onSubmitStory with complete form data when the form is submitted', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
-    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia de prueba' } });
@@ -110,16 +136,16 @@ describe('StoryUploadForm', () => {
     const { container } = render(<StoryUploadForm onSubmitStory={vi.fn()} />);
 
     // Check for helper text within this container
-    expect(within(container).getByText('Write or paste the es story text you wish to translate to en.')).toBeInTheDocument();
-    expect(within(container).getByText('Currently only en translation is supported.')).toBeInTheDocument();
-    expect(within(container).getByText('The story will be adapted to this en proficiency level.')).toBeInTheDocument();
+    expect(within(container).getByText('Write or paste the Spanish story text you wish to translate to English.')).toBeInTheDocument();
+    expect(within(container).getByText('Currently only English translation is supported.')).toBeInTheDocument();
+    expect(within(container).getByText('The story will be adapted to this English proficiency level.')).toBeInTheDocument();
   });
 
   it('submits with different difficulty levels', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
     const difficultySelectTrigger = within(container).getByLabelText('Select difficulty level');
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
@@ -141,7 +167,7 @@ describe('StoryUploadForm', () => {
     const onSubmitStoryMock = vi.fn();
     const { container } = render(<StoryUploadForm onSubmitStory={onSubmitStoryMock} />);
     
-    const textArea = within(container).getByRole('textbox', { name: /es Story/i });
+    const textArea = within(container).getByRole('textbox', { name: /Spanish Story/i });
     const submitButton = within(container).getByRole('button', { name: /Translate Story/i });
 
     fireEvent.change(textArea, { target: { value: 'Historia básica' } });

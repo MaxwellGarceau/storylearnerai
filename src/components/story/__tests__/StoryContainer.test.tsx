@@ -5,6 +5,50 @@ import StoryContainer from '../StoryContainer';
 import { translationService } from '../../../lib/translationService';
 import type { TranslationResponse } from '../../../lib/translationService';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'story.translateButton': 'Translate Story',
+        'story.uploadTitle': 'Upload Story',
+        'story.uploadDescription': 'Upload a story file or paste text to get started',
+        'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'storyInput.translation': 'Translation:',
+        'storyInput.enterYour': 'Enter your',
+        'storyInput.storyBelowAndItWillBeTranslatedTo': 'story below, and it will be translated to',
+        'storyInput.atYourSelectedDifficultyLevel': 'at your selected difficulty level.',
+        'storyInput.targetLanguage': 'Target Language',
+        'storyInput.currentlyOnly': 'Currently only',
+        'storyInput.translationIsSupported': 'translation is supported.',
+        'storyInput.theStoryWillBeAdaptedToThis': 'The story will be adapted to this',
+        'storyInput.proficiencyLevel': 'proficiency level.',
+        'storyInput.translateStory': 'Translate Story',
+        'difficultyLevels.a1.label': 'A1 (Beginner)',
+        'difficultyLevels.a2.label': 'A2 (Elementary)',
+        'difficultyLevels.b1.label': 'B1 (Intermediate)',
+        'difficultyLevels.b2.label': 'B2 (Upper Intermediate)',
+        'storySidebar.confirmTranslation': 'Confirm Translation Options',
+        'storySidebar.translationOptions': 'Translation Options',
+        'storySidebar.originalLanguage': 'Original Language',
+        'storySidebar.targetLanguage': 'Target Language',
+        'storySidebar.difficulty': 'Difficulty',
+        'storySidebar.confirm': 'Confirm',
+        'storySidebar.cancel': 'Cancel',
+        'common.edit': 'Edit',
+        'storyInput.confirmationModal.title': 'Confirm Translation Options',
+        'storyInput.confirmationModal.from': 'From',
+        'storyInput.confirmationModal.to': 'To',
+        'storyInput.confirmationModal.difficulty': 'Difficulty',
+        'storyInput.confirmationModal.confirm': 'Confirm',
+        'storyInput.confirmationModal.cancel': 'Cancel',
+        'storyInput.tip': '💡 Tip: You can paste long stories, articles, or any Spanish text you\'d like to translate',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 // Mock the translation service
 vi.mock('../../../lib/translationService', () => ({
   translationService: {
@@ -53,7 +97,7 @@ describe('StoryContainer Component', () => {
       expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = within(container).getByRole('button', { name: /confirm/i });
     fireEvent.click(confirmButton);
 
     // Wait for translation to complete - check that the callback was called
@@ -99,7 +143,7 @@ describe('StoryContainer Component', () => {
       expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = within(container).getByRole('button', { name: /confirm/i });
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -132,7 +176,7 @@ describe('StoryContainer Component', () => {
       expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = within(container).getByRole('button', { name: /confirm/i });
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -162,7 +206,7 @@ describe('StoryContainer Component', () => {
       expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = within(container).getByRole('button', { name: /confirm/i });
     fireEvent.click(confirmButton);
 
     // Should show loading state in the button
@@ -197,7 +241,7 @@ describe('StoryContainer Component', () => {
       expect(within(container).getByText('Confirm Translation Options')).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = within(container).getByRole('button', { name: /confirm/i });
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
