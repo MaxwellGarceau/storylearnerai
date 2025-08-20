@@ -15,18 +15,18 @@ import {
   Globe,
   Loader2
 } from 'lucide-react'
-import type { DatabaseUser as User } from '../types/database'
+import type { DatabaseUserInsert } from '../types/database'
 import type { NullableString } from '../types/common'
 import { useTranslation } from 'react-i18next'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth()
   const { getLanguageName } = useLanguages()
-  const { savedTranslations, isLoading: isLoadingSavedTranslations } = useSavedTranslations()
+  const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<NullableString>(null)
-  const [profile, setProfile] = useState<User | null>(null)
+  const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const { t } = useTranslation()
 
   const loadDashboardData = useCallback(async () => {
@@ -44,7 +44,7 @@ export const DashboardPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [user])
+  }, [user, t])
 
   useEffect(() => {
     if (user) {
@@ -190,10 +190,10 @@ export const DashboardPage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserIcon className="h-5 w-5" />
-                   {t('dashboard.quickActions.editProfile.title')}
+                  {t('dashboard.quickActions.editProfile.title')}
                 </CardTitle>
                 <CardDescription>
-                   {t('dashboard.quickActions.editProfile.description')}
+                  {t('dashboard.quickActions.editProfile.description')}
                 </CardDescription>
               </CardHeader>
             </Card>

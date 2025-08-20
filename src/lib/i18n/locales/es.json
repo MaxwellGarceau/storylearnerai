@@ -10,6 +10,7 @@
     "close": "Cerrar",
     "submit": "Enviar",
     "back": "Atrás",
+    "backToHome": "Volver al Inicio",
     "next": "Siguiente",
     "previous": "Anterior"
   },
@@ -52,6 +53,9 @@
       "username": "Nombre de Usuario",
       "displayName": "Nombre para Mostrar",
       "preferredLanguage": "Idioma Preferido",
+      "accountInformation": "Información de la Cuenta",
+      "memberSince": "Miembro desde",
+      "lastUpdated": "Última actualización",
       "loading": "Cargando perfil...",
       "saving": "Guardando...",
       "errors": {
@@ -232,6 +236,14 @@
     "storyLibrary": "Biblioteca de Historias",
     "openLibrary": "Abrir biblioteca de historias",
     "closeLibrary": "Cerrar biblioteca de historias",
+    "stories": "Historias",
+    "info": "Información",
+    "clickOnStoryToRead": "Haz clic en una historia para leerla",
+    "savedStories": "Historias Guardadas",
+    "loadingSavedStories": "Cargando historias guardadas...",
+    "noSavedStoriesYet": "Aún no hay historias guardadas. Traduce una historia para guardarla aquí.",
+    "sampleStories": "Historias de Ejemplo",
+    "loadingStory": "Cargando historia...",
     "storyOptions": "Opciones de Historia",
     "currentSettings": "Configuración actual de traducción",
     "translation": "Traducción",
@@ -239,6 +251,13 @@
     "currentlySupported": "Actualmente solo se admite traducción al inglés.",
     "difficultyLevel": "Nivel de Dificultad",
     "optionsEditing": "Estas son las configuraciones utilizadas para esta traducción. La edición de opciones estará disponible en una actualización futura.",
+    "storyAdaptedToLevel": "La historia se adaptó a este nivel de competencia en inglés.",
+    "noTranslationData": "No hay datos de traducción disponibles para mostrar.",
+    "demoStories": "Historias de demostración • Español a Inglés",
+    "translationSettings": "Configuración de traducción",
+    "untitledStory": "Historia Sin Título",
+    "untitled": "Sin Título",
+    "noDescriptionAvailable": "No hay descripción disponible.",
     "difficultyLevels": {
       "a1": "A1 (Principiante)",
       "a2": "A2 (Elemental)",
@@ -273,7 +292,9 @@
     },
     "validation": {
       "invalidInput": "Entrada inválida detectada",
-      "fixInput": "Por favor corrige la entrada antes de traducir"
+      "fixInput": "Por favor corrige la entrada antes de traducir",
+      "securityWarning": "⚠️ Advertencia de Seguridad",
+      "maliciousContentRemoved": "El contenido malicioso ha sido eliminado automáticamente por tu seguridad."
     }
   },
   "savedTranslations": {

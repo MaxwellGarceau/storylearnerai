@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import noDuplicateTypes from './eslint-rules/no-duplicate-types.js'
+import noNonLocalizedText from './eslint-rules/no-non-localized-text.js'
 
 export default tseslint.config(
   { ignores: ['dist', 'eslint-rules/**'] },
@@ -29,6 +30,7 @@ export default tseslint.config(
       'custom': {
         rules: {
           'no-duplicate-types': noDuplicateTypes,
+          'no-non-localized-text': noNonLocalizedText,
         },
       },
     },
@@ -138,6 +140,28 @@ export default tseslint.config(
           'SavedTranslationResult'
         ],
         minComplexity: 2
+      }],
+      // Custom rule to prevent non-localized text
+      'custom/no-non-localized-text': ['warn', {
+        minLength: 3,
+        ignorePatterns: [
+          '^[A-Z_]+$', // Constants like ERROR, SUCCESS
+          '^[a-z]+://', // URLs with protocols
+          '^/[a-zA-Z0-9/?=&._-]*$', // Relative URLs starting with /
+          '^[0-9]+$', // Numbers
+          '^[0-9]+\\.[0-9]+$', // Decimal numbers
+          '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$', // Email addresses
+          '^[a-zA-Z0-9._-]+$', // Technical identifiers
+          '^[\\s\\S]*<[^>]*>[\\s\\S]*$', // HTML-like content
+          '^[\\s\\S]*\\{[^}]*\\}[\\s\\S]*$', // Template literals with variables
+          '^[\\s\\S]*\\([^)]*\\)[\\s\\S]*$', // Function calls
+          '^[\\s\\S]*\\.[a-zA-Z]+[\\s\\S]*$', // Method calls
+        ],
+        allowedProps: [
+          'className', 'id', 'data-testid', 'aria-label', 'title', 'alt', 'placeholder',
+          'name', 'type', 'value', 'src', 'href', 'target', 'rel',
+          'viewBox', 'fill', 'stroke', 'strokeLinecap', 'strokeLinejoin', 'strokeWidth', 'd'
+        ]
       }]
     },
   },

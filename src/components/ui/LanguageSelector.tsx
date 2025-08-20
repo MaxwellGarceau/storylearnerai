@@ -14,7 +14,7 @@ interface LanguageSelectorProps {
 export const LanguageSelector = React.forwardRef<
   HTMLButtonElement,
   LanguageSelectorProps
->(({ variant = 'select', className, ...props }, ref) => {
+>(({ variant = 'select', className }, _ref) => {
   const {
     currentLocalization,
     changeLocalization,
@@ -62,7 +62,7 @@ export const LanguageSelector = React.forwardRef<
             {language.nativeName}
           </SelectItem>
         ))}
-              </SelectContent>
+      </SelectContent>
     </Select>
   );
 });

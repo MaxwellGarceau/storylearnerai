@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/ui/Button'
 import { ArrowLeft } from 'lucide-react'
 import { logger } from '../lib/logger'
+import { useTranslation } from 'react-i18next'
 
 type AuthMode = 'signin' | 'signup' | 'profile'
 
@@ -14,6 +15,7 @@ export const AuthPage: React.FC = () => {
   const { user, loading } = useAuth()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { t } = useTranslation()
   const [mode, setMode] = useState<AuthMode>('signin')
   const hasSetProfileMode = useRef(false)
 
@@ -51,7 +53,7 @@ export const AuthPage: React.FC = () => {
         <div className="max-w-md mx-auto">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading...</p>
+            <p className="mt-2 text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
       </div>
@@ -69,7 +71,7 @@ export const AuthPage: React.FC = () => {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t('common.backToHome')}
           </Button>
         </div>
 

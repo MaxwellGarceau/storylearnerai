@@ -10,6 +10,7 @@
     "close": "Close",
     "submit": "Submit",
     "back": "Back",
+    "backToHome": "Back to Home",
     "next": "Next",
     "previous": "Previous"
   },
@@ -51,6 +52,9 @@
       "username": "Username",
       "displayName": "Display Name",
       "preferredLanguage": "Preferred Language",
+      "accountInformation": "Account Information",
+      "memberSince": "Member since",
+      "lastUpdated": "Last updated",
       "description": "Manage your account settings and preferences",
       "loading": "Loading profile...",
       "saving": "Saving...",
@@ -232,6 +236,14 @@
     "storyLibrary": "Story Library",
     "openLibrary": "Open story library",
     "closeLibrary": "Close story library",
+    "stories": "Stories",
+    "info": "Info",
+    "clickOnStoryToRead": "Click on a story to read it",
+    "savedStories": "Saved Stories",
+    "loadingSavedStories": "Loading saved stories...",
+    "noSavedStoriesYet": "No saved stories yet. Translate a story to save it here.",
+    "sampleStories": "Sample Stories",
+    "loadingStory": "Loading story...",
     "storyOptions": "Story Options",
     "currentSettings": "Current translation settings",
     "translation": "Translation",
@@ -239,6 +251,13 @@
     "currentlySupported": "Currently only English translation is supported.",
     "difficultyLevel": "Difficulty Level",
     "optionsEditing": "These are the settings used for this translation. Options editing will be available in a future update.",
+    "storyAdaptedToLevel": "The story was adapted to this English proficiency level.",
+    "noTranslationData": "No translation data available to display.",
+    "demoStories": "Demo stories • Spanish to English",
+    "translationSettings": "Translation settings",
+    "untitledStory": "Untitled Story",
+    "untitled": "Untitled",
+    "noDescriptionAvailable": "No description available.",
     "difficultyLevels": {
       "a1": "A1 (Beginner)",
       "a2": "A2 (Elementary)",
@@ -254,6 +273,15 @@
     "difficultyDescription": "The story will be adapted to this {language} proficiency level.",
     "done": "Done",
     "tip": "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
+    "translation": "Translation:",
+    "enterYour": "Enter your",
+    "storyBelowAndItWillBeTranslatedTo": "story below, and it will be translated to",
+    "atYourSelectedDifficultyLevel": "at your selected difficulty level.",
+    "currentlyOnly": "Currently only",
+    "translationIsSupported": "translation is supported.",
+    "theStoryWillBeAdaptedToThis": "The story will be adapted to this",
+    "proficiencyLevel": "proficiency level.",
+    "translateStory": "Translate Story",
     "optionsModal": {
       "title": "Story Options",
       "languageLabel": "Target Language",
@@ -273,7 +301,9 @@
     },
     "validation": {
       "invalidInput": "Invalid input detected",
-      "fixInput": "Please fix the input before translating"
+      "fixInput": "Please fix the input before translating",
+      "securityWarning": "⚠️ Security Warning",
+      "maliciousContentRemoved": "Malicious content has been automatically removed for your safety."
     }
   },
   "savedTranslations": {

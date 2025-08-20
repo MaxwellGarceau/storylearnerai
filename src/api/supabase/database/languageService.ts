@@ -47,10 +47,11 @@ export class LanguageService {
     }
 
     // Cast the raw database type to our typed interface
+    const data = result.data as Database['public']['Tables']['languages']['Row'];
     return {
-      ...result.data,
-      name: result.data.name as EnglishLanguageName,
-      native_name: result.data.native_name as NativeLanguageName
+      ...data,
+      name: data.name as EnglishLanguageName,
+      native_name: data.native_name as NativeLanguageName
     };
   }
 

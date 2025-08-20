@@ -104,14 +104,14 @@ const StoryReaderPage: React.FC = () => {
           onClick={handleTranslateAnother}
           size="lg"
         >
-            {t('storyReader.actions.translateAnother')}
+          {t('storyReader.actions.translateAnother')}
         </Button>
         <Button 
           onClick={handleGoHome}
           variant="secondary"
           size="lg"
         >
-            {t('storyReader.actions.home')}
+          {t('storyReader.actions.home')}
         </Button>
       </div>
 

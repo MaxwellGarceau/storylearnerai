@@ -21,7 +21,7 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const { user, signOut } = useAuth()
-  const { languages, getLanguageName } = useLanguages()
+  const { languages } = useLanguages()
   const { t } = useTranslation()
   const [profile, setProfile] = useState<DatabaseUserInsert | null>(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -162,7 +162,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex items-center justify-center p-6">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading profile...</span>
+          <span className="ml-2">{t('auth.userProfile.loading')}</span>
         </CardContent>
       </Card>
     )
@@ -173,7 +173,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-6">
           <Alert variant="destructive">
-            <p>Failed to load user profile</p>
+            <p>{t('auth.userProfile.errors.loadFailed')}</p>
           </Alert>
         </CardContent>
       </Card>
@@ -310,14 +310,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             >
               {languages.map((language) => (
                 <option key={language.code} value={language.code}>
-                  {language.name}
+                  {t(`languages.${language.code}`)}
                 </option>
               ))}
             </select>
           ) : (
             profile.preferred_language && (
               <Badge variant="secondary">
-                {getLanguageName(profile.preferred_language)}
+                {t(`languages.${profile.preferred_language}`)}
               </Badge>
             )
           )}
@@ -325,10 +325,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
 
         {/* Account Info */}
         <div className="space-y-2">
-          <Label htmlFor="account-info">Account Information</Label>
+          <Label htmlFor="account-info">{t('auth.userProfile.accountInformation')}</Label>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>Member since: {new Date(profile.created_at).toLocaleDateString()}</p>
-            <p>Last updated: {new Date(profile.updated_at).toLocaleDateString()}</p>
+            <p>{t('auth.userProfile.memberSince')}: {new Date(profile.created_at).toLocaleDateString()}</p>
+            <p>{t('auth.userProfile.lastUpdated')}: {new Date(profile.updated_at).toLocaleDateString()}</p>
           </div>
         </div>
 

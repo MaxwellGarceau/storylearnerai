@@ -77,12 +77,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   };
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
-    switch (difficulty) {
-      case 'a1': return t('storySidebar.difficultyLevels.a1');
-      case 'a2': return t('storySidebar.difficultyLevels.a2');
-      case 'b1': return t('storySidebar.difficultyLevels.b1');
-      case 'b2': return t('storySidebar.difficultyLevels.b2');
-    }
+    return t(`difficultyLevels.${difficulty}.label`);
   };
 
   return (
@@ -105,7 +100,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
               data-testid="story-textarea"
               value={value}
               onChange={handleInputChange}
-              placeholder={placeholder || t('storyInput.placeholder')}
+              placeholder={placeholder ?? t('storyInput.placeholder')}
               className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
               style={{
                 minHeight: 'calc(100vh - 300px)',
@@ -163,9 +158,9 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         {/* Validation Error */}
         {validationError && (
           <div className="text-sm text-red-600 text-center bg-red-50 p-3 rounded-md border border-red-200">
-            <p className="font-medium">⚠️ Security Warning</p>
+            <p className="font-medium">{t('storyInput.validation.securityWarning')}</p>
             <p>{validationError}</p>
-            <p className="text-xs mt-1">Malicious content has been automatically removed for your safety.</p>
+            <p className="text-xs mt-1">{t('storyInput.validation.maliciousContentRemoved')}</p>
           </div>
         )}
 
