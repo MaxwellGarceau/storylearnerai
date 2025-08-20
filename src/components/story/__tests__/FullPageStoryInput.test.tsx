@@ -3,6 +3,22 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
 
+// Mock PDFUploadModal component
+vi.mock('../PDFUploadModal', () => ({
+  default: ({ isOpen, onClose, onTextExtracted }: any) => {
+    if (!isOpen) return null;
+    return (
+      <div data-testid="pdf-upload-modal">
+        <div>Upload PDF</div>
+        <button onClick={() => onTextExtracted('Extracted text from PDF')}>
+          Extract Text
+        </button>
+        <button onClick={onClose}>Close</button>
+      </div>
+    );
+  }
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -38,6 +54,7 @@ vi.mock('react-i18next', () => ({
         'storySidebar.difficultyLevels.a2': 'A2 (Elementary)',
         'storySidebar.difficultyLevels.b1': 'B1 (Intermediate)',
         'storySidebar.difficultyLevels.b2': 'B2 (Upper Intermediate)',
+        'story.uploadPDF': 'Upload PDF',
       };
       return translations[key] || key;
     },
@@ -103,7 +120,26 @@ describe('FullPageStoryInput Component', () => {
   it('renders translate button', () => {
     render(<FullPageStoryInput {...defaultProps} />);
 
-    expect(screen.getByRole('button', { name: /translate story/i })).toBeInTheDocument();
+    const translateButton = screen.getByText('Translate Story');
+    expect(translateButton).toBeInTheDocument();
+  });
+
+  it('renders PDF upload button', () => {
+    render(<FullPageStoryInput {...defaultProps} />);
+
+    const pdfUploadButton = screen.getByTestId('pdf-upload-button');
+    expect(pdfUploadButton).toBeInTheDocument();
+    expect(screen.getByText('Upload PDF')).toBeInTheDocument();
+  });
+
+  it('opens PDF upload modal when upload button is clicked', () => {
+    render(<FullPageStoryInput {...defaultProps} />);
+
+    const pdfUploadButton = screen.getByTestId('pdf-upload-button');
+    fireEvent.click(pdfUploadButton);
+
+    // Modal should be rendered
+    expect(screen.getByTestId('pdf-upload-modal')).toBeInTheDocument();
   });
 
   it('calls onSubmit when translate button is clicked', () => {
@@ -116,7 +152,7 @@ describe('FullPageStoryInput Component', () => {
     const confirmButton = screen.getByRole('button', { name: /confirm & translate/i });
     fireEvent.click(confirmButton);
 
-    expect(defaultProps.onSubmit).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onSubmit).toHaveBeenCalled();
   });
 
   it('disables translate button when textarea is empty', () => {

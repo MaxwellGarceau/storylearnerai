@@ -79,6 +79,7 @@
     "uploadTitle": "Upload Story",
     "uploadDescription": "Upload a story file or paste text to get started",
     "uploadButton": "Upload File",
+    "uploadPDF": "Upload PDF",
     "pasteText": "Paste Text",
     "textPlaceholder": "Paste your story text here...",
     "difficultyLevel": "Difficulty Level",
@@ -356,6 +357,27 @@
     "b2": {
       "label": "B2 (Upper Intermediate)",
       "description": "Upper intermediate level - Can interact with fluency and spontaneity"
+    }
+  },
+  "pdfUpload": {
+    "title": "Upload PDF",
+    "uploadPrompt": "Click to select a PDF file",
+    "fileRequirements": "Max {{maxSize}}MB, {{maxPages}} pages",
+    "extractText": "Extract Text",
+    "processing": "Processing PDF...",
+    "requirements": {
+      "title": "File Requirements",
+      "maxSize": "Maximum file size: {{maxSize}}MB",
+      "maxPages": "Maximum pages: {{maxPages}}",
+      "pdfOnly": "PDF files only",
+      "textContent": "Must contain extractable text"
+    },
+    "errors": {
+      "invalidFileType": "Please select a valid PDF file",
+      "fileTooLarge": "File size exceeds {{maxSize}}MB limit",
+      "tooManyPages": "PDF has {{actualPages}} pages, maximum allowed is {{maxPages}}",
+      "noTextFound": "No text content found in the PDF",
+      "processingFailed": "Failed to process PDF. Please try again."
     }
   }
 }
