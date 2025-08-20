@@ -107,8 +107,6 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     onClose();
   };
 
-
-
   if (!isOpen) return null;
 
   return (

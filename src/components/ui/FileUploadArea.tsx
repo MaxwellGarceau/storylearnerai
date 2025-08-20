@@ -87,6 +87,7 @@ export interface FileUploadAreaProps
   fileInfo?: FileInfo | null;
   uploadPrompt?: string;
   fileRequirements?: string;
+  'data-testid'?: string;
 }
 
 const FileUploadArea = React.forwardRef<HTMLDivElement, FileUploadAreaProps>(
@@ -131,20 +132,21 @@ const FileUploadArea = React.forwardRef<HTMLDivElement, FileUploadAreaProps>(
     const defaultUploadPrompt = uploadPrompt ?? t('pdfUpload.uploadPrompt');
     const defaultFileRequirements = fileRequirements ?? t('pdfUpload.fileRequirements', { maxSize: maxFileSize, maxPages });
 
-    return (
+      return (
+    <div
+      className={cn('space-y-3', className)}
+      ref={ref}
+      {...props}
+    >
       <div
-        className={cn('space-y-3', className)}
-        ref={ref}
-        {...props}
+        className={cn(fileUploadAreaVariants({ state: currentState }))}
+        onClick={handleUploadClick}
+        role="button"
+        tabIndex={isProcessing ? -1 : 0}
+        aria-label={selectedFile ? 'Change selected file' : 'Select file to upload'}
+        aria-disabled={isProcessing}
+        data-testid={props['data-testid'] ? `${props['data-testid']}-area` : 'upload-area'}
       >
-        <div
-          className={cn(fileUploadAreaVariants({ state: currentState }))}
-          onClick={handleUploadClick}
-          role="button"
-          tabIndex={isProcessing ? -1 : 0}
-          aria-label={selectedFile ? 'Change selected file' : 'Select file to upload'}
-          aria-disabled={isProcessing}
-        >
           <input
             ref={fileInputRef}
             type="file"
