@@ -1,7 +1,9 @@
-// Lazy import to avoid issues in test environments
-let pdfjsLib: any = null;
+import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 
-const getPdfJsLib = async () => {
+// Lazy import to avoid issues in test environments
+let pdfjsLib: typeof import('pdfjs-dist') | null = null;
+
+const getPdfJsLib = async (): Promise<typeof import('pdfjs-dist')> => {
   if (!pdfjsLib) {
     pdfjsLib = await import('pdfjs-dist');
     // Set up PDF.js worker
@@ -32,14 +34,17 @@ export interface PDFExtractionResult {
   pageCount?: number;
 }
 
+// Type alias for methods that return PDF extraction results
+type PDFExtractionPromise = Promise<PDFExtractionResult>;
+
 export class PDFService {
   /**
    * Validates a PDF file for type, size, and basic structure
    */
   static validateFile(
     file: File, 
-    maxFileSize: number = 5, 
-    maxPages: number = 10
+    maxFileSize = 5, 
+    _maxPages = 10
   ): PDFValidationResult {
     // Validate file type
     if (file.type !== 'application/pdf') {
@@ -75,8 +80,8 @@ export class PDFService {
    */
   static async extractText(
     file: File, 
-    maxPages: number = 10
-  ): Promise<PDFExtractionResult> {
+    maxPages = 10
+  ): PDFExtractionPromise {
     try {
       // Read the file as ArrayBuffer
       const arrayBuffer = await file.arrayBuffer();
@@ -84,7 +89,7 @@ export class PDFService {
       // Load the PDF document using pdfjs-dist
       const pdfjs = await getPdfJsLib();
       const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
+      const pdf: PDFDocumentProxy = await loadingTask.promise;
       
       // Check page count
       if (pdf.numPages > maxPages) {
@@ -98,10 +103,11 @@ export class PDFService {
       // Extract text from all pages
       let extractedText = '';
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
+        const page: PDFPageProxy = await pdf.getPage(pageNum);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
-          .map((item: any) => item.str)
+          .filter((item): item is { str: string; dir: string; transform: number[]; width: number; height: number; fontName: string; hasEOL: boolean } => 'str' in item)
+          .map((item) => item.str)
           .join(' ');
         extractedText += pageText + '\n';
       }
@@ -135,8 +141,8 @@ export class PDFService {
    */
   static async processPDF(
     file: File, 
-    maxFileSize: number = 5, 
-    maxPages: number = 10
+    maxFileSize = 5, 
+    maxPages = 10
   ): Promise<PDFExtractionResult> {
     // First validate the file
     const validation = this.validateFile(file, maxFileSize, maxPages);
@@ -148,7 +154,7 @@ export class PDFService {
     }
 
     // Then extract the text
-    return await this.extractText(file, maxPages);
+    return this.extractText(file, maxPages);
   }
 
   /**
@@ -170,7 +176,7 @@ export class PDFService {
       const arrayBuffer = await file.arrayBuffer();
       const pdfjs = await getPdfJsLib();
       const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
+      const pdf: PDFDocumentProxy = await loadingTask.promise;
       
       return {
         name: file.name,

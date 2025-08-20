@@ -45,8 +45,8 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
       // Handle specific error messages that need parameters
       if (validation.error === 'pdfUpload.errors.fileTooLarge') {
         setError(t(validation.error, { maxSize: maxFileSize }));
-      } else {
-        setError(t(validation.error!));
+      } else if (validation.error) {
+        setError(t(validation.error));
       }
       setSelectedFile(null);
       setFileInfo(null);
@@ -54,7 +54,9 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
     }
 
     // Update file info with validated data
-    setFileInfo(validation.fileInfo!);
+    if (validation.fileInfo) {
+      setFileInfo(validation.fileInfo);
+    }
   };
 
   const handleUploadClick = () => {
@@ -77,8 +79,8 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
           setError(t(result.error, { actualPages: result.pageCount, maxPages }));
         } else if (result.error === 'pdfUpload.errors.fileTooLarge') {
           setError(t(result.error, { maxSize: maxFileSize }));
-        } else {
-          setError(t(result.error!));
+        } else if (result.error) {
+          setError(t(result.error));
         }
         if (result.pageCount) {
           setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
@@ -90,7 +92,9 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
       setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
 
       // Pass the extracted text to parent component
-      onTextExtracted(result.text!);
+      if (result.text) {
+        onTextExtracted(result.text);
+      }
       onClose();
       
     } catch (err) {
@@ -212,7 +216,9 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               {t('common.cancel')}
             </Button>
             <Button
-              onClick={handleProcessFile}
+              onClick={() => {
+                void handleProcessFile();
+              }}
               disabled={!selectedFile || isProcessing}
               className="flex-1"
             >

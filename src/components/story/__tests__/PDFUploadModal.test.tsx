@@ -16,21 +16,21 @@ vi.mock('../../../lib/pdfService', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, params?: any) => {
+    t: (key: string, params?: Record<string, string | number>) => {
       const translations: Record<string, string> = {
         'pdfUpload.title': 'Upload PDF',
         'pdfUpload.uploadPrompt': 'Click to select a PDF file',
-        'pdfUpload.fileRequirements': `Max ${params?.maxSize || 5}MB, ${params?.maxPages || 10} pages`,
+        'pdfUpload.fileRequirements': `Max ${params?.maxSize ?? 5}MB, ${params?.maxPages ?? 10} pages`,
         'pdfUpload.extractText': 'Extract Text',
         'pdfUpload.processing': 'Processing PDF...',
         'pdfUpload.requirements.title': 'File Requirements',
-        'pdfUpload.requirements.maxSize': `Maximum file size: ${params?.maxSize || 5}MB`,
-        'pdfUpload.requirements.maxPages': `Maximum pages: ${params?.maxPages || 10}`,
+        'pdfUpload.requirements.maxSize': `Maximum file size: ${params?.maxSize ?? 5}MB`,
+        'pdfUpload.requirements.maxPages': `Maximum pages: ${params?.maxPages ?? 10}`,
         'pdfUpload.requirements.pdfOnly': 'PDF files only',
         'pdfUpload.requirements.textContent': 'Must contain extractable text',
         'pdfUpload.errors.invalidFileType': 'Please select a valid PDF file',
-        'pdfUpload.errors.fileTooLarge': `File size exceeds ${params?.maxSize || 5}MB limit`,
-        'pdfUpload.errors.tooManyPages': `PDF has ${params?.actualPages || 0} pages, maximum allowed is ${params?.maxPages || 10}`,
+        'pdfUpload.errors.fileTooLarge': `File size exceeds ${params?.maxSize ?? 5}MB limit`,
+        'pdfUpload.errors.tooManyPages': `PDF has ${params?.actualPages ?? 0} pages, maximum allowed is ${params?.maxPages ?? 10}`,
         'pdfUpload.errors.noTextFound': 'No text content found in the PDF',
         'pdfUpload.errors.processingFailed': 'Failed to process PDF. Please try again.',
         'common.cancel': 'Cancel'

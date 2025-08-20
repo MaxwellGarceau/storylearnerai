@@ -5,7 +5,7 @@ import FullPageStoryInput from '../FullPageStoryInput';
 
 // Mock PDFUploadModal component
 vi.mock('../PDFUploadModal', () => ({
-  default: ({ isOpen, onClose, onTextExtracted }: any) => {
+  default: ({ isOpen, onClose, onTextExtracted }: { isOpen: boolean; onClose: () => void; onTextExtracted: (text: string) => void }) => {
     if (!isOpen) return null;
     return (
       <div data-testid="pdf-upload-modal">
@@ -22,7 +22,7 @@ vi.mock('../PDFUploadModal', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
+    t: (key: string): string => {
       const translations: Record<string, string> = {
         'story.uploadTitle': 'Upload Story',
         'story.uploadDescription': 'Upload a story file or paste text to get started',

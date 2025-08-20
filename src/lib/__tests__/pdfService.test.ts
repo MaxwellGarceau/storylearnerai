@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { PDFService, PDFFileInfo, PDFValidationResult, PDFExtractionResult } from '../pdfService';
+import { PDFService } from '../pdfService';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Mock pdfjs-dist
