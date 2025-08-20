@@ -118,9 +118,9 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="max-w-md w-full mx-4">
-        <CardHeader>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Card className="max-w-md w-full max-h-[90vh] flex flex-col">
+        <CardHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
@@ -139,7 +139,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 flex-1 overflow-y-auto">
           {/* File Upload Area */}
           <div className="space-y-3">
             <div
@@ -224,9 +224,11 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               </div>
             </div>
           </div>
+        </CardContent>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+        {/* Action Buttons - Sticky at bottom */}
+        <div className="p-6 pt-0 flex-shrink-0">
+          <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={handleClose}
@@ -256,7 +258,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               )}
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );
