@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PDFService } from '../pdfService';
 import * as pdfjsLib from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
+
+// Reusable type alias for the loading task returned by getDocument
+type PDFLoadingTask = ReturnType<typeof pdfjsLib.getDocument>;
 
 // Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
@@ -11,7 +15,7 @@ vi.mock('pdfjs-dist', () => ({
         getTextContent: vi.fn().mockResolvedValue({ items: [] }),
         getViewport: vi.fn().mockReturnValue({ height: 800 })
       })
-    })
+    } as unknown as PDFDocumentProxy)
   }),
   GlobalWorkerOptions: {
     workerSrc: ''
@@ -24,6 +28,25 @@ const createMockFile = (content: string, name: string, type: string): File => {
   // Mock the arrayBuffer method
   file.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(content.length));
   return file;
+};
+
+// Helpers to create properly typed loading tasks for pdfjs getDocument
+const createResolvedLoadingTask = (
+  doc: Partial<PDFDocumentProxy>
+): PDFLoadingTask => {
+  return {
+    promise: Promise.resolve(doc as PDFDocumentProxy)
+  } as unknown as PDFLoadingTask;
+};
+
+const createRejectedLoadingTask = (
+  reason: unknown
+): PDFLoadingTask => {
+  return {
+    promise: Promise.reject(
+      reason instanceof Error ? reason : new Error(String(reason))
+    )
+  } as unknown as PDFLoadingTask;
 };
 
 describe('PDFService', () => {
@@ -112,9 +135,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -158,9 +181,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -204,9 +227,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -259,9 +282,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -324,9 +347,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -372,9 +395,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -436,9 +459,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -455,9 +478,9 @@ describe('PDFService', () => {
         numPages: 15
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -482,9 +505,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -495,9 +518,9 @@ describe('PDFService', () => {
     });
 
     it('should handle PDF processing errors', async () => {
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.reject(new Error('PDF processing failed'))
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createRejectedLoadingTask(new Error('PDF processing failed'))
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.extractText(file, 10);
@@ -531,9 +554,9 @@ describe('PDFService', () => {
         getPage: vi.fn().mockResolvedValue(mockPage)
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.processPDF(file, 5, 10);
@@ -572,9 +595,9 @@ describe('PDFService', () => {
         numPages: 5
       };
       
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.resolve(mockPdf)
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createResolvedLoadingTask(mockPdf)
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.getFileInfo(file);
@@ -587,9 +610,9 @@ describe('PDFService', () => {
     });
 
     it('should return null on error', async () => {
-      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
-        promise: Promise.reject(new Error('Failed to load PDF'))
-      });
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue(
+        createRejectedLoadingTask(new Error('Failed to load PDF'))
+      );
 
       const file = createMockFile('test content', 'test.pdf', 'application/pdf');
       const result = await PDFService.getFileInfo(file);
