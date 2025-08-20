@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
-import { Settings, Check, X } from 'lucide-react';
+import { Settings, Check, X, Upload } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
+import PDFUploadModal from './PDFUploadModal';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -32,6 +33,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showPDFUpload, setShowPDFUpload] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
@@ -76,6 +78,10 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     setShowConfirmation(false);
   };
 
+  const handlePDFTextExtracted = (text: string) => {
+    onChange(text);
+  };
+
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
     return t(`difficultyLevels.${difficulty}.label`);
   };
@@ -116,6 +122,19 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       <div className="mt-6 space-y-4">
         {/* Buttons */}
         <div className="flex justify-center items-center gap-4">
+          {/* PDF Upload Button */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowPDFUpload(true)}
+            size="lg"
+            className="px-6 py-3 text-lg font-medium"
+            data-testid="pdf-upload-button"
+          >
+            <Upload className="w-5 h-5 mr-2" />
+            {t('story.uploadPDF')}
+          </Button>
+
           {/* Options Button */}
           <Button
             type="button"
@@ -276,6 +295,15 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
           </div>
         </div>
       )}
+
+      {/* PDF Upload Modal */}
+      <PDFUploadModal
+        isOpen={showPDFUpload}
+        onClose={() => setShowPDFUpload(false)}
+        onTextExtracted={handlePDFTextExtracted}
+        maxPages={10}
+        maxFileSize={5}
+      />
     </div>
   );
 };

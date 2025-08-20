@@ -79,6 +79,7 @@
     "uploadTitle": "Subir Historia",
     "uploadDescription": "Sube un archivo de historia o pega texto para comenzar",
     "uploadButton": "Subir Archivo",
+    "uploadPDF": "Subir PDF",
     "pasteText": "Pegar Texto",
     "textPlaceholder": "Pega el texto de tu historia aquí...",
     "difficultyLevel": "Nivel de Dificultad",
@@ -347,6 +348,38 @@
     "b2": {
       "label": "B2 (Intermedio Alto)",
       "description": "Nivel intermedio alto - Puede interactuar con fluidez y espontaneidad"
+    }
+  },
+  "pdfUpload": {
+    "title": "Subir PDF",
+    "uploadPrompt": "Haz clic para seleccionar un archivo PDF",
+    "fileRequirements": "Máx {{maxSize}}MB, {{maxPages}} páginas",
+    "extractText": "Extraer Texto",
+    "processing": "Procesando PDF...",
+    "requirements": {
+      "title": "Requisitos del Archivo",
+      "maxSize": "Tamaño máximo del archivo: {{maxSize}}MB",
+      "maxPages": "Páginas máximas: {{maxPages}}",
+      "pdfOnly": "Solo archivos PDF",
+      "textContent": "Debe contener texto extraíble"
+    },
+    "errors": {
+      "invalidFileType": "Por favor selecciona un archivo PDF válido",
+      "fileTooLarge": "El tamaño del archivo excede el límite de {{maxSize}}MB",
+      "tooManyPages": "El PDF tiene {{actualPages}} páginas, máximo permitido es {{maxPages}}",
+                      "noTextFound": "No se encontró contenido de texto en el PDF. Esto generalmente significa que el PDF contiene imágenes escaneadas en lugar de texto seleccionable. Por favor, intente con un PDF que tenga contenido de texto extraíble.",
+                "processingFailed": "Error al procesar el PDF. Por favor intenta de nuevo."
+              },
+    "bestPractices": {
+      "title": "Mejores Prácticas para Mejores Resultados",
+      "extractableText": "Usa PDFs con texto seleccionable (no imágenes escaneadas)",
+      "storyContent": "Sube PDFs que contengan principalmente contenido de historia",
+      "avoidImages": "Evita PDFs que sean principalmente imágenes o documentos escaneados",
+      "cleanFormat": "El texto limpio y bien formateado funciona mejor para la traducción"
+    },
+    "cleanupNotice": {
+      "title": "Importante: Puede ser necesario limpiar el texto",
+      "description": "Nuestro sistema intenta identificar el contenido de la historia, pero los PDFs pueden contener varios elementos de texto. Es posible que necesites revisar y limpiar el texto extraído para eliminar cualquier contenido no relacionado, encabezados, notas al pie u otros elementos que no sean parte de la historia."
     }
   }
 }
