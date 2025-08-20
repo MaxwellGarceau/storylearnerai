@@ -51,6 +51,20 @@ type PDFJSTextItem = { str: string; dir: string; transform: number[]; width: num
 // Type alias for methods that return PDF extraction results
 type PDFExtractionPromise = Promise<PDFExtractionResult>;
 
+/**
+ * PDFService handles PDF file processing including validation, text extraction, filtering, and data transformation.
+ * 
+ * TODO: If additional PDF functionality is needed, consider refactoring this class by:
+ * 1. Creating a new /lib/pdf/ directory
+ * 2. Breaking this class into focused subclasses:
+ *    - PDFValidator: File validation (type, size, structure)
+ *    - PDFTextExtractor: Raw text extraction from PDF files
+ *    - PDFTextFilter: Content filtering (headers, footers, page numbers)
+ *    - PDFDataTransformer: Data transformation and mapping
+ *    - PDFService: Main orchestrator class
+ * 
+ * This would improve separation of concerns and make the codebase more maintainable.
+ */
 export class PDFService {
   /**
    * Validates a PDF file for type, size, and basic structure
