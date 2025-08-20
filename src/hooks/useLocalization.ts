@@ -40,7 +40,8 @@ export const useLocalization = () => {
       nativeName: nativeName
     };
   // Depend only on the language code so the reference remains stable across rerenders
-  }, [effectiveLanguage, getLanguageName, getNativeLanguageName]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveLanguage]);
 
   const getSupportedLocalizations = useCallback((): LocalizationInfo[] => {
     return SUPPORTED_LANGUAGES.map(code => ({
@@ -49,6 +50,7 @@ export const useLocalization = () => {
       nativeName: getNativeLanguageName(code)
     }));
   // Keep reference stable
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

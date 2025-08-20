@@ -45,9 +45,9 @@ vi.mock('react-i18next', () => {
     'dashboard.recentActivity.noActivityDescription': 'Start translating stories to see your activity here',
   };
 
-  const stableT = (key: string, options?: any) => {
+  const stableT = (key: string, options?: Record<string, unknown>) => {
     let translation = translations[key] || key;
-    if (key === 'auth.userProfile.welcomeBack' && options?.name) {
+    if (key === 'auth.userProfile.welcomeBack' && options?.name && typeof options.name === 'string') {
       translation = translation.replace('{{name}}', options.name);
     }
     return translation;
