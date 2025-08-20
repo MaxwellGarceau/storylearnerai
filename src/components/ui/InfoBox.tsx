@@ -1,64 +1,70 @@
-import React from 'react';
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 
-export type InfoBoxVariant = 'info' | 'success' | 'warning' | 'error';
+const infoBoxVariants = cva(
+  'flex items-start gap-2 rounded-lg border p-3',
+  {
+    variants: {
+      variant: {
+        info: 'bg-blue-50 border-blue-200 text-blue-800',
+        success: 'bg-green-50 border-green-200 text-green-800',
+        warning: 'bg-amber-50 border-amber-200 text-amber-800',
+        error: 'bg-red-50 border-red-200 text-red-800',
+      },
+    },
+    defaultVariants: {
+      variant: 'info',
+    },
+  }
+);
 
-interface InfoBoxProps {
-  variant: InfoBoxVariant;
+const iconVariants = cva(
+  'w-4 h-4 mt-0.5 flex-shrink-0',
+  {
+    variants: {
+      variant: {
+        info: 'text-blue-600',
+        success: 'text-green-600',
+        warning: 'text-amber-600',
+        error: 'text-red-600',
+      },
+    },
+    defaultVariants: {
+      variant: 'info',
+    },
+  }
+);
+
+export interface InfoBoxProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof infoBoxVariants> {
   title: string;
   icon?: React.ReactNode;
-  children: React.ReactNode;
-  className?: string;
 }
 
-const variantStyles = {
-  info: {
-    container: 'bg-blue-50 border-blue-200',
-    icon: 'text-blue-600',
-    title: 'text-blue-800',
-    content: 'text-blue-800'
-  },
-  success: {
-    container: 'bg-green-50 border-green-200',
-    icon: 'text-green-600',
-    title: 'text-green-800',
-    content: 'text-green-800'
-  },
-  warning: {
-    container: 'bg-amber-50 border-amber-200',
-    icon: 'text-amber-600',
-    title: 'text-amber-800',
-    content: 'text-amber-800'
-  },
-  error: {
-    container: 'bg-red-50 border-red-200',
-    icon: 'text-red-600',
-    title: 'text-red-800',
-    content: 'text-red-800'
-  }
-};
-
-export const InfoBox: React.FC<InfoBoxProps> = ({
-  variant,
-  title,
-  icon,
-  children,
-  className = ''
-}) => {
-  const styles = variantStyles[variant];
-
-  return (
-    <div className={`border rounded-lg p-3 ${styles.container} ${className}`}>
-      <div className="flex items-start gap-2">
+const InfoBox = React.forwardRef<HTMLDivElement, InfoBoxProps>(
+  ({ className, variant, title, icon, children, ...props }, ref) => {
+    return (
+      <div
+        className={cn(infoBoxVariants({ variant }), className)}
+        ref={ref}
+        {...props}
+      >
         {icon && (
-          <div className={`w-4 h-4 mt-0.5 flex-shrink-0 ${styles.icon}`}>
+          <div className={cn(iconVariants({ variant }))}>
             {icon}
           </div>
         )}
-        <div className={`text-sm ${styles.content}`}>
+        <div className="text-sm">
           <div className="font-medium mb-1">{title}</div>
           {children}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
+
+InfoBox.displayName = 'InfoBox';
+
+export { InfoBox };
