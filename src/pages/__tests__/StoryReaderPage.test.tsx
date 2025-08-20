@@ -144,9 +144,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };
@@ -164,9 +164,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };
@@ -186,9 +186,9 @@ describe('StoryReaderPage', () => {
     const mockTranslationData: TranslationResponse = {
       originalText: 'Test story in Spanish',
       translatedText: 'Test story in English',
-      fromLanguage: 'Spanish',
+      fromLanguage: 'es',
       toLanguage: 'en',
-      difficulty: 'Intermediate',
+      difficulty: 'a2',
       provider: 'test',
       model: 'test-model'
     };
