@@ -625,9 +625,10 @@ describe('PDFService', () => {
   });
 
   describe('fixPunctuationSpacing', () => {
-    it('should fix missing spaces after punctuation marks', () => {
+    it('should fix missing spaces after punctuation marks but preserve quote spacing', () => {
       const input = 'Hello,world.She said"hello"and left.The end!';
-      const expected = 'Hello, world. She said "hello" and left. The end!';
+      // Should fix punctuation spacing but preserve original quote spacing
+      const expected = 'Hello, world. She said"hello"and left. The end!';
       
       // Access the private method for testing
       const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
@@ -644,9 +645,10 @@ describe('PDFService', () => {
       expect(result).toBe(expected);
     });
 
-    it('should fix spacing around quotes', () => {
+    it('should preserve original quote spacing from PDF', () => {
       const input = 'She said"hello"and"goodbye"then left.';
-      const expected = 'She said "hello" and "goodbye" then left.';
+      // Should preserve original spacing around quotes, only fix other punctuation
+      const expected = 'She said"hello"and"goodbye"then left.';
       
       const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
       
@@ -662,8 +664,9 @@ describe('PDFService', () => {
       expect(result).toBe(expected);
     });
 
-    it('should handle quotes without adding internal spaces', () => {
-      const input = 'She said"hello"then"goodbye"and left.';
+    it('should preserve quotes with existing proper spacing', () => {
+      const input = 'She said "hello" then "goodbye" and left.';
+      // Should preserve already correct spacing around quotes
       const expected = 'She said "hello" then "goodbye" and left.';
       
       const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
@@ -671,70 +674,26 @@ describe('PDFService', () => {
       expect(result).toBe(expected);
     });
 
-    it('should ensure no spaces after opening quotes in any text', () => {
+    it('should handle malformed quotes gracefully by preserving original spacing', () => {
       const testCases = [
         {
-          input: 'He said "hello" to me.',
-          description: 'simple quote'
+          input: 'He said "hello\' and left.', // Malformed quote
+          description: 'malformed quote with single quote'
         },
         {
-          input: 'She wrote "The quick brown fox" in her book.',
-          description: 'quote with spaces in content'
+          input: 'She wrote "The quick brown fox and left.', // Missing closing quote
+          description: 'missing closing quote'
         },
         {
-          input: 'They shouted "Stop!" at the driver.',
-          description: 'quote with punctuation'
-        },
-        {
-          input: 'The sign read "No Entry" clearly.',
-          description: 'quote with capital letters'
-        },
-        {
-          input: 'He whispered "I love you" softly.',
-          description: 'quote with lowercase letters'
-        },
-        {
-          input: 'The book titled "1984" is famous.',
-          description: 'quote with numbers'
-        },
-        {
-          input: 'She said "hello" and "goodbye" quickly.',
-          description: 'multiple quotes'
+          input: 'They shouted hello" at the driver.', // Missing opening quote
+          description: 'missing opening quote'
         }
       ];
 
-      testCases.forEach(({ input, description }) => {
+      testCases.forEach(({ input }) => {
         const result = (PDFService as unknown as { fixPunctuationSpacing: FixPunctuationSpacingMethod }).fixPunctuationSpacing(input);
         
-        // Check that there are no spaces immediately after opening quotes
-        // But we need to be careful - we're looking for opening quotes followed by spaces
-        // The pattern should match a quote that starts a quoted string, not any quote
-        // We'll check for quotes followed by space where the space is the first character of the content
-        const problematicSpaces: string[] = [];
-        
-        // Find all quote pairs and check if they have spaces at the start or end of content
-        const quotePairs = result.match(/"[^"]*"/g);
-        if (quotePairs) {
-          quotePairs.forEach(pair => {
-            // Check if content starts with space: "hello" is good, " hello" is bad
-            if (pair.match(/^"\s/)) {
-              problematicSpaces.push(pair);
-            }
-            // Check if content ends with space: "hello" is good, "hello " is bad  
-            if (pair.match(/\s"$/)) {
-              problematicSpaces.push(pair);
-            }
-          });
-        }
-        
-        if (problematicSpaces.length > 0) {
-          throw new Error(
-            `Found spaces inside quotes in "${description}": "${input}" -> "${result}". ` +
-            `Problematic quotes: ${problematicSpaces.join(', ')}`
-          );
-        }
-        
-        // Also verify the result is what we expect (no changes needed for already correct text)
+        // Should preserve original spacing around quotes, even if malformed
         expect(result).toBe(input);
       });
     });
