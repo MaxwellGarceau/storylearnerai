@@ -376,15 +376,15 @@
       "invalidFileType": "Please select a valid PDF file",
       "fileTooLarge": "File size exceeds {{maxSize}}MB limit",
       "tooManyPages": "PDF has {{actualPages}} pages, maximum allowed is {{maxPages}}",
-                      "noTextFound": "No text content found in the PDF",
-                "processingFailed": "Failed to process PDF. Please try again."
-              },
-              "bestPractices": {
-                "title": "Best Practices for Best Results",
-                "extractableText": "Use PDFs with selectable text (not scanned images)",
-                "storyContent": "Upload PDFs that contain primarily story content",
-                "avoidImages": "Avoid PDFs that are mostly images or scanned documents",
-                "cleanFormat": "Clean, well-formatted text works best for translation"
-              }
-            }
+      "noTextFound": "No text content found in the PDF. This usually means the PDF contains scanned images rather than selectable text. Please try a PDF with extractable text content.",
+      "processingFailed": "Failed to process PDF. Please try again."
+    },
+    "bestPractices": {
+      "title": "Best Practices for Best Results",
+      "extractableText": "Use PDFs with selectable text (not scanned images)",
+      "storyContent": "Upload PDFs that contain primarily story content",
+      "avoidImages": "Avoid PDFs that are mostly images or scanned documents",
+      "cleanFormat": "Clean, well-formatted text works best for translation"
+    }
+  }
 }
