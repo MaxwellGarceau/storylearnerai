@@ -1,4 +1,5 @@
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { logger } from './logger';
 
 // Lazy import to avoid issues in test environments
 let pdfjsLib: typeof import('pdfjs-dist') | null = null;
@@ -153,7 +154,7 @@ export class PDFService {
       };
       
     } catch (err) {
-      console.error('PDF processing error:', err);
+      logger.error('translation', 'PDF processing error', { error: err, fileName: file.name });
       return {
         success: false,
         error: 'pdfUpload.errors.processingFailed'
@@ -399,7 +400,7 @@ export class PDFService {
         pages: pdf.numPages
       };
     } catch (err) {
-      console.error('Error getting PDF file info:', err);
+      logger.error('translation', 'Error getting PDF file info', { error: err, fileName: file.name });
       return null;
     }
   }
