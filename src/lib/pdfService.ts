@@ -326,9 +326,12 @@ export class PDFService {
         const nextYDiff = Math.abs(nextItem.y - item.y);
         
         if (nextYDiff <= lineTolerance) {
-          // Same line, add space if there's a gap
+          // Same line, add space if there's a gap or if we need to separate words
           const gap = nextItem.x - (item.x + item.width);
-          if (gap > 5) { // If there's a significant gap, add a space
+          if (gap > 3) { // Reduced threshold for more sensitive spacing
+            currentLine += ' ';
+          } else if (gap > 0) {
+            // Even small gaps should have spaces for word separation
             currentLine += ' ';
           }
         }
@@ -346,10 +349,47 @@ export class PDFService {
   }
 
   /**
+   * Fixes common spacing issues around punctuation marks
+   */
+  private static fixPunctuationSpacing(text: string): string {
+    let fixedText = text;
+    
+    // Add spaces after punctuation marks that are missing spaces
+    // This handles cases where PDF extraction doesn't preserve proper spacing
+    const punctuationMarks = [',', '.', '!', '?', ':', ';'];
+    
+    punctuationMarks.forEach(mark => {
+      // Add space after punctuation if followed by a letter (but not if it's already followed by a space or newline)
+      const regex = new RegExp(`\\${mark}([a-zA-Z])`, 'g');
+      fixedText = fixedText.replace(regex, `${mark} $1`);
+    });
+    
+    // Fix spacing around parentheses
+    fixedText = fixedText.replace(/([a-zA-Z])\(/g, '$1 ('); // Add space before opening parenthesis
+    fixedText = fixedText.replace(/\)([a-zA-Z])/g, ') $1'); // Add space after closing parenthesis
+    
+    // Fix spacing around quotes - process complete quoted strings to avoid internal spacing issues
+    // Pattern: word"quoted text"word -> word "quoted text" word
+    fixedText = fixedText.replace(/([a-zA-Z])"([^"]*)"([a-zA-Z])/g, '$1 "$2" $3');
+    // Pattern: word"quoted text" (at end or before punctuation)
+    fixedText = fixedText.replace(/([a-zA-Z])"([^"]*)"(?=\s|[.!?;:,]|$)/g, '$1 "$2"');
+    // Pattern: "quoted text"word (at start or after punctuation) 
+    fixedText = fixedText.replace(/(?<=^|\s|[.!?;:,])"([^"]*)"([a-zA-Z])/g, '"$1" $2');
+    
+    // Clean up any double spaces that might have been introduced
+    fixedText = fixedText.replace(/  +/g, ' ');
+    
+    return fixedText;
+  }
+
+  /**
    * Applies additional content filtering to remove non-story elements
    */
   private static filterNonStoryContent(text: string): string {
     let filteredText = text;
+    
+    // Fix common spacing issues around punctuation
+    filteredText = this.fixPunctuationSpacing(filteredText);
     
     // Remove excessive whitespace but preserve line breaks
     filteredText = filteredText.replace(/[ \t]+/g, ' ').trim();

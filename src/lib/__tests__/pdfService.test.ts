@@ -620,4 +620,43 @@ describe('PDFService', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('fixPunctuationSpacing', () => {
+    it('should fix missing spaces after punctuation marks', () => {
+      const input = 'Hello,world.She said"hello"and left.The end!';
+      const expected = 'Hello, world. She said "hello" and left. The end!';
+      
+      // Access the private method for testing using type assertion
+      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      
+      expect(result).toBe(expected);
+    });
+
+    it('should fix spacing around parentheses', () => {
+      const input = 'She moved to Detroit(as mentioned)and then Boston.';
+      const expected = 'She moved to Detroit (as mentioned) and then Boston.';
+      
+      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      
+      expect(result).toBe(expected);
+    });
+
+    it('should fix spacing around quotes', () => {
+      const input = 'She said"hello"and"goodbye"then left.';
+      const expected = 'She said "hello" and "goodbye" then left.';
+      
+      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      
+      expect(result).toBe(expected);
+    });
+
+    it('should not add extra spaces where they already exist', () => {
+      const input = 'Hello, world. She said "hello" and left. The end!';
+      const expected = 'Hello, world. She said "hello" and left. The end!';
+      
+      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      
+      expect(result).toBe(expected);
+    });
+  });
 });
