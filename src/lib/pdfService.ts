@@ -76,7 +76,7 @@ export class PDFService {
   }
 
   /**
-   * Extracts text content from a PDF file
+   * Extracts text content from a PDF file with intelligent filtering
    */
   static async extractText(
     file: File, 
@@ -100,17 +100,36 @@ export class PDFService {
         };
       }
 
-      // Extract text from all pages
-      let extractedText = '';
+      // Extract text from all pages with filtering
+      const pageTexts: string[] = [];
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page: PDFPageProxy = await pdf.getPage(pageNum);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items
+        
+        // Get page dimensions for positioning analysis
+        const viewport = page.getViewport({ scale: 1.0 });
+        const pageHeight = viewport.height;
+        
+        // Filter and process text items with position information
+        const filteredItems = textContent.items
           .filter((item): item is { str: string; dir: string; transform: number[]; width: number; height: number; fontName: string; hasEOL: boolean } => 'str' in item)
-          .map((item) => item.str)
-          .join(' ');
-        extractedText += pageText + '\n';
+          .map((item) => ({
+            text: item.str,
+            y: item.transform[5], // Y position on page
+            fontName: item.fontName,
+            width: item.width,
+            height: item.height
+          }))
+          .filter((item) => this.isStoryContent(item, pageHeight));
+        
+        const pageText = filteredItems.map((item) => item.text).join(' ');
+        if (pageText.trim()) {
+          pageTexts.push(pageText.trim());
+        }
       }
+      
+      // Combine all page texts
+      const extractedText = pageTexts.join('\n\n');
       
       // Check if text was extracted
       if (!extractedText || extractedText.trim().length === 0) {
@@ -121,9 +140,12 @@ export class PDFService {
         };
       }
 
+      // Apply additional content filtering
+      const filteredText = this.filterNonStoryContent(extractedText);
+
       return {
         success: true,
-        text: extractedText.trim(),
+        text: filteredText.trim(),
         pageCount: pdf.numPages
       };
       
@@ -134,6 +156,124 @@ export class PDFService {
         error: 'pdfUpload.errors.processingFailed'
       };
     }
+  }
+
+  /**
+   * Determines if a text item is likely story content based on its position and properties
+   */
+  private static isStoryContent(
+    item: { text: string; y: number; fontName: string; width: number; height: number },
+    pageHeight: number
+  ): boolean {
+    const text = item.text.trim();
+    
+    // Skip empty text
+    if (!text) return false;
+    
+    // Calculate position as percentage of page height
+    const yPercent = (item.y / pageHeight) * 100;
+    
+    // Filter out header content (top 10% of page)
+    if (yPercent > 90) return false;
+    
+    // Filter out footer content (bottom 10% of page)
+    if (yPercent < 10) return false;
+    
+    // Filter out page numbers (usually small, centered text)
+    if (this.isPageNumber(text)) return false;
+    
+    // Filter out common header/footer patterns
+    if (this.isHeaderFooter(text)) return false;
+    
+    // Filter out very small text (likely footnotes or captions)
+    if (item.height < 8) return false;
+    
+    return true;
+  }
+
+  /**
+   * Checks if text is likely a page number
+   */
+  private static isPageNumber(text: string): boolean {
+    const cleanText = text.trim();
+    
+    // Simple numeric page numbers
+    if (/^\d+$/.test(cleanText)) return true;
+    
+    // Page numbers with "Page" prefix
+    if (/^Page\s+\d+$/i.test(cleanText)) return true;
+    
+    // Roman numerals (common in some documents)
+    if (/^[IVXLC]+$/i.test(cleanText)) return true;
+    
+    return false;
+  }
+
+  /**
+   * Checks if text is likely header or footer content
+   */
+  private static isHeaderFooter(text: string): boolean {
+    const cleanText = text.trim().toLowerCase();
+    
+    // Common header/footer patterns
+    const headerFooterPatterns = [
+      /^copyright\s+\d{4}/i,
+      /^all\s+rights\s+reserved/i,
+      /^confidential/i,
+      /^draft/i,
+      /^version\s+\d+/i,
+      /^rev\.?\s*\d+/i,
+      /^page\s+\d+\s+of\s+\d+/i,
+      /^\d+\s*\/\s*\d+$/,
+      /^chapter\s+\d+/i,
+      /^section\s+\d+/i,
+      /^appendix\s+[a-z]/i,
+      /^figure\s+\d+/i,
+      /^table\s+\d+/i,
+      /^footnote\s+\d+/i,
+      /^endnote\s+\d+/i
+    ];
+    
+    return headerFooterPatterns.some(pattern => pattern.test(cleanText));
+  }
+
+  /**
+   * Applies additional content filtering to remove non-story elements
+   */
+  private static filterNonStoryContent(text: string): string {
+    let filteredText = text;
+    
+    // Remove excessive whitespace and normalize line breaks
+    filteredText = filteredText.replace(/\s+/g, ' ').trim();
+    
+    // Remove common document artifacts
+    const artifactsToRemove = [
+      // Remove lines that are just punctuation or symbols
+      /^[^\w\s]*$/gm,
+      // Remove lines that are just numbers (likely page numbers)
+      /^\d+$/gm,
+      // Remove lines that are just single characters
+      /^.$/gm,
+      // Remove lines that are just repeated characters
+      /^(.)\1+$/gm,
+      // Remove lines that are just whitespace
+      /^\s*$/gm
+    ];
+    
+    artifactsToRemove.forEach(pattern => {
+      filteredText = filteredText.replace(pattern, '');
+    });
+    
+    // Remove excessive line breaks
+    filteredText = filteredText.replace(/\n\s*\n\s*\n/g, '\n\n');
+    
+    // Remove leading/trailing whitespace from each line
+    filteredText = filteredText.split('\n').map(line => line.trim()).join('\n');
+    
+    // Remove empty lines at the beginning and end
+    filteredText = filteredText.replace(/^\s*\n+/, '').replace(/\n+\s*$/, '');
+    
+    return filteredText;
   }
 
   /**
