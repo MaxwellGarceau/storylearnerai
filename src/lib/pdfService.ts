@@ -116,13 +116,16 @@ export class PDFService {
           .map((item) => ({
             text: item.str,
             y: item.transform[5], // Y position on page
+            x: item.transform[4], // X position on page
             fontName: item.fontName,
             width: item.width,
-            height: item.height
+            height: item.height,
+            hasEOL: item.hasEOL
           }))
           .filter((item) => this.isStoryContent(item, pageHeight));
         
-        const pageText = filteredItems.map((item) => item.text).join(' ');
+        // Reconstruct text with proper line breaks
+        const pageText = this.reconstructTextWithLineBreaks(filteredItems);
         if (pageText.trim()) {
           pageTexts.push(pageText.trim());
         }
@@ -162,7 +165,7 @@ export class PDFService {
    * Determines if a text item is likely story content based on its position and properties
    */
   private static isStoryContent(
-    item: { text: string; y: number; fontName: string; width: number; height: number },
+    item: { text: string; y: number; x: number; fontName: string; width: number; height: number; hasEOL: boolean },
     pageHeight: number
   ): boolean {
     const text = item.text.trim();
@@ -238,13 +241,75 @@ export class PDFService {
   }
 
   /**
+   * Reconstructs text with proper line breaks based on text positioning and EOL markers
+   */
+  private static reconstructTextWithLineBreaks(
+    items: { text: string; y: number; x: number; fontName: string; width: number; height: number; hasEOL: boolean }[]
+  ): string {
+    if (items.length === 0) return '';
+    
+    // Sort items by Y position (top to bottom), then by X position (left to right)
+    const sortedItems = [...items].sort((a, b) => {
+      // First sort by Y position (with some tolerance for same line)
+      const yDiff = Math.abs(a.y - b.y);
+      if (yDiff > 5) { // If Y difference is significant, sort by Y
+        return b.y - a.y; // Higher Y values first (PDF coordinates are inverted)
+      }
+      // If Y positions are similar, sort by X position
+      return a.x - b.x;
+    });
+    
+    let result = '';
+    let currentLine = '';
+    let lastY = sortedItems[0].y;
+    const lineTolerance = 5; // Tolerance for considering text on the same line
+    
+    for (let i = 0; i < sortedItems.length; i++) {
+      const item = sortedItems[i];
+      const yDiff = Math.abs(item.y - lastY);
+      
+      // Check if this item is on a new line
+      if (yDiff > lineTolerance && currentLine.trim()) {
+        result += currentLine.trim() + '\n';
+        currentLine = '';
+      }
+      
+      // Add text to current line
+      currentLine += item.text;
+      
+      // Add space if not end of line and next item is close
+      if (i < sortedItems.length - 1) {
+        const nextItem = sortedItems[i + 1];
+        const nextYDiff = Math.abs(nextItem.y - item.y);
+        
+        if (nextYDiff <= lineTolerance) {
+          // Same line, add space if there's a gap
+          const gap = nextItem.x - (item.x + item.width);
+          if (gap > 5) { // If there's a significant gap, add a space
+            currentLine += ' ';
+          }
+        }
+      }
+      
+      lastY = item.y;
+    }
+    
+    // Add the last line
+    if (currentLine.trim()) {
+      result += currentLine.trim();
+    }
+    
+    return result;
+  }
+
+  /**
    * Applies additional content filtering to remove non-story elements
    */
   private static filterNonStoryContent(text: string): string {
     let filteredText = text;
     
-    // Remove excessive whitespace and normalize line breaks
-    filteredText = filteredText.replace(/\s+/g, ' ').trim();
+    // Remove excessive whitespace but preserve line breaks
+    filteredText = filteredText.replace(/[ \t]+/g, ' ').trim();
     
     // Remove common document artifacts
     const artifactsToRemove = [
@@ -264,8 +329,8 @@ export class PDFService {
       filteredText = filteredText.replace(pattern, '');
     });
     
-    // Remove excessive line breaks
-    filteredText = filteredText.replace(/\n\s*\n\s*\n/g, '\n\n');
+    // Remove excessive line breaks (more than 2 consecutive)
+    filteredText = filteredText.replace(/\n\s*\n\s*\n+/g, '\n\n');
     
     // Remove leading/trailing whitespace from each line
     filteredText = filteredText.split('\n').map(line => line.trim()).join('\n');

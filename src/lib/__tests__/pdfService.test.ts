@@ -76,10 +76,11 @@ describe('PDFService', () => {
           items: [{ 
             str: 'Extracted text content',
             dir: 'ltr',
-            transform: [1, 0, 0, 1, 0, 400], // Y position at 400 (middle of page)
+            transform: [1, 0, 0, 1, 50, 400], // X=50, Y=400 (middle of page)
             width: 100,
             height: 12,
-            fontName: 'Arial'
+            fontName: 'Arial',
+            hasEOL: false
           }]
         }),
         getViewport: vi.fn().mockReturnValue({
@@ -100,7 +101,7 @@ describe('PDFService', () => {
       const result = await PDFService.extractText(file, 10);
       
       expect(result.success).toBe(true);
-      expect(result.text).toBe('Extracted text content Extracted text content');
+      expect(result.text).toBe('Extracted text content\n\nExtracted text content');
       expect(result.pageCount).toBe(2);
     });
 
@@ -168,10 +169,11 @@ describe('PDFService', () => {
           items: [{ 
             str: 'Extracted text content',
             dir: 'ltr',
-            transform: [1, 0, 0, 1, 0, 400], // Y position at 400 (middle of page)
+            transform: [1, 0, 0, 1, 50, 400], // X=50, Y=400 (middle of page)
             width: 100,
             height: 12,
-            fontName: 'Arial'
+            fontName: 'Arial',
+            hasEOL: false
           }]
         }),
         getViewport: vi.fn().mockReturnValue({
