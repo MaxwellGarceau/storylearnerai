@@ -35,6 +35,16 @@ export interface PDFExtractionResult {
   pageCount?: number;
 }
 
+export interface PDFTextItem {
+  text: string;
+  y: number;
+  x: number;
+  fontName: string;
+  width: number;
+  height: number;
+  hasEOL: boolean;
+}
+
 // Type alias for methods that return PDF extraction results
 type PDFExtractionPromise = Promise<PDFExtractionResult>;
 
@@ -166,7 +176,7 @@ export class PDFService {
    * Determines if a text item is likely story content based on its position and properties
    */
   private static isStoryContent(
-    item: { text: string; y: number; x: number; fontName: string; width: number; height: number; hasEOL: boolean },
+    item: PDFTextItem,
     pageHeight: number
   ): boolean {
     const text = item.text.trim();
@@ -245,7 +255,7 @@ export class PDFService {
    * Reconstructs text with proper line breaks based on text positioning and EOL markers
    */
   private static reconstructTextWithLineBreaks(
-    items: { text: string; y: number; x: number; fontName: string; width: number; height: number; hasEOL: boolean }[]
+    items: PDFTextItem[]
   ): string {
     if (items.length === 0) return '';
     
