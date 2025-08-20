@@ -626,8 +626,8 @@ describe('PDFService', () => {
       const input = 'Hello,world.She said"hello"and left.The end!';
       const expected = 'Hello, world. She said "hello" and left. The end!';
       
-      // Access the private method for testing using type assertion
-      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      // Access the private method for testing
+      const result = (PDFService as any).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -636,7 +636,7 @@ describe('PDFService', () => {
       const input = 'She moved to Detroit(as mentioned)and then Boston.';
       const expected = 'She moved to Detroit (as mentioned) and then Boston.';
       
-      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      const result = (PDFService as any).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -645,7 +645,7 @@ describe('PDFService', () => {
       const input = 'She said"hello"and"goodbye"then left.';
       const expected = 'She said "hello" and "goodbye" then left.';
       
-      const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+      const result = (PDFService as any).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
     });
@@ -666,6 +666,57 @@ describe('PDFService', () => {
       const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
       
       expect(result).toBe(expected);
+    });
+
+    it('should ensure no spaces after opening quotes in any text', () => {
+      const testCases = [
+        {
+          input: 'He said "hello" to me.',
+          description: 'simple quote'
+        },
+        {
+          input: 'She wrote "The quick brown fox" in her book.',
+          description: 'quote with spaces in content'
+        },
+        {
+          input: 'They shouted "Stop!" at the driver.',
+          description: 'quote with punctuation'
+        },
+        {
+          input: 'The sign read "No Entry" clearly.',
+          description: 'quote with capital letters'
+        },
+        {
+          input: 'He whispered "I love you" softly.',
+          description: 'quote with lowercase letters'
+        },
+        {
+          input: 'The book titled "1984" is famous.',
+          description: 'quote with numbers'
+        },
+        {
+          input: 'She said "hello" and "goodbye" quickly.',
+          description: 'multiple quotes'
+        }
+      ];
+
+      testCases.forEach(({ input, description }) => {
+        const result = (PDFService as { fixPunctuationSpacing: (text: string) => string }).fixPunctuationSpacing(input);
+        
+        // Check that there are no spaces immediately after opening quotes
+        const openingQuotePattern = /"\s+/g;
+        const matches = result.match(openingQuotePattern);
+        
+        if (matches) {
+          throw new Error(
+            `Found spaces after opening quotes in "${description}": "${input}" -> "${result}". ` +
+            `Matches found: ${matches.map(m => `"${m}"`).join(', ')}`
+          );
+        }
+        
+        // Also verify the result is what we expect (no changes needed for already correct text)
+        expect(result).toBe(input);
+      });
     });
   });
 });

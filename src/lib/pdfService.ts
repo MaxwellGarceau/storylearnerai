@@ -376,6 +376,9 @@ export class PDFService {
     
     // Clean up any spaces that ended up inside quotes due to the above replacements
     fixedText = fixedText.replace(/" ([^"]*) "/g, '"$1"'); // Remove spaces inside complete quote pairs
+    // Remove spaces after opening quotes, but be careful not to remove spaces after closing quotes
+    fixedText = fixedText.replace(/"\s+([^"]*)"([a-zA-Z])/g, '"$1" $2'); // Fix case where space after opening quote but before closing quote
+    fixedText = fixedText.replace(/"\s+([^"]*)"(?=\s|[.!?;:,]|$)/g, '"$1"'); // Fix case where space after opening quote at end
     
     // Clean up any double spaces that might have been introduced
     fixedText = fixedText.replace(/  +/g, ' ');
