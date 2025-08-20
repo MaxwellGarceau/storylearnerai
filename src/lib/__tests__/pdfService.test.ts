@@ -4,7 +4,15 @@ import * as pdfjsLib from 'pdfjs-dist';
 
 // Mock pdfjs-dist
 vi.mock('pdfjs-dist', () => ({
-  getDocument: vi.fn(),
+  getDocument: vi.fn().mockReturnValue({
+    promise: Promise.resolve({
+      numPages: 1,
+      getPage: vi.fn().mockResolvedValue({
+        getTextContent: vi.fn().mockResolvedValue({ items: [] }),
+        getViewport: vi.fn().mockReturnValue({ height: 800 })
+      })
+    })
+  }),
   GlobalWorkerOptions: {
     workerSrc: ''
   }
@@ -114,6 +122,332 @@ describe('PDFService', () => {
       expect(result.success).toBe(true);
       expect(result.text).toBe('First paragraph text\n\nSecond paragraph text\nFirst paragraph text\n\nSecond paragraph text');
       expect(result.pageCount).toBe(2);
+    });
+
+    it('should filter out header content (top 10% of page)', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Document Title', // Header at top of page
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 750], // Y=750 (top 10% of 800px page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Story content here',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // Y=400 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Story content here');
+      expect(result.text).not.toContain('Document Title');
+    });
+
+    it('should filter out footer content (bottom 10% of page)', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Story content here',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // Y=400 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Page 1 of 5', // Footer at bottom of page
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 50], // Y=50 (bottom 10% of 800px page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Story content here');
+      expect(result.text).not.toContain('Page 1 of 5');
+    });
+
+    it('should filter out page numbers', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Story content here',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // Y=400 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: '1', // Page number
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 400, 400], // X=400, Y=400 (middle of page)
+              width: 10,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Page 2', // Page number with prefix
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 350, 400], // X=350, Y=400 (middle of page)
+              width: 50,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Story content here');
+      expect(result.text).not.toContain('1');
+      expect(result.text).not.toContain('Page 2');
+    });
+
+    it('should filter out header/footer patterns', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Story content here',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // Y=400 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Copyright 2024',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 300], // Y=300 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Chapter 1',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 200], // Y=200 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Figure 1.1',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 100], // Y=100 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Story content here');
+      expect(result.text).not.toContain('Copyright 2024');
+      expect(result.text).not.toContain('Chapter 1');
+      expect(result.text).not.toContain('Figure 1.1');
+    });
+
+    it('should filter out very small text (likely footnotes)', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Story content here',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 400], // Y=400 (middle of page)
+              width: 100,
+              height: 12, // Normal height
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Footnote text',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 300], // Y=300 (middle of page)
+              width: 100,
+              height: 6, // Small height (less than 8px)
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Story content here');
+      expect(result.text).not.toContain('Footnote text');
+    });
+
+    it('should preserve story content while filtering non-story elements', async () => {
+      const mockPage = {
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [
+            { 
+              str: 'Once upon a time',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 500], // Y=500 (middle of page)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'there was a little girl',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 480], // Y=480 (same line)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'who lived in a village',
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 50, 450], // Y=450 (new line)
+              width: 100,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            },
+            { 
+              str: 'Page 1', // Page number to be filtered
+              dir: 'ltr',
+              transform: [1, 0, 0, 1, 400, 400], // X=400, Y=400
+              width: 50,
+              height: 12,
+              fontName: 'Arial',
+              hasEOL: false
+            }
+          ]
+        }),
+        getViewport: vi.fn().mockReturnValue({
+          height: 800
+        })
+      };
+      
+      const mockPdf = {
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue(mockPage)
+      };
+      
+      vi.mocked(pdfjsLib.getDocument).mockReturnValue({
+        promise: Promise.resolve(mockPdf)
+      });
+
+      const file = createMockFile('test content', 'test.pdf', 'application/pdf');
+      const result = await PDFService.extractText(file, 10);
+      
+      expect(result.success).toBe(true);
+      expect(result.text).toContain('Once upon a time');
+      expect(result.text).toContain('there was a little girl');
+      expect(result.text).toContain('who lived in a village');
+      expect(result.text).not.toContain('Page 1');
     });
 
     it('should reject PDFs with too many pages', async () => {
