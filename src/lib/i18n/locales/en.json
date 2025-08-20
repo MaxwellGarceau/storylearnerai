@@ -383,12 +383,12 @@
       "title": "Best Practices for Best Results",
       "extractableText": "Use PDFs with selectable text (not scanned images)",
       "storyContent": "Upload PDFs that contain primarily story content",
-                    "avoidImages": "Avoid PDFs that are mostly images or scanned documents",
-              "cleanFormat": "Clean, well-formatted text works best for translation"
-            }
-          },
-          "cleanupNotice": {
-            "title": "Important: Text Cleanup May Be Required",
-            "description": "Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements."
-          }
-        }
+      "avoidImages": "Avoid PDFs that are mostly images or scanned documents",
+      "cleanFormat": "Clean, well-formatted text works best for translation"
+    },
+    "cleanupNotice": {
+      "title": "Important: Text Cleanup May Be Required",
+      "description": "Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements."
+    }
+  }
+}
