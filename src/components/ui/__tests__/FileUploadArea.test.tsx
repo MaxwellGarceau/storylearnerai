@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FileUploadArea, type FileInfo } from '../FileUploadArea';
 
@@ -135,9 +135,12 @@ describe('FileUploadArea Component', () => {
         />
       );
       
-      expect(screen.getByText('test.pdf')).toBeInTheDocument();
-      expect(screen.getByText('1.2 MB • 5 pages')).toBeInTheDocument();
-      expect(screen.getByTestId('file-info')).toBeInTheDocument();
+      const container = screen.getByTestId('file-info');
+      const uploadArea = within(container).getByTestId('file-info-area');
+      
+      expect(within(uploadArea).getByText('test.pdf')).toBeInTheDocument();
+      expect(within(uploadArea).getByText('1.2 MB • 5 pages')).toBeInTheDocument();
+      expect(container).toBeInTheDocument();
     });
 
     it('shows file info without pages when pages not provided', () => {
@@ -155,10 +158,13 @@ describe('FileUploadArea Component', () => {
         />
       );
       
-      expect(screen.getByText('test.pdf')).toBeInTheDocument();
-      expect(screen.getByText('1.2 MB')).toBeInTheDocument();
-      expect(screen.queryByText(/pages/)).not.toBeInTheDocument();
-      expect(screen.getByTestId('no-pages')).toBeInTheDocument();
+      const container = screen.getByTestId('no-pages');
+      const uploadArea = within(container).getByTestId('no-pages-area');
+      
+      expect(within(uploadArea).getByText('test.pdf')).toBeInTheDocument();
+      expect(within(uploadArea).getByText('1.2 MB')).toBeInTheDocument();
+      expect(within(uploadArea).queryByText(/pages/)).not.toBeInTheDocument();
+      expect(container).toBeInTheDocument();
     });
   });
 
@@ -175,8 +181,7 @@ describe('FileUploadArea Component', () => {
       expect(container).toBeInTheDocument();
     });
 
-    it('does not call onFileSelect when no file is selected', async () => {
-      const user = userEvent.setup();
+    it('does not call onFileSelect when no file is selected', () => {
       render(<FileUploadArea {...defaultProps} data-testid="no-file-select" />);
       
       const container = screen.getByTestId('no-file-select');
