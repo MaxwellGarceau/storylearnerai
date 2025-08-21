@@ -174,20 +174,20 @@ export class UserService {
    * Get user by user ID
    */
   static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // User not found
       }
-      throw new Error(`Failed to fetch user: ${error.message}`)
+      throw new Error(`Failed to fetch user: ${result.error.message}`)
     }
 
-    return user;
+    return result.data as DatabaseUserInsert;
   }
 
   /**
@@ -211,7 +211,7 @@ export class UserService {
       }
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .insert({
         id: sanitizedData.id,
@@ -225,11 +225,11 @@ export class UserService {
       .select()
       .single();
 
-    if (error) {
-      throw new Error(`Failed to create user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to create user: ${result.error.message}`)
     }
 
-    return user;
+    return result.data as DatabaseUserInsert;
   }
 
   /**
@@ -263,31 +263,31 @@ export class UserService {
       updated_at: new Date().toISOString()
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .update(updateData)
       .eq('id', userId)
       .select()
       .single();
 
-    if (error) {
-      throw new Error(`Failed to update user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to update user: ${result.error.message}`)
     }
 
-    return user;
+    return result.data as DatabaseUserInsert;
   }
 
   /**
    * Delete user
    */
   static async deleteUser(userId: string): VoidPromise {
-    const { error } = await supabase
+    const result = await supabase
       .from('users')
       .delete()
       .eq('id', userId)
 
-    if (error) {
-      throw new Error(`Failed to delete user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to delete user: ${result.error.message}`)
     }
   }
 
@@ -305,17 +305,17 @@ export class UserService {
     if (!usernameValidation.isValid) {
       throw new Error(`Invalid username format: ${usernameValidation.errors[0]}`)
     }
-    const { error } = await supabase
+    const result = await supabase
       .from('users')
       .select('id')
       .eq('username', username)
       .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return true // Username is available
       }
-      throw new Error(`Failed to check username availability: ${error.message}`)
+      throw new Error(`Failed to check username availability: ${result.error.message}`)
     }
 
     return false // Username is taken
@@ -335,20 +335,20 @@ export class UserService {
     if (!usernameValidation.isValid) {
       throw new Error(`Invalid username format: ${usernameValidation.errors[0]}`)
     }
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .select('*')
       .eq('username', username)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // User not found
       }
-      throw new Error(`Failed to fetch user by username: ${error.message}`)
+      throw new Error(`Failed to fetch user by username: ${result.error.message}`)
     }
 
-    return user;
+    return result.data as DatabaseUserInsert;
   }
 
   /**
