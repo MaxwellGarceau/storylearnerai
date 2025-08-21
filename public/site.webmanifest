@@ -1,7 +1,6 @@
 {
-    "name": "Story Learner AI",
-    "short_name": "StoryLearner",
-    "description": "Transform your stories into interactive language learning experiences",
+    "name": "",
+    "short_name": "",
     "icons": [
        {
           "src": "/android-chrome-192x192.png",
@@ -16,7 +15,5 @@
     ],
     "theme_color": "#FFFFFF",
     "background_color": "#FFFFFF",
-    "display": "standalone",
-    "start_url": "/",
-    "scope": "/"
+    "display": "standalone"
  }
