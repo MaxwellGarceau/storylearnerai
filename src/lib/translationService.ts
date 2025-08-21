@@ -34,10 +34,12 @@ export interface TranslationError {
 }
 
 class TranslationService {
-  async translateStory(request: TranslationRequest): TranslationResponsePromise {
+  async translateStory(
+    request: TranslationRequest
+  ): TranslationResponsePromise {
     try {
       const prompt = await this.buildTranslationPrompt(request);
-      
+
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
         maxTokens: 2000,
@@ -55,7 +57,7 @@ class TranslationService {
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
-      
+
       // Handle LLM-specific errors
       if (error && typeof error === 'object' && 'provider' in error) {
         const llmError = error as LLMError;
@@ -68,11 +70,18 @@ class TranslationService {
         };
         throw new Error(translationError.message);
       }
-      
+
       // Handle other errors
-      const errorMessage = error instanceof Error ? error.message : 'Translation service unavailable';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Translation service unavailable';
       const translationError: TranslationError = {
-        message: this.getUserFriendlyErrorMessage({ message: errorMessage, code: 'TRANSLATION_ERROR', provider: 'unknown' }),
+        message: this.getUserFriendlyErrorMessage({
+          message: errorMessage,
+          code: 'TRANSLATION_ERROR',
+          provider: 'unknown',
+        }),
         code: 'TRANSLATION_ERROR',
         details: errorMessage,
       };
@@ -83,19 +92,29 @@ class TranslationService {
   /**
    * Build a customized translation prompt based on language and difficulty level
    */
-  private async buildTranslationPrompt(request: TranslationRequest): Promise<string> {
+  private async buildTranslationPrompt(
+    request: TranslationRequest
+  ): Promise<string> {
     const context = {
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
       text: request.text,
-      nativeLanguage: request.nativeLanguage
+      nativeLanguage: request.nativeLanguage,
     };
 
     // If the configuration doesn't support this language/difficulty combination,
     // fall back to a basic prompt
-    if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
-      logger.warn('translation', `Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`);
+    if (
+      !generalPromptConfigService.isSupported(
+        request.toLanguage,
+        request.difficulty
+      )
+    ) {
+      logger.warn(
+        'translation',
+        `Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`
+      );
       return this.buildFallbackPrompt(request);
     }
 
@@ -126,9 +145,14 @@ class TranslationService {
   /**
    * Convert technical error messages to user-friendly messages
    */
-  private getUserFriendlyErrorMessage(error: { message: string; code: string; provider?: string; statusCode?: number }): string {
+  private getUserFriendlyErrorMessage(error: {
+    message: string;
+    code: string;
+    provider?: string;
+    statusCode?: number;
+  }): string {
     const { message, code, provider, statusCode } = error;
-    
+
     // Handle specific error codes
     switch (code) {
       case 'API_ERROR':
@@ -138,29 +162,34 @@ class TranslationService {
         if (statusCode === 429) {
           return `Rate limit exceeded for ${provider ?? 'translation service'}. Please wait a moment and try again.`;
         }
-        if (statusCode === 500 || statusCode === 502 || statusCode === 503 || statusCode === 504) {
+        if (
+          statusCode === 500 ||
+          statusCode === 502 ||
+          statusCode === 503 ||
+          statusCode === 504
+        ) {
           return `${provider ?? 'Translation service'} is temporarily unavailable. Please try again later.`;
         }
         if (statusCode === 400) {
           return `Invalid request to ${provider ?? 'translation service'}. Please check your input and try again.`;
         }
         return `Service error (${statusCode}): ${message}`;
-      
+
       case 'GEMINI_ERROR':
         return `Google Gemini service error: ${message}`;
-      
+
       case 'PARSE_ERROR':
         return `Failed to process response from ${provider ?? 'translation service'}. Please try again.`;
-      
+
       case 'NETWORK_ERROR':
         return `Network connection error. Please check your internet connection and try again.`;
-      
+
       case 'TIMEOUT_ERROR':
         return `Request timed out. Please try again with a shorter story or check your connection.`;
-      
+
       case 'TRANSLATION_ERROR':
         return `Translation failed: ${message}`;
-      
+
       default:
         // If it's a known provider, include it in the message
         if (provider && provider !== 'unknown') {
@@ -170,15 +199,16 @@ class TranslationService {
     }
   }
 
-
   // Mock translation for development/testing
-  async mockTranslateStory(request: TranslationRequest): TranslationResponsePromise {
+  async mockTranslateStory(
+    request: TranslationRequest
+  ): TranslationResponsePromise {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
-    
+
     return {
       originalText: request.text,
       translatedText: mockTranslation,
@@ -204,7 +234,7 @@ class TranslationService {
     if (EnvironmentConfig.isMockTranslationEnabled()) {
       return true; // Mock is always available
     }
-    
+
     try {
       return await llmServiceManager.healthCheck();
     } catch (error) {
@@ -227,4 +257,4 @@ class TranslationService {
   }
 }
 
-export const translationService = new TranslationService(); 
+export const translationService = new TranslationService();

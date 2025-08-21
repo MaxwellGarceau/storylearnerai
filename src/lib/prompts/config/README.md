@@ -1,4 +1,5 @@
 # Folder structure
+
 - `general.json` contains general instructions used on every prompt
 - `template.json` contains the prompt template with placeholders
 - `to-language.json` contains the baseline rules when translating TO a language

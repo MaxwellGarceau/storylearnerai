@@ -36,6 +36,7 @@ LOG_ENDPOINT=https://logs.storylearnerai.com
 ### Environment-Specific Configurations
 
 #### Development
+
 - **Level**: debug
 - **Console**: enabled
 - **File**: disabled
@@ -43,6 +44,7 @@ LOG_ENDPOINT=https://logs.storylearnerai.com
 - **Channels**: all enabled
 
 #### Production
+
 - **Level**: warn
 - **Console**: disabled
 - **File**: enabled
@@ -50,6 +52,7 @@ LOG_ENDPOINT=https://logs.storylearnerai.com
 - **Channels**: api, auth, database, llm, translation, performance, security
 
 #### Test
+
 - **Level**: error
 - **Console**: disabled
 - **File**: disabled
@@ -103,20 +106,20 @@ import { logger } from '@/lib/logger';
 function MyComponent() {
   useEffect(() => {
     logger.info('ui', 'Component mounted');
-    
+
     // API logging
     logger.logApiRequest('api', 'GET', '/api/users');
     logger.logApiResponse('api', 'GET', '/api/users', 200);
-    
+
     // Auth logging
     logger.info('auth', 'User login attempt', { email: 'user@example.com' });
-    
+
     // UI logging
     logger.info('ui', 'Button clicked', { buttonId: 'submit' });
     logger.time('performance', 'render');
     // ... render logic
     logger.timeEnd('performance', 'render');
-    
+
     // Prompt logging
     logger.info('prompts', 'Prompt built', { fromLanguage: 'es', toLanguage: 'en' });
   }, []);
@@ -133,17 +136,17 @@ import { logger } from '@/lib/logger';
 class ApiService {
   async fetchUsers() {
     logger.time('api', 'fetch-users');
-    
+
     try {
       logger.logApiRequest('api', 'GET', '/api/users');
-      
+
       const response = await fetch('/api/users');
       const data = await response.json();
-      
-      logger.logApiResponse('api', 'GET', '/api/users', response.status, { 
-        userCount: data.length 
+
+      logger.logApiResponse('api', 'GET', '/api/users', response.status, {
+        userCount: data.length,
       });
-      
+
       return data;
     } catch (error) {
       logger.logError('api', error as Error, { endpoint: '/api/users' });
@@ -203,18 +206,21 @@ console.log('Current level:', logger.config.level);
 ## 📤 Output Destinations
 
 ### Console Output (Development)
+
 - Colored, formatted logs
 - Timestamp, level, channel, message
 - User, session, and request IDs
 - Performance metrics
 
 ### File Output (Production)
+
 - JSON structured logs
 - Log rotation (10MB files, 10 files max)
 - Separate error and combined logs
 - Only available in Node.js environment
 
 ### Remote Output (Production)
+
 - Batched HTTP requests
 - Automatic retry on failure
 - Fallback to console on error
@@ -241,10 +247,10 @@ logger.logMemoryUsage('performance');
 try {
   throw new Error('API call failed');
 } catch (error) {
-  logger.logError('api', error as Error, { 
+  logger.logError('api', error as Error, {
     endpoint: '/api/users',
     userId: '123',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 ```
@@ -272,7 +278,9 @@ In test environment, logging is disabled by default to avoid noise:
 const testConfig = {
   enabled: false,
   level: 'error',
-  channels: { /* all disabled */ },
+  channels: {
+    /* all disabled */
+  },
   environment: 'test',
   enableConsole: false,
   enableFile: false,
@@ -324,9 +332,11 @@ winstonLogger.add(new CustomTransport());
 ```typescript
 import winston from 'winston';
 
-const customFormat = winston.format.printf(({ timestamp, level, message, channel }) => {
-  return `${timestamp} [${level.toUpperCase()}] [${channel}] ${message}`;
-});
+const customFormat = winston.format.printf(
+  ({ timestamp, level, message, channel }) => {
+    return `${timestamp} [${level.toUpperCase()}] [${channel}] ${message}`;
+  }
+);
 ```
 
 ## 📈 Monitoring and Analytics
@@ -399,5 +409,3 @@ console.log('Logger config:', logger.config);
 - `logger.enableChannel(channel)`
 - `logger.disableChannel(channel)`
 - `logger.isChannelEnabled(channel)`
-
- 

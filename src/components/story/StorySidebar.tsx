@@ -23,15 +23,20 @@ interface StorySidebarProps {
   translationData?: TranslationResponse;
 }
 
-const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData }) => {
+const StorySidebar: React.FC<StorySidebarProps> = ({
+  className,
+  translationData,
+}) => {
   const { isMobile } = useViewport();
   const { getLanguageName } = useLanguages();
-  const { savedTranslations, loading: isLoadingSavedTranslations } = useSavedTranslations();
+  const { savedTranslations, loading: isLoadingSavedTranslations } =
+    useSavedTranslations();
   const { t } = useTranslation();
-  
+
   // Use DB type directly for sample stories
-  const sampleStories: DatabaseSavedTranslationWithDetails[] = savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
-  
+  const sampleStories: DatabaseSavedTranslationWithDetails[] =
+    savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
+
   // Get initial state from localStorage or default based on screen size
   const getInitialSidebarState = (): boolean => {
     try {
@@ -42,22 +47,28 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
       // Default to closed on mobile, open on larger screens
       return !isMobile;
     } catch (error) {
-      logger.warn('ui', 'Failed to read sidebar state from localStorage', { error });
+      logger.warn('ui', 'Failed to read sidebar state from localStorage', {
+        error,
+      });
       return !isMobile; // Default based on screen size if localStorage fails
     }
   };
 
   const [isOpen, setIsOpen] = useState(getInitialSidebarState);
-  const [activeSection, setActiveSection] = useState<'stories' | 'info'>('stories');
+  const [activeSection, setActiveSection] = useState<'stories' | 'info'>(
+    'stories'
+  );
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const navigate = useNavigate();
-  
+
   // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem('sidebarOpen', JSON.stringify(isOpen));
     } catch (error) {
-      logger.warn('ui', 'Failed to save sidebar state to localStorage', { error });
+      logger.warn('ui', 'Failed to save sidebar state to localStorage', {
+        error,
+      });
     }
   }, [isOpen]);
 
@@ -70,9 +81,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
     }
   }, [isMobile]);
 
-  const handleStoryClick = async (story: DatabaseSavedTranslationWithDetails) => {
+  const handleStoryClick = async (
+    story: DatabaseSavedTranslationWithDetails
+  ) => {
     setIsLoading(String(story.id));
-    
+
     try {
       // Use the translation service to translate the story
       const response = await translationService.translate({
@@ -83,11 +96,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
       });
 
       // Navigate to story page with the translated data
-      void navigate('/story', { 
-        state: { 
+      void navigate('/story', {
+        state: {
           translationData: response,
-          isSavedStory: true 
-        } 
+          isSavedStory: true,
+        },
       });
     } catch (error) {
       logger.error('ui', 'Failed to load story', { error });
@@ -98,11 +111,16 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
 
   const getDifficultyColor = (difficulty: DifficultyLevel) => {
     switch (difficulty) {
-      case 'a1': return 'bg-green-100 text-green-800';
-      case 'a2': return 'bg-blue-100 text-blue-800';
-      case 'b1': return 'bg-yellow-100 text-yellow-800';
-      case 'b2': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'a1':
+        return 'bg-green-100 text-green-800';
+      case 'a2':
+        return 'bg-blue-100 text-blue-800';
+      case 'b1':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'b2':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -114,16 +132,18 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
     <>
       {/* Toggle Button - Fixed Position (only visible when sidebar is closed) */}
       {!isOpen && (
-        <div className="fixed top-20 left-4 z-50">
+        <div className='fixed top-20 left-4 z-50'>
           <Button
-            variant="outline"
-            size="default"
+            variant='outline'
+            size='default'
             onClick={() => setIsOpen(true)}
-            className="inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm"
+            className='inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm'
             aria-label={t('storySidebar.openLibrary')}
           >
-            <BookOpen className="w-4 h-4" />
-            <span className="hidden sm:inline">{t('storySidebar.storyLibrary')}</span>
+            <BookOpen className='w-4 h-4' />
+            <span className='hidden sm:inline'>
+              {t('storySidebar.storyLibrary')}
+            </span>
           </Button>
         </div>
       )}
@@ -131,82 +151,84 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-16 left-0 z-40 w-80 max-w-[calc(100vw-16px)] h-[calc(100vh-64px)]",
-          "bg-background border-r shadow-lg transition-all duration-300",
-          "overflow-hidden",
-          isOpen 
-            ? "translate-x-0 opacity-100" 
-            : "-translate-x-full opacity-0 pointer-events-none",
+          'fixed top-16 left-0 z-40 w-80 max-w-[calc(100vw-16px)] h-[calc(100vh-64px)]',
+          'bg-background border-r shadow-lg transition-all duration-300',
+          'overflow-hidden',
+          isOpen
+            ? 'translate-x-0 opacity-100'
+            : '-translate-x-full opacity-0 pointer-events-none',
           className
         )}
       >
-        <div className="h-full flex flex-col">
+        <div className='h-full flex flex-col'>
           {/* Header */}
-          <div className="p-4 border-b bg-muted/50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold">{t('storySidebar.storyLibrary')}</h2>
+          <div className='p-4 border-b bg-muted/50'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <BookOpen className='w-5 h-5 text-primary' />
+                <h2 className='text-lg font-semibold'>
+                  {t('storySidebar.storyLibrary')}
+                </h2>
               </div>
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8 p-0"
+                className='h-8 w-8 p-0'
                 aria-label={t('storySidebar.closeLibrary')}
               >
-                <X className="w-4 h-4" />
+                <X className='w-4 h-4' />
               </Button>
             </div>
-            
+
             {/* Section Tabs */}
-            <div className="flex gap-1 mt-3">
+            <div className='flex gap-1 mt-3'>
               <Button
                 variant={activeSection === 'stories' ? 'default' : 'ghost'}
-                size="sm"
+                size='sm'
                 onClick={() => setActiveSection('stories')}
-                className="flex-1"
+                className='flex-1'
               >
-                <BookOpen className="w-4 h-4 mr-2" />
+                <BookOpen className='w-4 h-4 mr-2' />
                 {t('storySidebar.stories')}
               </Button>
               <Button
                 variant={activeSection === 'info' ? 'default' : 'ghost'}
-                size="sm"
+                size='sm'
                 onClick={() => setActiveSection('info')}
-                className="flex-1"
+                className='flex-1'
               >
-                <Settings className="w-4 h-4 mr-2" />
+                <Settings className='w-4 h-4 mr-2' />
                 {t('storySidebar.info')}
               </Button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className='flex-1 overflow-y-auto'>
             {activeSection === 'stories' && (
-              <div className="p-4 space-y-6">
+              <div className='p-4 space-y-6'>
                 {/* Help Text */}
-                <p className="text-sm text-muted-foreground text-center">
+                <p className='text-sm text-muted-foreground text-center'>
                   {t('storySidebar.clickOnStoryToRead')}
                 </p>
 
                 {/* Saved Stories Section */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-foreground border-b pb-2">
+                <div className='space-y-3'>
+                  <h3 className='text-lg font-semibold text-foreground border-b pb-2'>
                     {t('storySidebar.savedStories')}
                   </h3>
                   {isLoadingSavedTranslations ? (
-                    <div className="text-sm text-muted-foreground text-center py-4">
+                    <div className='text-sm text-muted-foreground text-center py-4'>
                       {t('storySidebar.loadingSavedStories')}
                     </div>
                   ) : savedTranslations.length > 0 ? (
-                    savedTranslations.map((savedTranslation) => (
+                    savedTranslations.map(savedTranslation => (
                       <Card
                         key={savedTranslation.id}
                         className={cn(
-                          "cursor-pointer transition-all duration-200 hover:shadow-md",
-                          "hover:border-primary/50 hover:bg-accent/50"
+                          'cursor-pointer transition-all duration-200 hover:shadow-md',
+                          'hover:border-primary/50 hover:bg-accent/50'
                         )}
                         onClick={() => {
                           // Navigate to story page with saved translation data
@@ -214,77 +236,95 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
                             state: {
                               translationData: {
                                 originalText: savedTranslation.original_story,
-                                translatedText: savedTranslation.translated_story,
-                                difficulty: savedTranslation.difficulty_level.code,
-                                fromLanguage: savedTranslation.original_language.code,
-                                toLanguage: savedTranslation.translated_language.code,
+                                translatedText:
+                                  savedTranslation.translated_story,
+                                difficulty:
+                                  savedTranslation.difficulty_level.code,
+                                fromLanguage:
+                                  savedTranslation.original_language.code,
+                                toLanguage:
+                                  savedTranslation.translated_language.code,
                               },
-                              isSavedStory: true
-                            }
+                              isSavedStory: true,
+                            },
                           });
                         }}
                       >
-                        <CardHeader className="pb-2">
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="text-base leading-tight">
-                              {savedTranslation.title ?? t('storySidebar.untitledStory')}
+                        <CardHeader className='pb-2'>
+                          <div className='flex items-start justify-between'>
+                            <CardTitle className='text-base leading-tight'>
+                              {savedTranslation.title ??
+                                t('storySidebar.untitledStory')}
                             </CardTitle>
-                            <Badge 
-                              variant="secondary" 
-                              className={cn("text-xs", getDifficultyColor(savedTranslation.difficulty_level.code))}
+                            <Badge
+                              variant='secondary'
+                              className={cn(
+                                'text-xs',
+                                getDifficultyColor(
+                                  savedTranslation.difficulty_level.code
+                                )
+                              )}
                             >
-                              {getDifficultyLabel(savedTranslation.difficulty_level.code)}
+                              {getDifficultyLabel(
+                                savedTranslation.difficulty_level.code
+                              )}
                             </Badge>
                           </div>
                         </CardHeader>
-                        <CardContent className="pt-0">
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {savedTranslation.original_story.substring(0, 100)}...
+                        <CardContent className='pt-0'>
+                          <p className='text-sm text-muted-foreground line-clamp-2'>
+                            {savedTranslation.original_story.substring(0, 100)}
+                            ...
                           </p>
                         </CardContent>
                       </Card>
                     ))
                   ) : (
-                    <div className="text-sm text-muted-foreground text-center py-4">
+                    <div className='text-sm text-muted-foreground text-center py-4'>
                       {t('storySidebar.noSavedStoriesYet')}
                     </div>
                   )}
                 </div>
 
                 {/* Sample Stories Section */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-foreground border-b pb-2">
+                <div className='space-y-3'>
+                  <h3 className='text-lg font-semibold text-foreground border-b pb-2'>
                     {t('storySidebar.sampleStories')}
                   </h3>
-                  {sampleStories.map((story) => (
+                  {sampleStories.map(story => (
                     <Card
                       key={story.id}
                       className={cn(
-                        "cursor-pointer transition-all duration-200 hover:shadow-md",
-                        "hover:border-primary/50 hover:bg-accent/50",
-                        isLoading === String(story.id) && "opacity-50 pointer-events-none"
+                        'cursor-pointer transition-all duration-200 hover:shadow-md',
+                        'hover:border-primary/50 hover:bg-accent/50',
+                        isLoading === String(story.id) &&
+                          'opacity-50 pointer-events-none'
                       )}
                       onClick={() => void handleStoryClick(story)}
                     >
-                      <CardHeader className="pb-2">
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-base leading-tight">
+                      <CardHeader className='pb-2'>
+                        <div className='flex items-start justify-between'>
+                          <CardTitle className='text-base leading-tight'>
                             {story.title ?? t('storySidebar.untitled')}
                           </CardTitle>
-                          <Badge 
-                            variant="secondary" 
-                            className={cn("text-xs", getDifficultyColor(story.difficulty_level.code))}
+                          <Badge
+                            variant='secondary'
+                            className={cn(
+                              'text-xs',
+                              getDifficultyColor(story.difficulty_level.code)
+                            )}
                           >
                             {getDifficultyLabel(story.difficulty_level.code)}
                           </Badge>
                         </div>
                       </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {story.notes ?? t('storySidebar.noDescriptionAvailable')}
+                      <CardContent className='pt-0'>
+                        <p className='text-sm text-muted-foreground line-clamp-2'>
+                          {story.notes ??
+                            t('storySidebar.noDescriptionAvailable')}
                         </p>
                         {isLoading === String(story.id) && (
-                          <div className="mt-2 text-xs text-primary">
+                          <div className='mt-2 text-xs text-primary'>
                             {t('storySidebar.loadingStory')}
                           </div>
                         )}
@@ -296,52 +336,63 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             )}
 
             {activeSection === 'info' && translationData && (
-              <div className="p-4 space-y-6">
+              <div className='p-4 space-y-6'>
                 {/* Header */}
-                <div className="border-b pb-4">
-                  <h3 className="text-lg font-semibold text-foreground">{t('storySidebar.storyOptions')}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{t('storySidebar.currentSettings')}</p>
+                <div className='border-b pb-4'>
+                  <h3 className='text-lg font-semibold text-foreground'>
+                    {t('storySidebar.storyOptions')}
+                  </h3>
+                  <p className='text-sm text-muted-foreground mt-1'>
+                    {t('storySidebar.currentSettings')}
+                  </p>
                 </div>
 
                 {/* Info Box */}
-                <Card variant="outline" className="bg-accent/50">
-                  <CardContent className="p-3">
-                    <p className="text-sm text-accent-foreground">
-                      <strong>{t('storySidebar.translation')}:</strong> {getLanguageName(translationData.fromLanguage)} → {getLanguageName(translationData.toLanguage)}
+                <Card variant='outline' className='bg-accent/50'>
+                  <CardContent className='p-3'>
+                    <p className='text-sm text-accent-foreground'>
+                      <strong>{t('storySidebar.translation')}:</strong>{' '}
+                      {getLanguageName(translationData.fromLanguage)} →{' '}
+                      {getLanguageName(translationData.toLanguage)}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className='text-xs text-muted-foreground mt-1'>
                       {t('storySidebar.optionsEditing')}
                     </p>
                   </CardContent>
                 </Card>
 
                 {/* Language Display */}
-                <div className="space-y-2">
-                  <Label htmlFor="target-language">{t('storySidebar.targetLanguage')}</Label>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-sm">
+                <div className='space-y-2'>
+                  <Label htmlFor='target-language'>
+                    {t('storySidebar.targetLanguage')}
+                  </Label>
+                  <div className='flex items-center gap-2'>
+                    <Badge variant='outline' className='text-sm'>
                       {getLanguageName(translationData.toLanguage)}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className='text-xs text-muted-foreground'>
                     {t('storySidebar.currentlySupported')}
                   </p>
                 </div>
 
                 {/* Difficulty Selection (Disabled) */}
-                <div className="space-y-2">
-                  <Label htmlFor="story-difficulty">
+                <div className='space-y-2'>
+                  <Label htmlFor='story-difficulty'>
                     {t('storySidebar.difficultyLevel')} (CEFR)
                   </Label>
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      variant="secondary" 
-                      className={cn("text-sm", getDifficultyColor(translationData.difficulty))}
+                  <div className='flex items-center gap-2'>
+                    <Badge
+                      variant='secondary'
+                      className={cn(
+                        'text-sm',
+                        getDifficultyColor(translationData.difficulty)
+                      )}
                     >
                       {getDifficultyLabel(translationData.difficulty)}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className='text-xs text-muted-foreground'>
                     {t('storySidebar.storyAdaptedToLevel')}
                   </p>
                 </div>
@@ -349,8 +400,8 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
             )}
 
             {activeSection === 'info' && !translationData && (
-              <div className="p-4 text-center">
-                <p className="text-muted-foreground">
+              <div className='p-4 text-center'>
+                <p className='text-muted-foreground'>
                   {t('storySidebar.noTranslationData')}
                 </p>
               </div>
@@ -358,9 +409,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t bg-muted/30">
-            <p className="text-xs text-muted-foreground text-center">
-              {activeSection === 'stories' ? t('storySidebar.demoStories') : t('storySidebar.translationSettings')}
+          <div className='p-4 border-t bg-muted/30'>
+            <p className='text-xs text-muted-foreground text-center'>
+              {activeSection === 'stories'
+                ? t('storySidebar.demoStories')
+                : t('storySidebar.translationSettings')}
             </p>
           </div>
         </div>
@@ -369,4 +422,4 @@ const StorySidebar: React.FC<StorySidebarProps> = ({ className, translationData 
   );
 };
 
-export default StorySidebar; 
+export default StorySidebar;

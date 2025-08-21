@@ -159,8 +159,8 @@ try {
 const response = await service.generateCompletion({
   prompt: 'Create a detailed character description.',
   model: 'gemini-1.5-pro',
-  temperature: 0.9,     // Higher creativity
-  maxTokens: 1000,      // Longer responses
+  temperature: 0.9, // Higher creativity
+  maxTokens: 1000, // Longer responses
 });
 ```
 
@@ -193,12 +193,14 @@ const factualResponse = await service.generateCompletion({
 Generates a text completion using the Gemini API.
 
 **Parameters:**
+
 - `request.prompt` (string): The input prompt
 - `request.model` (string, optional): Model to use (defaults to config model)
 - `request.temperature` (number, optional): Sampling temperature (0.0-2.0)
 - `request.maxTokens` (number, optional): Maximum tokens to generate
 
 **Returns:** Promise resolving to an `LLMResponse` object with:
+
 - `content` (string): Generated text
 - `tokenUsage` (object): Token usage statistics
 - `model` (string): Model used
@@ -219,6 +221,7 @@ Checks if the service is healthy and can make API calls.
 ## Rate Limits and Quotas
 
 Be aware of Gemini API rate limits:
+
 - Free tier: 15 requests per minute
 - Paid tier: Higher limits based on your plan
 
@@ -289,4 +292,4 @@ const response = await service.generateCompletion({
 });
 
 logger.info('llm', 'Educational content', { content: response.content });
-``` 
+```

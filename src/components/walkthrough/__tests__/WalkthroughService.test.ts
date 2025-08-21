@@ -61,23 +61,25 @@ describe('WalkthroughService', () => {
   describe('Walkthrough Control', () => {
     it('should start walkthrough', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
-      
+
       const state = walkthroughService.getState();
       expect(state.isActive).toBe(true);
       expect(state.currentStepIndex).toBe(0);
-      
+
       const currentStep = walkthroughService.getCurrentStep();
       expect(currentStep).toEqual(homeWalkthrough.steps[0]);
     });
 
     it('should not start walkthrough if already completed', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        completed: ['home-walkthrough'],
-        skipped: [],
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          completed: ['home-walkthrough'],
+          skipped: [],
+        })
+      );
 
       walkthroughService.startWalkthrough(homeWalkthrough);
-      
+
       const state = walkthroughService.getState();
       expect(state.isActive).toBe(false);
     });
@@ -85,7 +87,7 @@ describe('WalkthroughService', () => {
     it('should move to next step', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
       walkthroughService.nextStep();
-      
+
       const state = walkthroughService.getState();
       expect(state.isCompleted).toBe(true);
       expect(state.isActive).toBe(false);
@@ -95,7 +97,7 @@ describe('WalkthroughService', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
       walkthroughService.nextStep();
       walkthroughService.previousStep();
-      
+
       const state = walkthroughService.getState();
       expect(state.currentStepIndex).toBe(0);
     });
@@ -103,11 +105,11 @@ describe('WalkthroughService', () => {
     it('should skip walkthrough', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
       walkthroughService.skipWalkthrough();
-      
+
       const state = walkthroughService.getState();
       expect(state.isSkipped).toBe(true);
       expect(state.isActive).toBe(false);
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'storylearnerai-walkthroughs',
         expect.stringContaining('"skipped":["home-walkthrough"]')
@@ -117,11 +119,11 @@ describe('WalkthroughService', () => {
     it('should complete walkthrough', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
       walkthroughService.completeWalkthrough();
-      
+
       const state = walkthroughService.getState();
       expect(state.isCompleted).toBe(true);
       expect(state.isActive).toBe(false);
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'storylearnerai-walkthroughs',
         expect.stringContaining('"completed":["home-walkthrough"]')
@@ -131,7 +133,7 @@ describe('WalkthroughService', () => {
     it('should stop walkthrough', () => {
       walkthroughService.startWalkthrough(homeWalkthrough);
       walkthroughService.stopWalkthrough();
-      
+
       const state = walkthroughService.getState();
       expect(state.isActive).toBe(false);
     });
@@ -139,33 +141,47 @@ describe('WalkthroughService', () => {
 
   describe('Storage Management', () => {
     it('should check if walkthrough is completed', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        completed: ['home-walkthrough'],
-        skipped: [],
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          completed: ['home-walkthrough'],
+          skipped: [],
+        })
+      );
 
-      expect(walkthroughService.isCompleted('home-walkthrough' as WalkthroughId)).toBe(true);
-      expect(walkthroughService.isCompleted('translate-walkthrough' as WalkthroughId)).toBe(false);
+      expect(
+        walkthroughService.isCompleted('home-walkthrough' as WalkthroughId)
+      ).toBe(true);
+      expect(
+        walkthroughService.isCompleted('translate-walkthrough' as WalkthroughId)
+      ).toBe(false);
     });
 
     it('should check if walkthrough is skipped', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        completed: [],
-        skipped: ['home-walkthrough'],
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          completed: [],
+          skipped: ['home-walkthrough'],
+        })
+      );
 
-      expect(walkthroughService.isSkipped('home-walkthrough' as WalkthroughId)).toBe(true);
-      expect(walkthroughService.isSkipped('translate-walkthrough' as WalkthroughId)).toBe(false);
+      expect(
+        walkthroughService.isSkipped('home-walkthrough' as WalkthroughId)
+      ).toBe(true);
+      expect(
+        walkthroughService.isSkipped('translate-walkthrough' as WalkthroughId)
+      ).toBe(false);
     });
 
     it('should reset walkthrough', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        completed: ['home-walkthrough'],
-        skipped: ['translate-walkthrough'],
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          completed: ['home-walkthrough'],
+          skipped: ['translate-walkthrough'],
+        })
+      );
 
       walkthroughService.resetWalkthrough('home-walkthrough' as WalkthroughId);
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'storylearnerai-walkthroughs',
         JSON.stringify({
@@ -177,7 +193,7 @@ describe('WalkthroughService', () => {
 
     it('should reset all walkthroughs', () => {
       walkthroughService.resetAllWalkthroughs();
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'storylearnerai-walkthroughs',
         JSON.stringify({
@@ -212,4 +228,4 @@ describe('WalkthroughService', () => {
       }).not.toThrow();
     });
   });
-}); 
+});

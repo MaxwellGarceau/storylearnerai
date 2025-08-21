@@ -9,8 +9,8 @@ vi.mock('../../../lib/pdfService', () => ({
   PDFService: {
     validateFile: vi.fn(),
     processPDF: vi.fn(),
-    formatFileSize: vi.fn()
-  }
+    formatFileSize: vi.fn(),
+  },
 }));
 
 // Mock react-i18next
@@ -32,19 +32,26 @@ vi.mock('react-i18next', () => ({
         'pdfUpload.errors.fileTooLarge': `File size exceeds ${params?.maxSize ?? 5}MB limit`,
         'pdfUpload.errors.tooManyPages': `PDF has ${params?.actualPages ?? 0} pages, maximum allowed is ${params?.maxPages ?? 10}`,
         'pdfUpload.errors.noTextFound': 'No text content found in the PDF',
-        'pdfUpload.errors.processingFailed': 'Failed to process PDF. Please try again.',
+        'pdfUpload.errors.processingFailed':
+          'Failed to process PDF. Please try again.',
         'pdfUpload.bestPractices.title': 'Best Practices for Best Results',
-        'pdfUpload.bestPractices.extractableText': 'Use PDFs with selectable text (not scanned images)',
-        'pdfUpload.bestPractices.storyContent': 'Upload PDFs that contain primarily story content',
-        'pdfUpload.bestPractices.avoidImages': 'Avoid PDFs that are mostly images or scanned documents',
-        'pdfUpload.bestPractices.cleanFormat': 'Clean, well-formatted text works best for translation',
-        'pdfUpload.cleanupNotice.title': 'Important: Text Cleanup May Be Required',
-        'pdfUpload.cleanupNotice.description': 'Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements.',
-        'common.cancel': 'Cancel'
+        'pdfUpload.bestPractices.extractableText':
+          'Use PDFs with selectable text (not scanned images)',
+        'pdfUpload.bestPractices.storyContent':
+          'Upload PDFs that contain primarily story content',
+        'pdfUpload.bestPractices.avoidImages':
+          'Avoid PDFs that are mostly images or scanned documents',
+        'pdfUpload.bestPractices.cleanFormat':
+          'Clean, well-formatted text works best for translation',
+        'pdfUpload.cleanupNotice.title':
+          'Important: Text Cleanup May Be Required',
+        'pdfUpload.cleanupNotice.description':
+          'Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements.',
+        'common.cancel': 'Cancel',
       };
       return translations[key] || key;
-    }
-  })
+    },
+  }),
 }));
 
 describe('PDFUploadModal Component', () => {
@@ -53,7 +60,7 @@ describe('PDFUploadModal Component', () => {
     onClose: vi.fn(),
     onTextExtracted: vi.fn(),
     maxPages: 10,
-    maxFileSize: 5
+    maxFileSize: 5,
   };
 
   beforeEach(() => {
@@ -66,51 +73,71 @@ describe('PDFUploadModal Component', () => {
 
   it('renders when isOpen is true', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     expect(screen.getByText('Upload PDF')).toBeInTheDocument();
     expect(screen.getByText('Click to select a PDF file')).toBeInTheDocument();
   });
 
   it('does not render when isOpen is false', () => {
     render(<PDFUploadModal {...defaultProps} isOpen={false} />);
-    
+
     expect(screen.queryByText('Upload PDF')).not.toBeInTheDocument();
   });
 
   it('shows file requirements info', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     expect(screen.getByText('File Requirements')).toBeInTheDocument();
     expect(screen.getByText(/Maximum file size: 5MB/)).toBeInTheDocument();
     expect(screen.getByText(/Maximum pages: 10/)).toBeInTheDocument();
     expect(screen.getByText(/PDF files only/)).toBeInTheDocument();
-    expect(screen.getByText(/Must contain extractable text/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Must contain extractable text/)
+    ).toBeInTheDocument();
   });
 
   it('shows best practices guide', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
-    expect(screen.getByText('Best Practices for Best Results')).toBeInTheDocument();
-    expect(screen.getByText(/Use PDFs with selectable text/)).toBeInTheDocument();
-    expect(screen.getByText(/Upload PDFs that contain primarily story content/)).toBeInTheDocument();
-    expect(screen.getByText(/Avoid PDFs that are mostly images/)).toBeInTheDocument();
-    expect(screen.getByText(/Clean, well-formatted text works best/)).toBeInTheDocument();
+
+    expect(
+      screen.getByText('Best Practices for Best Results')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Use PDFs with selectable text/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Upload PDFs that contain primarily story content/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Avoid PDFs that are mostly images/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Clean, well-formatted text works best/)
+    ).toBeInTheDocument();
   });
 
   it('shows cleanup notice', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
-    expect(screen.getByText('Important: Text Cleanup May Be Required')).toBeInTheDocument();
-    expect(screen.getByText(/Our system tries to identify story content/)).toBeInTheDocument();
-    expect(screen.getByText(/You may need to review and clean up/)).toBeInTheDocument();
+
+    expect(
+      screen.getByText('Important: Text Cleanup May Be Required')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Our system tries to identify story content/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/You may need to review and clean up/)
+    ).toBeInTheDocument();
   });
 
   it('opens file dialog when upload area is clicked', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
-    const uploadArea = screen.getByText('Click to select a PDF file').closest('div');
+
+    const uploadArea = screen
+      .getByText('Click to select a PDF file')
+      .closest('div');
     expect(uploadArea).toBeInTheDocument();
-    
+
     if (uploadArea) {
       fireEvent.click(uploadArea);
       // Note: We can't actually test file dialog opening in unit tests
@@ -120,64 +147,72 @@ describe('PDFUploadModal Component', () => {
 
   it('calls onClose when close button is clicked', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const closeButton = screen.getByRole('button', { name: /close modal/i });
     fireEvent.click(closeButton);
-    
+
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it('calls onClose when cancel button is clicked', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
-    
+
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it('shows error for invalid file type', async () => {
     vi.mocked(PDFService.validateFile).mockReturnValue({
       isValid: false,
-      error: 'pdfUpload.errors.invalidFileType'
+      error: 'pdfUpload.errors.invalidFileType',
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const invalidFile = new File(['test content'], 'test.txt', { type: 'text/plain' });
+
+    const invalidFile = new File(['test content'], 'test.txt', {
+      type: 'text/plain',
+    });
     fireEvent.change(fileInput, { target: { files: [invalidFile] } });
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Please select a valid PDF file')).toBeInTheDocument();
+      expect(
+        screen.getByText('Please select a valid PDF file')
+      ).toBeInTheDocument();
     });
   });
 
   it('shows error for file too large', async () => {
     vi.mocked(PDFService.validateFile).mockReturnValue({
       isValid: false,
-      error: 'pdfUpload.errors.fileTooLarge'
+      error: 'pdfUpload.errors.fileTooLarge',
     });
 
     render(<PDFUploadModal {...defaultProps} maxFileSize={1} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
+
     // Create a file larger than 1MB
-    const largeFile = new File(['x'.repeat(2 * 1024 * 1024)], 'large.pdf', { type: 'application/pdf' });
+    const largeFile = new File(['x'.repeat(2 * 1024 * 1024)], 'large.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [largeFile] } });
-    
+
     await waitFor(() => {
-      expect(screen.getByText('File size exceeds 1MB limit')).toBeInTheDocument();
+      expect(
+        screen.getByText('File size exceeds 1MB limit')
+      ).toBeInTheDocument();
     });
   });
 
   it('disables extract button when no file is selected', () => {
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const extractButton = screen.getByText('Extract Text');
     expect(extractButton).toBeDisabled();
   });
@@ -187,18 +222,20 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       expect(extractButton).not.toBeDisabled();
@@ -210,18 +247,20 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText('test.pdf')).toBeInTheDocument();
       expect(screen.getByText('12 Bytes')).toBeInTheDocument();
@@ -233,31 +272,35 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     vi.mocked(PDFService.processPDF).mockResolvedValue({
       success: true,
       text: 'Extracted text content',
-      pageCount: 2
+      pageCount: 2,
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       fireEvent.click(extractButton);
     });
-    
+
     await waitFor(() => {
-      expect(defaultProps.onTextExtracted).toHaveBeenCalledWith('Extracted text content');
+      expect(defaultProps.onTextExtracted).toHaveBeenCalledWith(
+        'Extracted text content'
+      );
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
   });
@@ -267,31 +310,35 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     vi.mocked(PDFService.processPDF).mockResolvedValue({
       success: false,
       error: 'pdfUpload.errors.tooManyPages',
-      pageCount: 15
+      pageCount: 15,
     });
 
     render(<PDFUploadModal {...defaultProps} maxPages={10} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       fireEvent.click(extractButton);
     });
-    
+
     await waitFor(() => {
-      expect(screen.getByText('PDF has 15 pages, maximum allowed is 10')).toBeInTheDocument();
+      expect(
+        screen.getByText('PDF has 15 pages, maximum allowed is 10')
+      ).toBeInTheDocument();
     });
   });
 
@@ -300,31 +347,35 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     vi.mocked(PDFService.processPDF).mockResolvedValue({
       success: false,
       error: 'pdfUpload.errors.noTextFound',
-      pageCount: 1
+      pageCount: 1,
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       fireEvent.click(extractButton);
     });
-    
+
     await waitFor(() => {
-      expect(screen.getByText('No text content found in the PDF')).toBeInTheDocument();
+      expect(
+        screen.getByText('No text content found in the PDF')
+      ).toBeInTheDocument();
     });
   });
 
@@ -333,30 +384,34 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
     vi.mocked(PDFService.processPDF).mockResolvedValue({
       success: false,
-      error: 'pdfUpload.errors.processingFailed'
+      error: 'pdfUpload.errors.processingFailed',
     });
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       fireEvent.click(extractButton);
     });
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Failed to process PDF. Please try again.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Failed to process PDF. Please try again.')
+      ).toBeInTheDocument();
     });
   });
 
@@ -365,34 +420,43 @@ describe('PDFUploadModal Component', () => {
       isValid: true,
       fileInfo: {
         name: 'test.pdf',
-        size: '12 Bytes'
-      }
+        size: '12 Bytes',
+      },
     });
 
-    vi.mocked(PDFService.processPDF).mockImplementation(() => 
-      new Promise(resolve => setTimeout(() => resolve({
-        success: true,
-        text: 'Extracted text content',
-        pageCount: 1
-      }), 100))
+    vi.mocked(PDFService.processPDF).mockImplementation(
+      () =>
+        new Promise(resolve =>
+          setTimeout(
+            () =>
+              resolve({
+                success: true,
+                text: 'Extracted text content',
+                pageCount: 1,
+              }),
+            100
+          )
+        )
     );
 
     render(<PDFUploadModal {...defaultProps} />);
-    
+
     const fileInput = screen.getByTestId('pdf-file-input');
     expect(fileInput).toBeInTheDocument();
-    
-    const validFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+    const validFile = new File(['test content'], 'test.pdf', {
+      type: 'application/pdf',
+    });
     fireEvent.change(fileInput, { target: { files: [validFile] } });
-    
+
     await waitFor(() => {
       const extractButton = screen.getByText('Extract Text');
       fireEvent.click(extractButton);
     });
-    
+
     // Should show processing state
     expect(screen.getByText('Processing PDF...')).toBeInTheDocument();
-    
+
     // Should disable close button during processing
     const closeButton = screen.getByRole('button', { name: /close modal/i });
     expect(closeButton).toBeDisabled();

@@ -1,5 +1,5 @@
-import { LanguageCode } from "../llm/prompts";
-import type { NullableString } from "../common";
+import { LanguageCode } from '../llm/prompts';
+import type { NullableString } from '../common';
 
 // User management types
 export interface DatabaseUser {
@@ -30,4 +30,4 @@ export interface DatabaseUserUpdate {
   preferred_language?: LanguageCode;
   created_at?: string;
   updated_at?: string;
-} 
+}

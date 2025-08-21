@@ -37,9 +37,10 @@ run_check() {
 }
 
 # Run all checks
+run_check "Prettier Format Check" "npm run format:check"
 run_check "ESLint" "npm run lint"
 run_check "TypeScript Build" "npm run build"
-run_check "Tests" "npm test -- --run"
+run_check "Tests" "npm run test:once"
 
 # Final result
 echo -e "\n================================"

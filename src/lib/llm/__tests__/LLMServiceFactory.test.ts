@@ -13,7 +13,7 @@ describe('LLMServiceFactory', () => {
   describe('Provider Management', () => {
     it('should return available providers', () => {
       const providers = LLMServiceFactory.getAvailableProviders();
-      
+
       expect(providers).toEqual(['gemini']);
       expect(providers).toContain('gemini');
       expect(providers).toContain('gemini');
@@ -21,7 +21,7 @@ describe('LLMServiceFactory', () => {
 
     it('should return provider display names', () => {
       const displayNames = LLMServiceFactory.getProviderDisplayNames();
-      
+
       expect(displayNames).toEqual({
         gemini: 'Google Gemini',
       });
@@ -29,9 +29,9 @@ describe('LLMServiceFactory', () => {
 
     it('should return provider descriptions', () => {
       const descriptions = LLMServiceFactory.getProviderDescriptions();
-      
+
       expect(descriptions).toHaveProperty('gemini');
-      
+
       // Check that descriptions are meaningful
       expect(descriptions.gemini).toContain('Google Gemini');
     });
@@ -65,7 +65,9 @@ describe('LLMServiceFactory', () => {
         projectId: 'test-project',
       } as unknown as GeminiConfig;
 
-      expect(() => LLMServiceFactory.createService(config)).toThrow('Unsupported LLM provider: unsupported');
+      expect(() => LLMServiceFactory.createService(config)).toThrow(
+        'Unsupported LLM provider: unsupported'
+      );
     });
   });
 
@@ -76,7 +78,7 @@ describe('LLMServiceFactory', () => {
 
       // Factory should support only Gemini provider
       expect(factoryProviders.sort()).toEqual(['gemini']);
-      
+
       // Test that Gemini provider can be created by the factory
       expect(() => {
         const mockConfig: Record<string, unknown> = {
@@ -88,8 +90,10 @@ describe('LLMServiceFactory', () => {
           temperature: 0.7,
           projectId: 'test-project',
         };
-        
-        const service = LLMServiceFactory.createService(mockConfig as unknown as GeminiConfig);
+
+        const service = LLMServiceFactory.createService(
+          mockConfig as unknown as GeminiConfig
+        );
         expect(service).toBeDefined();
       }).not.toThrow();
     });
@@ -98,7 +102,7 @@ describe('LLMServiceFactory', () => {
       // This test ensures that if a provider is added to the factory,
       // it must also be added to the EnvironmentConfig
       const factoryProviders = LLMServiceFactory.getAvailableProviders();
-      
+
       // Simply verify that the expected providers are available
       // The detailed integration with EnvironmentConfig is tested elsewhere
       const expectedProviders = ['gemini'];
@@ -109,7 +113,7 @@ describe('LLMServiceFactory', () => {
       const providers = LLMServiceFactory.getAvailableProviders();
       const displayNames = LLMServiceFactory.getProviderDisplayNames();
       const descriptions = LLMServiceFactory.getProviderDescriptions();
-      
+
       // Every provider should have display name and description
       providers.forEach(provider => {
         expect(displayNames).toHaveProperty(provider);
@@ -117,10 +121,10 @@ describe('LLMServiceFactory', () => {
         expect(displayNames[provider]).toBeTruthy();
         expect(descriptions[provider]).toBeTruthy();
       });
-      
+
       // No extra providers in metadata
       expect(Object.keys(displayNames).sort()).toEqual(providers.sort());
       expect(Object.keys(descriptions).sort()).toEqual(providers.sort());
     });
   });
-}); 
+});

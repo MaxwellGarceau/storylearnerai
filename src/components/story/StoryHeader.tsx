@@ -14,37 +14,35 @@ interface StoryHeaderProps {
 const StoryHeader: React.FC<StoryHeaderProps> = ({
   translationData,
   showOriginal,
-  onToggleView
+  onToggleView,
 }) => {
   const { getDifficultyLevelDisplay } = useDifficultyLevels();
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4">
-      <h3 className={`text-lg font-semibold transition-colors duration-300 lg:flex-shrink-0 ${
-        showOriginal ? 'text-muted-foreground' : 'text-foreground'
-      }`}>
-        {showOriginal 
-          ? 'Original Story (Spanish):' 
-          : 'Translated Story (English):'
-        }
+    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-2 mb-4'>
+      <h3
+        className={`text-lg font-semibold transition-colors duration-300 lg:flex-shrink-0 ${
+          showOriginal ? 'text-muted-foreground' : 'text-foreground'
+        }`}
+      >
+        {showOriginal
+          ? 'Original Story (Spanish):'
+          : 'Translated Story (English):'}
       </h3>
-      
-      <div className="flex flex-col sm:flex-row lg:flex-row items-start sm:items-center lg:items-center gap-2 sm:gap-3 lg:gap-2 flex-wrap relative">
+
+      <div className='flex flex-col sm:flex-row lg:flex-row items-start sm:items-center lg:items-center gap-2 sm:gap-3 lg:gap-2 flex-wrap relative'>
         {!showOriginal && (
           <>
-            <Badge 
-              variant="info"
-              className="order-1 sm:order-2"
-            >
+            <Badge variant='info' className='order-1 sm:order-2'>
               {getDifficultyLevelDisplay(translationData.difficulty)}
             </Badge>
           </>
         )}
-        
+
         <Button
           onClick={onToggleView}
-          variant={showOriginal ? "secondary" : "default"}
-          size="default"
-          className="order-3"
+          variant={showOriginal ? 'secondary' : 'default'}
+          size='default'
+          className='order-3'
         >
           {showOriginal ? 'Show translated story' : 'Show original story'}
         </Button>
@@ -53,4 +51,4 @@ const StoryHeader: React.FC<StoryHeaderProps> = ({
   );
 };
 
-export default StoryHeader; 
+export default StoryHeader;

@@ -9,7 +9,9 @@ interface WalkthroughDebugProps {
   show?: boolean;
 }
 
-export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false }) => {
+export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({
+  show = false,
+}) => {
   const {
     startWalkthroughById,
     resetWalkthrough,
@@ -26,15 +28,15 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
   const currentConfig = getCurrentConfig();
 
   return (
-    <Card className="fixed bottom-4 right-4 w-80 max-h-96 overflow-y-auto z-50 bg-white shadow-lg border">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">🔧 Walkthrough Debug</CardTitle>
+    <Card className='fixed bottom-4 right-4 w-80 max-h-96 overflow-y-auto z-50 bg-white shadow-lg border'>
+      <CardHeader className='pb-2'>
+        <CardTitle className='text-sm'>🔧 Walkthrough Debug</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 text-xs">
+      <CardContent className='space-y-3 text-xs'>
         {/* Current State */}
         <div>
-          <h4 className="font-semibold mb-1">Current State:</h4>
-          <div className="bg-gray-100 p-2 rounded">
+          <h4 className='font-semibold mb-1'>Current State:</h4>
+          <div className='bg-gray-100 p-2 rounded'>
             <div>Active: {state.isActive ? '✅' : '❌'}</div>
             <div>Step: {state.currentStepIndex + 1}</div>
             <div>Config: {currentConfig?.id ?? 'None'}</div>
@@ -44,31 +46,34 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
 
         {/* Available Configurations */}
         <div>
-          <h4 className="font-semibold mb-1">Available Configs:</h4>
+          <h4 className='font-semibold mb-1'>Available Configs:</h4>
           {Object.entries(walkthroughConfigs).map(([id, config]) => (
-            <div key={id} className="bg-gray-50 p-2 rounded mb-1">
-              <div className="font-medium">{config.title}</div>
-              <div className="text-gray-600">ID: {id}</div>
-              <div className="text-gray-600">Steps: {config.steps.length}</div>
-              <div className="text-gray-600">
-                Status: {isCompleted(id as WalkthroughId) ? '✅ Completed' : 
-                  isSkipped(id as WalkthroughId) ? '⏭️ Skipped' : 
-                    '⏸️ Not started'}
+            <div key={id} className='bg-gray-50 p-2 rounded mb-1'>
+              <div className='font-medium'>{config.title}</div>
+              <div className='text-gray-600'>ID: {id}</div>
+              <div className='text-gray-600'>Steps: {config.steps.length}</div>
+              <div className='text-gray-600'>
+                Status:{' '}
+                {isCompleted(id as WalkthroughId)
+                  ? '✅ Completed'
+                  : isSkipped(id as WalkthroughId)
+                    ? '⏭️ Skipped'
+                    : '⏸️ Not started'}
               </div>
-              <div className="flex gap-1 mt-1">
+              <div className='flex gap-1 mt-1'>
                 <Button
-                  size="sm"
-                  variant="outline"
+                  size='sm'
+                  variant='outline'
                   onClick={() => startWalkthroughById(id as WalkthroughId)}
-                  className="text-xs h-6 px-2"
+                  className='text-xs h-6 px-2'
                 >
                   Start
                 </Button>
                 <Button
-                  size="sm"
-                  variant="outline"
+                  size='sm'
+                  variant='outline'
                   onClick={() => resetWalkthrough(id as WalkthroughId)}
-                  className="text-xs h-6 px-2"
+                  className='text-xs h-6 px-2'
                 >
                   Reset
                 </Button>
@@ -79,13 +84,13 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
 
         {/* Actions */}
         <div>
-          <h4 className="font-semibold mb-1">Actions:</h4>
-          <div className="space-y-1">
+          <h4 className='font-semibold mb-1'>Actions:</h4>
+          <div className='space-y-1'>
             <Button
-              size="sm"
-              variant="destructive"
+              size='sm'
+              variant='destructive'
               onClick={resetAllWalkthroughs}
-              className="text-xs h-7 w-full"
+              className='text-xs h-7 w-full'
             >
               Reset All Walkthroughs
             </Button>
@@ -95,15 +100,23 @@ export const WalkthroughDebug: React.FC<WalkthroughDebugProps> = ({ show = false
         {/* Current Step Details */}
         {currentConfig && state.isActive && (
           <div>
-            <h4 className="font-semibold mb-1">Current Step:</h4>
-            <div className="bg-blue-50 p-2 rounded">
-              <div>Title: {currentConfig.steps[state.currentStepIndex]?.title}</div>
-              <div>Target: {currentConfig.steps[state.currentStepIndex]?.targetSelector}</div>
-              <div>Position: {currentConfig.steps[state.currentStepIndex]?.position}</div>
+            <h4 className='font-semibold mb-1'>Current Step:</h4>
+            <div className='bg-blue-50 p-2 rounded'>
+              <div>
+                Title: {currentConfig.steps[state.currentStepIndex]?.title}
+              </div>
+              <div>
+                Target:{' '}
+                {currentConfig.steps[state.currentStepIndex]?.targetSelector}
+              </div>
+              <div>
+                Position:{' '}
+                {currentConfig.steps[state.currentStepIndex]?.position}
+              </div>
             </div>
           </div>
         )}
       </CardContent>
     </Card>
   );
-}; 
+};

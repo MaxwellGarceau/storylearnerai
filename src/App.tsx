@@ -29,25 +29,58 @@ function AppContent() {
   useWalkthrough();
 
   // Enable debug panel in development or when needed
-  const showDebug = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=walkthrough');
+  const showDebug =
+    process.env.NODE_ENV === 'development' &&
+    window.location.search.includes('debug=walkthrough');
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/translate" element={<PageLayout><TranslatePage /></PageLayout>} />
-        <Route path="/story" element={<PageLayout><StoryReaderPage /></PageLayout>} />
-        <Route path="/auth" element={<PageLayout><AuthPage /></PageLayout>} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <PageLayout><DashboardPage /></PageLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/saved-translations" element={
-          <ProtectedRoute>
-            <PageLayout><SavedTranslationsPage /></PageLayout>
-          </ProtectedRoute>
-        } />
+        <Route path='/' element={<Home />} />
+        <Route
+          path='/translate'
+          element={
+            <PageLayout>
+              <TranslatePage />
+            </PageLayout>
+          }
+        />
+        <Route
+          path='/story'
+          element={
+            <PageLayout>
+              <StoryReaderPage />
+            </PageLayout>
+          }
+        />
+        <Route
+          path='/auth'
+          element={
+            <PageLayout>
+              <AuthPage />
+            </PageLayout>
+          }
+        />
+        <Route
+          path='/dashboard'
+          element={
+            <ProtectedRoute>
+              <PageLayout>
+                <DashboardPage />
+              </PageLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/saved-translations'
+          element={
+            <ProtectedRoute>
+              <PageLayout>
+                <SavedTranslationsPage />
+              </PageLayout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <Toaster />
       <Walkthrough />

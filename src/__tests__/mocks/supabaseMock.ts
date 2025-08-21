@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
-import type { User } from '@supabase/supabase-js'
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import type { User } from '@supabase/supabase-js';
 
 // Mock Supabase client
 const mockSupabaseClient = {
@@ -35,7 +35,7 @@ const mockSupabaseClient = {
       })),
     })),
   })),
-}
+};
 
 // Mock useAuth hook
 export const mockUseAuth = vi.fn(() => ({
@@ -46,7 +46,7 @@ export const mockUseAuth = vi.fn(() => ({
   user: null as User | null,
   loading: false,
   error: null as string | null,
-}))
+}));
 
 // MSW handlers for Supabase REST API
 const supabaseHandlers = [
@@ -62,7 +62,7 @@ const supabaseHandlers = [
         access_token: 'mock-access-token',
         refresh_token: 'mock-refresh-token',
       },
-    })
+    });
   }),
 
   http.post('*/auth/v1/token', () => {
@@ -76,15 +76,15 @@ const supabaseHandlers = [
         access_token: 'mock-access-token',
         refresh_token: 'mock-refresh-token',
       },
-    })
+    });
   }),
 
   http.post('*/auth/v1/logout', () => {
-    return HttpResponse.json({})
+    return HttpResponse.json({});
   }),
 
   http.post('*/auth/v1/recover', () => {
-    return HttpResponse.json({})
+    return HttpResponse.json({});
   }),
 
   // Database endpoints
@@ -98,18 +98,21 @@ const supabaseHandlers = [
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
       },
-    ])
+    ]);
   }),
 
   http.post('*/rest/v1/users', () => {
-    return HttpResponse.json({
-      id: 'mock-user-id',
-      username: 'testuser',
-      display_name: 'Test User',
-      preferred_language: 'en',
-      created_at: '2023-01-01T00:00:00Z',
-      updated_at: '2023-01-01T00:00:00Z',
-    }, { status: 201 })
+    return HttpResponse.json(
+      {
+        id: 'mock-user-id',
+        username: 'testuser',
+        display_name: 'Test User',
+        preferred_language: 'en',
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z',
+      },
+      { status: 201 }
+    );
   }),
 
   http.patch('*/rest/v1/users', () => {
@@ -120,9 +123,9 @@ const supabaseHandlers = [
       preferred_language: 'en',
       created_at: '2023-01-01T00:00:00Z',
       updated_at: '2023-01-01T00:00:00Z',
-    })
+    });
   }),
-]
+];
 
 // MSW handlers for Llama service
 const llamaHandlers = [
@@ -141,7 +144,7 @@ const llamaHandlers = [
         total_tokens: 25,
       },
       model: 'llama3-8b-8192',
-    })
+    });
   }),
 
   http.post('http://localhost:11434/api/chat', () => {
@@ -152,13 +155,13 @@ const llamaHandlers = [
       model: 'llama3.1:8b',
       prompt_eval_count: 10,
       eval_count: 15,
-    })
+    });
   }),
 
   http.post('http://localhost:11434/api/tags', () => {
     return HttpResponse.json({
       models: [{ name: 'llama3.1:8b' }],
-    })
+    });
   }),
 
   http.post('https://api.together.xyz/v1/chat/completions', () => {
@@ -176,31 +179,31 @@ const llamaHandlers = [
         total_tokens: 25,
       },
       model: 'meta-llama/Llama-2-7b-chat-hf',
-    })
+    });
   }),
 
   http.post('https://api.replicate.com/v1/predictions', () => {
     return HttpResponse.json({
       output: ['Hello! How can I help you today?'],
       status: 'succeeded',
-    })
+    });
   }),
-]
+];
 
 // Setup MSW server
-export const server = setupServer(...supabaseHandlers, ...llamaHandlers)
+export const server = setupServer(...supabaseHandlers, ...llamaHandlers);
 
 // Mock the useAuth hook globally
 export const setupSupabaseMocks = () => {
   // Mock the useAuth hook
   vi.mock('../../hooks/useAuth', () => ({
     useAuth: mockUseAuth,
-  }))
+  }));
 
   // Mock the Supabase client
   vi.mock('../../api/supabase/client', () => ({
     supabase: mockSupabaseClient,
-  }))
+  }));
 
   // Mock the UserService
   vi.mock('../../api/supabase', () => ({
@@ -209,5 +212,5 @@ export const setupSupabaseMocks = () => {
       updateUser: vi.fn(),
       isUsernameAvailable: vi.fn(),
     },
-  }))
-}
+  }));
+};

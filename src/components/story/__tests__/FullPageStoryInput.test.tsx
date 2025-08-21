@@ -5,10 +5,18 @@ import FullPageStoryInput from '../FullPageStoryInput';
 
 // Mock PDFUploadModal component
 vi.mock('../PDFUploadModal', () => ({
-  default: ({ isOpen, onClose, onTextExtracted }: { isOpen: boolean; onClose: () => void; onTextExtracted: (text: string) => void }) => {
+  default: ({
+    isOpen,
+    onClose,
+    onTextExtracted,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    onTextExtracted: (text: string) => void;
+  }) => {
     if (!isOpen) return null;
     return (
-      <div data-testid="pdf-upload-modal">
+      <div data-testid='pdf-upload-modal'>
         <div>Upload PDF</div>
         <button onClick={() => onTextExtracted('Extracted text from PDF')}>
           Extract Text
@@ -16,7 +24,7 @@ vi.mock('../PDFUploadModal', () => ({
         <button onClick={onClose}>Close</button>
       </div>
     );
-  }
+  },
 }));
 
 // Mock react-i18next
@@ -25,15 +33,20 @@ vi.mock('react-i18next', () => ({
     t: (key: string): string => {
       const translations: Record<string, string> = {
         'story.uploadTitle': 'Upload Story',
-        'story.uploadDescription': 'Upload a story file or paste text to get started',
+        'story.uploadDescription':
+          'Upload a story file or paste text to get started',
         'story.translateButton': 'Translate Story',
-        'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
-        'storyInput.tip': '💡 Tip: You can paste long stories, articles, or any Spanish text you\'d like to translate',
+        'storyInput.placeholder':
+          'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'storyInput.tip':
+          "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
         'common.edit': 'Edit',
         'storyInput.validation.securityWarning': '⚠️ Security Warning',
-        'storyInput.validation.maliciousContentRemoved': 'Malicious content has been automatically removed for your safety.',
+        'storyInput.validation.maliciousContentRemoved':
+          'Malicious content has been automatically removed for your safety.',
         'storyInput.validation.invalidInput': 'Invalid input detected',
-        'storyInput.validation.fixInput': 'Please fix the input before translating',
+        'storyInput.validation.fixInput':
+          'Please fix the input before translating',
         'storyInput.optionsModal.title': 'Story Options',
         'storyInput.optionsModal.languageLabel': 'Target Language',
         'storyInput.optionsModal.difficultyLabel': 'Target Difficulty (CEFR)',
@@ -41,8 +54,10 @@ vi.mock('react-i18next', () => ({
         'storyInput.optionsModal.a2': 'A2 (Elementary)',
         'storyInput.optionsModal.b1': 'B1 (Intermediate)',
         'storyInput.optionsModal.b2': 'B2 (Upper Intermediate)',
-        'storyInput.currentlySupported': 'Currently only {language} translation is supported.',
-        'storyInput.difficultyDescription': 'The story will be adapted to this {language} proficiency level.',
+        'storyInput.currentlySupported':
+          'Currently only {language} translation is supported.',
+        'storyInput.difficultyDescription':
+          'The story will be adapted to this {language} proficiency level.',
         'storyInput.done': 'Done',
         'storyInput.confirmationModal.title': 'Confirm Translation Options',
         'storyInput.confirmationModal.from': 'From:',
@@ -82,13 +97,17 @@ describe('FullPageStoryInput Component', () => {
     render(<FullPageStoryInput {...defaultProps} />);
 
     expect(screen.getByText('Upload Story')).toBeInTheDocument();
-    expect(screen.getByText('Upload a story file or paste text to get started')).toBeInTheDocument();
+    expect(
+      screen.getByText('Upload a story file or paste text to get started')
+    ).toBeInTheDocument();
   });
 
   it('renders textarea with correct placeholder', () => {
     render(<FullPageStoryInput {...defaultProps} />);
 
-    const textarea = screen.getByPlaceholderText('Ingresa tu historia en español aquí... (Enter your Spanish story here...)');
+    const textarea = screen.getByPlaceholderText(
+      'Ingresa tu historia en español aquí... (Enter your Spanish story here...)'
+    );
     expect(textarea).toBeInTheDocument();
   });
 
@@ -111,7 +130,9 @@ describe('FullPageStoryInput Component', () => {
 
   it('renders with custom placeholder when provided', () => {
     const customPlaceholder = 'Custom placeholder text';
-    render(<FullPageStoryInput {...defaultProps} placeholder={customPlaceholder} />);
+    render(
+      <FullPageStoryInput {...defaultProps} placeholder={customPlaceholder} />
+    );
 
     const textarea = screen.getByPlaceholderText(customPlaceholder);
     expect(textarea).toBeInTheDocument();
@@ -143,34 +164,54 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('calls onSubmit when translate button is clicked', () => {
-    render(<FullPageStoryInput {...defaultProps} value="Test story" />);
+    render(<FullPageStoryInput {...defaultProps} value='Test story' />);
 
-    const translateButton = screen.getByRole('button', { name: /translate story/i });
+    const translateButton = screen.getByRole('button', {
+      name: /translate story/i,
+    });
     fireEvent.click(translateButton);
 
     // Wait for confirmation modal to appear and click confirm
-    const confirmButton = screen.getByRole('button', { name: /confirm & translate/i });
+    const confirmButton = screen.getByRole('button', {
+      name: /confirm & translate/i,
+    });
     fireEvent.click(confirmButton);
 
     expect(defaultProps.onSubmit).toHaveBeenCalled();
   });
 
   it('disables translate button when textarea is empty', () => {
-    render(<FullPageStoryInput {...defaultProps} value="" />);
+    render(<FullPageStoryInput {...defaultProps} value='' />);
 
-    const translateButton = screen.getByRole('button', { name: /translate story/i });
+    const translateButton = screen.getByRole('button', {
+      name: /translate story/i,
+    });
     expect(translateButton).toBeDisabled();
   });
 
   it('disables translate button when isTranslating is true', () => {
-    render(<FullPageStoryInput {...defaultProps} isTranslating={true} value="Test story" />);
+    render(
+      <FullPageStoryInput
+        {...defaultProps}
+        isTranslating={true}
+        value='Test story'
+      />
+    );
 
-    const translateButton = screen.getByRole('button', { name: /translating/i });
+    const translateButton = screen.getByRole('button', {
+      name: /translating/i,
+    });
     expect(translateButton).toBeDisabled();
   });
 
   it('shows loading state when isTranslating is true', () => {
-    render(<FullPageStoryInput {...defaultProps} isTranslating={true} value="Test story" />);
+    render(
+      <FullPageStoryInput
+        {...defaultProps}
+        isTranslating={true}
+        value='Test story'
+      />
+    );
 
     expect(screen.getByText('Translating...')).toBeInTheDocument();
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
@@ -179,7 +220,9 @@ describe('FullPageStoryInput Component', () => {
   it('renders tip text at the bottom', () => {
     render(<FullPageStoryInput {...defaultProps} />);
 
-    expect(screen.getByText(/💡 Tip: You can paste long stories/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/💡 Tip: You can paste long stories/)
+    ).toBeInTheDocument();
   });
 
   it('has correct textarea styling classes', () => {
@@ -188,4 +231,4 @@ describe('FullPageStoryInput Component', () => {
     const textarea = screen.getByRole('textbox');
     expect(textarea).toHaveClass('w-full', 'h-full', 'resize-none', 'border-0');
   });
-}); 
+});

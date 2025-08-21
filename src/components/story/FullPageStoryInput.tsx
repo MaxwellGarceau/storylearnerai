@@ -19,7 +19,10 @@ interface FullPageStoryInputProps {
     language: LanguageCode;
     difficulty: DifficultyLevel;
   };
-  onFormDataChange: (field: 'language' | 'difficulty', value: LanguageCode | DifficultyLevel) => void;
+  onFormDataChange: (
+    field: 'language' | 'difficulty',
+    value: LanguageCode | DifficultyLevel
+  ) => void;
 }
 
 const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
@@ -29,7 +32,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   isTranslating,
   placeholder,
   formData,
-  onFormDataChange
+  onFormDataChange,
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -40,17 +43,19 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
-    
+
     // Validate and sanitize the input
     const validation = validateStoryText(rawValue);
-    
+
     if (validation.isValid) {
       setValidationError(null);
       // Use the sanitized text
       onChange(validation.sanitizedText);
     } else {
       // Show validation error but still allow editing
-      setValidationError(validation.errors[0] || t('storyInput.validation.invalidInput'));
+      setValidationError(
+        validation.errors[0] || t('storyInput.validation.invalidInput')
+      );
       // Still update with sanitized text to prevent malicious content
       onChange(validation.sanitizedText);
     }
@@ -59,12 +64,14 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const handleTranslateClick = () => {
     // Final validation before translation
     const validation = validateStoryText(value);
-    
+
     if (!validation.isValid) {
-      setValidationError(validation.errors[0] || t('storyInput.validation.fixInput'));
+      setValidationError(
+        validation.errors[0] || t('storyInput.validation.fixInput')
+      );
       return;
     }
-    
+
     setValidationError(null);
     setShowConfirmation(true);
   };
@@ -87,27 +94,29 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className='h-full flex flex-col'>
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-foreground mb-2">{t('story.uploadTitle')}</h2>
-        <p className="text-muted-foreground text-lg">
+      <div className='mb-6'>
+        <h2 className='text-3xl font-bold text-foreground mb-2'>
+          {t('story.uploadTitle')}
+        </h2>
+        <p className='text-muted-foreground text-lg'>
           {t('story.uploadDescription')}
         </p>
       </div>
 
       {/* Full-page text area */}
-      <div className="flex-1 min-h-0">
-        <Card className="h-full">
-          <CardContent className="p-0 h-full">
+      <div className='flex-1 min-h-0'>
+        <Card className='h-full'>
+          <CardContent className='p-0 h-full'>
             <textarea
-              id="fullpage-story-input"
-              name="fullpage-story-input"
-              data-testid="story-textarea"
+              id='fullpage-story-input'
+              name='fullpage-story-input'
+              data-testid='story-textarea'
               value={value}
               onChange={handleInputChange}
               placeholder={placeholder ?? t('storyInput.placeholder')}
-              className="w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground"
+              className='w-full h-full min-h-[calc(100vh-300px)] resize-none border-0 focus:ring-0 focus:border-0 p-6 text-lg leading-relaxed bg-transparent text-foreground placeholder:text-muted-foreground'
               style={{
                 minHeight: 'calc(100vh - 300px)',
                 fontFamily: 'Georgia, serif',
@@ -119,50 +128,50 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       </div>
 
       {/* Action area with buttons and tip */}
-      <div className="mt-6 space-y-4">
+      <div className='mt-6 space-y-4'>
         {/* Buttons */}
-        <div className="flex justify-center items-center gap-4">
+        <div className='flex justify-center items-center gap-4'>
           {/* PDF Upload Button */}
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={() => setShowPDFUpload(true)}
-            size="lg"
-            className="px-6 py-3 text-lg font-medium"
-            data-testid="pdf-upload-button"
+            size='lg'
+            className='px-6 py-3 text-lg font-medium'
+            data-testid='pdf-upload-button'
           >
-            <Upload className="w-5 h-5 mr-2" />
+            <Upload className='w-5 h-5 mr-2' />
             {t('story.uploadPDF')}
           </Button>
 
           {/* Options Button */}
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={() => setShowOptions(!showOptions)}
-            size="lg"
-            className="px-6 py-3 text-lg font-medium"
-            data-testid="options-button"
+            size='lg'
+            className='px-6 py-3 text-lg font-medium'
+            data-testid='options-button'
           >
-            <Settings className="w-5 h-5 mr-2" />
+            <Settings className='w-5 h-5 mr-2' />
             {t('common.edit')}
           </Button>
 
           {/* Translate Button */}
           <Button
-            type="button"
+            type='button'
             onClick={handleTranslateClick}
             disabled={isTranslating || !value.trim()}
-            size="lg"
-            className="px-8 py-3 text-lg font-medium"
-            data-testid="translate-button"
+            size='lg'
+            className='px-8 py-3 text-lg font-medium'
+            data-testid='translate-button'
           >
             {isTranslating ? (
-              <div className="flex items-center space-x-2">
-                <div 
-                  className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" 
-                  role="status" 
-                  aria-label="Loading"
+              <div className='flex items-center space-x-2'>
+                <div
+                  className='animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent'
+                  role='status'
+                  aria-label='Loading'
                 />
                 <span>Translating...</span>
               </div>
@@ -176,77 +185,93 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
         {/* Validation Error */}
         {validationError && (
-          <div className="text-sm text-red-600 text-center bg-red-50 p-3 rounded-md border border-red-200">
-            <p className="font-medium">{t('storyInput.validation.securityWarning')}</p>
+          <div className='text-sm text-red-600 text-center bg-red-50 p-3 rounded-md border border-red-200'>
+            <p className='font-medium'>
+              {t('storyInput.validation.securityWarning')}
+            </p>
             <p>{validationError}</p>
-            <p className="text-xs mt-1">{t('storyInput.validation.maliciousContentRemoved')}</p>
+            <p className='text-xs mt-1'>
+              {t('storyInput.validation.maliciousContentRemoved')}
+            </p>
           </div>
         )}
 
         {/* Footer info */}
-        <div className="text-sm text-muted-foreground text-center">
-          <p>
-            {t('storyInput.tip')}
-          </p>
+        <div className='text-sm text-muted-foreground text-center'>
+          <p>{t('storyInput.tip')}</p>
         </div>
       </div>
 
       {/* Options Modal */}
       {showOptions && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{t('storyInput.optionsModal.title')}</h3>
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
+          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
+            <div className='flex items-center justify-between mb-4'>
+              <h3 className='text-lg font-semibold'>
+                {t('storyInput.optionsModal.title')}
+              </h3>
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={() => setShowOptions(false)}
-                className="h-8 w-8 p-0"
+                className='h-8 w-8 p-0'
               >
-                <X className="w-4 h-4" />
+                <X className='w-4 h-4' />
               </Button>
             </div>
-            
-            <div className="space-y-4">
+
+            <div className='space-y-4'>
               {/* Language Selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{t('storyInput.optionsModal.languageLabel')}</label>
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>
+                  {t('storyInput.optionsModal.languageLabel')}
+                </label>
                 <select
                   value={formData.language}
-                  onChange={(e) => onFormDataChange('language', e.target.value as LanguageCode)}
-                  className="w-full p-2 border rounded-md bg-background"
+                  onChange={e =>
+                    onFormDataChange('language', e.target.value as LanguageCode)
+                  }
+                  className='w-full p-2 border rounded-md bg-background'
                 >
-                  <option value="en">{getLanguageName('en')}</option>
+                  <option value='en'>{getLanguageName('en')}</option>
                 </select>
-                <p className="text-xs text-muted-foreground">
-                  {t('storyInput.currentlySupported', { language: getLanguageName('en') })}
+                <p className='text-xs text-muted-foreground'>
+                  {t('storyInput.currentlySupported', {
+                    language: getLanguageName('en'),
+                  })}
                 </p>
               </div>
 
               {/* Difficulty Selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{t('storyInput.optionsModal.difficultyLabel')}</label>
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>
+                  {t('storyInput.optionsModal.difficultyLabel')}
+                </label>
                 <select
                   value={formData.difficulty}
-                  onChange={(e) => onFormDataChange('difficulty', e.target.value as DifficultyLevel)}
-                  className="w-full p-2 border rounded-md bg-background"
+                  onChange={e =>
+                    onFormDataChange(
+                      'difficulty',
+                      e.target.value as DifficultyLevel
+                    )
+                  }
+                  className='w-full p-2 border rounded-md bg-background'
                 >
-                  <option value="a1">{t('storyInput.optionsModal.a1')}</option>
-                  <option value="a2">{t('storyInput.optionsModal.a2')}</option>
-                  <option value="b1">{t('storyInput.optionsModal.b1')}</option>
-                  <option value="b2">{t('storyInput.optionsModal.b2')}</option>
+                  <option value='a1'>{t('storyInput.optionsModal.a1')}</option>
+                  <option value='a2'>{t('storyInput.optionsModal.a2')}</option>
+                  <option value='b1'>{t('storyInput.optionsModal.b1')}</option>
+                  <option value='b2'>{t('storyInput.optionsModal.b2')}</option>
                 </select>
-                <p className="text-xs text-muted-foreground">
-                  {t('storyInput.difficultyDescription', { language: getLanguageName('en') })}
+                <p className='text-xs text-muted-foreground'>
+                  {t('storyInput.difficultyDescription', {
+                    language: getLanguageName('en'),
+                  })}
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-end mt-6">
-              <Button
-                onClick={() => setShowOptions(false)}
-                className="px-6"
-              >
+            <div className='flex justify-end mt-6'>
+              <Button onClick={() => setShowOptions(false)} className='px-6'>
                 {t('storyInput.done')}
               </Button>
             </div>
@@ -256,39 +281,48 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
       {/* Confirmation Modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">{t('storyInput.confirmationModal.title')}</h3>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('storyInput.confirmationModal.from')}</span>
-                <span className="font-medium">{getLanguageName('es')}</span>
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
+          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
+            <h3 className='text-lg font-semibold mb-4'>
+              {t('storyInput.confirmationModal.title')}
+            </h3>
+
+            <div className='space-y-3 mb-6'>
+              <div className='flex justify-between'>
+                <span className='text-muted-foreground'>
+                  {t('storyInput.confirmationModal.from')}
+                </span>
+                <span className='font-medium'>{getLanguageName('es')}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('storyInput.confirmationModal.to')}</span>
-                <span className="font-medium">{getLanguageName(formData.language)}</span>
+              <div className='flex justify-between'>
+                <span className='text-muted-foreground'>
+                  {t('storyInput.confirmationModal.to')}
+                </span>
+                <span className='font-medium'>
+                  {getLanguageName(formData.language)}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('storyInput.confirmationModal.difficulty')}</span>
-                <span className="font-medium">{getDifficultyLabel(formData.difficulty)}</span>
+              <div className='flex justify-between'>
+                <span className='text-muted-foreground'>
+                  {t('storyInput.confirmationModal.difficulty')}
+                </span>
+                <span className='font-medium'>
+                  {getDifficultyLabel(formData.difficulty)}
+                </span>
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className='flex gap-3'>
               <Button
                 onClick={handleCancelTranslation}
-                variant="outline"
-                className="flex-1"
+                variant='outline'
+                className='flex-1'
               >
-                <X className="w-4 h-4 mr-2" />
+                <X className='w-4 h-4 mr-2' />
                 {t('storyInput.confirmationModal.cancel')}
               </Button>
-              <Button
-                onClick={handleConfirmTranslation}
-                className="flex-1"
-              >
-                <Check className="w-4 h-4 mr-2" />
+              <Button onClick={handleConfirmTranslation} className='flex-1'>
+                <Check className='w-4 h-4 mr-2' />
                 {t('storyInput.confirmationModal.confirm')}
               </Button>
             </div>
@@ -308,4 +342,4 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   );
 };
 
-export default FullPageStoryInput; 
+export default FullPageStoryInput;

@@ -76,10 +76,10 @@ function Component() {
   return (
     <div>
       <div>Hi</div> {/* ✅ Short strings (below minLength) */}
-      <div className="container">Content</div> {/* ✅ Technical identifiers */}
+      <div className='container'>Content</div> {/* ✅ Technical identifiers */}
       <div>123</div> {/* ✅ Numbers */}
-      <a href="https://example.com">Link</a> {/* ✅ URLs */}
-      <input placeholder="Enter text" /> {/* ✅ Allowed props */}
+      <a href='https://example.com'>Link</a> {/* ✅ URLs */}
+      <input placeholder='Enter text' /> {/* ✅ Allowed props */}
     </div>
   );
 }
@@ -102,6 +102,7 @@ The rule provides auto-fix suggestions that:
 3. **Maintain context**: Preserves the original structure
 
 Example suggestion:
+
 ```
 Non-localized text 'Hello World' found. Use t('helloWorld') from react-i18next instead.
 ```
@@ -169,6 +170,7 @@ The rule includes comprehensive tests covering:
 - Configuration options
 
 Run tests with:
+
 ```bash
 npm run test:once eslint-rules/__tests__/no-non-localized-text.test.ts
 ```

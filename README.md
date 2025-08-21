@@ -24,29 +24,33 @@ An AI-powered language learning application that helps users learn new languages
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd storylearnerai
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
    ```bash
    cp env.example .env
    ```
 
 4. Configure your environment variables in `.env`:
+
 ```env
 # LLM Service Configuration
 VITE_LLM_PROVIDER=openai
@@ -66,6 +70,7 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 2. Get your project URL and anon key from the project settings
 
 3. Run the database migrations:
+
 ```bash
 # Install Supabase CLI (if not already installed)
 npm install -g supabase
@@ -86,6 +91,7 @@ supabase db reset
 ### Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -95,16 +101,19 @@ The application will be available at `http://localhost:5173`
 ### Testing
 
 Run tests:
+
 ```bash
 npm test:once
 ```
 
 Run tests with coverage:
+
 ```bash
 npm run test:coverage
 ```
 
 **Current Test Status:**
+
 - **307 tests passing** ✅
 - **28 tests strategically skipped** ⏭️ (complex DOM manipulation and mock conflicts)
 - **91.6% effective test coverage**
@@ -113,11 +122,13 @@ npm run test:coverage
 ### Linting
 
 Check for linting errors:
+
 ```bash
 npm run lint
 ```
 
 Fix linting errors:
+
 ```bash
 npm run lint:fix
 ```
@@ -125,6 +136,7 @@ npm run lint:fix
 ## Database Schema
 
 ### Users Table
+
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -138,6 +150,7 @@ CREATE TABLE users (
 ```
 
 ### Stories Table
+
 ```sql
 CREATE TABLE stories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -152,6 +165,7 @@ CREATE TABLE stories (
 ```
 
 ### Translations Table
+
 ```sql
 CREATE TABLE translations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -165,6 +179,7 @@ CREATE TABLE translations (
 ```
 
 ### User Progress Table
+
 ```sql
 CREATE TABLE user_progress (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -181,22 +196,26 @@ CREATE TABLE user_progress (
 ## Services
 
 ### UserService
+
 Handles all user-related database operations:
+
 - Create, read, update, delete user profiles
 - Check username availability
 - Update user preferences (language, avatar)
 - Get or create user profiles automatically
 
-
-
 ### TranslationService
+
 Manages story translations:
+
 - Store and retrieve translations
 - Check for existing translations
 - Update translation content
 
 ### UserProgressService
+
 Tracks user learning progress:
+
 - Record progress percentages
 - Mark stories as completed
 - Generate user statistics
@@ -206,24 +225,28 @@ Tracks user learning progress:
 The application uses Supabase Auth for user authentication with comprehensive user management features:
 
 ### User Registration
+
 - Sign up with email, password, username, and display name
 - Automatic username generation from email if not provided
 - Username availability checking
 - Automatic user profile creation on signup
 
 ### User Authentication
+
 - Sign in with email and password
 - Secure session management
 - Password reset functionality
 - Protected route access
 
 ### User Profiles
+
 - Editable user profiles with username, display name, and avatar
 - Language preference selection for translations
 - Real-time profile updates
 - User dashboard with personalized content
 
 ### Security Features
+
 - Row Level Security (RLS) on all user data
 - Secure authentication through Supabase
 - **Comprehensive input sanitization and XSS prevention**
@@ -235,6 +258,7 @@ The application uses Supabase Auth for user authentication with comprehensive us
 ## Real-time Features
 
 Supabase real-time subscriptions enable:
+
 - Live updates when stories are modified
 - Real-time progress tracking
 - Collaborative learning features
@@ -242,6 +266,7 @@ Supabase real-time subscriptions enable:
 ## Recent Updates
 
 ### Sprint 5: User Management System (Latest)
+
 - **Complete user authentication system** with Supabase integration
 - **User profile management** with editable fields and preferences
 - **Comprehensive test coverage** with 307 passing tests
@@ -250,6 +275,7 @@ Supabase real-time subscriptions enable:
 - **Production-ready code** with proper error handling and validation
 
 ### Key Features Added:
+
 - User registration with username and display name
 - Secure authentication with session management
 - Editable user profiles with language preferences

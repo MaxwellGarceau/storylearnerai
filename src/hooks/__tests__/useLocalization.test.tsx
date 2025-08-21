@@ -25,13 +25,27 @@ vi.mock('react-i18next', async () => {
 vi.mock('../useLanguages', () => ({
   useLanguages: () => ({
     languages: [
-      { id: '1', code: 'en', name: 'English', native_name: 'English', created_at: '2023-01-01T00:00:00Z' },
-      { id: '2', code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2023-01-01T00:00:00Z' },
+      {
+        id: '1',
+        code: 'en',
+        name: 'English',
+        native_name: 'English',
+        created_at: '2023-01-01T00:00:00Z',
+      },
+      {
+        id: '2',
+        code: 'es',
+        name: 'Spanish',
+        native_name: 'Español',
+        created_at: '2023-01-01T00:00:00Z',
+      },
     ],
     loading: false,
     error: null,
-    getLanguageName: (code: string) => (code === 'en' ? 'English' : code === 'es' ? 'Spanish' : code),
-    getNativeLanguageName: (code: string) => (code === 'en' ? 'English' : code === 'es' ? 'Español' : code),
+    getLanguageName: (code: string) =>
+      code === 'en' ? 'English' : code === 'es' ? 'Spanish' : code,
+    getNativeLanguageName: (code: string) =>
+      code === 'en' ? 'English' : code === 'es' ? 'Español' : code,
     languageMap: new Map([
       ['en', 'English'],
       ['es', 'Spanish'],
@@ -71,7 +85,7 @@ describe('useLocalization', () => {
     const supportedLanguages = result.current.getSupportedLocalizations();
     expect(supportedLanguages).toEqual([
       { code: 'en', name: 'English', nativeName: 'English' },
-      { code: 'es', name: 'Spanish', nativeName: 'Español' }
+      { code: 'es', name: 'Spanish', nativeName: 'Español' },
     ]);
   });
 
@@ -93,14 +107,18 @@ describe('useLocalization', () => {
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
     const currentLanguage = result.current.getCurrentLocalization();
-    expect(currentLanguage).toEqual({ code: 'en', name: 'English', nativeName: 'English' }); // Should return first supported language
+    expect(currentLanguage).toEqual({
+      code: 'en',
+      name: 'English',
+      nativeName: 'English',
+    }); // Should return first supported language
   });
 
   it('calls changeLanguage and stores preference in localStorage', async () => {
     // Clear localStorage and reset mocks before test
     localStorage.clear();
     mockChangeLanguage.mockReset();
-    
+
     // Set up the mock to properly simulate the behavior
     mockChangeLanguage.mockImplementation((code: string) => {
       baseI18n.language = code;
@@ -109,7 +127,7 @@ describe('useLocalization', () => {
       return Promise.resolve(undefined);
     });
     baseI18n.language = 'en';
-    
+
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
     await act(async () => {
@@ -122,7 +140,9 @@ describe('useLocalization', () => {
 
   it('handles changeLanguage errors gracefully', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockChangeLanguage.mockRejectedValueOnce(new Error('Language change failed'));
+    mockChangeLanguage.mockRejectedValueOnce(
+      new Error('Language change failed')
+    );
 
     const { result } = renderHook(() => useLocalization(), { wrapper });
 
@@ -130,21 +150,31 @@ describe('useLocalization', () => {
       await result.current.changeLocalization('es');
     });
 
-    expect(consoleSpy).toHaveBeenCalledWith('Failed to change language:', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Failed to change language:',
+      expect.any(Error)
+    );
     consoleSpy.mockRestore();
   });
 
   it('maintains stable function references', () => {
-    const { result, rerender } = renderHook(() => useLocalization(), { wrapper });
+    const { result, rerender } = renderHook(() => useLocalization(), {
+      wrapper,
+    });
 
     const initialChangeLocalization = result.current.changeLocalization;
     const initialGetCurrentLanguage = result.current.getCurrentLocalization;
-    const initialGetSupportedLanguages = result.current.getSupportedLocalizations;
+    const initialGetSupportedLanguages =
+      result.current.getSupportedLocalizations;
 
     rerender();
 
     expect(result.current.changeLocalization).toBe(initialChangeLocalization);
-    expect(result.current.getCurrentLocalization).toBe(initialGetCurrentLanguage);
-    expect(result.current.getSupportedLocalizations).toBe(initialGetSupportedLanguages);
+    expect(result.current.getCurrentLocalization).toBe(
+      initialGetCurrentLanguage
+    );
+    expect(result.current.getSupportedLocalizations).toBe(
+      initialGetSupportedLanguages
+    );
   });
 });

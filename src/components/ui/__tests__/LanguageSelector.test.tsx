@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { LanguageSelector } from '../LanguageSelector';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { I18nextProvider } from 'react-i18next';
@@ -16,7 +22,9 @@ describe('LanguageSelector', () => {
     currentLocalization: 'en',
     isLocalizationLoaded: true,
     changeLocalization: vi.fn(),
-    getCurrentLocalization: vi.fn().mockReturnValue({ code: 'en', name: 'English', nativeName: 'English' }),
+    getCurrentLocalization: vi
+      .fn()
+      .mockReturnValue({ code: 'en', name: 'English', nativeName: 'English' }),
     getSupportedLocalizations: vi.fn().mockReturnValue([
       { code: 'en', name: 'English', nativeName: 'English' },
       { code: 'es', name: 'Spanish', nativeName: 'Español' },
@@ -34,17 +42,13 @@ describe('LanguageSelector', () => {
   });
 
   const renderWithI18n = (component: React.ReactElement) => {
-    return render(
-      <I18nextProvider i18n={i18n}>
-        {component}
-      </I18nextProvider>
-    );
+    return render(<I18nextProvider i18n={i18n}>{component}</I18nextProvider>);
   };
 
   describe('Button variant', () => {
     it('renders language button with current language', () => {
-      renderWithI18n(<LanguageSelector variant="button" />);
-      
+      renderWithI18n(<LanguageSelector variant='button' />);
+
       const button = screen.getByRole('button', { name: /english/i });
       expect(button).toBeInTheDocument();
       expect(button).toHaveTextContent('English');
@@ -57,8 +61,8 @@ describe('LanguageSelector', () => {
         changeLocalization: mockChangeLocalization,
       });
 
-      renderWithI18n(<LanguageSelector variant="button" />);
-      
+      renderWithI18n(<LanguageSelector variant='button' />);
+
       const button = screen.getByRole('button', { name: /english/i });
       fireEvent.click(button);
 
@@ -68,8 +72,8 @@ describe('LanguageSelector', () => {
     });
 
     it('displays globe icon', () => {
-      renderWithI18n(<LanguageSelector variant="button" />);
-      
+      renderWithI18n(<LanguageSelector variant='button' />);
+
       const button = screen.getByRole('button', { name: /english/i });
       expect(button.querySelector('svg')).toBeInTheDocument();
     });
@@ -77,16 +81,16 @@ describe('LanguageSelector', () => {
 
   describe('Select variant', () => {
     it('renders select dropdown with current language', () => {
-      renderWithI18n(<LanguageSelector variant="select" />);
-      
+      renderWithI18n(<LanguageSelector variant='select' />);
+
       const select = screen.getByRole('combobox');
       expect(select).toBeInTheDocument();
       expect(select).toHaveTextContent('English');
     });
 
     it('opens dropdown when clicked', () => {
-      renderWithI18n(<LanguageSelector variant="select" />);
-      
+      renderWithI18n(<LanguageSelector variant='select' />);
+
       const select = screen.getByRole('combobox');
       fireEvent.click(select);
 
@@ -101,8 +105,8 @@ describe('LanguageSelector', () => {
         changeLocalization: mockChangeLocalization,
       });
 
-      renderWithI18n(<LanguageSelector variant="select" />);
-      
+      renderWithI18n(<LanguageSelector variant='select' />);
+
       const select = screen.getByRole('combobox');
       fireEvent.click(select);
 
@@ -118,13 +122,13 @@ describe('LanguageSelector', () => {
   describe('Default behavior', () => {
     it('defaults to select variant', () => {
       renderWithI18n(<LanguageSelector />);
-      
+
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
-      renderWithI18n(<LanguageSelector className="custom-class" />);
-      
+      renderWithI18n(<LanguageSelector className='custom-class' />);
+
       const select = screen.getByRole('combobox');
       expect(select).toHaveClass('custom-class');
     });
@@ -132,15 +136,15 @@ describe('LanguageSelector', () => {
 
   describe('Accessibility', () => {
     it('has proper ARIA attributes for select variant', () => {
-      renderWithI18n(<LanguageSelector variant="select" />);
-      
+      renderWithI18n(<LanguageSelector variant='select' />);
+
       const select = screen.getByRole('combobox');
       expect(select).toHaveAttribute('aria-expanded');
     });
 
     it('has proper role for button variant', () => {
-      renderWithI18n(<LanguageSelector variant="button" />);
-      
+      renderWithI18n(<LanguageSelector variant='button' />);
+
       const button = screen.getByRole('button', { name: /english/i });
       expect(button).toBeInTheDocument();
     });

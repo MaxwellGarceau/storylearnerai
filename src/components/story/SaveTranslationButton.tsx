@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/Card';
 import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useAuth } from '../../hooks/useAuth';
@@ -40,7 +46,7 @@ export default function SaveTranslationButton({
     title?: string;
     notes?: string;
   }>({});
-  
+
   const { user } = useAuth();
   const savedTranslationService = new SavedTranslationService();
   const { toast } = useToast();
@@ -50,10 +56,10 @@ export default function SaveTranslationButton({
   // Validate and sanitize input fields
   const validateAndSanitizeInput = (field: SaveFieldType, value: string) => {
     // Align with database schema: title VARCHAR(255), notes TEXT (unlimited)
-    const sanitizedValue = sanitizeText(value, { 
-      maxLength: field === 'title' ? 255 : undefined 
+    const sanitizedValue = sanitizeText(value, {
+      maxLength: field === 'title' ? 255 : undefined,
     });
-    
+
     const validation = validateTextInput(sanitizedValue, {
       maxLength: field === 'title' ? 255 : undefined, // title: 255 chars, notes: unlimited
       allowHTML: false,
@@ -64,14 +70,14 @@ export default function SaveTranslationButton({
     if (!validation.isValid) {
       setValidationErrors(prev => ({
         ...prev,
-        [field]: validation.errors[0] || `Invalid ${field}`
+        [field]: validation.errors[0] || `Invalid ${field}`,
       }));
       return null;
     }
 
     setValidationErrors(prev => ({
       ...prev,
-      [field]: undefined
+      [field]: undefined,
     }));
     return sanitizedValue;
   };
@@ -83,12 +89,12 @@ export default function SaveTranslationButton({
     } else {
       setNotes(value);
     }
-    
+
     // Clear validation error when user starts typing
     if (validationErrors[field]) {
       setValidationErrors(prev => ({
         ...prev,
-        [field]: undefined
+        [field]: undefined,
       }));
     }
   };
@@ -126,21 +132,24 @@ export default function SaveTranslationButton({
         return;
       }
 
-      await savedTranslationService.createSavedTranslation({
-        original_story: originalStory,
-        translated_story: translationData.translatedText,
-        original_language_code: originalLanguageCode,
-        translated_language_code: translatedLanguageCode,
-        difficulty_level_code: difficultyLevel,
-        title: sanitizedTitle ?? undefined,
-        notes: sanitizedNotes ?? undefined,
-      }, user.id);
+      await savedTranslationService.createSavedTranslation(
+        {
+          original_story: originalStory,
+          translated_story: translationData.translatedText,
+          original_language_code: originalLanguageCode,
+          translated_language_code: translatedLanguageCode,
+          difficulty_level_code: difficultyLevel,
+          title: sanitizedTitle ?? undefined,
+          notes: sanitizedNotes ?? undefined,
+        },
+        user.id
+      );
 
       // Show success toast
       toast({
-        variant: "success",
-        title: "Translation Saved!",
-        description: "Your translation has been saved to your library.",
+        variant: 'success',
+        title: 'Translation Saved!',
+        description: 'Your translation has been saved to your library.',
       });
 
       // Close the modal and reset form
@@ -148,7 +157,8 @@ export default function SaveTranslationButton({
       setTitle('');
       setNotes('');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save translation';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to save translation';
       setError(errorMessage);
     } finally {
       setIsSaving(false);
@@ -167,62 +177,60 @@ export default function SaveTranslationButton({
     <>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="inline-block cursor-help">
+          <div className='inline-block cursor-help'>
             <Button
               onClick={() => setIsOpen(true)}
-              variant="outline"
-              className="gap-2"
+              variant='outline'
+              className='gap-2'
               disabled={!user || isSavedStory}
-              data-testid="save-translation-button"
+              data-testid='save-translation-button'
             >
               <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                className='h-4 w-4'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                   strokeWidth={2}
-                  d="M5 13l4 4L19 7"
+                  d='M5 13l4 4L19 7'
                 />
               </svg>
-              {!user 
-                ? 'Sign in to Save' 
-                : isSavedStory 
-                  ? 'Already Saved' 
-                  : 'Save Translation'
-              }
+              {!user
+                ? 'Sign in to Save'
+                : isSavedStory
+                  ? 'Already Saved'
+                  : 'Save Translation'}
             </Button>
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          {!user 
-            ? 'Sign in to save translations' 
-            : isSavedStory 
-              ? 'The ability to edit and resave already translated stories is under construction =)' 
-              : 'Save this translation'
-          }
+          {!user
+            ? 'Sign in to save translations'
+            : isSavedStory
+              ? 'The ability to edit and resave already translated stories is under construction =)'
+              : 'Save this translation'}
         </TooltipContent>
       </Tooltip>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
+          <Card className='w-full max-w-md'>
             <CardHeader>
               <CardTitle>Save Translation</CardTitle>
               <CardDescription>
                 Save this translation to your library for future reference
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
+            <CardContent className='space-y-4'>
+              <div className='space-y-2'>
                 <TextArea
-                  id="title"
-                  name="title"
-                  label="Title (optional)"
-                  placeholder="Enter a title for this translation..."
+                  id='title'
+                  name='title'
+                  label='Title (optional)'
+                  placeholder='Enter a title for this translation...'
                   value={title}
                   onChange={(e: TextAreaChangeEvent) => {
                     handleInputChange('title', e.target.value);
@@ -231,56 +239,63 @@ export default function SaveTranslationButton({
                   showCharacterCount={true}
                 />
                 {validationErrors.title && (
-                  <p className="text-sm text-red-600">{validationErrors.title}</p>
+                  <p className='text-sm text-red-600'>
+                    {validationErrors.title}
+                  </p>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <TextArea
-                  id="notes"
-                  name="notes"
-                  label="Notes (optional)"
-                  placeholder="Add any notes about this translation..."
+                  id='notes'
+                  name='notes'
+                  label='Notes (optional)'
+                  placeholder='Add any notes about this translation...'
                   value={notes}
                   onChange={(e: TextAreaChangeEvent) => {
                     handleInputChange('notes', e.target.value);
                   }}
                 />
                 {validationErrors.notes && (
-                  <p className="text-sm text-red-600">{validationErrors.notes}</p>
+                  <p className='text-sm text-red-600'>
+                    {validationErrors.notes}
+                  </p>
                 )}
               </div>
 
-              <div className="text-sm text-muted-foreground space-y-1">
+              <div className='text-sm text-muted-foreground space-y-1'>
                 <div>
-                  <span className="font-medium">Original Language:</span> {originalLanguage}
+                  <span className='font-medium'>Original Language:</span>{' '}
+                  {originalLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Translated Language:</span> {translatedLanguage}
+                  <span className='font-medium'>Translated Language:</span>{' '}
+                  {translatedLanguage}
                 </div>
                 <div>
-                  <span className="font-medium">Difficulty Level:</span> {getDifficultyLevelName(difficultyLevel)}
+                  <span className='font-medium'>Difficulty Level:</span>{' '}
+                  {getDifficultyLevelName(difficultyLevel)}
                 </div>
               </div>
 
               {error && (
-                <Alert variant="destructive">
-                  <AlertIcon.destructive className="h-4 w-4" />
+                <Alert variant='destructive'>
+                  <AlertIcon.destructive className='h-4 w-4' />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
-              <div className="flex gap-2 pt-2">
+              <div className='flex gap-2 pt-2'>
                 <Button
                   onClick={() => void handleSave()}
                   disabled={isSaving}
-                  className="flex-1"
+                  className='flex-1'
                 >
                   {isSaving ? 'Saving...' : 'Save Translation'}
                 </Button>
                 <Button
                   onClick={handleCancel}
-                  variant="outline"
+                  variant='outline'
                   disabled={isSaving}
                 >
                   Cancel
@@ -292,4 +307,4 @@ export default function SaveTranslationButton({
       )}
     </>
   );
-} 
+}

@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { vi } from 'vitest';
 import { SignUpForm } from '../SignUpForm';
 
@@ -52,7 +58,9 @@ describe('SignUpForm Security', () => {
       fireEvent.change(emailInput, { target: { value: maliciousEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -93,7 +101,9 @@ describe('SignUpForm Security', () => {
       fireEvent.change(usernameInput, { target: { value: maliciousUsername } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -106,7 +116,11 @@ describe('SignUpForm Security', () => {
       fireEvent.change(usernameInput, { target: { value: invalidUsername } });
 
       await waitFor(() => {
-        expect(screen.getByText('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens'
+          )
+        ).toBeInTheDocument();
       });
     });
 
@@ -119,7 +133,11 @@ describe('SignUpForm Security', () => {
       fireEvent.change(usernameInput, { target: { value: shortUsername } });
 
       await waitFor(() => {
-        expect(screen.getByText('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens'
+          )
+        ).toBeInTheDocument();
       });
     });
 
@@ -145,7 +163,9 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const maliciousDisplayName = '<script>alert("xss")</script>John Doe';
 
-      fireEvent.change(displayNameInput, { target: { value: maliciousDisplayName } });
+      fireEvent.change(displayNameInput, {
+        target: { value: maliciousDisplayName },
+      });
 
       await waitFor(() => {
         expect(displayNameInput).toHaveValue('John Doe');
@@ -158,10 +178,14 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const maliciousDisplayName = '<script>alert("xss")</script>John Doe';
 
-      fireEvent.change(displayNameInput, { target: { value: maliciousDisplayName } });
+      fireEvent.change(displayNameInput, {
+        target: { value: maliciousDisplayName },
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -171,10 +195,14 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const shortDisplayName = 'A';
 
-      fireEvent.change(displayNameInput, { target: { value: shortDisplayName } });
+      fireEvent.change(displayNameInput, {
+        target: { value: shortDisplayName },
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Display name must be at least 2 characters long')).toBeInTheDocument();
+        expect(
+          screen.getByText('Display name must be at least 2 characters long')
+        ).toBeInTheDocument();
       });
     });
 
@@ -184,7 +212,9 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const validDisplayName = 'John Doe';
 
-      fireEvent.change(displayNameInput, { target: { value: validDisplayName } });
+      fireEvent.change(displayNameInput, {
+        target: { value: validDisplayName },
+      });
 
       await waitFor(() => {
         expect(displayNameInput).toHaveValue(validDisplayName);
@@ -202,18 +232,27 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const passwordInput = screen.getByLabelText('Password');
       const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
       fireEvent.change(usernameInput, { target: { value: 'user123' } });
       fireEvent.change(displayNameInput, { target: { value: 'John Doe' } });
-      fireEvent.change(passwordInput, { target: { value: 'MySecurePassword123!' } });
-      fireEvent.change(confirmPasswordInput, { target: { value: 'MySecurePassword123!' } });
+      fireEvent.change(passwordInput, {
+        target: { value: 'MySecurePassword123!' },
+      });
+      fireEvent.change(confirmPasswordInput, {
+        target: { value: 'MySecurePassword123!' },
+      });
 
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockSignUp).toHaveBeenCalledWith('user@example.com', 'MySecurePassword123!');
+        expect(mockSignUp).toHaveBeenCalledWith(
+          'user@example.com',
+          'MySecurePassword123!'
+        );
       });
     });
 
@@ -225,13 +264,21 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const passwordInput = screen.getByLabelText('Password');
       const confirmPasswordInput = screen.getByLabelText('Confirm Password');
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
-      fireEvent.change(emailInput, { target: { value: '<script>alert("xss")</script>user@example.com' } });
+      fireEvent.change(emailInput, {
+        target: { value: '<script>alert("xss")</script>user@example.com' },
+      });
       fireEvent.change(usernameInput, { target: { value: 'user123' } });
       fireEvent.change(displayNameInput, { target: { value: 'John Doe' } });
-      fireEvent.change(passwordInput, { target: { value: 'MySecurePassword123!' } });
-      fireEvent.change(confirmPasswordInput, { target: { value: 'MySecurePassword123!' } });
+      fireEvent.change(passwordInput, {
+        target: { value: 'MySecurePassword123!' },
+      });
+      fireEvent.change(confirmPasswordInput, {
+        target: { value: 'MySecurePassword123!' },
+      });
 
       fireEvent.click(submitButton);
 
@@ -244,9 +291,13 @@ describe('SignUpForm Security', () => {
       render(<SignUpForm {...defaultProps} />);
 
       const emailInput = screen.getByLabelText('Email');
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
-      fireEvent.change(emailInput, { target: { value: '<script>alert("xss")</script>user@example.com' } });
+      fireEvent.change(emailInput, {
+        target: { value: '<script>alert("xss")</script>user@example.com' },
+      });
 
       await waitFor(() => {
         expect(submitButton).toBeDisabled();
@@ -264,7 +315,9 @@ describe('SignUpForm Security', () => {
       fireEvent.change(emailInput, { target: { value: longEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input exceeds maximum length of 254 characters')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input exceeds maximum length of 254 characters')
+        ).toBeInTheDocument();
       });
     });
 
@@ -277,7 +330,9 @@ describe('SignUpForm Security', () => {
       fireEvent.change(usernameInput, { target: { value: longUsername } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input exceeds maximum length of 50 characters')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input exceeds maximum length of 50 characters')
+        ).toBeInTheDocument();
       });
     });
 
@@ -287,10 +342,14 @@ describe('SignUpForm Security', () => {
       const displayNameInput = screen.getByLabelText('Display Name');
       const longDisplayName = 'a'.repeat(300);
 
-      fireEvent.change(displayNameInput, { target: { value: longDisplayName } });
+      fireEvent.change(displayNameInput, {
+        target: { value: longDisplayName },
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Input exceeds maximum length of 255 characters')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input exceeds maximum length of 255 characters')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -332,4 +391,4 @@ describe('SignUpForm Security', () => {
       });
     });
   });
-}); 
+});

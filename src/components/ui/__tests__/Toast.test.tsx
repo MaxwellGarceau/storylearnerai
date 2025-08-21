@@ -1,7 +1,14 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach } from 'vitest';
-import { Toast, ToastTitle, ToastDescription, ToastClose, ToastProvider, ToastViewport } from '../Toast';
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastClose,
+  ToastProvider,
+  ToastViewport,
+} from '../Toast';
 
 describe('Toast Component', () => {
   afterEach(() => {
@@ -13,7 +20,9 @@ describe('Toast Component', () => {
       <ToastProvider>
         <Toast open={true}>
           <ToastTitle>Success!</ToastTitle>
-          <ToastDescription>Your action was completed successfully.</ToastDescription>
+          <ToastDescription>
+            Your action was completed successfully.
+          </ToastDescription>
           <ToastClose />
         </Toast>
         <ToastViewport />
@@ -21,15 +30,19 @@ describe('Toast Component', () => {
     );
 
     expect(screen.getByText('Success!')).toBeInTheDocument();
-    expect(screen.getByText('Your action was completed successfully.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Your action was completed successfully.')
+    ).toBeInTheDocument();
   });
 
   it('renders toast with success variant', () => {
     render(
       <ToastProvider>
-        <Toast variant="success" open={true}>
+        <Toast variant='success' open={true}>
           <ToastTitle>Translation Saved!</ToastTitle>
-          <ToastDescription>Your translation has been saved to your library.</ToastDescription>
+          <ToastDescription>
+            Your translation has been saved to your library.
+          </ToastDescription>
           <ToastClose />
         </Toast>
         <ToastViewport />
@@ -39,13 +52,17 @@ describe('Toast Component', () => {
     // Get all elements with status role and find the visible one (not the hidden accessibility span)
     const statusElements = screen.getAllByRole('status');
     const toast = statusElements.find(el => el.tagName === 'LI');
-    expect(toast).toHaveClass('border-green-500/50', 'bg-green-50', 'text-green-700');
+    expect(toast).toHaveClass(
+      'border-green-500/50',
+      'bg-green-50',
+      'text-green-700'
+    );
   });
 
   it('renders toast with destructive variant', () => {
     render(
       <ToastProvider>
-        <Toast variant="destructive" open={true}>
+        <Toast variant='destructive' open={true}>
           <ToastTitle>Error!</ToastTitle>
           <ToastDescription>Something went wrong.</ToastDescription>
           <ToastClose />
@@ -57,7 +74,12 @@ describe('Toast Component', () => {
     // Get all elements with status role and find the visible one (not the hidden accessibility span)
     const statusElements = screen.getAllByRole('status');
     const toast = statusElements.find(el => el.tagName === 'LI');
-    expect(toast).toHaveClass('destructive', 'border-destructive', 'bg-destructive', 'text-destructive-foreground');
+    expect(toast).toHaveClass(
+      'destructive',
+      'border-destructive',
+      'bg-destructive',
+      'text-destructive-foreground'
+    );
   });
 
   it('renders toast with default variant', () => {
@@ -93,4 +115,4 @@ describe('Toast Component', () => {
     expect(closeButton).toBeInTheDocument();
     expect(closeButton).toHaveAttribute('toast-close', '');
   });
-}); 
+});

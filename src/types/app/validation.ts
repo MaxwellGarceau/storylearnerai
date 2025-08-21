@@ -12,5 +12,3 @@ export interface ValidationResult {
   errors: string[];
   sanitizedText: string;
 }
-
-

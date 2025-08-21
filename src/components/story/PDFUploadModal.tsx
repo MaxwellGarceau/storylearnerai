@@ -21,7 +21,7 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
   onClose,
   onTextExtracted,
   maxPages = 10,
-  maxFileSize = 5 // 5MB default
+  maxFileSize = 5, // 5MB default
 }) => {
   const { t } = useTranslation();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -65,32 +65,42 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
 
     try {
       // Process PDF using PDF service
-      const result = await PDFService.processPDF(selectedFile, maxFileSize, maxPages);
-      
+      const result = await PDFService.processPDF(
+        selectedFile,
+        maxFileSize,
+        maxPages
+      );
+
       if (!result.success) {
         // Handle specific error messages that need parameters
-        if (result.error === 'pdfUpload.errors.tooManyPages' && result.pageCount) {
-          setError(t(result.error, { actualPages: result.pageCount, maxPages }));
+        if (
+          result.error === 'pdfUpload.errors.tooManyPages' &&
+          result.pageCount
+        ) {
+          setError(
+            t(result.error, { actualPages: result.pageCount, maxPages })
+          );
         } else if (result.error === 'pdfUpload.errors.fileTooLarge') {
           setError(t(result.error, { maxSize: maxFileSize }));
         } else if (result.error) {
           setError(t(result.error));
         }
         if (result.pageCount) {
-          setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
+          setFileInfo(prev =>
+            prev ? { ...prev, pages: result.pageCount } : null
+          );
         }
         return;
       }
 
       // Update file info with page count
-      setFileInfo(prev => prev ? { ...prev, pages: result.pageCount } : null);
+      setFileInfo(prev => (prev ? { ...prev, pages: result.pageCount } : null));
 
       // Pass the extracted text to parent component
       if (result.text) {
         onTextExtracted(result.text);
       }
       onClose();
-      
     } catch (err) {
       console.error('PDF processing error:', err);
       setError(t('pdfUpload.errors.processingFailed'));
@@ -110,35 +120,35 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-md w-full max-h-[90vh] flex flex-col">
-        <CardHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
+    <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
+      <Card className='max-w-md w-full max-h-[90vh] flex flex-col'>
+        <CardHeader className='flex-shrink-0'>
+          <div className='flex items-center justify-between'>
+            <CardTitle className='flex items-center gap-2'>
+              <FileText className='w-5 h-5' />
               {t('pdfUpload.title')}
             </CardTitle>
             <Button
-              variant="ghost"
-              size="sm"
+              variant='ghost'
+              size='sm'
               onClick={handleClose}
-              className="h-8 w-8 p-0"
+              className='h-8 w-8 p-0'
               disabled={isProcessing}
-              aria-label="Close modal"
+              aria-label='Close modal'
             >
-              <X className="w-4 h-4" />
+              <X className='w-4 h-4' />
             </Button>
           </div>
         </CardHeader>
-        
-        <CardContent className="space-y-4 flex-1 overflow-y-auto">
+
+        <CardContent className='space-y-4 flex-1 overflow-y-auto'>
           {/* File Upload Area */}
           <FileUploadArea
-            accept=".pdf"
+            accept='.pdf'
             maxFileSize={maxFileSize}
             maxPages={maxPages}
             onFileSelect={handleFileSelect}
-            onValidationError={(error) => setError(error)}
+            onValidationError={error => setError(error)}
             isProcessing={isProcessing}
             selectedFile={selectedFile}
             fileInfo={fileInfo}
@@ -146,20 +156,23 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
 
           {/* Error Display */}
           {error && (
-            <Alert variant="destructive">
-              <AlertIcon.destructive className="h-4 w-4" />
+            <Alert variant='destructive'>
+              <AlertIcon.destructive className='h-4 w-4' />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           {/* File Requirements Info */}
           <InfoBox
-            variant="info"
+            variant='info'
             title={t('pdfUpload.requirements.title')}
-            icon={<AlertTriangle className="w-4 h-4" />}
+            icon={<AlertTriangle className='w-4 h-4' />}
           >
-            <ul className="space-y-1 text-xs">
-              <li>• {t('pdfUpload.requirements.maxSize', { maxSize: maxFileSize })}</li>
+            <ul className='space-y-1 text-xs'>
+              <li>
+                •{' '}
+                {t('pdfUpload.requirements.maxSize', { maxSize: maxFileSize })}
+              </li>
               <li>• {t('pdfUpload.requirements.maxPages', { maxPages })}</li>
               <li>• {t('pdfUpload.requirements.pdfOnly')}</li>
               <li>• {t('pdfUpload.requirements.textContent')}</li>
@@ -168,20 +181,20 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
 
           {/* Best Practices Guide */}
           <InfoBox
-            variant="success"
+            variant='success'
             title={t('pdfUpload.bestPractices.title')}
             icon={
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
+              <svg fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
                 />
               </svg>
             }
           >
-            <ul className="space-y-1 text-xs">
+            <ul className='space-y-1 text-xs'>
               <li>• {t('pdfUpload.bestPractices.extractableText')}</li>
               <li>• {t('pdfUpload.bestPractices.storyContent')}</li>
               <li>• {t('pdfUpload.bestPractices.avoidImages')}</li>
@@ -191,30 +204,32 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
 
           {/* Cleanup Notice */}
           <InfoBox
-            variant="warning"
+            variant='warning'
             title={t('pdfUpload.cleanupNotice.title')}
             icon={
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
+              <svg fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
                 />
               </svg>
             }
           >
-            <p className="text-xs">{t('pdfUpload.cleanupNotice.description')}</p>
+            <p className='text-xs'>
+              {t('pdfUpload.cleanupNotice.description')}
+            </p>
           </InfoBox>
         </CardContent>
 
         {/* Action Buttons - Sticky at bottom */}
-        <div className="p-6 pt-0 flex-shrink-0">
-          <div className="flex gap-3">
+        <div className='p-6 pt-0 flex-shrink-0'>
+          <div className='flex gap-3'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={handleClose}
-              className="flex-1"
+              className='flex-1'
               disabled={isProcessing}
             >
               {t('common.cancel')}
@@ -224,14 +239,14 @@ const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
                 void handleProcessFile();
               }}
               disabled={!selectedFile || isProcessing}
-              className="flex-1"
+              className='flex-1'
             >
               {isProcessing ? (
-                <div className="flex items-center space-x-2">
-                  <div 
-                    className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" 
-                    role="status" 
-                    aria-label="Loading"
+                <div className='flex items-center space-x-2'>
+                  <div
+                    className='animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent'
+                    role='status'
+                    aria-label='Loading'
                   />
                   <span>{t('pdfUpload.processing')}</span>
                 </div>

@@ -1,5 +1,9 @@
 import { LLMService } from '../LLMService';
-import { LLMRequest, LLMResponse, GeminiConfig } from '../../../types/llm/providers';
+import {
+  LLMRequest,
+  LLMResponse,
+  GeminiConfig,
+} from '../../../types/llm/providers';
 import { logger } from '../../../lib/logger';
 import { GoogleGenAI } from '@google/genai';
 
@@ -15,7 +19,7 @@ export class GeminiService extends LLMService {
     try {
       const geminiConfig = this.config;
       const model = request.model ?? geminiConfig.model;
-      
+
       const response = await this.genAI.models.generateContent({
         model: model,
         contents: [{ text: request.prompt }],
@@ -30,11 +34,13 @@ export class GeminiService extends LLMService {
 
       return {
         content,
-        tokenUsage: usage ? {
-          promptTokens: usage.promptTokenCount ?? 0,
-          completionTokens: usage.candidatesTokenCount ?? 0,
-          totalTokens: usage.totalTokenCount ?? 0,
-        } : undefined,
+        tokenUsage: usage
+          ? {
+              promptTokens: usage.promptTokenCount ?? 0,
+              completionTokens: usage.candidatesTokenCount ?? 0,
+              totalTokens: usage.totalTokenCount ?? 0,
+            }
+          : undefined,
         model: model,
         provider: 'gemini',
       };
@@ -43,8 +49,8 @@ export class GeminiService extends LLMService {
       throw error instanceof Error && 'provider' in error
         ? error
         : new Error(
-          error instanceof Error ? error.message : 'Gemini API request failed'
-        );
+            error instanceof Error ? error.message : 'Gemini API request failed'
+          );
     }
   }
 
@@ -52,7 +58,7 @@ export class GeminiService extends LLMService {
     try {
       const geminiConfig = this.config;
       const model = geminiConfig.model;
-      
+
       const response = await this.genAI.models.generateContent({
         model: model,
         contents: [{ text: 'ping' }],
@@ -68,4 +74,4 @@ export class GeminiService extends LLMService {
       return false;
     }
   }
-} 
+}

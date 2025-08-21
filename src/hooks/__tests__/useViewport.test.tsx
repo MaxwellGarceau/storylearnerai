@@ -120,8 +120,14 @@ describe('useViewport', () => {
   it('should add event listeners on mount', () => {
     renderHook(() => useViewport());
 
-    expect(window.addEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-    expect(window.addEventListener).toHaveBeenCalledWith('orientationchange', expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      'resize',
+      expect.any(Function)
+    );
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      'orientationchange',
+      expect.any(Function)
+    );
   });
 
   it('should remove event listeners on unmount', () => {
@@ -129,7 +135,13 @@ describe('useViewport', () => {
 
     unmount();
 
-    expect(window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-    expect(window.removeEventListener).toHaveBeenCalledWith('orientationchange', expect.any(Function));
+    expect(window.removeEventListener).toHaveBeenCalledWith(
+      'resize',
+      expect.any(Function)
+    );
+    expect(window.removeEventListener).toHaveBeenCalledWith(
+      'orientationchange',
+      expect.any(Function)
+    );
   });
-}); 
+});

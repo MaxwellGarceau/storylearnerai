@@ -1,6 +1,12 @@
 import React from 'react';
 import { useLocalization } from '../../hooks/useLocalization';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './Select';
 import { Button } from './Button';
 import { Globe } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -19,7 +25,7 @@ export const LanguageSelector = React.forwardRef<
     currentLocalization,
     changeLocalization,
     getCurrentLocalization,
-    getSupportedLocalizations
+    getSupportedLocalizations,
   } = useLocalization();
   const { t } = useTranslation();
 
@@ -29,8 +35,8 @@ export const LanguageSelector = React.forwardRef<
   if (variant === 'button') {
     return (
       <Button
-        variant="outline"
-        size="sm"
+        variant='outline'
+        size='sm'
         onClick={() => {
           const nextLang = supportedLanguages.find(
             lang => lang.code !== currentLocalization
@@ -41,7 +47,7 @@ export const LanguageSelector = React.forwardRef<
         }}
         className={cn(className)}
       >
-        <Globe className="h-4 w-4 mr-2" />
+        <Globe className='h-4 w-4 mr-2' />
         {currentLang.nativeName}
       </Button>
     );
@@ -50,14 +56,14 @@ export const LanguageSelector = React.forwardRef<
   return (
     <Select
       value={currentLocalization}
-      onValueChange={(value) => void changeLocalization(value)}
+      onValueChange={value => void changeLocalization(value)}
     >
       <SelectTrigger className={cn('w-[140px]', className)}>
-        <Globe className="h-4 w-4 mr-2" />
+        <Globe className='h-4 w-4 mr-2' />
         <SelectValue placeholder={t('languageSelector.title')} />
       </SelectTrigger>
       <SelectContent>
-        {supportedLanguages.map((language) => (
+        {supportedLanguages.map(language => (
           <SelectItem key={language.code} value={language.code}>
             {language.nativeName}
           </SelectItem>

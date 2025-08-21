@@ -101,4 +101,4 @@ describe('useToast Hook', () => {
     expect(result.current.toasts).toHaveLength(1);
     expect(result.current.toasts[0].title).toBe('Toast 3');
   });
-}); 
+});

@@ -6,26 +6,26 @@
 /** @type {import('eslint').Rule.RuleModule} */
 export default {
   meta: {
-    type: "suggestion",
+    type: 'suggestion',
     docs: {
-      description: "Prevent duplicate type definitions across the codebase",
-      category: "TypeScript",
+      description: 'Prevent duplicate type definitions across the codebase',
+      category: 'TypeScript',
       recommended: false,
     },
     fixable: null,
     hasSuggestions: true,
     schema: [
       {
-        type: "object",
+        type: 'object',
         properties: {
           ignoreTypes: {
-            type: "array",
-            items: { type: "string" },
-            description: "Types to ignore (e.g., primitive types)",
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Types to ignore (e.g., primitive types)',
           },
           minComplexity: {
-            type: "number",
-            description: "Minimum complexity to trigger the rule (default: 2)",
+            type: 'number',
+            description: 'Minimum complexity to trigger the rule (default: 2)',
             default: 2,
           },
         },
@@ -33,18 +33,32 @@ export default {
       },
     ],
     messages: {
-      duplicateType: "Duplicate type definition '{{type}}' found. Consider creating a reusable type alias.",
+      duplicateType:
+        "Duplicate type definition '{{type}}' found. Consider creating a reusable type alias.",
     },
   },
 
   create(context) {
     const options = context.options[0] || {};
-    const ignoreTypes = new Set(options.ignoreTypes || ['string', 'number', 'boolean', 'any', 'unknown', 'never', 'void', 'null', 'undefined', 'Record']);
+    const ignoreTypes = new Set(
+      options.ignoreTypes || [
+        'string',
+        'number',
+        'boolean',
+        'any',
+        'unknown',
+        'never',
+        'void',
+        'null',
+        'undefined',
+        'Record',
+      ]
+    );
     const minComplexity = options.minComplexity || 2;
-    
+
     // Store all type definitions found in the codebase
     const typeRegistry = new Map();
-    
+
     /**
      * Calculate type complexity
      * @param {string} typeString - The type as a string
@@ -52,43 +66,45 @@ export default {
      */
     function calculateComplexity(typeString) {
       if (!typeString) return 0;
-      
+
       let complexity = 0;
-      
+
       // Union types
       if (typeString.includes('|')) {
         complexity += typeString.split('|').length;
       }
-      
+
       // Intersection types
       if (typeString.includes('&')) {
         complexity += typeString.split('&').length;
       }
-      
+
       // Generic types
       if (typeString.includes('<')) {
         complexity += 2;
       }
-      
+
       // Array types
       if (typeString.includes('[]') || typeString.includes('Array<')) {
         complexity += 1;
       }
-      
+
       // Object types with properties
       if (typeString.includes('{') && typeString.includes('}')) {
-        const propertyCount = (typeString.match(/[a-zA-Z_$][a-zA-Z0-9_$]*\s*:/g) || []).length;
+        const propertyCount = (
+          typeString.match(/[a-zA-Z_$][a-zA-Z0-9_$]*\s*:/g) || []
+        ).length;
         complexity += propertyCount;
       }
-      
+
       // Function types
       if (typeString.includes('=>')) {
         complexity += 2;
       }
-      
+
       return complexity;
     }
-    
+
     /**
      * Normalize type string for comparison
      * @param {string} typeString - The type as a string
@@ -96,25 +112,31 @@ export default {
      */
     function normalizeType(typeString) {
       if (!typeString) return '';
-      
+
       // Remove extra whitespace
       let normalized = typeString.replace(/\s+/g, ' ').trim();
-      
+
       // Sort union types alphabetically
       if (normalized.includes('|')) {
-        const parts = normalized.split('|').map(part => part.trim()).sort();
+        const parts = normalized
+          .split('|')
+          .map(part => part.trim())
+          .sort();
         normalized = parts.join(' | ');
       }
-      
+
       // Sort intersection types alphabetically
       if (normalized.includes('&')) {
-        const parts = normalized.split('&').map(part => part.trim()).sort();
+        const parts = normalized
+          .split('&')
+          .map(part => part.trim())
+          .sort();
         normalized = parts.join(' & ');
       }
-      
+
       return normalized;
     }
-    
+
     /**
      * Check if type should be ignored
      * @param {string} typeString - The type as a string
@@ -122,23 +144,26 @@ export default {
      */
     function shouldIgnoreType(typeString) {
       if (!typeString) return true;
-      
+
       // Check against ignore list
       for (const ignoreType of ignoreTypes) {
-        if (typeString === ignoreType || typeString.startsWith(ignoreType + '<')) {
+        if (
+          typeString === ignoreType ||
+          typeString.startsWith(ignoreType + '<')
+        ) {
           return true;
         }
       }
-      
+
       // Check complexity
       const complexity = calculateComplexity(typeString);
       if (complexity < minComplexity) {
         return true;
       }
-      
+
       return false;
     }
-    
+
     /**
      * Report duplicate type
      * @param {ASTNode} node - The node with the duplicate type
@@ -148,23 +173,26 @@ export default {
     function reportDuplicateType(node, typeString, originalLocation) {
       context.report({
         node,
-        messageId: "duplicateType",
+        messageId: 'duplicateType',
         data: {
           type: typeString,
         },
         suggest: [
           {
             desc: `Create a type alias for '${typeString}'`,
-            fix: (fixer) => {
+            fix: fixer => {
               // This would need to be implemented based on your preferred naming convention
               const typeName = generateTypeName(typeString);
-              return fixer.insertTextBefore(node, `type ${typeName} = ${typeString};\n\n`);
+              return fixer.insertTextBefore(
+                node,
+                `type ${typeName} = ${typeString};\n\n`
+              );
             },
           },
         ],
       });
     }
-    
+
     /**
      * Generate a type name from the type string
      * @param {string} typeString - The type as a string
@@ -179,7 +207,7 @@ export default {
         .split(' ')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('');
-      
+
       return normalized + 'Type';
     }
 
@@ -204,7 +232,9 @@ export default {
       // Process any type annotation (covers unions, intersections, function types, object literals, etc.)
       TSTypeAnnotation(node) {
         if (node.typeAnnotation) {
-          const typeString = context.getSourceCode().getText(node.typeAnnotation);
+          const typeString = context
+            .getSourceCode()
+            .getText(node.typeAnnotation);
           visitTypeString(node, typeString);
         }
       },

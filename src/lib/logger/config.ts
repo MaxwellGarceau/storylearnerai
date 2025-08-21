@@ -8,12 +8,12 @@ const getEnvironment = (): string => {
     // Browser environment
     return 'development'; // Default to development in browser
   }
-  
+
   // Node.js environment
   if (typeof process !== 'undefined' && process.env) {
     return process.env.NODE_ENV ?? 'development';
   }
-  
+
   return 'development';
 };
 
@@ -96,12 +96,12 @@ const getEnvVar = (key: string, defaultValue?: string): string | undefined => {
     // For now, return default values
     return defaultValue;
   }
-  
+
   // Node.js environment
   if (typeof process !== 'undefined' && process.env) {
     return process.env[key] ?? defaultValue;
   }
-  
+
   return defaultValue;
 };
 
@@ -115,14 +115,22 @@ function getLoggerConfig(): LoggerConfig {
 // Override configuration with environment variables
 export function getLoggerConfigWithOverrides(): LoggerConfig {
   const baseConfig = getLoggerConfig();
-  
+
   return {
     ...baseConfig,
-    enabled: getEnvVar('LOG_ENABLED') ? getEnvVar('LOG_ENABLED') === 'true' : baseConfig.enabled,
+    enabled: getEnvVar('LOG_ENABLED')
+      ? getEnvVar('LOG_ENABLED') === 'true'
+      : baseConfig.enabled,
     level: (getEnvVar('LOG_LEVEL') as LogLevel) || baseConfig.level,
-    enableConsole: getEnvVar('LOG_CONSOLE') ? getEnvVar('LOG_CONSOLE') === 'true' : baseConfig.enableConsole,
-    enableFile: getEnvVar('LOG_FILE') ? getEnvVar('LOG_FILE') === 'true' : baseConfig.enableFile,
-    enableRemote: getEnvVar('LOG_REMOTE') ? getEnvVar('LOG_REMOTE') === 'true' : baseConfig.enableRemote,
+    enableConsole: getEnvVar('LOG_CONSOLE')
+      ? getEnvVar('LOG_CONSOLE') === 'true'
+      : baseConfig.enableConsole,
+    enableFile: getEnvVar('LOG_FILE')
+      ? getEnvVar('LOG_FILE') === 'true'
+      : baseConfig.enableFile,
+    enableRemote: getEnvVar('LOG_REMOTE')
+      ? getEnvVar('LOG_REMOTE') === 'true'
+      : baseConfig.enableRemote,
     remoteEndpoint: getEnvVar('LOG_ENDPOINT') ?? baseConfig.remoteEndpoint,
   };
-} 
+}

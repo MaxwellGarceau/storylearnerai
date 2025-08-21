@@ -7,7 +7,11 @@ export type NativeLanguageName = 'English' | 'Español';
 export type NullableLanguageCode = LanguageCode | null;
 
 export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2';
-export type DifficultyLevelDisplay = 'A1 (Beginner)' | 'A2 (Elementary)' | 'B1 (Intermediate)' | 'B2 (Upper Intermediate)';
+export type DifficultyLevelDisplay =
+  | 'A1 (Beginner)'
+  | 'A2 (Elementary)'
+  | 'B1 (Intermediate)'
+  | 'B2 (Upper Intermediate)';
 
 export interface PromptInstructions {
   // Language-specific instructions for translation
@@ -76,4 +80,4 @@ export interface PromptBuildContext {
   difficulty: DifficultyLevel;
   text: string;
   nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
-} 
+}

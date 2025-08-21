@@ -1,15 +1,15 @@
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
-export type LogChannel = 
-  | 'api' 
-  | 'auth' 
-  | 'ui' 
-  | 'prompts' 
-  | 'database' 
-  | 'llm' 
-  | 'translation' 
-  | 'performance' 
-  | 'security' 
+export type LogChannel =
+  | 'api'
+  | 'auth'
+  | 'ui'
+  | 'prompts'
+  | 'database'
+  | 'llm'
+  | 'translation'
+  | 'performance'
+  | 'security'
   | 'general'
   | 'walkthrough';
 
@@ -48,20 +48,18 @@ export interface Logger {
   warn(channel: LogChannel, message: string, data?: unknown): void;
   info(channel: LogChannel, message: string, data?: unknown): void;
   debug(channel: LogChannel, message: string, data?: unknown): void;
-  
+
   // Performance logging
   time(channel: LogChannel, label: string): void;
   timeEnd(channel: LogChannel, label: string, data?: unknown): void;
-  
+
   // Channel control
   enableChannel(channel: LogChannel): void;
   disableChannel(channel: LogChannel): void;
   isChannelEnabled(channel: LogChannel): boolean;
-  
+
   // Configuration
   setLevel(level: LogLevel): void;
   setUserId(userId: string): void;
   setSessionId(sessionId: string): void;
 }
-
-

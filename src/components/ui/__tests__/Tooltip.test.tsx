@@ -1,7 +1,12 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach } from 'vitest';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '../Tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from '../Tooltip';
 
 describe('Tooltip Component', () => {
   afterEach(() => {
@@ -15,9 +20,7 @@ describe('Tooltip Component', () => {
           <TooltipTrigger asChild>
             <button>Hover me</button>
           </TooltipTrigger>
-          <TooltipContent>
-            This is a tooltip
-          </TooltipContent>
+          <TooltipContent>This is a tooltip</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
@@ -35,7 +38,7 @@ describe('Tooltip Component', () => {
           <TooltipTrigger asChild>
             <button>Trigger</button>
           </TooltipTrigger>
-          <TooltipContent className="custom-class">
+          <TooltipContent className='custom-class'>
             Custom styled tooltip
           </TooltipContent>
         </Tooltip>
@@ -44,7 +47,9 @@ describe('Tooltip Component', () => {
 
     // Find the visible tooltip content (not the hidden accessibility one)
     const tooltipElements = screen.getAllByText('Custom styled tooltip');
-    const visibleTooltip = tooltipElements.find(el => !el.style.clip && !el.style.overflow?.includes('hidden'));
+    const visibleTooltip = tooltipElements.find(
+      el => !el.style.clip && !el.style.overflow?.includes('hidden')
+    );
     expect(visibleTooltip).toHaveClass('custom-class');
   });
 
@@ -55,9 +60,7 @@ describe('Tooltip Component', () => {
           <TooltipTrigger asChild>
             <button>Trigger</button>
           </TooltipTrigger>
-          <TooltipContent sideOffset={8}>
-            Tooltip with offset
-          </TooltipContent>
+          <TooltipContent sideOffset={8}>Tooltip with offset</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
@@ -66,4 +69,4 @@ describe('Tooltip Component', () => {
     const tooltipElements = screen.getAllByText('Tooltip with offset');
     expect(tooltipElements.length).toBeGreaterThan(0);
   });
-}); 
+});

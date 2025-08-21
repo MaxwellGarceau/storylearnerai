@@ -11,7 +11,7 @@ export class LLMServiceFactory {
     switch (config.provider) {
       case 'gemini':
         return new GeminiService(config);
-      
+
       default: {
         const provider = (config as { provider: string }).provider;
         throw new Error(`Unsupported LLM provider: ${provider}`);
@@ -40,7 +40,8 @@ export class LLMServiceFactory {
    */
   static getProviderDescriptions(): RecordString {
     return {
-      gemini: 'Google Gemini models via Google GenAI SDK including Gemini Pro, Flash, and Ultra',
+      gemini:
+        'Google Gemini models via Google GenAI SDK including Gemini Pro, Flash, and Ultra',
     };
   }
-} 
+}

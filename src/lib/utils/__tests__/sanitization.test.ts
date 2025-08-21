@@ -19,7 +19,9 @@ describe('Sanitization Utilities', () => {
     });
 
     it('should respect trim option', () => {
-      expect(sanitizeText('  hello world  ', { trim: false })).toBe('  hello world  ');
+      expect(sanitizeText('  hello world  ', { trim: false })).toBe(
+        '  hello world  '
+      );
     });
 
     it('should enforce max length', () => {
@@ -78,42 +80,54 @@ describe('Sanitization Utilities', () => {
       const input = '<script>alert("xss")</script>Hello';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
 
     it('should detect javascript protocol', () => {
       const input = 'javascript:alert("xss")';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
 
     it('should detect event handlers', () => {
       const input = '<img src="x" onerror="alert(\'xss\')">';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
 
     it('should detect data URLs', () => {
       const input = 'data:text/html,<script>alert("xss")</script>';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
 
     it('should detect iframe tags', () => {
       const input = '<iframe src="javascript:alert(\'xss\')"></iframe>';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
 
     it('should validate length limits', () => {
       const longText = 'a'.repeat(10001);
       const result = validateTextInput(longText, { maxLength: 10000 });
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input exceeds maximum length of 10000 characters');
+      expect(result.errors).toContain(
+        'Input exceeds maximum length of 10000 characters'
+      );
     });
 
     it('should handle empty input', () => {
@@ -149,14 +163,18 @@ describe('Sanitization Utilities', () => {
       const result = validateStoryText(input);
       expect(result.isValid).toBe(true);
       expect(result.errors).toEqual([]);
-      expect(result.sanitizedText).toBe('Érase una vez un gato que vivía en una casa muy bonita.');
+      expect(result.sanitizedText).toBe(
+        'Érase una vez un gato que vivía en una casa muy bonita.'
+      );
     });
 
     it('should reject dangerous story content', () => {
       const input = 'Érase una vez... <script>alert("xss")</script> un gato.';
       const result = validateStoryText(input);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Input contains potentially dangerous content');
+      expect(result.errors).toContain(
+        'Input contains potentially dangerous content'
+      );
     });
   });
 
@@ -192,7 +210,8 @@ describe('Sanitization Utilities', () => {
     });
 
     it('should handle complex XSS attempts', () => {
-      const input = '<img src="x" onerror="alert(\'xss\')" onload="alert(\'xss2\')">';
+      const input =
+        '<img src="x" onerror="alert(\'xss\')" onload="alert(\'xss2\')">';
       const result = validateTextInput(input);
       expect(result.isValid).toBe(false);
     });
@@ -215,4 +234,4 @@ describe('Sanitization Utilities', () => {
       expect(result).toBe(maxInput);
     });
   });
-}); 
+});

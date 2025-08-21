@@ -68,7 +68,7 @@ import { useWalkthrough } from './hooks/useWalkthrough';
 
 function App() {
   useWalkthrough(); // Initialize walkthrough hook
-  
+
   return (
     <Router>
       {/* Your routes */}
@@ -84,21 +84,14 @@ function App() {
 import { useWalkthrough } from '../hooks/useWalkthrough';
 
 function MyComponent() {
-  const { 
-    startWalkthroughById, 
-    stopWalkthrough, 
-    isCompleted 
-  } = useWalkthrough();
+  const { startWalkthroughById, stopWalkthrough, isCompleted } =
+    useWalkthrough();
 
   const handleStartWalkthrough = () => {
     startWalkthroughById('home-walkthrough');
   };
 
-  return (
-    <button onClick={handleStartWalkthrough}>
-      Start Tutorial
-    </button>
-  );
+  return <button onClick={handleStartWalkthrough}>Start Tutorial</button>;
 }
 ```
 
@@ -149,9 +142,7 @@ Each walkthrough step defines:
 Elements are targeted using CSS selectors. It's recommended to use `data-testid` attributes:
 
 ```tsx
-<button data-testid="save-button">
-  Save
-</button>
+<button data-testid='save-button'>Save</button>
 ```
 
 Then reference in walkthrough config:
@@ -168,7 +159,7 @@ Then reference in walkthrough config:
 The overlay automatically positions itself relative to the target element:
 
 - **top**: Above the element
-- **bottom**: Below the element  
+- **bottom**: Below the element
 - **left**: To the left of the element
 - **right**: To the right of the element
 - **center**: Centered on screen
@@ -192,7 +183,7 @@ Walkthrough completion status is stored in localStorage:
 Walkthroughs automatically start based on the current route:
 
 - **Home page** (`/`): Starts `home-walkthrough`
-- **Translate page** (`/translate`): Starts `translate-walkthrough`  
+- **Translate page** (`/translate`): Starts `translate-walkthrough`
 - **Story page** (`/story`): Starts `story-walkthrough`
 
 Auto-start only occurs if the walkthrough hasn't been completed or skipped.
@@ -204,7 +195,9 @@ The walkthrough system includes CSS for highlighting elements:
 ```css
 .walkthrough-highlight {
   @apply relative z-30;
-  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3), 0 0 0 8px hsl(var(--primary) / 0.1);
+  box-shadow:
+    0 0 0 4px hsl(var(--primary) / 0.3),
+    0 0 0 8px hsl(var(--primary) / 0.1);
   border-radius: 0.5rem;
   transition: all 0.3s ease-in-out;
 }
@@ -220,6 +213,7 @@ npm run test:once -- src/__tests__/walkthrough/
 ```
 
 Tests cover:
+
 - Service functionality
 - Hook behavior
 - Auto-start logic
@@ -229,14 +223,17 @@ Tests cover:
 ## Current Walkthroughs
 
 ### Home Walkthrough
+
 - **Target**: "Start Translating" button
 - **Purpose**: Guide users to begin their first translation
 
-### Translate Walkthrough  
+### Translate Walkthrough
+
 - **Targets**: Story textarea, translation options, translate button
 - **Purpose**: Explain how to input stories and configure translation settings
 
 ### Story Walkthrough
+
 - **Targets**: Save translation button, login/signup buttons
 - **Purpose**: Show users how to save translations and create accounts
 
@@ -257,4 +254,4 @@ Tests cover:
 4. **Provide Skip Option**: Always allow users to skip walkthroughs
 5. **Use Descriptive Text**: Make step descriptions clear and actionable
 6. **Position Carefully**: Choose tooltip positions that don't obscure important UI
-7. **Handle Edge Cases**: Account for missing elements or dynamic content 
+7. **Handle Edge Cases**: Account for missing elements or dynamic content

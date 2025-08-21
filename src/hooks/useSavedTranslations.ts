@@ -1,56 +1,63 @@
-import { useState, useEffect, useCallback } from 'react'
-import { SavedTranslationService } from '../api/supabase/database/savedTranslationService'
-import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation'
-import type { VoidPromise } from '../types/common'
-import { useAuth } from './useAuth'
+import { useState, useEffect, useCallback } from 'react';
+import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
+import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation';
+import type { VoidPromise } from '../types/common';
+import { useAuth } from './useAuth';
 
 // Type alias to avoid duplicate type definition
-type LoadTranslationsFunction = () => VoidPromise
+type LoadTranslationsFunction = () => VoidPromise;
 
 interface UseSavedTranslationsReturn {
-  savedTranslations: DatabaseSavedTranslationWithDetails[]
-  loading: boolean
-  error: string | null
-  loadTranslations: LoadTranslationsFunction
-  refreshTranslations: LoadTranslationsFunction
+  savedTranslations: DatabaseSavedTranslationWithDetails[];
+  loading: boolean;
+  error: string | null;
+  loadTranslations: LoadTranslationsFunction;
+  refreshTranslations: LoadTranslationsFunction;
 }
 
 // Create a singleton instance of the service
-const savedTranslationService = new SavedTranslationService()
+const savedTranslationService = new SavedTranslationService();
 
 export function useSavedTranslations(): UseSavedTranslationsReturn {
-  const { user } = useAuth()
-  const [savedTranslations, setSavedTranslations] = useState<DatabaseSavedTranslationWithDetails[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth();
+  const [savedTranslations, setSavedTranslations] = useState<
+    DatabaseSavedTranslationWithDetails[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadTranslations = useCallback(async () => {
     if (!user) {
-      setSavedTranslations([])
-      setLoading(false)
-      return
+      setSavedTranslations([]);
+      setLoading(false);
+      return;
     }
 
     try {
-      setLoading(true)
-      setError(null)
-      const translations = await savedTranslationService.getSavedTranslations(user.id)
-      setSavedTranslations(translations)
+      setLoading(true);
+      setError(null);
+      const translations = await savedTranslationService.getSavedTranslations(
+        user.id
+      );
+      setSavedTranslations(translations);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load saved translations'
-      setError(errorMessage)
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Failed to load saved translations';
+      setError(errorMessage);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [user])
+  }, [user]);
 
   const refreshTranslations = useCallback(async () => {
-    await loadTranslations()
-  }, [loadTranslations])
+    await loadTranslations();
+  }, [loadTranslations]);
 
   useEffect(() => {
-    void loadTranslations()
-  }, [loadTranslations])
+    void loadTranslations();
+  }, [loadTranslations]);
 
   return {
     savedTranslations,
@@ -58,5 +65,5 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     error,
     loadTranslations,
     refreshTranslations,
-  }
-} 
+  };
+}
