@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS languages (
     id SERIAL PRIMARY KEY,
     code VARCHAR(2) UNIQUE NOT NULL, -- ISO 639-1 language codes (e.g., 'en', 'es', 'fr')
     name VARCHAR(100) NOT NULL, -- Full language name (e.g., 'English', 'Spanish', 'French')
-    native_name VARCHAR(100), -- Name in the native language
+    native_name VARCHAR(100) NOT NULL, -- Name in the native language
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

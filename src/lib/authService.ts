@@ -205,7 +205,7 @@ class AuthServiceImpl implements AuthService {
   onAuthStateChange(callback: AuthStateCallback): UnsubscribeFunction {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       const state: AuthState = {
         user: session?.user ?? null,
         loading: false,

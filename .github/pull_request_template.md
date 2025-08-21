@@ -44,15 +44,6 @@
 - [ ] Manual testing completed
 - [ ] All existing tests pass
 
-### Testing Commands Used
-
-<!-- Check the commands you used -->
-
-- [ ] `npm test:once` - Single test run
-- [ ] `npm test` - Watch mode testing
-- [ ] `npm run lint` - Code linting
-- [ ] `npm run build` - Build verification
-
 ### Manual Testing Steps
 
 <!-- Describe how to manually test the changes -->

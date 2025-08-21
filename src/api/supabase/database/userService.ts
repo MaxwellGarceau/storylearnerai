@@ -1,6 +1,5 @@
 import { supabase } from '../client'
-import type { PostgrestError } from '@supabase/supabase-js';
-import type { DatabaseUserInsert } from '../../../types/database/user';
+import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user';
 import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { NullableString, VoidPromise } from '../../../types/common'
@@ -205,7 +204,7 @@ export class UserService {
   }
 
   /**
-   * Get user by user ID
+   * Get user by ID
    */
   static async getUser(userId: string): DatabaseUserInsertOrNullPromise {
     // Validate user ID
@@ -213,20 +212,20 @@ export class UserService {
       throw new Error('Invalid user ID provided');
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // User not found
       }
-      throw new Error(`Failed to fetch user: ${error.message}`)
+      throw new Error(`Failed to fetch user: ${result.error.message}`)
     }
 
-    return user
+    return result.data as DatabaseUserInsert
   }
 
   /**
@@ -250,7 +249,7 @@ export class UserService {
       }
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .insert({
         id: sanitizedData.id,
@@ -262,13 +261,13 @@ export class UserService {
         updated_at: new Date().toISOString()
       })
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
-    if (error) {
-      throw new Error(`Failed to create user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to create user: ${result.error.message}`)
     }
 
-    return user
+    return result.data as DatabaseUserInsert
   }
 
   /**
@@ -297,24 +296,24 @@ export class UserService {
       }
     }
 
-    const updateData: DatabaseUserInsert = {
+    const updateData: DatabaseUserUpdate = {
       ...sanitizedData,
-      preferred_language: sanitizedData.preferred_language as LanguageCode | null | undefined,
+      preferred_language: (sanitizedData.preferred_language ?? undefined) as LanguageCode | undefined,
       updated_at: new Date().toISOString()
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
-    if (error) {
-      throw new Error(`Failed to update user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to update user: ${result.error.message}`)
     }
 
-    return user
+    return result.data as DatabaseUserInsert
   }
 
   /**
@@ -326,13 +325,13 @@ export class UserService {
       throw new Error('Invalid user ID provided');
     }
 
-    const { error } = await supabase
+    const result = await supabase
       .from('users')
       .delete()
       .eq('id', userId)
 
-    if (error) {
-      throw new Error(`Failed to delete user: ${error.message}`)
+    if (result.error) {
+      throw new Error(`Failed to delete user: ${result.error.message}`)
     }
   }
 
@@ -346,17 +345,17 @@ export class UserService {
       throw new Error(`Invalid username format: ${usernameValidation.errors[0]}`);
     }
 
-    const { error } = await supabase
+    const result = await supabase
       .from('users')
       .select('id')
       .eq('username', usernameValidation.sanitizedText)
       .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return true // Username is available
       }
-      throw new Error(`Failed to check username availability: ${error.message}`)
+      throw new Error(`Failed to check username availability: ${result.error.message}`)
     }
 
     return false // Username is taken
@@ -372,20 +371,20 @@ export class UserService {
       throw new Error(`Invalid username format: ${usernameValidation.errors[0]}`);
     }
 
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from('users')
       .select('*')
       .eq('username', usernameValidation.sanitizedText)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (result.error) {
+      if (result.error.code === 'PGRST116') {
         return null // User not found
       }
-      throw new Error(`Failed to fetch user by username: ${error.message}`)
+      throw new Error(`Failed to fetch user by username: ${result.error.message}`)
     }
 
-    return user
+    return result.data as DatabaseUserInsert
   }
 
   /**

@@ -1,5 +1,6 @@
 import { supabase } from '../client'
 import type { DatabaseTranslationUpdate } from '../../../types/database/translation'
+import type { LanguageCode } from '../../../types/llm/prompts'
 import type { DatabaseTranslationInsertPromise, DatabaseTranslationInsertOrNullPromise, DatabaseTranslationInsertArrayPromise } from '../../../types/database/promise'
 import type { Database } from '../../../types/database'
 import { validateStoryText } from '../../../lib/utils/sanitization'
@@ -12,7 +13,7 @@ export interface CreateTranslationData {
 }
 
 export interface UpdateTranslationData {
-  target_language?: string
+  target_language?: LanguageCode
   translated_content?: string
 }
 
@@ -93,7 +94,7 @@ export class TranslationService {
         if (!languageRegex.test(data.target_language)) {
           errors.push({ field: 'target_language', message: 'Invalid language code format (use ISO 639-1)' });
         } else {
-          sanitizedData.target_language = data.target_language.toLowerCase();
+          sanitizedData.target_language = data.target_language.toLowerCase() as LanguageCode;
         }
       }
     }

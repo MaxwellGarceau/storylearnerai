@@ -1,8 +1,9 @@
 import type {
   LanguageCode,
   DifficultyLevel,
-  EnglishLanguageName,
   NativeLanguageName,
+  EnglishLanguageName,
+  DifficultyLevelDisplay,
 } from '../llm/prompts';
 import type { NullableString } from '../common';
 
@@ -38,7 +39,7 @@ export interface DatabaseLanguage {
 export interface DatabaseDifficultyLevel {
   id: number;
   code: DifficultyLevel;
-  name: string;
+  name: DifficultyLevelDisplay;
   description: NullableString;
   created_at: string;
 }

@@ -1,5 +1,5 @@
 import { supabase } from '../client';
-import {
+import type {
   DatabaseSavedTranslationWithDetails,
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
@@ -10,6 +10,12 @@ import {
 import type { DatabaseSavedTranslationWithDetailsPromise } from '../../../types/database/promise';
 import type { Database } from '../../../types/database';
 import type { LanguageCode } from '../../../types/llm/prompts';
+import type {
+  EnglishLanguageName,
+  NativeLanguageName,
+  DifficultyLevelDisplay,
+  DifficultyLevel as DifficultyLevelCode,
+} from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
 import type { VoidPromise } from '../../../types/common';
 
@@ -183,7 +189,17 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch languages: ${error.message}`);
     }
 
-    return (data as Database['public']['Tables']['languages']['Row'][]) ?? [];
+    const rows = (data as Database['public']['Tables']['languages']['Row'][]) ?? []
+    return rows.map(r => {
+      const native: NativeLanguageName = (r.native_name ?? (r.code === 'en' ? 'English' : 'Español')) as NativeLanguageName
+      return {
+        id: r.id,
+        code: r.code,
+        name: r.name as EnglishLanguageName,
+        native_name: native,
+        created_at: r.created_at,
+      }
+    })
   }
 
   /**
@@ -199,7 +215,24 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
     }
 
-    return (data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? [];
+    const rows = (data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? []
+    const displayMap: Record<DifficultyLevelCode, DifficultyLevelDisplay> = {
+      a1: 'A1 (Beginner)',
+      a2: 'A2 (Elementary)',
+      b1: 'B1 (Intermediate)',
+      b2: 'B2 (Upper Intermediate)',
+    }
+    return rows.map(r => {
+      const display: DifficultyLevelDisplay =
+        (r.name as DifficultyLevelDisplay) ?? displayMap[r.code]
+      return {
+        id: r.id,
+        code: r.code,
+        name: display,
+        description: r.description,
+        created_at: r.created_at,
+      }
+    })
   }
 
   /**
@@ -219,7 +252,16 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch language: ${result.error.message}`);
     }
 
-    return result.data as Database['public']['Tables']['languages']['Row'] | null;
+    if (!result.data) return null
+    const r = result.data as Database['public']['Tables']['languages']['Row']
+    const native: NativeLanguageName = (r.native_name ?? (r.code === 'en' ? 'English' : 'Español')) as NativeLanguageName
+    return {
+      id: r.id,
+      code: r.code,
+      name: r.name as EnglishLanguageName,
+      native_name: native,
+      created_at: r.created_at,
+    }
   }
 
   /**
@@ -239,7 +281,23 @@ export class SavedTranslationService {
       throw new Error(`Failed to fetch difficulty level: ${result.error.message}`);
     }
 
-    return result.data as Database['public']['Tables']['difficulty_levels']['Row'] | null;
+    if (!result.data) return null
+    const r = result.data as Database['public']['Tables']['difficulty_levels']['Row']
+    const displayMap: Record<DifficultyLevelCode, DifficultyLevelDisplay> = {
+      a1: 'A1 (Beginner)',
+      a2: 'A2 (Elementary)',
+      b1: 'B1 (Intermediate)',
+      b2: 'B2 (Upper Intermediate)',
+    }
+    const display: DifficultyLevelDisplay =
+      (r.name as DifficultyLevelDisplay) ?? displayMap[r.code]
+    return {
+      id: r.id,
+      code: r.code,
+      name: display,
+      description: r.description,
+      created_at: r.created_at,
+    }
   }
 
   /**

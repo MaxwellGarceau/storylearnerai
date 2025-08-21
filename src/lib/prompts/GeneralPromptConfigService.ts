@@ -242,7 +242,7 @@ class GeneralPromptConfigService {
    * comprehensive user background customization yet
    */
   private getLanguagePairInstructions(
-    fromLanguageCode: LanguageCode,
+    _fromLanguageCode: LanguageCode,
     toLanguageCode: LanguageCode,
     difficulty: DifficultyLevel
   ): PromptInstructions {
