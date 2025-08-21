@@ -12,13 +12,16 @@ vi.mock('react-i18next', () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         'storyReader.noStory.title': 'No Story Found',
-        'storyReader.noStory.description': 'Please translate a story first to view it here.',
+        'storyReader.noStory.description':
+          'Please translate a story first to view it here.',
         'storyReader.noStory.translateStory': 'Translate a Story',
         'storyReader.noStory.home': 'Home',
         'storyReader.header.translatedStory': 'Your Translated Story',
-        'storyReader.header.translatedDescription': 'Enjoy reading your story in English!',
+        'storyReader.header.translatedDescription':
+          'Enjoy reading your story in English!',
         'storyReader.header.savedStory': 'Your Saved Story',
-        'storyReader.header.savedDescription': 'Enjoy reading your saved story!',
+        'storyReader.header.savedDescription':
+          'Enjoy reading your saved story!',
         'storyReader.header.savedBadge': 'Saved',
         'storyReader.header.debugBadge': 'Debug Mode',
         'storyReader.actions.translateAnother': 'Translate Another Story',
@@ -64,11 +67,11 @@ vi.mock('../../hooks/useWalkthrough', () => ({
 // Mock the StoryRender component
 vi.mock('../../components/story/StoryRender', () => ({
   default: ({ translationData }: { translationData: TranslationResponse }) => (
-    <div data-testid="story-render">
+    <div data-testid='story-render'>
       <div>Original: {translationData.originalText}</div>
       <div>Translated: {translationData.translatedText}</div>
     </div>
-  )
+  ),
 }));
 
 // Mock react-router-dom
@@ -97,9 +100,7 @@ vi.mock('react-router-dom', async () => {
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
     <TooltipProvider>
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
+      <BrowserRouter>{component}</BrowserRouter>
     </TooltipProvider>
   );
 };
@@ -113,30 +114,32 @@ describe('StoryReaderPage', () => {
 
   it('shows no story message when no translation data is available', () => {
     renderWithRouter(<StoryReaderPage />);
-    
+
     expect(screen.getByText('No Story Found')).toBeInTheDocument();
-    expect(screen.getByText('Please translate a story first to view it here.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please translate a story first to view it here.')
+    ).toBeInTheDocument();
     expect(screen.getByText('Translate a Story')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
   });
 
   it('navigates to /translate when Translate a Story button is clicked', () => {
     renderWithRouter(<StoryReaderPage />);
-    
+
     const translateButtons = screen.getAllByText('Translate a Story');
     const translateButton = translateButtons[0];
     fireEvent.click(translateButton);
-    
+
     expect(mockNavigate).toHaveBeenCalledWith('/translate');
   });
 
   it('navigates to / when Home button is clicked', () => {
     renderWithRouter(<StoryReaderPage />);
-    
+
     const homeButtons = screen.getAllByRole('button', { name: 'Home' });
     const homeButton = homeButtons[0];
     fireEvent.click(homeButton);
-    
+
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
@@ -148,15 +151,17 @@ describe('StoryReaderPage', () => {
       toLanguage: 'en',
       difficulty: 'a2',
       provider: 'test',
-      model: 'test-model'
+      model: 'test-model',
     };
 
     mockLocation.state = { translationData: mockTranslationData };
-    
+
     renderWithRouter(<StoryReaderPage />);
-    
+
     expect(screen.getByText('Your Translated Story')).toBeInTheDocument();
-    expect(screen.getByText('Enjoy reading your story in English!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Enjoy reading your story in English!')
+    ).toBeInTheDocument();
     expect(screen.getByTestId('story-render')).toBeInTheDocument();
   });
 
@@ -168,16 +173,18 @@ describe('StoryReaderPage', () => {
       toLanguage: 'en',
       difficulty: 'a2',
       provider: 'test',
-      model: 'test-model'
+      model: 'test-model',
     };
 
     mockLocation.state = { translationData: mockTranslationData };
-    
+
     renderWithRouter(<StoryReaderPage />);
-    
-    const translateAnotherButtons = screen.getAllByText('Translate Another Story');
+
+    const translateAnotherButtons = screen.getAllByText(
+      'Translate Another Story'
+    );
     expect(translateAnotherButtons[0]).toBeInTheDocument();
-    
+
     const homeButtons = screen.getAllByRole('button', { name: 'Home' });
     expect(homeButtons[0]).toBeInTheDocument();
   });
@@ -190,17 +197,19 @@ describe('StoryReaderPage', () => {
       toLanguage: 'en',
       difficulty: 'a2',
       provider: 'test',
-      model: 'test-model'
+      model: 'test-model',
     };
 
     mockLocation.state = { translationData: mockTranslationData };
-    
+
     renderWithRouter(<StoryReaderPage />);
-    
-    const translateAnotherButtons = screen.getAllByText('Translate Another Story');
+
+    const translateAnotherButtons = screen.getAllByText(
+      'Translate Another Story'
+    );
     const translateAnotherButton = translateAnotherButtons[0];
     fireEvent.click(translateAnotherButton);
-    
+
     expect(mockNavigate).toHaveBeenCalledWith('/translate');
   });
-}); 
+});

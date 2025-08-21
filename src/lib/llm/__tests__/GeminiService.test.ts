@@ -17,10 +17,10 @@ vi.mock('@google/genai', () => ({
 describe('GeminiService', () => {
   let service: GeminiService;
   let mockGenerateContent: MockFunction;
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     const config: GeminiConfig = {
       provider: 'gemini',
       apiKey: 'test-api-key',
@@ -30,9 +30,13 @@ describe('GeminiService', () => {
       temperature: 0.7,
       projectId: 'test-project',
     };
-    
+
     service = new GeminiService(config);
-    mockGenerateContent = (service as unknown as { genAI: { models: { generateContent: MockFunction } } }).genAI.models.generateContent;
+    mockGenerateContent = (
+      service as unknown as {
+        genAI: { models: { generateContent: MockFunction } };
+      }
+    ).genAI.models.generateContent;
   });
 
   it('should generate completion with Gemini format', async () => {
@@ -86,7 +90,9 @@ describe('GeminiService', () => {
       model: 'gemini-1.5-flash',
     };
 
-    await expect(service.generateCompletion(request)).rejects.toThrow('API Error');
+    await expect(service.generateCompletion(request)).rejects.toThrow(
+      'API Error'
+    );
   });
 
   it('should use default model from config', async () => {
@@ -214,4 +220,4 @@ describe('GeminiService', () => {
 
     expect(isHealthy).toBe(false);
   });
-}); 
+});

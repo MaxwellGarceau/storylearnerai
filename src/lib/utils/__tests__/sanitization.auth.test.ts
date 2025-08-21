@@ -13,12 +13,18 @@ describe('Authentication Sanitization Utilities', () => {
     describe('sanitizeEmail', () => {
       it('should sanitize normal email addresses', () => {
         expect(sanitizeEmail('user@example.com')).toBe('user@example.com');
-        expect(sanitizeEmail('test.user+tag@domain.co.uk')).toBe('test.user+tag@domain.co.uk');
+        expect(sanitizeEmail('test.user+tag@domain.co.uk')).toBe(
+          'test.user+tag@domain.co.uk'
+        );
       });
 
       it('should remove HTML tags from email', () => {
-        expect(sanitizeEmail('<script>alert("xss")</script>user@example.com')).toBe('user@example.com');
-        expect(sanitizeEmail('user@example.com<script>alert("xss")</script>')).toBe('user@example.com');
+        expect(
+          sanitizeEmail('<script>alert("xss")</script>user@example.com')
+        ).toBe('user@example.com');
+        expect(
+          sanitizeEmail('user@example.com<script>alert("xss")</script>')
+        ).toBe('user@example.com');
       });
 
       it('should trim whitespace', () => {
@@ -82,7 +88,9 @@ describe('Authentication Sanitization Utilities', () => {
         maliciousEmails.forEach(email => {
           const result = validateEmail(email);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Input contains potentially dangerous content');
+          expect(result.errors).toContain(
+            'Input contains potentially dangerous content'
+          );
         });
       });
 
@@ -90,7 +98,9 @@ describe('Authentication Sanitization Utilities', () => {
         const longEmail = 'a'.repeat(250) + '@example.com';
         const result = validateEmail(longEmail);
         expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Input exceeds maximum length of 254 characters');
+        expect(result.errors).toContain(
+          'Input exceeds maximum length of 254 characters'
+        );
       });
     });
   });
@@ -105,8 +115,12 @@ describe('Authentication Sanitization Utilities', () => {
       });
 
       it('should remove HTML tags from username', () => {
-        expect(sanitizeUsername('<script>alert("xss")</script>user123')).toBe('user123');
-        expect(sanitizeUsername('user123<script>alert("xss")</script>')).toBe('user123');
+        expect(sanitizeUsername('<script>alert("xss")</script>user123')).toBe(
+          'user123'
+        );
+        expect(sanitizeUsername('user123<script>alert("xss")</script>')).toBe(
+          'user123'
+        );
       });
 
       it('should trim whitespace', () => {
@@ -149,7 +163,9 @@ describe('Authentication Sanitization Utilities', () => {
         shortUsernames.forEach(username => {
           const result = validateUsername(username);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens');
+          expect(result.errors).toContain(
+            'Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens'
+          );
         });
       });
 
@@ -172,7 +188,9 @@ describe('Authentication Sanitization Utilities', () => {
         invalidUsernames.forEach(username => {
           const result = validateUsername(username);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens');
+          expect(result.errors).toContain(
+            'Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens'
+          );
         });
       });
 
@@ -187,7 +205,9 @@ describe('Authentication Sanitization Utilities', () => {
         maliciousUsernames.forEach(username => {
           const result = validateUsername(username);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Input contains potentially dangerous content');
+          expect(result.errors).toContain(
+            'Input contains potentially dangerous content'
+          );
         });
       });
 
@@ -195,7 +215,9 @@ describe('Authentication Sanitization Utilities', () => {
         const longUsername = 'a'.repeat(60);
         const result = validateUsername(longUsername);
         expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Input exceeds maximum length of 50 characters');
+        expect(result.errors).toContain(
+          'Input exceeds maximum length of 50 characters'
+        );
       });
     });
   });
@@ -206,12 +228,16 @@ describe('Authentication Sanitization Utilities', () => {
         expect(sanitizeDisplayName('John Doe')).toBe('John Doe');
         expect(sanitizeDisplayName('Mary Jane')).toBe('Mary Jane');
         expect(sanitizeDisplayName('Dr. Smith')).toBe('Dr. Smith');
-        expect(sanitizeDisplayName('O\'Connor')).toBe('O\'Connor');
+        expect(sanitizeDisplayName("O'Connor")).toBe("O'Connor");
       });
 
       it('should remove HTML tags from display names', () => {
-        expect(sanitizeDisplayName('<script>alert("xss")</script>John Doe')).toBe('John Doe');
-        expect(sanitizeDisplayName('John Doe<script>alert("xss")</script>')).toBe('John Doe');
+        expect(
+          sanitizeDisplayName('<script>alert("xss")</script>John Doe')
+        ).toBe('John Doe');
+        expect(
+          sanitizeDisplayName('John Doe<script>alert("xss")</script>')
+        ).toBe('John Doe');
       });
 
       it('should trim whitespace', () => {
@@ -236,7 +262,7 @@ describe('Authentication Sanitization Utilities', () => {
           'John Doe',
           'Mary Jane',
           'Dr. Smith',
-          'O\'Connor',
+          "O'Connor",
           'Jean-Pierre',
           'José María',
         ];
@@ -254,7 +280,9 @@ describe('Authentication Sanitization Utilities', () => {
         shortNames.forEach(name => {
           const result = validateDisplayName(name);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Display name must be at least 2 characters long');
+          expect(result.errors).toContain(
+            'Display name must be at least 2 characters long'
+          );
         });
       });
 
@@ -268,7 +296,9 @@ describe('Authentication Sanitization Utilities', () => {
         const longName = 'a'.repeat(150);
         const result = validateDisplayName(longName);
         expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Display name must be 100 characters or less');
+        expect(result.errors).toContain(
+          'Display name must be 100 characters or less'
+        );
       });
 
       it('should detect malicious content', () => {
@@ -282,7 +312,9 @@ describe('Authentication Sanitization Utilities', () => {
         maliciousNames.forEach(name => {
           const result = validateDisplayName(name);
           expect(result.isValid).toBe(false);
-          expect(result.errors).toContain('Input contains potentially dangerous content');
+          expect(result.errors).toContain(
+            'Input contains potentially dangerous content'
+          );
         });
       });
 
@@ -290,35 +322,66 @@ describe('Authentication Sanitization Utilities', () => {
         const longName = 'a'.repeat(300);
         const result = validateDisplayName(longName);
         expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Input exceeds maximum length of 255 characters');
+        expect(result.errors).toContain(
+          'Input exceeds maximum length of 255 characters'
+        );
       });
     });
   });
 
   describe('Security Edge Cases', () => {
     it('should handle mixed case script tags', () => {
-      expect(validateEmail('<SCRIPT>alert("xss")</SCRIPT>user@example.com').isValid).toBe(false);
-      expect(validateUsername('<SCRIPT>alert("xss")</SCRIPT>user123').isValid).toBe(false);
-      expect(validateDisplayName('<SCRIPT>alert("xss")</SCRIPT>John Doe').isValid).toBe(false);
+      expect(
+        validateEmail('<SCRIPT>alert("xss")</SCRIPT>user@example.com').isValid
+      ).toBe(false);
+      expect(
+        validateUsername('<SCRIPT>alert("xss")</SCRIPT>user123').isValid
+      ).toBe(false);
+      expect(
+        validateDisplayName('<SCRIPT>alert("xss")</SCRIPT>John Doe').isValid
+      ).toBe(false);
     });
 
     it('should handle encoded script tags', () => {
       // Encoded script tags should be allowed as they are not executable
-      expect(validateEmail('&lt;script&gt;alert("xss")&lt;/script&gt;user@example.com').isValid).toBe(true);
-      expect(validateUsername('&lt;script&gt;alert("xss")&lt;/script&gt;user123').isValid).toBe(false); // Username format validation fails
-      expect(validateDisplayName('&lt;script&gt;alert("xss")&lt;/script&gt;John Doe').isValid).toBe(true);
+      expect(
+        validateEmail(
+          '&lt;script&gt;alert("xss")&lt;/script&gt;user@example.com'
+        ).isValid
+      ).toBe(true);
+      expect(
+        validateUsername('&lt;script&gt;alert("xss")&lt;/script&gt;user123')
+          .isValid
+      ).toBe(false); // Username format validation fails
+      expect(
+        validateDisplayName('&lt;script&gt;alert("xss")&lt;/script&gt;John Doe')
+          .isValid
+      ).toBe(true);
     });
 
     it('should handle event handlers', () => {
-      expect(validateEmail('user@example.com<img src="x" onerror="alert(\'xss\')">').isValid).toBe(false);
-      expect(validateUsername('user123<img src="x" onerror="alert(\'xss\')">').isValid).toBe(false);
-      expect(validateDisplayName('John Doe<img src="x" onerror="alert(\'xss\')">').isValid).toBe(false);
+      expect(
+        validateEmail('user@example.com<img src="x" onerror="alert(\'xss\')">')
+          .isValid
+      ).toBe(false);
+      expect(
+        validateUsername('user123<img src="x" onerror="alert(\'xss\')">')
+          .isValid
+      ).toBe(false);
+      expect(
+        validateDisplayName('John Doe<img src="x" onerror="alert(\'xss\')">')
+          .isValid
+      ).toBe(false);
     });
 
     it('should handle javascript protocol', () => {
-      expect(validateEmail('javascript:alert("xss")@example.com').isValid).toBe(false);
+      expect(validateEmail('javascript:alert("xss")@example.com').isValid).toBe(
+        false
+      );
       expect(validateUsername('javascript:alert("xss")').isValid).toBe(false);
-      expect(validateDisplayName('javascript:alert("xss")').isValid).toBe(false);
+      expect(validateDisplayName('javascript:alert("xss")').isValid).toBe(
+        false
+      );
     });
   });
-}); 
+});

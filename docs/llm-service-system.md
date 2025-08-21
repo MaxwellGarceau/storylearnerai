@@ -44,11 +44,14 @@ import { logger } from '@/lib/logger';
 const response = await llmServiceManager.generateCompletion({
   prompt: 'Translate this text to English: Hola mundo',
   maxTokens: 1000,
-  temperature: 0.7
+  temperature: 0.7,
 });
 
 logger.info('llm', 'Generated text', { content: response.content });
-logger.info('llm', 'Response details', { provider: response.provider, model: response.model });
+logger.info('llm', 'Response details', {
+  provider: response.provider,
+  model: response.model,
+});
 ```
 
 ### Health Check
@@ -79,7 +82,7 @@ const newConfig = {
   model: 'claude-3-haiku-20240307',
   maxTokens: 2000,
   temperature: 0.7,
-  version: '2023-06-01'
+  version: '2023-06-01',
 };
 
 llmServiceManager.reinitialize(newConfig);
@@ -101,6 +104,7 @@ VITE_LLM_TEMPERATURE=0.7
 ### Provider-Specific Configuration
 
 #### OpenAI
+
 ```bash
 VITE_LLM_PROVIDER=openai
 VITE_LLM_API_KEY=sk-...
@@ -110,6 +114,7 @@ VITE_OPENAI_ORGANIZATION=org-... # Optional
 ```
 
 #### Anthropic
+
 ```bash
 VITE_LLM_PROVIDER=anthropic
 VITE_LLM_API_KEY=sk-ant-...
@@ -119,6 +124,7 @@ VITE_ANTHROPIC_VERSION=2023-06-01 # Optional
 ```
 
 #### Meta Llama
+
 ```bash
 VITE_LLM_PROVIDER=llama
 VITE_LLM_API_KEY=your-llama-api-key # or "none" for Ollama
@@ -131,6 +137,7 @@ VITE_LLAMA_HEADERS={"X-Custom-Header": "value"} # Optional JSON
 ```
 
 ##### Llama Provider Options:
+
 - **ollama**: Local deployment (http://localhost:11434)
 - **groq**: Groq cloud API (https://api.groq.com/openai/v1)
 - **together**: Together AI (https://api.together.xyz/v1)
@@ -138,6 +145,7 @@ VITE_LLAMA_HEADERS={"X-Custom-Header": "value"} # Optional JSON
 - **custom**: Custom endpoint with OpenAI-compatible format
 
 #### Custom
+
 ```bash
 VITE_LLM_PROVIDER=custom
 VITE_LLM_API_KEY=your-custom-key
@@ -158,7 +166,12 @@ export interface NewProviderConfig extends LLMConfig {
 }
 
 // Update union type
-export type ProviderConfig = OpenAIConfig | AnthropicConfig | GeminiConfig | CustomConfig | NewProviderConfig;
+export type ProviderConfig =
+  | OpenAIConfig
+  | AnthropicConfig
+  | GeminiConfig
+  | CustomConfig
+  | NewProviderConfig;
 ```
 
 ### Step 2: Create Provider Service
@@ -175,7 +188,7 @@ export class NewProviderService extends LLMService {
 
   async generateCompletion(request: LLMRequest): Promise<LLMResponse> {
     const providerConfig = this.config as NewProviderConfig;
-    
+
     // Implement API call logic here
     const response = await fetch(`${providerConfig.endpoint}/completions`, {
       method: 'POST',
@@ -186,7 +199,7 @@ export class NewProviderService extends LLMService {
     });
 
     const data = await this.handleResponse(response);
-    
+
     return {
       content: data.text, // Map to provider response format
       model: data.model,
@@ -241,7 +254,9 @@ export class EnvironmentConfig {
           provider: 'llama',
           llamaProvider: import.meta.env.VITE_LLAMA_PROVIDER || 'ollama',
           systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT,
-          stopSequences: this.parseStopSequences(import.meta.env.VITE_LLAMA_STOP_SEQUENCES),
+          stopSequences: this.parseStopSequences(
+            import.meta.env.VITE_LLAMA_STOP_SEQUENCES
+          ),
           headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS),
         };
       case 'newprovider':
@@ -283,7 +298,7 @@ interface LLMError {
 ```typescript
 try {
   const response = await llmServiceManager.generateCompletion({
-    prompt: 'Hello world'
+    prompt: 'Hello world',
   });
 } catch (error) {
   if (error.provider === 'openai' && error.statusCode === 429) {
@@ -355,4 +370,4 @@ describe('LLM Service Integration', () => {
 - **Response caching** for improved performance
 - **Usage analytics** for monitoring and optimization
 - **Automatic failover** between providers
-- **UI component** for provider selection 
+- **UI component** for provider selection

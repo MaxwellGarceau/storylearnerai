@@ -1,7 +1,11 @@
 import { LLMService } from './LLMService';
 import { LLMServiceFactory } from './LLMServiceFactory';
 import { EnvironmentConfig } from '../config/env';
-import { LLMRequest, LLMResponse, ProviderConfig } from '../../types/llm/providers';
+import {
+  LLMRequest,
+  LLMResponse,
+  ProviderConfig,
+} from '../../types/llm/providers';
 import type { RecordString } from '../../types/common';
 
 export class LLMServiceManager {
@@ -91,4 +95,4 @@ export class LLMServiceManager {
 }
 
 // Export a singleton instance for easy access
-export const llmServiceManager = LLMServiceManager.getInstance(); 
+export const llmServiceManager = LLMServiceManager.getInstance();

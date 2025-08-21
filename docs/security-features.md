@@ -38,13 +38,15 @@ validateStoryText(input: string): {
 #### 1. Cross-Site Scripting (XSS)
 
 **Threat**: Malicious scripts injected through text input
-**Prevention**: 
+**Prevention**:
+
 - Strips all `<script>` tags and their content
 - Removes event handlers (`onclick`, `onerror`, etc.)
 - Blocks JavaScript protocol URLs (`javascript:`)
 - Handles nested and encoded script tags
 
 **Example**:
+
 ```javascript
 // Input: <script>alert('xss')</script>Hello world
 // Output: Hello world
@@ -54,6 +56,7 @@ validateStoryText(input: string): {
 
 **Threat**: Unwanted HTML tags that could break layout or inject content
 **Prevention**:
+
 - By default, strips all HTML tags
 - Optional whitelist for safe HTML tags when needed
 - Preserves text content while removing markup
@@ -62,6 +65,7 @@ validateStoryText(input: string): {
 
 **Threat**: Malicious data URLs that could execute code
 **Prevention**:
+
 - Blocks `data:text/html` URLs
 - Prevents iframe injection through data URLs
 
@@ -69,6 +73,7 @@ validateStoryText(input: string): {
 
 **Threat**: Event handlers that could execute malicious code
 **Prevention**:
+
 - Removes all `on*` attributes
 - Handles various event handler patterns
 
@@ -78,11 +83,11 @@ The sanitization system supports flexible configuration:
 
 ```typescript
 interface SanitizationOptions {
-  allowHTML?: boolean;           // Default: false
-  allowLineBreaks?: boolean;     // Default: true
-  maxLength?: number;           // Default: 10000
-  trim?: boolean;               // Default: true
-  allowedTags?: string[];       // Custom allowed HTML tags
+  allowHTML?: boolean; // Default: false
+  allowLineBreaks?: boolean; // Default: true
+  maxLength?: number; // Default: 10000
+  trim?: boolean; // Default: true
+  allowedTags?: string[]; // Custom allowed HTML tags
   allowedAttributes?: string[]; // Custom allowed HTML attributes
 }
 ```
@@ -94,6 +99,7 @@ interface SanitizationOptions {
 The backend `UserService` class implements comprehensive validation and sanitization for all user data operations:
 
 #### Input Validation and Sanitization
+
 - **Data Type Validation**: Ensures all inputs are of correct types
 - **Format Validation**: Validates email, username, display name, and language code formats
 - **Security Sanitization**: Removes malicious content using the same sanitization utilities as frontend
@@ -101,12 +107,14 @@ The backend `UserService` class implements comprehensive validation and sanitiza
 - **URL Validation**: Validates and sanitizes avatar URLs to prevent XSS
 
 #### Business Logic Validation
+
 - **Username Uniqueness**: Prevents duplicate usernames during creation and updates
 - **Required Field Validation**: Ensures required fields are provided and valid
 - **Language Code Validation**: Validates ISO 639-1 language codes
 - **User ID Validation**: Ensures user IDs are valid strings
 
 #### Security Features
+
 - **XSS Prevention**: Strips HTML tags and malicious content from all text fields
 - **URL Sanitization**: Removes dangerous characters from avatar URLs
 - **Input Sanitization**: Uses the same `validateUsername`, `validateDisplayName` utilities as frontend
@@ -115,6 +123,7 @@ The backend `UserService` class implements comprehensive validation and sanitiza
 ### Implementation Examples
 
 #### User Creation with Validation
+
 ```typescript
 static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
   // Validate and sanitize input data
@@ -158,6 +167,7 @@ static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
 ```
 
 #### Username Validation and Availability Check
+
 ```typescript
 static async isUsernameAvailable(username: string): Promise<boolean> {
   // Validate username format
@@ -189,6 +199,7 @@ static async isUsernameAvailable(username: string): Promise<boolean> {
 The backend `TranslationService` class implements comprehensive validation and sanitization for all translation data operations:
 
 #### Input Validation and Sanitization
+
 - **Data Type Validation**: Ensures all inputs are of correct types
 - **Format Validation**: Validates language codes (ISO 639-1) and story IDs
 - **Content Sanitization**: Removes malicious content from translated text using the same sanitization utilities as frontend
@@ -196,6 +207,7 @@ The backend `TranslationService` class implements comprehensive validation and s
 - **Required Field Validation**: Ensures required fields are provided and valid
 
 #### Security Features
+
 - **XSS Prevention**: Strips HTML tags and malicious content from translated text
 - **Content Sanitization**: Uses the same `validateStoryText` utilities as frontend
 - **Language Code Validation**: Validates ISO 639-1 language codes
@@ -205,6 +217,7 @@ The backend `TranslationService` class implements comprehensive validation and s
 ### Implementation Examples
 
 #### Translation Creation with Validation
+
 ```typescript
 static async createTranslation(data: CreateTranslationData): Promise<DatabaseTranslationInsert> {
   // Validate and sanitize input data
@@ -238,11 +251,12 @@ static async createTranslation(data: CreateTranslationData): Promise<DatabaseTra
 ```
 
 #### Language Code and Content Validation
+
 ```typescript
-private static validateCreateTranslationData(data: CreateTranslationData): { 
-  isValid: boolean; 
-  errors: ValidationError[]; 
-  sanitizedData: CreateTranslationData 
+private static validateCreateTranslationData(data: CreateTranslationData): {
+  isValid: boolean;
+  errors: ValidationError[];
+  sanitizedData: CreateTranslationData
 } {
   const errors: ValidationError[] = [];
   const sanitizedData: CreateTranslationData = { ...data };
@@ -270,9 +284,9 @@ private static validateCreateTranslationData(data: CreateTranslationData): {
   } else {
     const contentValidation = validateStoryText(data.translated_content);
     if (!contentValidation.isValid) {
-      errors.push({ 
-        field: 'translated_content', 
-        message: contentValidation.errors[0] || 'Invalid translated content format' 
+      errors.push({
+        field: 'translated_content',
+        message: contentValidation.errors[0] || 'Invalid translated content format'
       });
     } else {
       sanitizedData.translated_content = contentValidation.sanitizedText;
@@ -294,23 +308,27 @@ private static validateCreateTranslationData(data: CreateTranslationData): {
 Both authentication forms implement comprehensive input sanitization and validation:
 
 #### Email Input Security
+
 - **Real-time Validation**: Email format validation with security checks
 - **XSS Prevention**: Strips malicious HTML and script tags
 - **Length Limits**: Enforces RFC 5321 email length limits (254 characters)
 - **Format Validation**: Ensures proper email format before submission
 
 #### Username Input Security
+
 - **Character Restrictions**: Only allows letters, numbers, underscores, and hyphens
 - **Length Validation**: 3-50 characters with real-time feedback
 - **Security Sanitization**: Removes all HTML tags and malicious content
 - **Format Enforcement**: Prevents submission with invalid characters
 
 #### Display Name Security
+
 - **Length Validation**: 2-100 characters with appropriate feedback
 - **Content Sanitization**: Strips HTML tags while preserving text content
 - **Security Checks**: Detects and prevents malicious content injection
 
 #### Password Security
+
 - **Existing Strength Validation**: Maintains current password strength requirements
 - **Special Character Support**: Allows secure passwords with special characters
 - **No Sanitization**: Passwords are not sanitized to preserve security
@@ -318,12 +336,14 @@ Both authentication forms implement comprehensive input sanitization and validat
 ### Form Submission Security
 
 #### Validation Flow
+
 1. **Real-time Validation**: Input is validated as user types
 2. **Final Validation**: All fields are re-validated before submission
 3. **Submission Prevention**: Forms cannot be submitted with validation errors
 4. **Error Display**: Clear error messages guide users to fix issues
 
 #### Security Features
+
 - **Button Disabling**: Submit buttons are disabled when validation errors exist
 - **Error State Management**: Tracks validation errors across all form fields
 - **Sanitized Data**: Only sanitized data is passed to backend services
@@ -331,6 +351,7 @@ Both authentication forms implement comprehensive input sanitization and validat
 ### Implementation Examples
 
 #### Email Validation
+
 ```typescript
 import { validateEmail } from '../../lib/utils/sanitization';
 
@@ -341,9 +362,9 @@ const handleInputChange = (field: 'email' | 'password', value: string) => {
       setValidationErrors(prev => ({ ...prev, email: undefined }));
       setFormData(prev => ({ ...prev, email: validation.sanitizedText }));
     } else {
-      setValidationErrors(prev => ({ 
-        ...prev, 
-        email: validation.errors[0] || 'Invalid email format'
+      setValidationErrors(prev => ({
+        ...prev,
+        email: validation.errors[0] || 'Invalid email format',
       }));
       setFormData(prev => ({ ...prev, email: validation.sanitizedText }));
     }
@@ -352,26 +373,27 @@ const handleInputChange = (field: 'email' | 'password', value: string) => {
 ```
 
 #### Form Submission Prevention
+
 ```typescript
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  
+
   // Check if there are any validation errors
   if (hasValidationErrors) {
     return;
   }
-  
+
   // Final validation before submission
   const emailValidation = validateEmail(formData.email);
   if (!emailValidation.isValid) {
-    setValidationErrors(prev => ({ 
-      ...prev, 
-      email: emailValidation.errors[0] || 'Invalid email format'
+    setValidationErrors(prev => ({
+      ...prev,
+      email: emailValidation.errors[0] || 'Invalid email format',
     }));
     setHasValidationErrors(true);
     return;
   }
-  
+
   // Proceed with submission only if validation passes
   const success = await signIn(formData.email, formData.password);
 };
@@ -393,6 +415,7 @@ The `FullPageStoryInput` component implements real-time security validation:
 #### Security Warning Display
 
 When malicious content is detected:
+
 - Red warning banner appears below the input
 - Clear explanation of the security issue
 - Assurance that content has been automatically sanitized
@@ -409,10 +432,10 @@ When malicious content is detected:
 ```typescript
 const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
   const rawValue = event.target.value;
-  
+
   // Validate and sanitize the input
   const validation = validateStoryText(rawValue);
-  
+
   if (validation.isValid) {
     setValidationError(null);
     onChange(validation.sanitizedText);
@@ -444,13 +467,13 @@ The security features are thoroughly tested with:
    - User interaction testing
    - Real-time validation testing
 
-4. **Authentication Form Security Tests**: 
+4. **Authentication Form Security Tests**:
    - `src/components/auth/__tests__/SignInForm.security.test.tsx` (13 tests)
    - `src/components/auth/__tests__/SignUpForm.security.test.tsx` (20 tests)
    - Form submission prevention and validation error handling
    - Real-time input sanitization and user feedback
 
-5. **Backend Validation Tests**: 
+5. **Backend Validation Tests**:
    - `src/api/supabase/database/__tests__/userService.test.ts` - 25 test cases for user data validation
    - `src/api/supabase/database/__tests__/translationService.test.ts` - 26 test cases for translation data validation
    - Input validation for user and translation creation and updates
@@ -461,6 +484,7 @@ The security features are thoroughly tested with:
 ### Test Categories
 
 #### Sanitization Tests
+
 - Null/undefined input handling
 - HTML tag stripping
 - Script tag removal
@@ -468,6 +492,7 @@ The security features are thoroughly tested with:
 - Length limit enforcement
 
 #### Security Threat Tests
+
 - XSS script injection attempts
 - JavaScript protocol attacks
 - Event handler injection
@@ -475,6 +500,7 @@ The security features are thoroughly tested with:
 - Complex nested attacks
 
 #### User Experience Tests
+
 - Normal text handling
 - Special character preservation
 - Warning display and clearing
@@ -546,10 +572,11 @@ The security implementation follows OWASP (Open Web Application Security Project
 The StoryLearnerAI application implements robust security measures to protect users from common web vulnerabilities. The multi-layered approach ensures that malicious content is detected and prevented while maintaining a smooth user experience.
 
 The security system is designed to be:
+
 - **Comprehensive**: Covers all major threat vectors
 - **User-friendly**: Provides clear feedback and guidance
 - **Performant**: Efficient processing without impacting user experience
 - **Maintainable**: Well-tested and documented code
 - **Extensible**: Easy to add new security features as needed
 
-For questions or concerns about security features, please refer to the test files or contact the development team. 
+For questions or concerns about security features, please refer to the test files or contact the development team.

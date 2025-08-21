@@ -15,11 +15,11 @@ const TranslatePage: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className='relative'>
       <StoryContainer onStoryTranslated={handleStoryTranslated} />
       <StorySidebar />
     </div>
   );
 };
 
-export default TranslatePage; 
+export default TranslatePage;

@@ -31,10 +31,13 @@ export interface WalkthroughState {
   isSkipped: boolean;
 }
 
-export type WalkthroughId = 'home-walkthrough' | 'translate-walkthrough' | 'story-walkthrough';
+export type WalkthroughId =
+  | 'home-walkthrough'
+  | 'translate-walkthrough'
+  | 'story-walkthrough';
 
 export interface WalkthroughStorage {
   completed: WalkthroughId[];
   skipped: WalkthroughId[];
   lastCompleted?: Date;
-} 
+}

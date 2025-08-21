@@ -2,14 +2,20 @@ import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { walkthroughService } from '../lib/walkthroughService';
 import { walkthroughConfigs } from '../lib/walkthroughConfigs';
-import type { WalkthroughConfig, WalkthroughId } from '../types/app/walkthrough';
+import type {
+  WalkthroughConfig,
+  WalkthroughId,
+} from '../types/app/walkthrough';
 import { logger } from '../lib/logger';
 
 export const useWalkthrough = () => {
   const location = useLocation();
 
   const startWalkthrough = useCallback((config: WalkthroughConfig) => {
-    logger.info('walkthrough', `Starting walkthrough: ${config.title} (${config.id})`);
+    logger.info(
+      'walkthrough',
+      `Starting walkthrough: ${config.title} (${config.id})`
+    );
     walkthroughService.startWalkthrough(config);
   }, []);
 
@@ -65,7 +71,7 @@ export const useWalkthrough = () => {
     const pathname = location.pathname;
     logger.debug('walkthrough', `Route changed to: ${pathname}`);
     logger.debug('walkthrough', 'Current location object', { location });
-    
+
     // Stop any active walkthrough when navigating away from its page
     const currentState = walkthroughService.getState();
     logger.debug('walkthrough', 'Current walkthrough state', { currentState });
@@ -78,16 +84,20 @@ export const useWalkthrough = () => {
           'translate-walkthrough': '/translate',
           'story-walkthrough': '/story',
         };
-        
-        const expectedRoute = walkthroughRouteMap[currentConfig.id as WalkthroughId];
+
+        const expectedRoute =
+          walkthroughRouteMap[currentConfig.id as WalkthroughId];
         if (expectedRoute && pathname !== expectedRoute) {
-          logger.info('walkthrough', `User navigated away from ${expectedRoute} to ${pathname}, stopping walkthrough`);
+          logger.info(
+            'walkthrough',
+            `User navigated away from ${expectedRoute} to ${pathname}, stopping walkthrough`
+          );
           stopWalkthrough();
           return; // Don't start a new walkthrough immediately
         }
       }
     }
-    
+
     // Define route to walkthrough mapping
     const routeWalkthroughMap: Record<string, WalkthroughId> = {
       '/': 'home-walkthrough',
@@ -96,17 +106,30 @@ export const useWalkthrough = () => {
     };
 
     const walkthroughId = routeWalkthroughMap[pathname];
-    logger.debug('walkthrough', `Route ${pathname} maps to walkthrough: ${walkthroughId}`);
-    
+    logger.debug(
+      'walkthrough',
+      `Route ${pathname} maps to walkthrough: ${walkthroughId}`
+    );
+
     if (!walkthroughId) {
-      logger.debug('walkthrough', `No walkthrough defined for route: ${pathname}`);
+      logger.debug(
+        'walkthrough',
+        `No walkthrough defined for route: ${pathname}`
+      );
       return;
     }
 
     const config = walkthroughConfigs[walkthroughId];
-    logger.debug('walkthrough', `Walkthrough config lookup for ${walkthroughId}`, { found: !!config });
+    logger.debug(
+      'walkthrough',
+      `Walkthrough config lookup for ${walkthroughId}`,
+      { found: !!config }
+    );
     if (!config) {
-      logger.warn('walkthrough', `Walkthrough config not found for: ${walkthroughId}`);
+      logger.warn(
+        'walkthrough',
+        `Walkthrough config not found for: ${walkthroughId}`
+      );
       return;
     }
 
@@ -120,12 +143,15 @@ export const useWalkthrough = () => {
       shouldAutoStart,
       pathname,
       configSteps: config.steps.length,
-      configAutoStart: config.autoStart
+      configAutoStart: config.autoStart,
     });
 
     // Don't auto-start if user has already completed or skipped
     if (completed) {
-      logger.info('walkthrough', `Walkthrough already completed: ${walkthroughId}`);
+      logger.info(
+        'walkthrough',
+        `Walkthrough already completed: ${walkthroughId}`
+      );
       return;
     }
 
@@ -139,55 +165,92 @@ export const useWalkthrough = () => {
       return;
     }
 
-    logger.info('walkthrough', `Scheduling walkthrough start: ${walkthroughId}`);
-    logger.debug('walkthrough', `Checking for target elements in ${config.steps.length} steps...`);
-    
+    logger.info(
+      'walkthrough',
+      `Scheduling walkthrough start: ${walkthroughId}`
+    );
+    logger.debug(
+      'walkthrough',
+      `Checking for target elements in ${config.steps.length} steps...`
+    );
+
     // Small delay to ensure page is fully loaded and elements are available
     const timer = setTimeout(() => {
       // Find the first visible step (not skipped)
       let firstVisibleStep = null;
       let firstVisibleIndex = 0;
-      
-      logger.debug('walkthrough', `Checking ${config.steps.length} steps for visibility...`);
+
+      logger.debug(
+        'walkthrough',
+        `Checking ${config.steps.length} steps for visibility...`
+      );
       for (let i = 0; i < config.steps.length; i++) {
         const step = config.steps[i];
         const shouldSkip = step?.skipIf?.();
-        logger.debug('walkthrough', `Step ${i}: ${step?.id} - skipIf: ${shouldSkip}`);
+        logger.debug(
+          'walkthrough',
+          `Step ${i}: ${step?.id} - skipIf: ${shouldSkip}`
+        );
         if (!shouldSkip) {
           firstVisibleStep = step;
           firstVisibleIndex = i;
-          logger.debug('walkthrough', `Found first visible step: ${step?.id} at index ${i}`);
+          logger.debug(
+            'walkthrough',
+            `Found first visible step: ${step?.id} at index ${i}`
+          );
           break;
         }
       }
-      
+
       if (firstVisibleStep) {
-        logger.debug('walkthrough', `Looking for target element: ${firstVisibleStep.targetSelector}`);
-        const targetElement = document.querySelector(firstVisibleStep.targetSelector);
+        logger.debug(
+          'walkthrough',
+          `Looking for target element: ${firstVisibleStep.targetSelector}`
+        );
+        const targetElement = document.querySelector(
+          firstVisibleStep.targetSelector
+        );
         logger.debug('walkthrough', `Target element found: ${!!targetElement}`);
         if (targetElement) {
-          logger.info('walkthrough', `Auto-starting walkthrough: ${walkthroughId} at step ${firstVisibleIndex}`);
+          logger.info(
+            'walkthrough',
+            `Auto-starting walkthrough: ${walkthroughId} at step ${firstVisibleIndex}`
+          );
           startWalkthrough(config);
         } else {
-          logger.warn('walkthrough', `Target element not found for first visible step: ${firstVisibleStep.targetSelector}`);
+          logger.warn(
+            'walkthrough',
+            `Target element not found for first visible step: ${firstVisibleStep.targetSelector}`
+          );
           // Retry after a longer delay
           const retryTimer = setTimeout(() => {
-            const retryElement = document.querySelector(firstVisibleStep.targetSelector);
+            const retryElement = document.querySelector(
+              firstVisibleStep.targetSelector
+            );
             if (retryElement) {
-              logger.info('walkthrough', `Retrying walkthrough start: ${walkthroughId}`);
+              logger.info(
+                'walkthrough',
+                `Retrying walkthrough start: ${walkthroughId}`
+              );
               startWalkthrough(config);
             } else {
-              logger.error('walkthrough', `Target element still not found after retry: ${firstVisibleStep.targetSelector}`);
+              logger.error(
+                'walkthrough',
+                `Target element still not found after retry: ${firstVisibleStep.targetSelector}`
+              );
             }
           }, 2000);
           return () => clearTimeout(retryTimer);
         }
       } else {
-        logger.info('walkthrough', `All steps are skipped for walkthrough: ${walkthroughId}, completing immediately`);
+        logger.info(
+          'walkthrough',
+          `All steps are skipped for walkthrough: ${walkthroughId}, completing immediately`
+        );
         startWalkthrough(config); // This will complete immediately due to our logic in startWalkthrough
       }
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, [location, startWalkthrough, isCompleted, isSkipped, stopWalkthrough]);
 
@@ -204,6 +267,7 @@ export const useWalkthrough = () => {
     resetAllWalkthroughs,
     getState: walkthroughService.getState.bind(walkthroughService),
     getCurrentStep: walkthroughService.getCurrentStep.bind(walkthroughService),
-    getCurrentConfig: walkthroughService.getCurrentConfig.bind(walkthroughService),
+    getCurrentConfig:
+      walkthroughService.getCurrentConfig.bind(walkthroughService),
   };
-}; 
+};

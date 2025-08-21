@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { vi } from 'vitest';
 import { SignInForm } from '../SignInForm';
 
@@ -53,7 +59,9 @@ describe('SignInForm Security', () => {
       fireEvent.change(emailInput, { target: { value: maliciousEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -84,7 +92,9 @@ describe('SignInForm Security', () => {
       fireEvent.change(emailInput, { target: { value: maliciousEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -92,12 +102,15 @@ describe('SignInForm Security', () => {
       render(<SignInForm {...defaultProps} />);
 
       const emailInput = screen.getByLabelText('Email');
-      const maliciousEmail = 'user@example.com<img src="x" onerror="alert(\'xss\')">';
+      const maliciousEmail =
+        'user@example.com<img src="x" onerror="alert(\'xss\')">';
 
       fireEvent.change(emailInput, { target: { value: maliciousEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
       });
     });
 
@@ -171,7 +184,10 @@ describe('SignInForm Security', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockSignIn).toHaveBeenCalledWith('user@example.com', 'password123');
+        expect(mockSignIn).toHaveBeenCalledWith(
+          'user@example.com',
+          'password123'
+        );
       });
     });
 
@@ -182,7 +198,9 @@ describe('SignInForm Security', () => {
       const passwordInput = screen.getByLabelText('Password');
       const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      fireEvent.change(emailInput, { target: { value: '<script>alert("xss")</script>user@example.com' } });
+      fireEvent.change(emailInput, {
+        target: { value: '<script>alert("xss")</script>user@example.com' },
+      });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
       fireEvent.click(submitButton);
 
@@ -202,7 +220,9 @@ describe('SignInForm Security', () => {
       fireEvent.change(emailInput, { target: { value: longEmail } });
 
       await waitFor(() => {
-        expect(screen.getByText('Input exceeds maximum length of 254 characters')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input exceeds maximum length of 254 characters')
+        ).toBeInTheDocument();
       });
     });
 
@@ -219,4 +239,4 @@ describe('SignInForm Security', () => {
       });
     });
   });
-}); 
+});

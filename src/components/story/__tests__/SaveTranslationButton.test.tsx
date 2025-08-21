@@ -33,7 +33,7 @@ describe('SaveTranslationButton Component', () => {
     toLanguage: 'en',
     difficulty: 'a1',
     provider: 'mock',
-    model: 'test-model'
+    model: 'test-model',
   };
 
   beforeEach(() => {
@@ -49,10 +49,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -68,10 +68,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={true}
         />
       </TooltipProvider>
@@ -87,10 +87,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={true}
         />
       </TooltipProvider>
@@ -108,10 +108,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -129,10 +129,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={false}
         />
       </TooltipProvider>
@@ -141,13 +141,19 @@ describe('SaveTranslationButton Component', () => {
     // Click the Save Translation button (the trigger button, not the modal button)
     // Use getAllByText to handle potential multiple elements and click the first one
     const triggerButtons = screen.getAllByText('Save Translation');
-    const triggerButton = triggerButtons.find(button => !(button as HTMLButtonElement).disabled);
+    const triggerButton = triggerButtons.find(
+      button => !(button as HTMLButtonElement).disabled
+    );
     expect(triggerButton).toBeDefined();
     if (triggerButton) {
       fireEvent.click(triggerButton);
     }
-    
-    expect(screen.getByText('Save this translation to your library for future reference')).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        'Save this translation to your library for future reference'
+      )
+    ).toBeInTheDocument();
   });
 
   it('does not open modal when button is clicked for saved stories', () => {
@@ -155,10 +161,10 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory="Esta es una historia de prueba."
-          originalLanguage="Spanish"
-          translatedLanguage="English"
-          difficultyLevel="a1"
+          originalStory='Esta es una historia de prueba.'
+          originalLanguage='Spanish'
+          translatedLanguage='English'
+          difficultyLevel='a1'
           isSavedStory={true}
         />
       </TooltipProvider>
@@ -166,8 +172,12 @@ describe('SaveTranslationButton Component', () => {
 
     const alreadySavedButton = screen.getByText('Already Saved');
     fireEvent.click(alreadySavedButton);
-    
+
     // Modal should not appear
-    expect(screen.queryByText('Save this translation to your library for future reference')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'Save this translation to your library for future reference'
+      )
+    ).not.toBeInTheDocument();
   });
-}); 
+});

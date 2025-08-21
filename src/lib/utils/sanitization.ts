@@ -3,7 +3,7 @@ import type { SanitizationOptions, ValidationResult } from '@app/validation';
 
 /**
  * Sanitization utility for text input security
- * 
+ *
  * This module provides comprehensive sanitization functions to prevent:
  * - XSS (Cross-Site Scripting) attacks
  * - HTML injection
@@ -55,12 +55,15 @@ const DEFAULT_USERNAME_OPTIONS: SanitizationOptions = {
 
 /**
  * Sanitizes text input to prevent security vulnerabilities
- * 
+ *
  * @param input - The raw text input to sanitize
  * @param options - Sanitization options
  * @returns Sanitized text safe for processing
  */
-export function sanitizeText(input: string, options: SanitizationOptions = {}): string {
+export function sanitizeText(
+  input: string,
+  options: SanitizationOptions = {}
+): string {
   if (!input || typeof input !== 'string') {
     return '';
   }
@@ -124,12 +127,15 @@ export function sanitizeText(input: string, options: SanitizationOptions = {}): 
 
 /**
  * Validates text input for basic security checks
- * 
+ *
  * @param input - The text input to validate
  * @param options - Validation options
  * @returns Object with validation result and any errors
  */
-export function validateTextInput(input: string, options: SanitizationOptions = {}): ValidationResult {
+export function validateTextInput(
+  input: string,
+  options: SanitizationOptions = {}
+): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_STORY_OPTIONS, ...options };
 
@@ -173,7 +179,7 @@ export function validateTextInput(input: string, options: SanitizationOptions = 
 
 /**
  * Sanitizes text specifically for story input
- * 
+ *
  * @param input - The story text to sanitize
  * @returns Sanitized story text
  */
@@ -183,7 +189,7 @@ export function sanitizeStoryText(input: string): string {
 
 /**
  * Validates story text input
- * 
+ *
  * @param input - The story text to validate
  * @returns Validation result
  */
@@ -193,7 +199,7 @@ export function validateStoryText(input: string): ValidationResult {
 
 /**
  * Sanitizes and validates email input
- * 
+ *
  * @param input - The email to sanitize and validate
  * @returns Sanitized email
  */
@@ -203,14 +209,14 @@ export function sanitizeEmail(input: string): string {
 
 /**
  * Validates email input for security and format
- * 
+ *
  * @param input - The email to validate
  * @returns Validation result
  */
 export function validateEmail(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_EMAIL_OPTIONS };
-  
+
   // Basic validation
   const validation = validateTextInput(input, opts);
   if (!validation.isValid) {
@@ -232,7 +238,7 @@ export function validateEmail(input: string): ValidationResult {
 
 /**
  * Sanitizes and validates username input
- * 
+ *
  * @param input - The username to sanitize and validate
  * @returns Sanitized username
  */
@@ -242,14 +248,14 @@ export function sanitizeUsername(input: string): string {
 
 /**
  * Validates username input for security and format
- * 
+ *
  * @param input - The username to validate
  * @returns Validation result
  */
 export function validateUsername(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_USERNAME_OPTIONS };
-  
+
   // Basic validation
   const validation = validateTextInput(input, opts);
   if (!validation.isValid) {
@@ -259,7 +265,9 @@ export function validateUsername(input: string): ValidationResult {
   // Username format validation
   const usernameRegex = /^[a-zA-Z0-9_-]{3,50}$/;
   if (!usernameRegex.test(validation.sanitizedText)) {
-    errors.push('Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens');
+    errors.push(
+      'Username must be 3-50 characters and contain only letters, numbers, underscores, and hyphens'
+    );
   }
 
   return {
@@ -271,7 +279,7 @@ export function validateUsername(input: string): ValidationResult {
 
 /**
  * Sanitizes and validates display name input
- * 
+ *
  * @param input - The display name to sanitize and validate
  * @returns Sanitized display name
  */
@@ -281,14 +289,14 @@ export function sanitizeDisplayName(input: string): string {
 
 /**
  * Validates display name input for security and format
- * 
+ *
  * @param input - The display name to validate
  * @returns Validation result
  */
 export function validateDisplayName(input: string): ValidationResult {
   const errors: string[] = [];
   const opts = { ...DEFAULT_AUTH_OPTIONS };
-  
+
   // Basic validation
   const validation = validateTextInput(input, opts);
   if (!validation.isValid) {
@@ -309,4 +317,4 @@ export function validateDisplayName(input: string): ValidationResult {
     errors: [...validation.errors, ...errors],
     sanitizedText: validation.sanitizedText,
   };
-} 
+}

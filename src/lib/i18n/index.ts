@@ -32,7 +32,7 @@ i18n
       caches: ['localStorage'],
     },
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Failed to initialize i18n:', error);
   });
 

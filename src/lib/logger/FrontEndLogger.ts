@@ -1,4 +1,10 @@
-import { Logger, LogLevel, LogChannel, LogEntry, LoggerConfig } from '@app/logger';
+import {
+  Logger,
+  LogLevel,
+  LogChannel,
+  LogEntry,
+  LoggerConfig,
+} from '@app/logger';
 import { createLogger } from './ConsoleWrapper';
 import { getLoggerConfigWithOverrides } from './config';
 
@@ -14,8 +20,10 @@ class FrontEndLogger implements Logger {
   constructor(config?: Partial<LoggerConfig>) {
     this.config = { ...getLoggerConfigWithOverrides(), ...config };
     this.consoleLogger = createLogger(this.config);
-    this.channels = new Map(Object.entries(this.config.channels) as [LogChannel, boolean][]);
-    
+    this.channels = new Map(
+      Object.entries(this.config.channels) as [LogChannel, boolean][]
+    );
+
     // Generate session ID if not provided
     this.sessionId ??= this.generateSessionId();
   }
@@ -30,19 +38,24 @@ class FrontEndLogger implements Logger {
 
   private shouldLog(level: LogLevel, channel: LogChannel): boolean {
     if (!this.config.enabled) return false;
-    
+
     // Check if channel is enabled
     if (!this.channels.get(channel)) return false;
-    
+
     // Check log level
     const levels: LogLevel[] = ['error', 'warn', 'info', 'debug'];
     const currentLevelIndex = levels.indexOf(this.config.level);
     const messageLevelIndex = levels.indexOf(level);
-    
+
     return messageLevelIndex <= currentLevelIndex;
   }
 
-  private createLogEntry(level: LogLevel, channel: LogChannel, message: string, data?: unknown): LogEntry {
+  private createLogEntry(
+    level: LogLevel,
+    channel: LogChannel,
+    message: string,
+    data?: unknown
+  ): LogEntry {
     return {
       timestamp: new Date().toISOString(),
       level,
@@ -55,11 +68,16 @@ class FrontEndLogger implements Logger {
     };
   }
 
-  private log(level: LogLevel, channel: LogChannel, message: string, data?: unknown): void {
+  private log(
+    level: LogLevel,
+    channel: LogChannel,
+    message: string,
+    data?: unknown
+  ): void {
     if (!this.shouldLog(level, channel)) return;
 
     const logEntry = this.createLogEntry(level, channel, message, data);
-    
+
     this.consoleLogger.log(level, logEntry.message, {
       channel: logEntry.channel,
       data: logEntry.data,
@@ -97,14 +115,19 @@ class FrontEndLogger implements Logger {
   timeEnd(channel: LogChannel, label: string, data?: unknown): void {
     const timerKey = `${channel}:${label}`;
     const startTime = this.timers.get(timerKey);
-    
+
     if (startTime) {
       const duration = performance.now() - startTime;
       this.timers.delete(timerKey);
-      
-      const logEntry = this.createLogEntry('info', channel, `Timer ended: ${label}`, data);
+
+      const logEntry = this.createLogEntry(
+        'info',
+        channel,
+        `Timer ended: ${label}`,
+        data
+      );
       logEntry.performance = { duration };
-      
+
       this.consoleLogger.log('info', logEntry.message, {
         channel: logEntry.channel,
         data: logEntry.data,
@@ -159,7 +182,15 @@ class FrontEndLogger implements Logger {
   // Memory usage logging
   logMemoryUsage(channel: LogChannel = 'performance'): void {
     if ('memory' in performance) {
-      const memory = (performance as Performance & { memory: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+      const memory = (
+        performance as Performance & {
+          memory: {
+            usedJSHeapSize: number;
+            totalJSHeapSize: number;
+            jsHeapSizeLimit: number;
+          };
+        }
+      ).memory;
       this.info(channel, 'Memory usage', {
         used: Math.round(memory.usedJSHeapSize / 1024 / 1024) + 'MB',
         total: Math.round(memory.totalJSHeapSize / 1024 / 1024) + 'MB',
@@ -178,15 +209,26 @@ class FrontEndLogger implements Logger {
   }
 
   // API request logging
-  logApiRequest(channel: LogChannel, method: string, url: string, data?: unknown): void {
+  logApiRequest(
+    channel: LogChannel,
+    method: string,
+    url: string,
+    data?: unknown
+  ): void {
     this.info(channel, `API Request: ${method} ${url}`, data);
   }
 
-  logApiResponse(channel: LogChannel, method: string, url: string, status: number, data?: unknown): void {
+  logApiResponse(
+    channel: LogChannel,
+    method: string,
+    url: string,
+    status: number,
+    data?: unknown
+  ): void {
     const level = status >= 400 ? 'error' : 'info';
     this[level](channel, `API Response: ${method} ${url} - ${status}`, data);
   }
 }
 
 // Create and export the default logger instance
-export const logger = new FrontEndLogger(); 
+export const logger = new FrontEndLogger();

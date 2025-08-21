@@ -40,4 +40,4 @@ export interface GeminiConfig extends LLMConfig {
   projectId?: string;
 }
 
-export type ProviderConfig = GeminiConfig; 
+export type ProviderConfig = GeminiConfig;

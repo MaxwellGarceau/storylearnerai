@@ -1,4 +1,9 @@
-import { LLMRequest, LLMResponse, LLMError, ProviderConfig } from '../../types/llm/providers';
+import {
+  LLMRequest,
+  LLMResponse,
+  LLMError,
+  ProviderConfig,
+} from '../../types/llm/providers';
 import type { RecordString } from '../../types/common';
 
 export abstract class LLMService {
@@ -35,7 +40,11 @@ export abstract class LLMService {
   /**
    * Create an LLM error with provider context
    */
-  protected createError(message: string, code: string, statusCode?: number): LLMError {
+  protected createError(
+    message: string,
+    code: string,
+    statusCode?: number
+  ): LLMError {
     return {
       message,
       code,
@@ -69,9 +78,7 @@ export abstract class LLMService {
     try {
       return await response.json();
     } catch {
-      throw new Error(
-        'Failed to parse API response'
-      );
+      throw new Error('Failed to parse API response');
     }
   }
-} 
+}

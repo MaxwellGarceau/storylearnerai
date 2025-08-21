@@ -31,7 +31,7 @@ export const useViewport = (): ViewportDimensions => {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       setViewport({
         width,
         height,
@@ -59,4 +59,4 @@ export const useViewport = (): ViewportDimensions => {
   }, []);
 
   return viewport;
-}; 
+};

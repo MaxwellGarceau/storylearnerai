@@ -1,4 +1,9 @@
-import type { LanguageCode, DifficultyLevel, EnglishLanguageName, NativeLanguageName } from '../llm/prompts';
+import type {
+  LanguageCode,
+  DifficultyLevel,
+  EnglishLanguageName,
+  NativeLanguageName,
+} from '../llm/prompts';
 import type { NullableString } from '../common';
 
 // Translation management types
@@ -81,4 +86,4 @@ export interface SavedTranslationFilters {
   search?: string; // Search in title, notes, or story content
   limit?: number;
   offset?: number;
-} 
+}

@@ -8,6 +8,5 @@ export const testWalkthroughTranslationData: TranslationResponse = {
   toLanguage: 'en',
   difficulty: 'a1',
   provider: 'test',
-  model: 'test-model'
+  model: 'test-model',
 };
-

@@ -58,9 +58,9 @@ const isSupported = promptConfigService.isSupported('en', 'a1');
 // Build a complete prompt
 const context = {
   fromLanguage: 'es',
-  toLanguage: 'en', 
+  toLanguage: 'en',
   difficulty: 'a1',
-  text: 'Hola, ¿cómo estás?'
+  text: 'Hola, ¿cómo estás?',
 };
 const prompt = promptConfigService.buildPrompt(context);
 ```
@@ -87,10 +87,12 @@ private buildTranslationPrompt(request: TranslationRequest): string {
 ## Supported Languages and Levels
 
 ### Languages
+
 - **English (en)**: Full A1-B2 support
 - **Spanish (es)**: Full A1-B2 support
 
 ### CEFR Levels
+
 - **A1**: Beginner level with basic vocabulary and simple grammar
 - **A2**: Elementary level with expanded vocabulary and compound sentences
 - **B1**: Intermediate level with varied expressions and complex structures
@@ -127,14 +129,16 @@ Each language/difficulty combination includes:
 ### A1 English Translation Prompt
 
 For A1 level English translations, the system generates prompts that:
+
 - Use only the most common 1000 English words
 - Employ simple present, past, and continuous tenses
 - Keep sentences short (5-10 words)
 - Replace complex cultural references with universal concepts
 
-### B2 Spanish Translation Prompt  
+### B2 Spanish Translation Prompt
 
 For B2 level Spanish translations, the system generates prompts that:
+
 - Use upper-intermediate vocabulary (top 5000 words)
 - Include advanced tenses and subjunctive mood
 - Preserve cultural nuances and idiomatic expressions
@@ -143,6 +147,7 @@ For B2 level Spanish translations, the system generates prompts that:
 ## Fallback Behavior
 
 When a language/difficulty combination is not supported:
+
 1. The system logs a warning
 2. Falls back to a basic prompt template
 3. Uses generic difficulty-level instructions
@@ -151,6 +156,7 @@ When a language/difficulty combination is not supported:
 ## Testing
 
 The system includes comprehensive tests for:
+
 - Configuration loading and validation
 - Prompt building with various contexts
 - Language/difficulty support checking
@@ -158,6 +164,7 @@ The system includes comprehensive tests for:
 - Fallback behavior for unsupported combinations
 
 Run tests with:
+
 ```bash
 npm run test:once -- src/lib/config/__tests__/PromptConfigService.test.ts
 ```
@@ -165,7 +172,7 @@ npm run test:once -- src/lib/config/__tests__/PromptConfigService.test.ts
 ## Future Enhancements
 
 1. **Dynamic Configuration Loading**: Load configurations from external sources
-2. **User Customization**: Allow users to customize prompts for their needs  
+2. **User Customization**: Allow users to customize prompts for their needs
 3. **Context-Aware Prompts**: Adjust prompts based on story content and themes
 4. **Performance Optimization**: Cache frequently used prompt configurations
 5. **Multi-Modal Support**: Extend to support image and audio content translation
@@ -187,4 +194,4 @@ npm run test:once -- src/lib/config/__tests__/PromptConfigService.test.ts
 3. **Template placeholders not replaced**
    - Verify all required placeholders exist in the template
    - Check that the context object contains all necessary fields
-   - Ensure the template string format is correct 
+   - Ensure the template string format is correct

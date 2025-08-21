@@ -18,8 +18,16 @@ class ConsoleWrapper {
   }
 
   log(level: string, message: string, meta: Record<string, unknown> = {}) {
-    const { channel, data, userId, sessionId, requestId, performance, ...rest } = meta;
-    
+    const {
+      channel,
+      data,
+      userId,
+      sessionId,
+      requestId,
+      performance,
+      ...rest
+    } = meta;
+
     // Console logging
     if (this.config.enableConsole) {
       const timestamp = new Date().toISOString();
@@ -30,7 +38,7 @@ class ConsoleWrapper {
         channelStr = 'general';
       }
       const prefix = `[${timestamp}] [${level.toUpperCase()}] [${channelStr}]`;
-      
+
       switch (level) {
         case 'error':
           console.error(prefix, message, data ?? rest);
@@ -60,7 +68,9 @@ class ConsoleWrapper {
         userId: userId as string,
         sessionId: sessionId as string,
         requestId: requestId as string,
-        performance: performance as { duration?: number; memory?: number; } | undefined,
+        performance: performance as
+          | { duration?: number; memory?: number }
+          | undefined,
       };
 
       this.queue.push(logEntry);
@@ -96,7 +106,11 @@ class ConsoleWrapper {
     } catch (error) {
       console.error('Remote logging failed:', error);
       logs.forEach(log => {
-        console.log(`[REMOTE FAILED] [${log.level.toUpperCase()}] [${log.channel}]`, log.message, log.data);
+        console.log(
+          `[REMOTE FAILED] [${log.level.toUpperCase()}] [${log.channel}]`,
+          log.message,
+          log.data
+        );
       });
     }
   }
@@ -112,4 +126,4 @@ class ConsoleWrapper {
 export function createLogger(config?: Partial<LoggerConfig>) {
   const fullConfig = { ...getLoggerConfigWithOverrides(), ...config };
   return new ConsoleWrapper(fullConfig);
-} 
+}

@@ -12,7 +12,7 @@ describe('StoryContent Component', () => {
     toLanguage: 'en',
     difficulty: 'a1',
     provider: 'mock',
-    model: 'test-model'
+    model: 'test-model',
   };
 
   afterEach(() => {
@@ -33,10 +33,7 @@ describe('StoryContent Component', () => {
 
   it('displays original text when showOriginal is true', () => {
     const { container } = render(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={true}
-      />
+      <StoryContent translationData={mockTranslationData} showOriginal={true} />
     );
 
     const content = within(container).getByText('Hola mundo');
@@ -113,8 +110,11 @@ describe('StoryContent Component', () => {
   });
 
   it('handles long content properly', () => {
-    const longText = 'This is a very long story that should wrap properly and maintain proper formatting throughout multiple lines and paragraphs. '.repeat(10);
-    
+    const longText =
+      'This is a very long story that should wrap properly and maintain proper formatting throughout multiple lines and paragraphs. '.repeat(
+        10
+      );
+
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
       translatedText: longText,
@@ -137,8 +137,10 @@ describe('StoryContent Component', () => {
   it('handles special characters and unicode content', () => {
     const unicodeTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText: 'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
-      translatedText: 'Once upon a time there was a boy who lived in Spain... What an exciting story!',
+      originalText:
+        'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
+      translatedText:
+        'Once upon a time there was a boy who lived in Spain... What an exciting story!',
     };
 
     const { container: originalContainer } = render(
@@ -155,8 +157,12 @@ describe('StoryContent Component', () => {
       />
     );
 
-    expect(within(originalContainer).getByText(/Había una vez un niño/)).toBeInTheDocument();
-    expect(within(translatedContainer).getByText(/Once upon a time there was a boy/)).toBeInTheDocument();
+    expect(
+      within(originalContainer).getByText(/Había una vez un niño/)
+    ).toBeInTheDocument();
+    expect(
+      within(translatedContainer).getByText(/Once upon a time there was a boy/)
+    ).toBeInTheDocument();
   });
 
   it('switches content correctly when showOriginal prop changes', () => {
@@ -173,14 +179,13 @@ describe('StoryContent Component', () => {
 
     // After rerender with showOriginal=true, shows original text
     rerender(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={true}
-      />
+      <StoryContent translationData={mockTranslationData} showOriginal={true} />
     );
 
     expect(within(container).getByText('Hola mundo')).toBeInTheDocument();
-    expect(within(container).queryByText('Hello world')).not.toBeInTheDocument();
+    expect(
+      within(container).queryByText('Hello world')
+    ).not.toBeInTheDocument();
   });
 
   it('has transition classes for smooth content switching', () => {
@@ -204,8 +209,10 @@ describe('StoryContent Component', () => {
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText: 'Esta es una historia muy larga que contiene múltiples párrafos y líneas de texto para probar el comportamiento del componente.',
-      translatedText: 'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
+      originalText:
+        'Esta es una historia muy larga que contiene múltiples párrafos y líneas de texto para probar el comportamiento del componente.',
+      translatedText:
+        'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
     };
 
     const { container: shortContainer } = render(
@@ -225,8 +232,8 @@ describe('StoryContent Component', () => {
     // Both should have the same container structure
     expect(shortContainer.firstChild?.nodeName).toBe('DIV');
     expect(longContainer.firstChild?.nodeName).toBe('DIV');
-    
+
     expect(shortContainer.querySelector('p')).toBeInTheDocument();
     expect(longContainer.querySelector('p')).toBeInTheDocument();
   });
-}); 
+});

@@ -77,7 +77,9 @@ describe('useWalkthrough', () => {
         result.current.startWalkthrough(homeWalkthrough);
       });
 
-      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(homeWalkthrough);
+      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(
+        homeWalkthrough
+      );
     });
 
     it('should call startWalkthroughById', () => {
@@ -87,7 +89,9 @@ describe('useWalkthrough', () => {
         result.current.startWalkthroughById('home-walkthrough');
       });
 
-      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(homeWalkthrough);
+      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(
+        homeWalkthrough
+      );
     });
 
     it('should call stopWalkthrough', () => {
@@ -137,7 +141,9 @@ describe('useWalkthrough', () => {
         result.current.isCompleted('home-walkthrough');
       });
 
-      expect(walkthroughService.isCompleted).toHaveBeenCalledWith('home-walkthrough');
+      expect(walkthroughService.isCompleted).toHaveBeenCalledWith(
+        'home-walkthrough'
+      );
     });
 
     it('should call isSkipped', () => {
@@ -147,7 +153,9 @@ describe('useWalkthrough', () => {
         result.current.isSkipped('home-walkthrough');
       });
 
-      expect(walkthroughService.isSkipped).toHaveBeenCalledWith('home-walkthrough');
+      expect(walkthroughService.isSkipped).toHaveBeenCalledWith(
+        'home-walkthrough'
+      );
     });
 
     it('should call resetWalkthrough', () => {
@@ -157,7 +165,9 @@ describe('useWalkthrough', () => {
         result.current.resetWalkthrough('home-walkthrough');
       });
 
-      expect(walkthroughService.resetWalkthrough).toHaveBeenCalledWith('home-walkthrough');
+      expect(walkthroughService.resetWalkthrough).toHaveBeenCalledWith(
+        'home-walkthrough'
+      );
     });
 
     it('should call resetAllWalkthroughs', () => {
@@ -188,7 +198,9 @@ describe('useWalkthrough', () => {
       // Wait for the auto-start delay
       await new Promise(resolve => setTimeout(resolve, 1100));
 
-      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(homeWalkthrough);
+      expect(walkthroughService.startWalkthrough).toHaveBeenCalledWith(
+        homeWalkthrough
+      );
 
       // Cleanup
       document.body.removeChild(startButton);
@@ -242,4 +254,4 @@ describe('useWalkthrough', () => {
       expect(walkthroughService.getCurrentConfig).toHaveBeenCalled();
     });
   });
-}); 
+});

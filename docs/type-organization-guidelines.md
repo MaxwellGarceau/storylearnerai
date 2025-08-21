@@ -16,6 +16,7 @@ We've implemented a custom ESLint rule that prevents duplicate type definitions 
 ## Common Duplicate Types Found
 
 ### 1. Nullable String Types
+
 ```typescript
 // ❌ Duplicate across many files
 type SomeField = string | null;
@@ -25,6 +26,7 @@ export type NullableString = string | null;
 ```
 
 ### 2. Promise Return Types
+
 ```typescript
 // ❌ Duplicate across services
 async function someFunction(): Promise<DatabaseUserInsert> { ... }
@@ -35,6 +37,7 @@ export type UserInsertOrNullPromise = Promise<DatabaseUserInsert | null>;
 ```
 
 ### 3. Function Types
+
 ```typescript
 // ❌ Duplicate callback types
 type Callback = () => void;
@@ -42,10 +45,14 @@ type AuthCallback = (email: string, password: string) => Promise<boolean>;
 
 // ✅ Create reusable types
 export type VoidCallback = () => void;
-export type AuthFunction = (email: string, password: string) => Promise<boolean>;
+export type AuthFunction = (
+  email: string,
+  password: string
+) => Promise<boolean>;
 ```
 
 ### 4. Object Types
+
 ```typescript
 // ❌ Duplicate validation result types
 type ValidationResult = {
@@ -178,21 +185,25 @@ Add new types to the ignore list as needed:
 ## Migration Strategy
 
 ### Phase 1: Identify and Group
+
 1. Run the ESLint rule to identify all duplicates
 2. Group similar types together
 3. Create a plan for consolidation
 
 ### Phase 2: Create Shared Types
+
 1. Create common type files
 2. Define the most frequently used types
 3. Update ESLint configuration
 
 ### Phase 3: Gradual Migration
+
 1. Update one file at a time
 2. Test after each change
 3. Update imports throughout the codebase
 
 ### Phase 4: Validation
+
 1. Run ESLint to ensure no new duplicates
 2. Update documentation
 3. Train team on new conventions
@@ -200,6 +211,7 @@ Add new types to the ignore list as needed:
 ## Examples
 
 ### Before (Duplicate Types)
+
 ```typescript
 // file1.ts
 function getUser(): Promise<DatabaseUserInsert | null> { ... }
@@ -212,6 +224,7 @@ function updateUser(): Promise<DatabaseUserInsert | null> { ... }
 ```
 
 ### After (Reusable Types)
+
 ```typescript
 // types/database/common.ts
 export type UserResult = Promise<DatabaseUserInsert | null>;
@@ -242,4 +255,4 @@ function updateUser(): UserResult { ... }
 - Run `npm run lint` regularly to check for new duplicates
 - Review PRs for type organization
 - Update this document as new patterns emerge
-- Regular team reviews of type organization 
+- Regular team reviews of type organization

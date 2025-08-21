@@ -9,13 +9,13 @@ vi.mock('../config/native-to-target/en/es.json', () => ({
       description: 'Maximum scaffolding for absolute beginners',
       grammar_focus: {
         noun_gender: 'STRICTLY ADHERE to noun-article pairing',
-        verb_conjugation: 'Use only the Present Tense'
+        verb_conjugation: 'Use only the Present Tense',
       },
       vocabulary_focus: {
-        word_choice: 'Use high-frequency vocabulary'
-      }
-    }
-  }
+        word_choice: 'Use high-frequency vocabulary',
+      },
+    },
+  },
 }));
 
 vi.mock('../config/native-to-target/es/en.json', () => ({
@@ -24,18 +24,19 @@ vi.mock('../config/native-to-target/es/en.json', () => ({
       description: 'Maximum scaffolding for absolute beginners',
       grammar_focus: {
         subject_pronouns: 'STRICTLY ENFORCE subject pronouns',
-        adjective_placement: 'STRICTLY ENFORCE adjective-before-noun word order'
+        adjective_placement:
+          'STRICTLY ENFORCE adjective-before-noun word order',
       },
       vocabulary_focus: {
-        false_friends: 'STRICTLY AVOID common English-Spanish false friends'
-      }
-    }
-  }
+        false_friends: 'STRICTLY AVOID common English-Spanish false friends',
+      },
+    },
+  },
 }));
 
 /**
  * Comprehensive Prompt System Tests
- * 
+ *
  * CRITICAL tests are in: GeneralPromptConfigService.critical.test.ts
  * This file contains comprehensive validation and edge case testing
  */
@@ -43,17 +44,19 @@ describe('PromptConfigService', () => {
   describe('getGeneralInstructions', () => {
     it('should return array of general instructions', () => {
       const instructions = generalPromptConfigService.getGeneralInstructions();
-      
+
       expect(Array.isArray(instructions)).toBe(true);
       expect(instructions.length).toBeGreaterThan(0);
-      expect(instructions).toContain('Maintain the story\'s meaning and narrative flow');
+      expect(instructions).toContain(
+        "Maintain the story's meaning and narrative flow"
+      );
     });
   });
 
   describe('getTemplate', () => {
     it('should return the prompt template', () => {
       const template = generalPromptConfigService.getTemplate();
-      
+
       expect(typeof template).toBe('string');
       expect(template).toContain('{fromLanguage}');
       expect(template).toContain('{toLanguage}');
@@ -69,33 +72,42 @@ describe('PromptConfigService', () => {
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
-      text: 'Hola, ¿cómo estás?'
+      text: 'Hola, ¿cómo estás?',
     };
 
     it('should build different prompts for different difficulty levels', async () => {
-      const a1Context: PromptBuildContext = { ...mockContext, difficulty: 'a1' };
-      const b2Context: PromptBuildContext = { ...mockContext, difficulty: 'b2' };
-      
+      const a1Context: PromptBuildContext = {
+        ...mockContext,
+        difficulty: 'a1',
+      };
+      const b2Context: PromptBuildContext = {
+        ...mockContext,
+        difficulty: 'b2',
+      };
+
       const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
       const b2Prompt = await generalPromptConfigService.buildPrompt(b2Context);
-      
+
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('most common 1000 English words');
       expect(b2Prompt).toContain('upper-intermediate vocabulary');
     });
 
     it('should build different prompts for different languages', async () => {
-      const enContext: PromptBuildContext = { ...mockContext, toLanguage: 'en' };
-      const esContext: PromptBuildContext = { 
-        fromLanguage: 'en', 
-        toLanguage: 'es', 
-        difficulty: 'a1', 
-        text: 'Hello, how are you?' 
+      const enContext: PromptBuildContext = {
+        ...mockContext,
+        toLanguage: 'en',
       };
-      
+      const esContext: PromptBuildContext = {
+        fromLanguage: 'en',
+        toLanguage: 'es',
+        difficulty: 'a1',
+        text: 'Hello, how are you?',
+      };
+
       const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
       const esPrompt = await generalPromptConfigService.buildPrompt(esContext);
-      
+
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');
       expect(esPrompt).toContain('Spanish');
@@ -105,7 +117,7 @@ describe('PromptConfigService', () => {
   describe('getAvailableLanguages', () => {
     it('should return array of available language codes', () => {
       const languages = generalPromptConfigService.getAvailableLanguages();
-      
+
       expect(Array.isArray(languages)).toBe(true);
       expect(languages).toContain('en');
       expect(languages).toContain('es');
@@ -114,8 +126,9 @@ describe('PromptConfigService', () => {
 
   describe('getAvailableDifficulties', () => {
     it('should return difficulties for supported language', () => {
-      const difficulties = generalPromptConfigService.getAvailableDifficulties('en');
-      
+      const difficulties =
+        generalPromptConfigService.getAvailableDifficulties('en');
+
       expect(Array.isArray(difficulties)).toBe(true);
       expect(difficulties).toContain('a1');
       expect(difficulties).toContain('a2');
@@ -124,7 +137,8 @@ describe('PromptConfigService', () => {
     });
 
     it('should return empty array for unsupported language', () => {
-      const difficulties = generalPromptConfigService.getAvailableDifficulties('unsupported');
+      const difficulties =
+        generalPromptConfigService.getAvailableDifficulties('unsupported');
       expect(difficulties).toEqual([]);
     });
   });
@@ -136,22 +150,35 @@ describe('PromptConfigService', () => {
     });
 
     it('should return false for unsupported language', () => {
-      expect(generalPromptConfigService.isSupported('unsupported' as string, 'a1')).toBe(false);
+      expect(
+        generalPromptConfigService.isSupported('unsupported' as string, 'a1')
+      ).toBe(false);
     });
 
     it('should return false for unsupported difficulty', () => {
-      expect(generalPromptConfigService.isSupported('en', 'unsupported' as string)).toBe(false);
+      expect(
+        generalPromptConfigService.isSupported('en', 'unsupported' as string)
+      ).toBe(false);
     });
 
     it('should be case insensitive', () => {
-      expect(generalPromptConfigService.isSupported('EN' as string, 'a1')).toBe(true);
-      expect(generalPromptConfigService.isSupported('Es' as string, 'b2')).toBe(true);
+      expect(generalPromptConfigService.isSupported('EN' as string, 'a1')).toBe(
+        true
+      );
+      expect(generalPromptConfigService.isSupported('Es' as string, 'b2')).toBe(
+        true
+      );
     });
   });
 
   describe('Native-to-Target Instructions', () => {
     it('should return native-to-target instructions for supported combinations', async () => {
-      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'a1');
+      const instructions =
+        await generalPromptConfigService.getNativeToTargetInstructions(
+          'en',
+          'es',
+          'a1'
+        );
       expect(instructions).toBeTruthy();
       expect(instructions?.description).toContain('Maximum scaffolding');
       expect(instructions?.grammar_focus).toBeDefined();
@@ -159,17 +186,32 @@ describe('PromptConfigService', () => {
     });
 
     it('should return null for unsupported native language', async () => {
-      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('fr' as string, 'es', 'a1');
+      const instructions =
+        await generalPromptConfigService.getNativeToTargetInstructions(
+          'fr' as string,
+          'es',
+          'a1'
+        );
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported target language', async () => {
-      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'fr' as string, 'a1');
+      const instructions =
+        await generalPromptConfigService.getNativeToTargetInstructions(
+          'en',
+          'fr' as string,
+          'a1'
+        );
       expect(instructions).toBeNull();
     });
 
     it('should return null for unsupported difficulty', async () => {
-      const instructions = await generalPromptConfigService.getNativeToTargetInstructions('en', 'es', 'c1' as string);
+      const instructions =
+        await generalPromptConfigService.getNativeToTargetInstructions(
+          'en',
+          'es',
+          'c1' as string
+        );
       expect(instructions).toBeNull();
     });
 
@@ -178,7 +220,7 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: 'Hola, ¿cómo estás?'
+        text: 'Hola, ¿cómo estás?',
       };
 
       const prompt = await generalPromptConfigService.buildPrompt(context);
@@ -192,7 +234,7 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: 'Hola, ¿cómo estás?'
+        text: 'Hola, ¿cómo estás?',
       };
 
       const prompt = await generalPromptConfigService.buildPrompt(context);
@@ -207,11 +249,12 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: ''
+        text: '',
       };
 
-      const prompt = await generalPromptConfigService.buildPrompt(contextWithEmptyText);
-      
+      const prompt =
+        await generalPromptConfigService.buildPrompt(contextWithEmptyText);
+
       // Should handle empty text without errors
       expect(prompt).toContain('es Story:');
       expect(prompt).toContain('Please provide only the en translation');
@@ -222,11 +265,12 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: 'She said "Hello, how are you?" and he replied "I\'m fine, thanks!"'
+        text: 'She said "Hello, how are you?" and he replied "I\'m fine, thanks!"',
       };
 
-      const prompt = await generalPromptConfigService.buildPrompt(contextWithQuotes);
-      
+      const prompt =
+        await generalPromptConfigService.buildPrompt(contextWithQuotes);
+
       // Should preserve quotes and apostrophes
       expect(prompt).toContain('"Hello, how are you?"');
       expect(prompt).toContain('"I\'m fine, thanks!"');
@@ -238,12 +282,12 @@ describe('PromptConfigService', () => {
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
-      text: 'Hola, ¿cómo estás?'
+      text: 'Hola, ¿cómo estás?',
     };
 
     it('should include native-to-target instruction sections when fromLanguage is provided', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for native-to-target sections
       expect(prompt).toContain('Native Speaker Guidance:');
       expect(prompt).toContain('Grammar Focus:');
@@ -252,7 +296,7 @@ describe('PromptConfigService', () => {
 
     it('should include specific vocabulary instructions for A1 level', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for A1-specific vocabulary instructions
       expect(prompt).toContain('1000 English words');
       expect(prompt).toContain('simple alternatives');
@@ -260,7 +304,7 @@ describe('PromptConfigService', () => {
 
     it('should include specific grammar instructions for A1 level', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for A1-specific grammar instructions
       expect(prompt).toContain('present simple');
       expect(prompt).toContain('past simple');
@@ -269,7 +313,7 @@ describe('PromptConfigService', () => {
 
     it('should include specific style instructions for A1 level', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for A1-specific style instructions
       expect(prompt).toContain('5-10 words');
       expect(prompt).toContain('compound and complex sentences');
@@ -277,7 +321,7 @@ describe('PromptConfigService', () => {
 
     it('should include native-to-target grammar focus instructions', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for native-to-target grammar instructions
       expect(prompt).toContain('SUBJECT PRONOUNS:');
       expect(prompt).toContain('ADJECTIVE PLACEMENT:');
@@ -285,7 +329,7 @@ describe('PromptConfigService', () => {
 
     it('should include native-to-target vocabulary focus instructions', async () => {
       const prompt = await generalPromptConfigService.buildPrompt(mockContext);
-      
+
       // Check for native-to-target vocabulary instructions
       expect(prompt).toContain('FALSE FRIENDS:');
     });
@@ -295,14 +339,14 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: 'Hola, ¿cómo estás?'
+        text: 'Hola, ¿cómo estás?',
       };
 
       const b2Context: PromptBuildContext = {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'b2',
-        text: 'Hola, ¿cómo estás?'
+        text: 'Hola, ¿cómo estás?',
       };
 
       const a1Prompt = await generalPromptConfigService.buildPrompt(a1Context);
@@ -322,14 +366,14 @@ describe('PromptConfigService', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1',
-        text: 'Hola, ¿cómo estás?'
+        text: 'Hola, ¿cómo estás?',
       };
 
       const esContext: PromptBuildContext = {
         fromLanguage: 'en',
         toLanguage: 'es',
         difficulty: 'a1',
-        text: 'Hello, how are you?'
+        text: 'Hello, how are you?',
       };
 
       const enPrompt = await generalPromptConfigService.buildPrompt(enContext);
@@ -344,4 +388,4 @@ describe('PromptConfigService', () => {
       expect(esPrompt).toContain('es translation');
     });
   });
-}); 
+});

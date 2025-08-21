@@ -17,14 +17,14 @@ vi.mock('../../../hooks/useDifficultyLevels', () => ({
       { code: 'a1', name: 'Beginner' },
       { code: 'a2', name: 'Elementary' },
       { code: 'b1', name: 'Intermediate' },
-      { code: 'b2', name: 'Upper Intermediate' }
+      { code: 'b2', name: 'Upper Intermediate' },
     ],
     getDifficultyLevelDisplay: (code: string) => {
       const displayMap: Record<string, string> = {
-        'a1': 'A1 (Beginner)',
-        'a2': 'A2 (Elementary)',
-        'b1': 'B1 (Intermediate)',
-        'b2': 'B2 (Upper Intermediate)'
+        a1: 'A1 (Beginner)',
+        a2: 'A2 (Elementary)',
+        b1: 'B1 (Intermediate)',
+        b2: 'B2 (Upper Intermediate)',
       };
       return displayMap[code] || code;
     },
@@ -33,11 +33,11 @@ vi.mock('../../../hooks/useDifficultyLevels', () => ({
         'A1 (Beginner)': 'a1',
         'A2 (Elementary)': 'a2',
         'B1 (Intermediate)': 'b1',
-        'B2 (Upper Intermediate)': 'b2'
+        'B2 (Upper Intermediate)': 'b2',
       };
       return codeMap[display] || display;
-    }
-  })
+    },
+  }),
 }));
 
 const mockTranslationData: TranslationResponse = {
@@ -47,7 +47,7 @@ const mockTranslationData: TranslationResponse = {
   toLanguage: 'en',
   difficulty: 'a1',
   provider: 'test',
-  model: 'test-model'
+  model: 'test-model',
 };
 
 describe('StoryHeader Component', () => {
@@ -101,7 +101,9 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    expect(within(container).queryByText('A1 (Beginner)')).not.toBeInTheDocument();
+    expect(
+      within(container).queryByText('A1 (Beginner)')
+    ).not.toBeInTheDocument();
   });
 
   it('renders toggle button with correct text based on current view', () => {
@@ -121,8 +123,13 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const translatedToggleButton = within(translatedContainer).getByRole('button', { name: 'Show original story' });
-    const originalToggleButton = within(originalContainer).getByRole('button', { name: 'Show translated story' });
+    const translatedToggleButton = within(translatedContainer).getByRole(
+      'button',
+      { name: 'Show original story' }
+    );
+    const originalToggleButton = within(originalContainer).getByRole('button', {
+      name: 'Show translated story',
+    });
 
     expect(translatedToggleButton).toBeInTheDocument();
     expect(originalToggleButton).toBeInTheDocument();
@@ -138,7 +145,9 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const toggleButton = within(container).getByRole('button', { name: 'Show original story' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Show original story',
+    });
     fireEvent.click(toggleButton);
 
     expect(onToggleView).toHaveBeenCalledTimes(1);
@@ -153,8 +162,13 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const toggleButton = within(container).getByRole('button', { name: 'Show translated story' });
-    expect(toggleButton).toHaveClass('bg-secondary', 'text-secondary-foreground');
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Show translated story',
+    });
+    expect(toggleButton).toHaveClass(
+      'bg-secondary',
+      'text-secondary-foreground'
+    );
   });
 
   it('applies default variant to toggle button when showing translated', () => {
@@ -166,7 +180,9 @@ describe('StoryHeader Component', () => {
       />
     );
 
-    const toggleButton = within(container).getByRole('button', { name: 'Show original story' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Show original story',
+    });
     expect(toggleButton).toHaveClass('bg-primary', 'text-primary-foreground');
   });
 
@@ -199,9 +215,11 @@ describe('StoryHeader Component', () => {
     );
 
     const difficultyBadge = within(container).getByText('A1 (Beginner)');
-    const toggleButton = within(container).getByRole('button', { name: 'Show original story' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Show original story',
+    });
 
     expect(difficultyBadge).toHaveClass('order-1', 'sm:order-2');
     expect(toggleButton).toHaveClass('order-3');
   });
-}); 
+});

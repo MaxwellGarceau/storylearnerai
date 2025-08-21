@@ -4,16 +4,25 @@
  */
 
 import type { DatabaseUserInsert } from './user';
-import type { DatabaseTranslationInsert, DatabaseSavedTranslationWithDetails } from './translation';
+import type {
+  DatabaseTranslationInsert,
+  DatabaseSavedTranslationWithDetails,
+} from './translation';
 
 // User-related promise types
 export type DatabaseUserInsertPromise = Promise<DatabaseUserInsert>;
-export type DatabaseUserInsertOrNullPromise = Promise<DatabaseUserInsert | null>;
+export type DatabaseUserInsertOrNullPromise =
+  Promise<DatabaseUserInsert | null>;
 
 // Translation-related promise types
-export type DatabaseTranslationInsertPromise = Promise<DatabaseTranslationInsert>;
-export type DatabaseTranslationInsertOrNullPromise = Promise<DatabaseTranslationInsert | null>;
-export type DatabaseTranslationInsertArrayPromise = Promise<DatabaseTranslationInsert[]>;
+export type DatabaseTranslationInsertPromise =
+  Promise<DatabaseTranslationInsert>;
+export type DatabaseTranslationInsertOrNullPromise =
+  Promise<DatabaseTranslationInsert | null>;
+export type DatabaseTranslationInsertArrayPromise = Promise<
+  DatabaseTranslationInsert[]
+>;
 
 // Saved translation promise types
-export type DatabaseSavedTranslationWithDetailsPromise = Promise<DatabaseSavedTranslationWithDetails>;
+export type DatabaseSavedTranslationWithDetailsPromise =
+  Promise<DatabaseSavedTranslationWithDetails>;

@@ -1,20 +1,29 @@
-import React from 'react'
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
-import { vi } from 'vitest'
-import { SignInForm } from '../SignInForm'
-import { setupSupabaseMocks, mockUseAuth } from '../../../__tests__/mocks/supabaseMock'
+import React from 'react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
+import { vi } from 'vitest';
+import { SignInForm } from '../SignInForm';
+import {
+  setupSupabaseMocks,
+  mockUseAuth,
+} from '../../../__tests__/mocks/supabaseMock';
 
 // Setup Supabase mocks
-setupSupabaseMocks()
+setupSupabaseMocks();
 
 describe('SignInForm Component', () => {
-  const mockSignIn = vi.fn()
-  const mockOnSuccess = vi.fn()
-  const mockOnSwitchToSignUp = vi.fn()
+  const mockSignIn = vi.fn();
+  const mockOnSuccess = vi.fn();
+  const mockOnSwitchToSignUp = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    cleanup()
+    vi.clearAllMocks();
+    cleanup();
     mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
       signUp: vi.fn(),
@@ -22,63 +31,85 @@ describe('SignInForm Component', () => {
       resetPassword: vi.fn(),
       user: null,
       loading: false,
-      error: null
-    })
-  })
+      error: null,
+    });
+  });
 
   afterEach(() => {
-    cleanup()
-  })
+    cleanup();
+  });
 
   it('renders sign in form with all required fields', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument()
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /sign in/i })[0]).toBeInTheDocument()
-    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument()
-  })
+    expect(
+      screen.getByRole('heading', { name: 'Sign In' })
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(
+      screen.getAllByRole('button', { name: /sign in/i })[0]
+    ).toBeInTheDocument();
+    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
+  });
 
   it('handles form input changes', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    const emailInput = screen.getByLabelText(/email/i)
-    const passwordInput = screen.getByLabelText(/password/i)
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.change(passwordInput, { target: { value: 'Password123!' } })
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
 
-    expect(emailInput).toHaveValue('test@example.com')
-    expect(passwordInput).toHaveValue('Password123!')
-  })
+    expect(emailInput).toHaveValue('test@example.com');
+    expect(passwordInput).toHaveValue('Password123!');
+  });
 
   it('submits form with valid data', async () => {
-    mockSignIn.mockResolvedValue(true)
+    mockSignIn.mockResolvedValue(true);
 
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    const emailInput = screen.getByLabelText(/email/i)
-    const passwordInput = screen.getByLabelText(/password/i)
-    const submitButton = screen.getAllByRole('button', { name: /sign in/i })[0]
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitButton = screen.getAllByRole('button', { name: /sign in/i })[0];
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.change(passwordInput, { target: { value: 'Password123!' } })
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'Password123!' } });
 
-    fireEvent.click(submitButton)
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'Password123!')
-    })
+      expect(mockSignIn).toHaveBeenCalledWith(
+        'test@example.com',
+        'Password123!'
+      );
+    });
 
     await waitFor(() => {
-      expect(mockOnSuccess).toHaveBeenCalled()
-    })
-  })
+      expect(mockOnSuccess).toHaveBeenCalled();
+    });
+  });
 
   it('handles sign in error', () => {
-    const errorMessage = 'Invalid credentials'
-    
+    const errorMessage = 'Invalid credentials';
+
     // Mock the error state from useAuth
     mockUseAuth.mockReturnValue({
       signIn: mockSignIn,
@@ -87,22 +118,32 @@ describe('SignInForm Component', () => {
       resetPassword: vi.fn(),
       user: null,
       loading: false,
-      error: errorMessage
-    })
+      error: errorMessage,
+    });
 
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument()
-  })
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  });
 
   it('switches to sign up mode when link is clicked', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    const signUpLink = screen.getAllByText(/sign up/i)[0]
-    fireEvent.click(signUpLink)
+    const signUpLink = screen.getAllByText(/sign up/i)[0];
+    fireEvent.click(signUpLink);
 
-    expect(mockOnSwitchToSignUp).toHaveBeenCalled()
-  })
+    expect(mockOnSwitchToSignUp).toHaveBeenCalled();
+  });
 
   it('disables form during loading', () => {
     // Mock the loading state from useAuth
@@ -113,17 +154,24 @@ describe('SignInForm Component', () => {
       resetPassword: vi.fn(),
       user: null,
       loading: true,
-      error: null
-    })
+      error: null,
+    });
 
-    render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />)
+    render(
+      <SignInForm
+        onSuccess={mockOnSuccess}
+        onSwitchToSignUp={mockOnSwitchToSignUp}
+      />
+    );
 
-    const emailInput = screen.getByLabelText(/email/i)
-    const passwordInput = screen.getByLabelText(/password/i)
-    const submitButton = screen.getAllByRole('button', { name: /signing in/i })[0]
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitButton = screen.getAllByRole('button', {
+      name: /signing in/i,
+    })[0];
 
-    expect(emailInput).toBeDisabled()
-    expect(passwordInput).toBeDisabled()
-    expect(submitButton).toBeDisabled()
-  })
-}) 
+    expect(emailInput).toBeDisabled();
+    expect(passwordInput).toBeDisabled();
+    expect(submitButton).toBeDisabled();
+  });
+});

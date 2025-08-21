@@ -19,16 +19,16 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* Single Story Container - Toggleable */}
-      <div className="transition-all duration-300 relative">
-        <StoryHeader 
+      <div className='transition-all duration-300 relative'>
+        <StoryHeader
           translationData={translationData}
           showOriginal={showOriginal}
           onToggleView={toggleStoryView}
         />
-        
-        <StoryContent 
+
+        <StoryContent
           translationData={translationData}
           showOriginal={showOriginal}
         />

@@ -26,53 +26,44 @@ const fileUploadAreaVariants = cva(
   }
 );
 
-const iconVariants = cva(
-  'w-8 h-8 mx-auto',
-  {
-    variants: {
-      state: {
-        default: 'text-gray-400',
-        selected: 'text-green-600',
-        processing: 'text-gray-400',
-      },
+const iconVariants = cva('w-8 h-8 mx-auto', {
+  variants: {
+    state: {
+      default: 'text-gray-400',
+      selected: 'text-green-600',
+      processing: 'text-gray-400',
     },
-    defaultVariants: {
-      state: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    state: 'default',
+  },
+});
 
-const textVariants = cva(
-  'font-medium',
-  {
-    variants: {
-      state: {
-        default: 'text-gray-900',
-        selected: 'text-green-800',
-        processing: 'text-gray-500',
-      },
+const textVariants = cva('font-medium', {
+  variants: {
+    state: {
+      default: 'text-gray-900',
+      selected: 'text-green-800',
+      processing: 'text-gray-500',
     },
-    defaultVariants: {
-      state: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    state: 'default',
+  },
+});
 
-const subtitleVariants = cva(
-  'text-sm',
-  {
-    variants: {
-      state: {
-        default: 'text-muted-foreground',
-        selected: 'text-green-600',
-        processing: 'text-muted-foreground',
-      },
+const subtitleVariants = cva('text-sm', {
+  variants: {
+    state: {
+      default: 'text-muted-foreground',
+      selected: 'text-green-600',
+      processing: 'text-muted-foreground',
     },
-    defaultVariants: {
-      state: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    state: 'default',
+  },
+});
 
 export interface FileUploadAreaProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -91,29 +82,32 @@ export interface FileUploadAreaProps
 }
 
 const FileUploadArea = React.forwardRef<HTMLDivElement, FileUploadAreaProps>(
-  ({
-    className,
-    state: _state,
-    accept = '.pdf',
-    maxFileSize = 5,
-    maxPages = 10,
-    onFileSelect,
-    onValidationError: _onValidationError,
-    isProcessing = false,
-    selectedFile,
-    fileInfo,
-    uploadPrompt,
-    fileRequirements,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      state: _state,
+      accept = '.pdf',
+      maxFileSize = 5,
+      maxPages = 10,
+      onFileSelect,
+      onValidationError: _onValidationError,
+      isProcessing = false,
+      selectedFile,
+      fileInfo,
+      uploadPrompt,
+      fileRequirements,
+      ...props
+    },
+    ref
+  ) => {
     const { t } = useTranslation();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     // Determine the current state
-    const currentState = isProcessing 
-      ? 'processing' 
-      : selectedFile 
-        ? 'selected' 
+    const currentState = isProcessing
+      ? 'processing'
+      : selectedFile
+        ? 'selected'
         : 'default';
 
     const handleUploadClick = () => {
@@ -130,35 +124,39 @@ const FileUploadArea = React.forwardRef<HTMLDivElement, FileUploadAreaProps>(
     };
 
     const defaultUploadPrompt = uploadPrompt ?? t('pdfUpload.uploadPrompt');
-    const defaultFileRequirements = fileRequirements ?? t('pdfUpload.fileRequirements', { maxSize: maxFileSize, maxPages });
+    const defaultFileRequirements =
+      fileRequirements ??
+      t('pdfUpload.fileRequirements', { maxSize: maxFileSize, maxPages });
 
     return (
-      <div
-        className={cn('space-y-3', className)}
-        ref={ref}
-        {...props}
-      >
+      <div className={cn('space-y-3', className)} ref={ref} {...props}>
         <div
           className={cn(fileUploadAreaVariants({ state: currentState }))}
           onClick={handleUploadClick}
-          role="button"
+          role='button'
           tabIndex={isProcessing ? -1 : 0}
-          aria-label={selectedFile ? 'Change selected file' : 'Select file to upload'}
+          aria-label={
+            selectedFile ? 'Change selected file' : 'Select file to upload'
+          }
           aria-disabled={isProcessing}
-          data-testid={props['data-testid'] ? `${props['data-testid']}-area` : 'upload-area'}
+          data-testid={
+            props['data-testid']
+              ? `${props['data-testid']}-area`
+              : 'upload-area'
+          }
         >
           <input
             ref={fileInputRef}
-            type="file"
+            type='file'
             accept={accept}
             onChange={handleFileSelect}
-            className="hidden"
+            className='hidden'
             disabled={isProcessing}
-            data-testid="pdf-file-input"
-            aria-hidden="true"
+            data-testid='pdf-file-input'
+            aria-hidden='true'
           />
           {selectedFile ? (
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Check className={cn(iconVariants({ state: currentState }))} />
               <div className={cn(textVariants({ state: currentState }))}>
                 {fileInfo?.name}
@@ -169,7 +167,7 @@ const FileUploadArea = React.forwardRef<HTMLDivElement, FileUploadAreaProps>(
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Upload className={cn(iconVariants({ state: currentState }))} />
               <div className={cn(textVariants({ state: currentState }))}>
                 {defaultUploadPrompt}

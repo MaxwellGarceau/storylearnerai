@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { vi } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
 import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
@@ -9,15 +15,20 @@ vi.mock('react-i18next', () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         'story.uploadTitle': 'Upload Story',
-        'story.uploadDescription': 'Upload a story file or paste text to get started',
+        'story.uploadDescription':
+          'Upload a story file or paste text to get started',
         'story.translateButton': 'Translate Story',
-        'storyInput.placeholder': 'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
-        'storyInput.tip': '💡 Tip: You can paste long stories, articles, or any Spanish text you\'d like to translate',
+        'storyInput.placeholder':
+          'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
+        'storyInput.tip':
+          "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
         'common.edit': 'Edit',
         'storyInput.validation.securityWarning': '⚠️ Security Warning',
-        'storyInput.validation.maliciousContentRemoved': 'Malicious content has been automatically removed for your safety.',
+        'storyInput.validation.maliciousContentRemoved':
+          'Malicious content has been automatically removed for your safety.',
         'storyInput.validation.invalidInput': 'Invalid input detected',
-        'storyInput.validation.fixInput': 'Please fix the input before translating',
+        'storyInput.validation.fixInput':
+          'Please fix the input before translating',
         'storyInput.optionsModal.title': 'Story Options',
         'storyInput.optionsModal.languageLabel': 'Target Language',
         'storyInput.optionsModal.difficultyLabel': 'Target Difficulty (CEFR)',
@@ -25,8 +36,10 @@ vi.mock('react-i18next', () => ({
         'storyInput.optionsModal.a2': 'A2 (Elementary)',
         'storyInput.optionsModal.b1': 'B1 (Intermediate)',
         'storyInput.optionsModal.b2': 'B2 (Upper Intermediate)',
-        'storyInput.currentlySupported': 'Currently only {language} translation is supported.',
-        'storyInput.difficultyDescription': 'The story will be adapted to this {language} proficiency level.',
+        'storyInput.currentlySupported':
+          'Currently only {language} translation is supported.',
+        'storyInput.difficultyDescription':
+          'The story will be adapted to this {language} proficiency level.',
         'storyInput.done': 'Done',
         'storyInput.confirmationModal.title': 'Confirm Translation Options',
         'storyInput.confirmationModal.from': 'From:',
@@ -48,20 +61,29 @@ vi.mock('react-i18next', () => ({
 vi.mock('../../../lib/utils/sanitization', () => ({
   sanitizeStoryText: vi.fn((input: string) => {
     // Mock sanitization that removes script tags
-    return input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    return input.replace(
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      ''
+    );
   }),
   validateStoryText: vi.fn((input: string) => {
-    const hasScript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(input);
+    const hasScript =
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(input);
     const hasJavaScript = /javascript:/gi.test(input);
     const hasEventHandlers = /on\w+\s*=/gi.test(input);
-    
+
     const isValid = !hasScript && !hasJavaScript && !hasEventHandlers;
-    const errors = isValid ? [] : ['Input contains potentially dangerous content'];
-    
+    const errors = isValid
+      ? []
+      : ['Input contains potentially dangerous content'];
+
     return {
       isValid,
       errors,
-      sanitizedText: input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''),
+      sanitizedText: input.replace(
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        ''
+      ),
     };
   }),
 }));
@@ -112,14 +134,25 @@ describe('FullPageStoryInput Security Features', () => {
 
       await waitFor(() => {
         expect(screen.getByText('⚠️ Security Warning')).toBeInTheDocument();
-        expect(screen.getByText('Input contains potentially dangerous content')).toBeInTheDocument();
-        expect(screen.getByText('Malicious content has been automatically removed for your safety.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Input contains potentially dangerous content')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Malicious content has been automatically removed for your safety.'
+          )
+        ).toBeInTheDocument();
       });
     });
 
     it('should prevent translation when malicious content is detected', async () => {
       const { onSubmit } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} value="<script>alert('xss')</script>Hello" />);
+      render(
+        <FullPageStoryInput
+          {...defaultProps}
+          value="<script>alert('xss')</script>Hello"
+        />
+      );
 
       const translateButton = screen.getByTestId('translate-button');
       fireEvent.click(translateButton);
@@ -170,7 +203,9 @@ describe('FullPageStoryInput Security Features', () => {
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(normalText);
-        expect(screen.queryByText('⚠️ Security Warning')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('⚠️ Security Warning')
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -179,13 +214,16 @@ describe('FullPageStoryInput Security Features', () => {
       render(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
-      const textWithAccents = 'Érase una vez un gato que vivía en una casa muy bonita.';
+      const textWithAccents =
+        'Érase una vez un gato que vivía en una casa muy bonita.';
 
       fireEvent.change(textarea, { target: { value: textWithAccents } });
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(textWithAccents);
-        expect(screen.queryByText('⚠️ Security Warning')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('⚠️ Security Warning')
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -200,7 +238,9 @@ describe('FullPageStoryInput Security Features', () => {
 
       await waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(textWithBreaks);
-        expect(screen.queryByText('⚠️ Security Warning')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('⚠️ Security Warning')
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -208,7 +248,12 @@ describe('FullPageStoryInput Security Features', () => {
   describe('Translation Prevention', () => {
     it('should prevent translation when validation errors exist', async () => {
       const { onSubmit } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} value="<script>alert('xss')</script>Hello" />);
+      render(
+        <FullPageStoryInput
+          {...defaultProps}
+          value="<script>alert('xss')</script>Hello"
+        />
+      );
 
       const translateButton = screen.getByTestId('translate-button');
       fireEvent.click(translateButton);
@@ -222,14 +267,16 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should allow translation when text is clean', async () => {
       const { onSubmit } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} value="¡Hola mundo!" />);
+      render(<FullPageStoryInput {...defaultProps} value='¡Hola mundo!' />);
 
       const translateButton = screen.getByTestId('translate-button');
       fireEvent.click(translateButton);
 
       // Should show confirmation modal first
       await waitFor(() => {
-        expect(screen.getByText('Confirm Translation Options')).toBeInTheDocument();
+        expect(
+          screen.getByText('Confirm Translation Options')
+        ).toBeInTheDocument();
       });
 
       // Click confirm button
@@ -249,7 +296,9 @@ describe('FullPageStoryInput Security Features', () => {
       const textarea = screen.getByTestId('story-textarea');
 
       // First, add malicious content
-      fireEvent.change(textarea, { target: { value: '<script>alert("xss")</script>' } });
+      fireEvent.change(textarea, {
+        target: { value: '<script>alert("xss")</script>' },
+      });
 
       await waitFor(() => {
         expect(screen.getByText('⚠️ Security Warning')).toBeInTheDocument();
@@ -259,7 +308,9 @@ describe('FullPageStoryInput Security Features', () => {
       fireEvent.change(textarea, { target: { value: 'Hello world' } });
 
       await waitFor(() => {
-        expect(screen.queryByText('⚠️ Security Warning')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('⚠️ Security Warning')
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -280,4 +331,4 @@ describe('FullPageStoryInput Security Features', () => {
       });
     });
   });
-}); 
+});

@@ -6,8 +6,14 @@ import { TranslationResponse } from '../../../lib/translationService';
 
 // Mock the child components
 vi.mock('../StoryHeader', () => ({
-  default: ({ showOriginal, onToggleView }: { showOriginal: boolean; onToggleView: () => void }) => (
-    <div data-testid="story-header">
+  default: ({
+    showOriginal,
+    onToggleView,
+  }: {
+    showOriginal: boolean;
+    onToggleView: () => void;
+  }) => (
+    <div data-testid='story-header'>
       <div>Header - showOriginal: {showOriginal.toString()}</div>
       <button onClick={onToggleView}>Toggle View</button>
     </div>
@@ -15,10 +21,20 @@ vi.mock('../StoryHeader', () => ({
 }));
 
 vi.mock('../StoryContent', () => ({
-  default: ({ translationData, showOriginal }: { translationData: TranslationResponse; showOriginal: boolean }) => (
-    <div data-testid="story-content">
+  default: ({
+    translationData,
+    showOriginal,
+  }: {
+    translationData: TranslationResponse;
+    showOriginal: boolean;
+  }) => (
+    <div data-testid='story-content'>
       <div>Content - showOriginal: {showOriginal.toString()}</div>
-      <div>{showOriginal ? translationData.originalText : translationData.translatedText}</div>
+      <div>
+        {showOriginal
+          ? translationData.originalText
+          : translationData.translatedText}
+      </div>
     </div>
   ),
 }));
@@ -30,7 +46,7 @@ const mockTranslationData: TranslationResponse = {
   toLanguage: 'en',
   difficulty: 'a1',
   provider: 'test',
-  model: 'test-model'
+  model: 'test-model',
 };
 
 describe('StoryRender Component', () => {
@@ -55,8 +71,12 @@ describe('StoryRender Component', () => {
       <StoryRender translationData={mockTranslationData} />
     );
 
-    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
-    expect(within(container).queryByText('Esta es una historia de prueba.')).not.toBeInTheDocument();
+    expect(
+      within(container).getByText('This is a test story.')
+    ).toBeInTheDocument();
+    expect(
+      within(container).queryByText('Esta es una historia de prueba.')
+    ).not.toBeInTheDocument();
   });
 
   it('toggles to original story when toggle button is clicked', () => {
@@ -65,17 +85,29 @@ describe('StoryRender Component', () => {
     );
 
     // Initially showing translated
-    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
-    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: false')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('This is a test story.')
+    ).toBeInTheDocument();
 
     // Click toggle button
-    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Toggle View',
+    });
     fireEvent.click(toggleButton);
 
     // Now showing original
-    expect(within(container).getByText('Header - showOriginal: true')).toBeInTheDocument();
-    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
-    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Header - showOriginal: true')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: true')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('Esta es una historia de prueba.')
+    ).toBeInTheDocument();
   });
 
   it('can toggle back and forth between views', () => {
@@ -83,18 +115,26 @@ describe('StoryRender Component', () => {
       <StoryRender translationData={mockTranslationData} />
     );
 
-    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Toggle View',
+    });
 
     // Start with translated (false)
-    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: false')
+    ).toBeInTheDocument();
 
     // Toggle to original (true)
     fireEvent.click(toggleButton);
-    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: true')
+    ).toBeInTheDocument();
 
     // Toggle back to translated (false)
     fireEvent.click(toggleButton);
-    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: false')
+    ).toBeInTheDocument();
   });
 
   it('passes correct props to StoryHeader', () => {
@@ -103,11 +143,15 @@ describe('StoryRender Component', () => {
     );
 
     const storyHeader = within(container).getByTestId('story-header');
-    
+
     // Should pass translationData, showOriginal, and onToggleView
     expect(storyHeader).toBeInTheDocument();
-    expect(within(storyHeader).getByText('Header - showOriginal: false')).toBeInTheDocument();
-    expect(within(storyHeader).getByRole('button', { name: 'Toggle View' })).toBeInTheDocument();
+    expect(
+      within(storyHeader).getByText('Header - showOriginal: false')
+    ).toBeInTheDocument();
+    expect(
+      within(storyHeader).getByRole('button', { name: 'Toggle View' })
+    ).toBeInTheDocument();
   });
 
   it('passes correct props to StoryContent', () => {
@@ -116,11 +160,15 @@ describe('StoryRender Component', () => {
     );
 
     const storyContent = within(container).getByTestId('story-content');
-    
+
     // Should pass translationData and showOriginal
     expect(storyContent).toBeInTheDocument();
-    expect(within(storyContent).getByText('Content - showOriginal: false')).toBeInTheDocument();
-    expect(within(storyContent).getByText('This is a test story.')).toBeInTheDocument();
+    expect(
+      within(storyContent).getByText('Content - showOriginal: false')
+    ).toBeInTheDocument();
+    expect(
+      within(storyContent).getByText('This is a test story.')
+    ).toBeInTheDocument();
   });
 
   it('has proper container structure and classes', () => {
@@ -138,26 +186,42 @@ describe('StoryRender Component', () => {
       <StoryRender translationData={mockTranslationData} />
     );
 
-    const toggleButton = within(container).getByRole('button', { name: 'Toggle View' });
+    const toggleButton = within(container).getByRole('button', {
+      name: 'Toggle View',
+    });
 
     // First toggle
     fireEvent.click(toggleButton);
-    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
-    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: true')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('Esta es una historia de prueba.')
+    ).toBeInTheDocument();
 
     // Second toggle
     fireEvent.click(toggleButton);
-    expect(within(container).getByText('Content - showOriginal: false')).toBeInTheDocument();
-    expect(within(container).getByText('This is a test story.')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: false')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('This is a test story.')
+    ).toBeInTheDocument();
 
     // Third toggle
     fireEvent.click(toggleButton);
-    expect(within(container).getByText('Content - showOriginal: true')).toBeInTheDocument();
-    expect(within(container).getByText('Esta es una historia de prueba.')).toBeInTheDocument();
+    expect(
+      within(container).getByText('Content - showOriginal: true')
+    ).toBeInTheDocument();
+    expect(
+      within(container).getByText('Esta es una historia de prueba.')
+    ).toBeInTheDocument();
   });
 
   it('returns null when translationData is not provided', () => {
-    const { container } = render(<StoryRender translationData={null as unknown as TranslationResponse} />);
+    const { container } = render(
+      <StoryRender translationData={null as unknown as TranslationResponse} />
+    );
     expect(container.firstChild).toBeNull();
   });
 
@@ -169,7 +233,7 @@ describe('StoryRender Component', () => {
       toLanguage: 'en',
       difficulty: 'a1',
       provider: 'test',
-      model: 'test-model'
+      model: 'test-model',
     };
 
     const { container } = render(
@@ -180,4 +244,4 @@ describe('StoryRender Component', () => {
     expect(within(container).getByTestId('story-header')).toBeInTheDocument();
     expect(within(container).getByTestId('story-content')).toBeInTheDocument();
   });
-}); 
+});
