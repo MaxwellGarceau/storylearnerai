@@ -1,5 +1,5 @@
 import { supabase } from '../client';
-import {
+import type {
   DatabaseSavedTranslationWithDetails,
   CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,

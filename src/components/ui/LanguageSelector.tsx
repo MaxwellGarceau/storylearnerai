@@ -56,7 +56,7 @@ export const LanguageSelector = React.forwardRef<
   return (
     <Select
       value={currentLocalization}
-      onValueChange={value => void changeLocalization(value)}
+      onValueChange={(value: 'en' | 'es') => void changeLocalization(value)}
     >
       <SelectTrigger className={cn('w-[140px]', className)}>
         <Globe className='h-4 w-4 mr-2' />

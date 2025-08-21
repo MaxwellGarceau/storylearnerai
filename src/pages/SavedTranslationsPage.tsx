@@ -1,4 +1,4 @@
-import React from 'react';
+// React import not needed with React 17+ JSX transform
 import { useAuth } from '../hooks/useAuth';
 import SavedTranslationsList from '../components/story/SavedTranslationsList';
 import { useTranslation } from 'react-i18next';

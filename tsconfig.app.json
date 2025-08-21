@@ -27,5 +27,10 @@
       "@app/*": ["./src/types/app/*"]
     }
   },
-  "include": ["src", "setupTests.ts", "vite.config.ts"]
+  "include": ["src", "setupTests.ts", "vite.config.ts"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/__tests__/**"
+  ]
 }

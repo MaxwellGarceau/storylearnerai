@@ -1,5 +1,5 @@
 import { LLMProvider, ProviderConfig } from '../../types/llm/providers';
-import { logger } from '../logger';
+// import { logger } from '../logger';
 
 export class EnvironmentConfig {
   private static validateRequiredEnvVar(
@@ -63,37 +63,7 @@ export class EnvironmentConfig {
     }
   }
 
-  private static parseCustomHeaders(
-    headersString?: string
-  ): Record<string, string> {
-    if (!headersString) return {};
-
-    try {
-      return JSON.parse(headersString) as Record<string, string>;
-    } catch (error) {
-      logger.warn(
-        'config',
-        'Failed to parse custom headers, using empty object',
-        { error }
-      );
-      return {};
-    }
-  }
-
-  private static parseStopSequences(stopSequencesString?: string): string[] {
-    if (!stopSequencesString) return [];
-
-    try {
-      // Try parsing as JSON array first
-      return JSON.parse(stopSequencesString) as string[];
-    } catch {
-      // Fallback to comma-separated string
-      return stopSequencesString
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
-    }
-  }
+  // (helpers removed – will reintroduce when needed by providers)
 
   static isDevelopment(): boolean {
     return import.meta.env.MODE === 'development';

@@ -1,16 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { useLanguages } from './useLanguages';
-import {
-  LanguageCode,
-  EnglishLanguageName,
-  NativeLanguageName,
-} from '../types/llm/prompts';
+import { LanguageCode } from '../types/llm/prompts';
 
 export interface LocalizationInfo {
   code: LanguageCode;
-  name: EnglishLanguageName;
-  nativeName: NativeLanguageName;
+  name: string;
+  nativeName: string;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageCode[] = ['en', 'es'];

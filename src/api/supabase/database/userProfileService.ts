@@ -3,7 +3,6 @@ import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/data
 import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
-import type { PostgrestError } from '@supabase/supabase-js';
 import type { VoidPromise } from '../../../types/common';
 
 // Use existing database types for consistency
@@ -179,7 +178,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -224,7 +223,7 @@ export class UserService {
         updated_at: new Date().toISOString()
       })
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
@@ -269,7 +268,7 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
@@ -340,7 +339,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', username)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       if (error.code === 'PGRST116') {

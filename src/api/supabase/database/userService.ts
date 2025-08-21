@@ -1,6 +1,5 @@
 import { supabase } from '../client'
-import type { PostgrestError } from '@supabase/supabase-js';
-import type { DatabaseUserInsert } from '../../../types/database/user';
+import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/database/user';
 import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { NullableString, VoidPromise } from '../../../types/common'
@@ -217,7 +216,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -262,7 +261,7 @@ export class UserService {
         updated_at: new Date().toISOString()
       })
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`)
@@ -297,9 +296,9 @@ export class UserService {
       }
     }
 
-    const updateData: DatabaseUserInsert = {
+    const updateData: DatabaseUserUpdate = {
       ...sanitizedData,
-      preferred_language: sanitizedData.preferred_language as LanguageCode | null | undefined,
+      preferred_language: (sanitizedData.preferred_language ?? undefined) as LanguageCode | undefined,
       updated_at: new Date().toISOString()
     }
 
@@ -308,7 +307,7 @@ export class UserService {
       .update(updateData)
       .eq('id', userId)
       .select()
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`)
@@ -376,7 +375,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('username', usernameValidation.sanitizedText)
-      .single() as { data: DatabaseUserInsert; error: PostgrestError };
+      .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
