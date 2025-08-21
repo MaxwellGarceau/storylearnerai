@@ -89,4 +89,4 @@ export class DifficultyLevelService {
       return code; // Fallback to code if fetch fails
     }
   }
-} 
+}

@@ -75,4 +75,4 @@ export class LanguageService {
       return code === 'en' ? 'English' : 'Spanish'; // Fallback to appropriate English name
     }
   }
-} 
+}

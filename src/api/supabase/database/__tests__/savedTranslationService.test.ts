@@ -132,7 +132,7 @@ describe('SavedTranslationService', () => {
         ...validRequest,
         original_story: '<script>alert("xss")</script>This is a test story.'
       };
-      
+
       await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
         .rejects.toThrow('Validation failed: original_story: Input contains potentially dangerous content');
     });
@@ -142,7 +142,7 @@ describe('SavedTranslationService', () => {
         ...validRequest,
         translated_story: '<script>alert("xss")</script>Esta es una historia de prueba.'
       };
-      
+
       await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
         .rejects.toThrow('Validation failed: translated_story: Input contains potentially dangerous content');
     });
@@ -150,7 +150,7 @@ describe('SavedTranslationService', () => {
     it('should reject malicious content in title', () => {
       const maliciousTitle = '<script>alert("xss")</script>Test Title';
       const validation = validateStoryText(maliciousTitle);
-      
+
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain('Input contains potentially dangerous content');
     });
@@ -158,7 +158,7 @@ describe('SavedTranslationService', () => {
     it('should reject malicious content in notes', () => {
       const maliciousNotes = '<script>alert("xss")</script>Test notes';
       const validation = validateStoryText(maliciousNotes);
-      
+
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain('Input contains potentially dangerous content');
     });
@@ -183,7 +183,7 @@ describe('SavedTranslationService', () => {
     it('should reject malicious content in title update', () => {
       const maliciousTitle = '<script>alert("xss")</script>Updated Title';
       const validation = validateStoryText(maliciousTitle);
-      
+
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain('Input contains potentially dangerous content');
     });
@@ -191,7 +191,7 @@ describe('SavedTranslationService', () => {
     it('should reject malicious content in notes update', () => {
       const maliciousNotes = '<script>alert("xss")</script>Updated notes';
       const validation = validateStoryText(maliciousNotes);
-      
+
       expect(validation.isValid).toBe(false);
       expect(validation.errors).toContain('Input contains potentially dangerous content');
     });
@@ -244,4 +244,4 @@ describe('SavedTranslationService', () => {
         .rejects.toThrow('Search parameter must be a string');
     });
   });
-}); 
+});

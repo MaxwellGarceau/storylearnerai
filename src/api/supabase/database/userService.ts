@@ -3,8 +3,8 @@ import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/data
 import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import type { LanguageCode } from '../../../types/llm/prompts'
 import type { NullableString, VoidPromise } from '../../../types/common'
-import { 
-  validateUsername, 
+import {
+  validateUsername,
   validateDisplayName
 } from '../../../lib/utils/sanitization'
 
@@ -32,10 +32,10 @@ export class UserService {
   /**
    * Validate and sanitize user data for creation
    */
-  private static validateCreateUserData(data: CreateUserData): { 
-    isValid: boolean; 
-    errors: ValidationError[]; 
-    sanitizedData: CreateUserData 
+  private static validateCreateUserData(data: CreateUserData): {
+    isValid: boolean;
+    errors: ValidationError[];
+    sanitizedData: CreateUserData
   } {
     const errors: ValidationError[] = [];
     const sanitizedData: CreateUserData = { ...data };
@@ -52,9 +52,9 @@ export class UserService {
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
-          errors.push({ 
-            field: 'username', 
-            message: usernameValidation.errors[0] || 'Invalid username format' 
+          errors.push({
+            field: 'username',
+            message: usernameValidation.errors[0] || 'Invalid username format'
           });
         } else {
           sanitizedData.username = usernameValidation.sanitizedText;
@@ -69,9 +69,9 @@ export class UserService {
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
-          errors.push({ 
-            field: 'display_name', 
-            message: displayNameValidation.errors[0] || 'Invalid display name format' 
+          errors.push({
+            field: 'display_name',
+            message: displayNameValidation.errors[0] || 'Invalid display name format'
           });
         } else {
           sanitizedData.display_name = displayNameValidation.sanitizedText;
@@ -120,10 +120,10 @@ export class UserService {
   /**
    * Validate and sanitize user data for updates
    */
-  private static validateUpdateUserData(data: UpdateUserData): { 
-    isValid: boolean; 
-    errors: ValidationError[]; 
-    sanitizedData: UpdateUserData 
+  private static validateUpdateUserData(data: UpdateUserData): {
+    isValid: boolean;
+    errors: ValidationError[];
+    sanitizedData: UpdateUserData
   } {
     const errors: ValidationError[] = [];
     const sanitizedData: UpdateUserData = { ...data };
@@ -135,9 +135,9 @@ export class UserService {
       } else {
         const usernameValidation = validateUsername(data.username);
         if (!usernameValidation.isValid) {
-          errors.push({ 
-            field: 'username', 
-            message: usernameValidation.errors[0] || 'Invalid username format' 
+          errors.push({
+            field: 'username',
+            message: usernameValidation.errors[0] || 'Invalid username format'
           });
         } else {
           sanitizedData.username = usernameValidation.sanitizedText;
@@ -152,9 +152,9 @@ export class UserService {
       } else {
         const displayNameValidation = validateDisplayName(data.display_name);
         if (!displayNameValidation.isValid) {
-          errors.push({ 
-            field: 'display_name', 
-            message: displayNameValidation.errors[0] || 'Invalid display name format' 
+          errors.push({
+            field: 'display_name',
+            message: displayNameValidation.errors[0] || 'Invalid display name format'
           });
         } else {
           sanitizedData.display_name = displayNameValidation.sanitizedText;
@@ -406,7 +406,7 @@ export class UserService {
    */
   static async getOrCreateUser(userId: string, userData?: Partial<CreateUserData>): DatabaseUserInsertPromise {
     let user = await this.getUser(userId)
-    
+
     user ??= await this.createUser({
       id: userId,
       username: userData?.username,
@@ -417,4 +417,4 @@ export class UserService {
 
     return user;
   }
-} 
+}

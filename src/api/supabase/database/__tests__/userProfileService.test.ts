@@ -234,4 +234,4 @@ describe('UserService Validation', () => {
         .rejects.toThrow('Valid user ID is required')
     })
   })
-}) 
+})

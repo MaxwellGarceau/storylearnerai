@@ -592,4 +592,4 @@ export class SavedTranslationService {
 
     return result.count ?? 0;
   }
-} 
+}

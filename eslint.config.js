@@ -48,6 +48,8 @@ export default tseslint.config(
       ],
       // Prettier integration
       'prettier/prettier': 'error',
+      // Prevent trailing whitespace
+      'no-trailing-spaces': 'error',
       // Prevent direct console usage - enforce structured logging
       'no-console': [
         'error',
@@ -292,6 +294,8 @@ export default tseslint.config(
       ],
       // Prettier integration
       'prettier/prettier': 'error',
+      // Prevent trailing whitespace
+      'no-trailing-spaces': 'error',
       // Relax console restrictions for test files
       'no-console': 'off',
       'no-restricted-properties': 'off',
