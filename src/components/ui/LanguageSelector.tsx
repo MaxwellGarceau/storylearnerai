@@ -11,6 +11,7 @@ import { Button } from './Button';
 import { Globe } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useTranslation } from 'react-i18next';
+import type { LanguageCode } from '../../types/llm/prompts';
 
 interface LanguageSelectorProps {
   variant?: 'button' | 'select';
@@ -56,7 +57,7 @@ export const LanguageSelector = React.forwardRef<
   return (
     <Select
       value={currentLocalization}
-      onValueChange={(value: 'en' | 'es') => void changeLocalization(value)}
+      onValueChange={(value: LanguageCode) => void changeLocalization(value)}
     >
       <SelectTrigger className={cn('w-[140px]', className)}>
         <Globe className='h-4 w-4 mr-2' />

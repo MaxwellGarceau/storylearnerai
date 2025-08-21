@@ -22,7 +22,10 @@ export const useLanguages = () => {
   const nativeLanguageMap = useMemo(() => {
     const map = new Map<LanguageCode, string>();
     languages.forEach(lang => {
-      map.set(lang.code, lang.native_name ?? (lang.code === 'en' ? 'English' : 'Español'));
+      map.set(
+        lang.code,
+        lang.native_name ?? (lang.code === 'en' ? 'English' : 'Español')
+      );
     });
     return map;
   }, [languages]);

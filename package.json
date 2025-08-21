@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b tsconfig.app.json && vite build",
     "test": "vitest",
-    "test:once": "vitest run",
+    "test:once": "vitest --run",
     "test:critical": "vitest run src/lib/prompts/__tests__/GeneralPromptConfigService.critical.test.ts",
     "test:prompts": "vitest run src/lib/prompts/__tests__/",
     "test:coverage": "vitest run --coverage",
