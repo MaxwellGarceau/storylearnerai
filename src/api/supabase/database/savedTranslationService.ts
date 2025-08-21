@@ -290,10 +290,10 @@ export class SavedTranslationService {
       b2: 'B2 (Upper Intermediate)',
     }
     const display: DifficultyLevelDisplay =
-      (r.name as DifficultyLevelDisplay) ?? displayMap[r.code as DifficultyLevelCode]
+      (r.name as DifficultyLevelDisplay) ?? displayMap[r.code]
     return {
       id: r.id,
-      code: r.code as DifficultyLevelCode,
+      code: r.code,
       name: display,
       description: r.description,
       created_at: r.created_at,

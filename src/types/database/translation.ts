@@ -1,4 +1,10 @@
-import type { LanguageCode, DifficultyLevel, NativeLanguageName, EnglishLanguageName, DifficultyLevelDisplay } from '../llm/prompts';
+import type {
+  LanguageCode,
+  DifficultyLevel,
+  NativeLanguageName,
+  EnglishLanguageName,
+  DifficultyLevelDisplay,
+} from '../llm/prompts';
 import type { NullableString } from '../common';
 
 // Translation management types

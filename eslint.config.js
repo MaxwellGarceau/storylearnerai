@@ -259,11 +259,7 @@ export default tseslint.config(
   },
   // Test files configuration
   {
-    files: [
-      '**/__tests__/**/*',
-      '**/*.test.ts',
-      '**/*.test.tsx',
-    ],
+    files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
     extends: [
       ...tseslint.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
