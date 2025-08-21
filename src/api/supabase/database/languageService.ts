@@ -2,8 +2,24 @@ import { supabase } from '../client'
 import type { DatabaseLanguage as Language, LanguageCode } from '../../../types'
 import type { Database } from '../../../types/database'
 import { logger } from '../../../lib/logger'
+import type {
+  EnglishLanguageName,
+  NativeLanguageName,
+} from '../../../types/llm/prompts'
 
 export class LanguageService {
+  private mapRowToLanguage(
+    row: Database['public']['Tables']['languages']['Row']
+  ): Language {
+    return {
+      id: row.id,
+      code: row.code,
+      name: row.name as EnglishLanguageName,
+      native_name: row.native_name as NativeLanguageName,
+      created_at: row.created_at,
+    }
+  }
+
   /**
    * Get all languages supported by the application
    */
@@ -17,8 +33,8 @@ export class LanguageService {
       throw new Error(`Failed to fetch languages: ${result.error.message}`);
     }
 
-    // Already strongly typed by Database schema
-    return (result.data as Database['public']['Tables']['languages']['Row'][]) || [];
+    const rows = (result.data as Database['public']['Tables']['languages']['Row'][]) || []
+    return rows.map(r => this.mapRowToLanguage(r))
   }
 
   /**
@@ -42,8 +58,9 @@ export class LanguageService {
       return null;
     }
 
-    // Already strongly typed by Database schema
-    return result.data as Database['public']['Tables']['languages']['Row'];
+    return this.mapRowToLanguage(
+      result.data as Database['public']['Tables']['languages']['Row']
+    )
   }
 
   /**

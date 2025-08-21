@@ -1,4 +1,4 @@
-import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
+import type { LanguageCode, DifficultyLevel, NativeLanguageName, EnglishLanguageName, DifficultyLevelDisplay } from '../llm/prompts';
 import type { NullableString } from '../common';
 
 // Translation management types
@@ -25,15 +25,15 @@ export interface DatabaseTranslationUpdate {
 export interface DatabaseLanguage {
   id: number;
   code: LanguageCode;
-  name: string;
-  native_name: NullableString;
+  name: EnglishLanguageName;
+  native_name: NativeLanguageName;
   created_at: string;
 }
 
 export interface DatabaseDifficultyLevel {
   id: number;
   code: DifficultyLevel;
-  name: string;
+  name: DifficultyLevelDisplay;
   description: NullableString;
   created_at: string;
 }
