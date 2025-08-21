@@ -401,7 +401,7 @@ export class UserService {
     }
 
     let user = await this.getUser(userId)
-    
+
     user ??= await this.createUser({
       id: userId,
       username: userData?.username,
@@ -412,4 +412,4 @@ export class UserService {
 
     return user;
   }
-} 
+}

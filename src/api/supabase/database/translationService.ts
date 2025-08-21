@@ -26,10 +26,10 @@ export class TranslationService {
   /**
    * Validate and sanitize translation data for creation
    */
-  private static validateCreateTranslationData(data: CreateTranslationData): { 
-    isValid: boolean; 
-    errors: ValidationError[]; 
-    sanitizedData: CreateTranslationData 
+  private static validateCreateTranslationData(data: CreateTranslationData): {
+    isValid: boolean;
+    errors: ValidationError[];
+    sanitizedData: CreateTranslationData
   } {
     const errors: ValidationError[] = [];
     const sanitizedData: CreateTranslationData = { ...data };
@@ -57,9 +57,9 @@ export class TranslationService {
     } else {
       const contentValidation = validateStoryText(data.translated_content);
       if (!contentValidation.isValid) {
-        errors.push({ 
-          field: 'translated_content', 
-          message: contentValidation.errors[0] || 'Invalid translated content format' 
+        errors.push({
+          field: 'translated_content',
+          message: contentValidation.errors[0] || 'Invalid translated content format'
         });
       } else {
         sanitizedData.translated_content = contentValidation.sanitizedText;
@@ -76,10 +76,10 @@ export class TranslationService {
   /**
    * Validate and sanitize translation data for updates
    */
-  private static validateUpdateTranslationData(data: UpdateTranslationData): { 
-    isValid: boolean; 
-    errors: ValidationError[]; 
-    sanitizedData: UpdateTranslationData 
+  private static validateUpdateTranslationData(data: UpdateTranslationData): {
+    isValid: boolean;
+    errors: ValidationError[];
+    sanitizedData: UpdateTranslationData
   } {
     const errors: ValidationError[] = [];
     const sanitizedData: UpdateTranslationData = { ...data };
@@ -106,9 +106,9 @@ export class TranslationService {
       } else {
         const contentValidation = validateStoryText(data.translated_content);
         if (!contentValidation.isValid) {
-          errors.push({ 
-            field: 'translated_content', 
-            message: contentValidation.errors[0] || 'Invalid translated content format' 
+          errors.push({
+            field: 'translated_content',
+            message: contentValidation.errors[0] || 'Invalid translated content format'
           });
         } else {
           sanitizedData.translated_content = contentValidation.sanitizedText;
@@ -206,7 +206,7 @@ export class TranslationService {
    * Get a specific translation for a story and target language
    */
   static async getTranslationByStoryAndLanguage(
-    storyId: string, 
+    storyId: string,
     targetLanguage: string
   ): DatabaseTranslationInsertOrNullPromise {
     // Validate story ID
@@ -390,4 +390,4 @@ export class TranslationService {
 
     return !!data
   }
-} 
+}
