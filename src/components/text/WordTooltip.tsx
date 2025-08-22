@@ -9,32 +9,44 @@ import {
 interface WordTooltipProps {
   children: React.ReactNode;
   content: React.ReactNode;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
   side?: 'top' | 'right' | 'bottom' | 'left';
   className?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const WordTooltip: React.FC<WordTooltipProps> = ({
   children,
   content,
-  onMouseEnter,
-  onMouseLeave,
   side = 'top',
   className,
+  open,
+  onOpenChange,
 }) => {
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={open} onOpenChange={onOpenChange}>
         <TooltipTrigger asChild>
-          <span
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          >
+          <span>
             {children}
           </span>
         </TooltipTrigger>
-        <TooltipContent side={side} className={className || 'p-0'}>
+        <TooltipContent 
+          side={side} 
+          className={className || 'p-0'}
+          onPointerDownOutside={(e) => {
+            // Don't close when clicking inside the tooltip content
+            if (open) {
+              e.preventDefault();
+            }
+          }}
+          onEscapeKeyDown={(e) => {
+            // Don't close on escape when open
+            if (open) {
+              e.preventDefault();
+            }
+          }}
+        >
           {content}
         </TooltipContent>
       </Tooltip>

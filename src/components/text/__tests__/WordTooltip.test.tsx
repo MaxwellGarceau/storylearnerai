@@ -39,9 +39,6 @@ vi.mock('../../ui/Tooltip', () => ({
 }));
 
 describe('WordTooltip Component', () => {
-  const mockOnMouseEnter = vi.fn();
-  const mockOnMouseLeave = vi.fn();
-
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
@@ -69,37 +66,7 @@ describe('WordTooltip Component', () => {
     expect(tooltipContent).toHaveTextContent('Custom tooltip content');
   });
 
-  it('calls onMouseEnter when hovered', () => {
-    render(
-      <WordTooltip 
-        content={<div>Content</div>} 
-        onMouseEnter={mockOnMouseEnter}
-      >
-        <span>Hello</span>
-      </WordTooltip>
-    );
-    
-    const triggerElement = screen.getByTestId('tooltip-trigger').querySelector('span') as HTMLElement;
-    fireEvent.mouseEnter(triggerElement);
-    
-    expect(mockOnMouseEnter).toHaveBeenCalledTimes(1);
-  });
 
-  it('calls onMouseLeave when mouse leaves', () => {
-    render(
-      <WordTooltip 
-        content={<div>Content</div>} 
-        onMouseLeave={mockOnMouseLeave}
-      >
-        <span>Hello</span>
-      </WordTooltip>
-    );
-    
-    const triggerElement = screen.getByTestId('tooltip-trigger').querySelector('span') as HTMLElement;
-    fireEvent.mouseLeave(triggerElement);
-    
-    expect(mockOnMouseLeave).toHaveBeenCalledTimes(1);
-  });
 
   it('applies custom side prop', () => {
     render(
@@ -144,6 +111,22 @@ describe('WordTooltip Component', () => {
     expect(screen.getByTestId('tooltip-provider')).toBeInTheDocument();
     expect(screen.getByTestId('tooltip')).toBeInTheDocument();
     expect(screen.getByTestId('tooltip-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
+  });
+
+  it('supports controlled open state', () => {
+    const mockOnOpenChange = vi.fn();
+    render(
+      <WordTooltip 
+        content={<div>Content</div>} 
+        open={true}
+        onOpenChange={mockOnOpenChange}
+      >
+        <span>Hello</span>
+      </WordTooltip>
+    );
+
+    // The tooltip should be open when open prop is true
     expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
   });
 });

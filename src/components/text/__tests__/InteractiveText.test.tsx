@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveText from '../InteractiveText';
@@ -72,16 +72,17 @@ describe('InteractiveText Component', () => {
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
-    expect(screen.getByText('hello')).toBeInTheDocument();
-    expect(screen.getByText('world')).toBeInTheDocument();
+    // Check that the words are rendered in the highlights (not in tooltips)
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
   });
 
   it('preserves whitespace between words', () => {
     render(<InteractiveText text='hello  world' />);
 
-    // Check that both words are rendered
-    expect(screen.getByText('hello')).toBeInTheDocument();
-    expect(screen.getByText('world')).toBeInTheDocument();
+    // Check that both words are rendered in highlights
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
   });
 
   it('handles punctuation correctly', () => {
@@ -89,8 +90,8 @@ describe('InteractiveText Component', () => {
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
-    expect(screen.getByText('hello')).toBeInTheDocument();
-    expect(screen.getByText('world')).toBeInTheDocument();
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
     expect(screen.getByText(',')).toBeInTheDocument();
     expect(screen.getByText('!')).toBeInTheDocument();
   });
@@ -120,16 +121,16 @@ describe('InteractiveText Component', () => {
     render(<InteractiveText text='hello world' className='custom-class' />);
 
     // The className should be applied to the root span
-    const container = screen.getByText('hello').closest('.custom-class');
+    const container = screen.getByTestId('word-highlight-hello').closest('.custom-class');
     expect(container).toHaveClass('custom-class');
   });
 
   it('renders with tooltips by default', () => {
     render(<InteractiveText text='hello world' fromLanguage='en' targetLanguage='es' />);
 
-    // Check that tooltips are rendered (now using generic data-testid)
+    // Check that individual tooltips are rendered for each word
     const tooltips = screen.getAllByTestId('word-tooltip');
-    expect(tooltips).toHaveLength(2); // hello and world
+    expect(tooltips).toHaveLength(2); // One tooltip per word
   });
 
   it('renders without tooltips when enableTooltips is false', () => {
@@ -152,4 +153,6 @@ describe('InteractiveText Component', () => {
 
     expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
   });
+
+
 });
