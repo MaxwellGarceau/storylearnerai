@@ -65,7 +65,7 @@ function MyComponent() {
 The `WordHighlight` component automatically handles dictionary lookups:
 
 ```tsx
-import WordHighlight from '../components/story/WordHighlight';
+import WordHighlight from '../components/text/WordHighlight';
 
 function StoryText({ text, language }) {
   return (

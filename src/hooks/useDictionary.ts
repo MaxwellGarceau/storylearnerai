@@ -10,6 +10,7 @@ import {
 } from '../lib/dictionary/dictionaryService';
 import { logger } from '../lib/logger';
 import { LanguageCode } from '../types/llm/prompts';
+import { EnvironmentConfig } from '../lib/config/env';
 
 /**
  * React hook for dictionary functionality
@@ -32,6 +33,19 @@ export function useDictionary(): UseDictionaryReturn {
       fromLanguage?: LanguageCode,
       targetLanguage: LanguageCode = 'en'
     ) => {
+      // Check if dictionary is disabled
+      if (EnvironmentConfig.isDictionaryDisabled()) {
+        logger.debug('dictionary-hook', 'Dictionary is disabled, skipping search', {
+          word,
+        });
+        setError(
+          createDictionaryError('API_ERROR', 'Dictionary service is disabled', {
+            word,
+          })
+        );
+        return;
+      }
+
       if (!word || word.trim() === '') {
         setError(
           createDictionaryError('INVALID_REQUEST', 'Word cannot be empty', {

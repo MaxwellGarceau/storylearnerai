@@ -77,10 +77,22 @@ export class EnvironmentConfig {
     return import.meta.env.VITE_ENABLE_MOCK_TRANSLATION === 'true';
   }
 
+  static isDictionaryDisabled(): boolean {
+    return import.meta.env.VITE_DISABLE_DICTIONARY === 'true';
+  }
+
   static getDictionaryConfig(): {
     endpoint: string;
     apiKey: string;
   } {
+    // If dictionary is disabled, return empty config to avoid errors
+    if (this.isDictionaryDisabled()) {
+      return {
+        endpoint: '',
+        apiKey: '',
+      };
+    }
+
     const endpoint = import.meta.env.VITE_DICTIONARY_API_ENDPOINT as 'https://lexicala1.p.rapidapi.com';
 
     if (!endpoint) {

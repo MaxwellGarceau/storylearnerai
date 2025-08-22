@@ -7,3 +7,6 @@ export * from './database';
 // LLM types
 export * from './llm/providers';
 export * from './llm/prompts';
+
+// Dictionary types
+export * from './dictionary';
