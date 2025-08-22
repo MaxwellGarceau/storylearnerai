@@ -11,7 +11,9 @@ export interface DictionaryEntryAdditionalInfoProps {
   className?: string;
 }
 
-const DictionaryEntryAdditionalInfo: React.FC<DictionaryEntryAdditionalInfoProps> = ({
+const DictionaryEntryAdditionalInfo: React.FC<
+  DictionaryEntryAdditionalInfoProps
+> = ({
   maxSynonyms = 3,
   maxAntonyms = 2,
   showSynonyms = true,
@@ -22,8 +24,10 @@ const DictionaryEntryAdditionalInfo: React.FC<DictionaryEntryAdditionalInfoProps
 
   if (!wordInfo || (!showSynonyms && !showAntonyms)) return null;
 
-  const hasSynonyms = showSynonyms && wordInfo.synonyms && wordInfo.synonyms.length > 0;
-  const hasAntonyms = showAntonyms && wordInfo.antonyms && wordInfo.antonyms.length > 0;
+  const hasSynonyms =
+    showSynonyms && wordInfo.synonyms && wordInfo.synonyms.length > 0;
+  const hasAntonyms =
+    showAntonyms && wordInfo.antonyms && wordInfo.antonyms.length > 0;
 
   if (!hasSynonyms && !hasAntonyms) return null;
 

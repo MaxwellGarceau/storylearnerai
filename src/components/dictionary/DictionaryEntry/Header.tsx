@@ -18,11 +18,7 @@ const DictionaryEntryHeader: React.FC<DictionaryEntryHeaderProps> = ({
   const { word, wordInfo } = useDictionaryEntryContext();
 
   if (!wordInfo) {
-    return (
-      <span className={cn('font-medium block', className)}>
-        {word}
-      </span>
-    );
+    return <span className={cn('font-medium block', className)}>{word}</span>;
   }
 
   return (

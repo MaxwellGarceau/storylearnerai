@@ -19,7 +19,7 @@ const DictionaryEntrySource: React.FC<DictionaryEntrySourceProps> = ({
   return (
     <span className={cn('mt-2 pt-2 border-t border-border block', className)}>
       <span className='text-xs text-muted-foreground block'>
-        Source: {wordInfo.source || 'Dictionary API'}
+        Source: {wordInfo.source ?? 'Dictionary API'}
       </span>
     </span>
   );

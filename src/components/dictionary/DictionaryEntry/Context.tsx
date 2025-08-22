@@ -6,16 +6,19 @@ export interface DictionaryEntryContextValue {
   word: string;
   wordInfo: DictionaryWord | null;
   isLoading: boolean;
-  error: any;
+  error: Error | null;
 }
 
-export const DictionaryEntryContext = React.createContext<DictionaryEntryContextValue | null>(null);
+export const DictionaryEntryContext =
+  React.createContext<DictionaryEntryContextValue | null>(null);
 
 // Hook to use the context
 export const useDictionaryEntryContext = () => {
   const context = React.useContext(DictionaryEntryContext);
   if (!context) {
-    throw new Error('DictionaryEntry components must be used within DictionaryEntry.Root');
+    throw new Error(
+      'DictionaryEntry components must be used within DictionaryEntry.Root'
+    );
   }
   return context;
 };

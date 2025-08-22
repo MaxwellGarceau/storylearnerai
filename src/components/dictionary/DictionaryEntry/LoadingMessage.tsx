@@ -8,10 +8,9 @@ export interface DictionaryEntryLoadingMessageProps {
   className?: string;
 }
 
-const DictionaryEntryLoadingMessage: React.FC<DictionaryEntryLoadingMessageProps> = ({
-  message = 'Loading dictionary info...',
-  className,
-}) => {
+const DictionaryEntryLoadingMessage: React.FC<
+  DictionaryEntryLoadingMessageProps
+> = ({ message = 'Loading dictionary info...', className }) => {
   const { isLoading, word } = useDictionaryEntryContext();
 
   if (!isLoading) return null;
@@ -19,7 +18,9 @@ const DictionaryEntryLoadingMessage: React.FC<DictionaryEntryLoadingMessageProps
   return (
     <>
       <span className='font-medium block'>{word}</span>
-      <span className={cn('text-xs text-muted-foreground mt-1 block', className)}>
+      <span
+        className={cn('text-xs text-muted-foreground mt-1 block', className)}
+      >
         {message}
       </span>
     </>

@@ -40,7 +40,7 @@ describe('DictionaryEntry', () => {
     it('should provide context to child components', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -57,11 +57,11 @@ describe('DictionaryEntry', () => {
     it('should apply custom className', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
-          className="custom-class"
+          className='custom-class'
         >
           <DictionaryEntry.Header />
         </DictionaryEntry.Root>
@@ -76,7 +76,7 @@ describe('DictionaryEntry', () => {
     it('should display word header with all information', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -93,7 +93,7 @@ describe('DictionaryEntry', () => {
     it('should hide phonetic when showPhonetic is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -108,7 +108,7 @@ describe('DictionaryEntry', () => {
     it('should hide frequency when showFrequency is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -123,7 +123,7 @@ describe('DictionaryEntry', () => {
     it('should display just the word when no wordInfo', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={null}
@@ -141,7 +141,7 @@ describe('DictionaryEntry', () => {
     it('should display definitions with examples', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -150,11 +150,15 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('A greeting or an expression of goodwill.')).toBeInTheDocument();
+      expect(
+        screen.getByText('A greeting or an expression of goodwill.')
+      ).toBeInTheDocument();
       expect(screen.getByText('To greet with "hello".')).toBeInTheDocument();
       expect(screen.getByText('noun')).toBeInTheDocument();
       expect(screen.getByText('verb')).toBeInTheDocument();
-      expect(screen.getByText('"She gave me a warm hello."')).toBeInTheDocument();
+      expect(
+        screen.getByText('"She gave me a warm hello."')
+      ).toBeInTheDocument();
     });
 
     it('should limit definitions based on maxDefinitions', () => {
@@ -169,7 +173,7 @@ describe('DictionaryEntry', () => {
 
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={wordInfoWithManyDefinitions}
           isLoading={false}
           error={null}
@@ -178,7 +182,9 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('A greeting or an expression of goodwill.')).toBeInTheDocument();
+      expect(
+        screen.getByText('A greeting or an expression of goodwill.')
+      ).toBeInTheDocument();
       expect(screen.getByText('To greet with "hello".')).toBeInTheDocument();
       expect(screen.queryByText('Third definition')).not.toBeInTheDocument();
     });
@@ -186,7 +192,7 @@ describe('DictionaryEntry', () => {
     it('should hide examples when showExamples is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -195,13 +201,15 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.queryByText('"She gave me a warm hello."')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('"She gave me a warm hello."')
+      ).not.toBeInTheDocument();
     });
 
     it('should return null when no wordInfo', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={null}
@@ -218,7 +226,7 @@ describe('DictionaryEntry', () => {
     it('should display synonyms and antonyms', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -227,18 +235,22 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === 'Synonyms: greeting, salutation, hi';
-      })).toBeInTheDocument();
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === 'Antonyms: goodbye, farewell';
-      })).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => {
+          return element?.textContent === 'Synonyms: greeting, salutation, hi';
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => {
+          return element?.textContent === 'Antonyms: goodbye, farewell';
+        })
+      ).toBeInTheDocument();
     });
 
     it('should limit synonyms and antonyms', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -247,18 +259,22 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === 'Synonyms: greeting, salutation';
-      })).toBeInTheDocument();
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === 'Antonyms: goodbye';
-      })).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => {
+          return element?.textContent === 'Synonyms: greeting, salutation';
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => {
+          return element?.textContent === 'Antonyms: goodbye';
+        })
+      ).toBeInTheDocument();
     });
 
     it('should hide synonyms when showSynonyms is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -273,7 +289,7 @@ describe('DictionaryEntry', () => {
     it('should hide antonyms when showAntonyms is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -290,7 +306,7 @@ describe('DictionaryEntry', () => {
     it('should display source information', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -305,7 +321,7 @@ describe('DictionaryEntry', () => {
     it('should hide source when showSource is false', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -322,7 +338,7 @@ describe('DictionaryEntry', () => {
     it('should display loading message when isLoading is true', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={true}
           error={null}
@@ -332,18 +348,20 @@ describe('DictionaryEntry', () => {
       );
 
       expect(screen.getByText('hello')).toBeInTheDocument();
-      expect(screen.getByText('Loading dictionary info...')).toBeInTheDocument();
+      expect(
+        screen.getByText('Loading dictionary info...')
+      ).toBeInTheDocument();
     });
 
     it('should display custom loading message', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={true}
           error={null}
         >
-          <DictionaryEntry.LoadingMessage message="Custom loading..." />
+          <DictionaryEntry.LoadingMessage message='Custom loading...' />
         </DictionaryEntry.Root>
       );
 
@@ -353,7 +371,7 @@ describe('DictionaryEntry', () => {
     it('should return null when not loading', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -371,7 +389,7 @@ describe('DictionaryEntry', () => {
       const error = { code: 'WORD_NOT_FOUND', message: 'Word not found' };
       render(
         <DictionaryEntry.Root
-          word="nonexistent"
+          word='nonexistent'
           wordInfo={null}
           isLoading={false}
           error={error}
@@ -381,14 +399,16 @@ describe('DictionaryEntry', () => {
       );
 
       expect(screen.getByText('nonexistent')).toBeInTheDocument();
-      expect(screen.getByText('Word not found in dictionary')).toBeInTheDocument();
+      expect(
+        screen.getByText('Word not found in dictionary')
+      ).toBeInTheDocument();
     });
 
     it('should display generic error message', () => {
       const error = { code: 'API_ERROR', message: 'API failed' };
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={error}
@@ -397,21 +417,23 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('Failed to load dictionary info')).toBeInTheDocument();
+      expect(
+        screen.getByText('Failed to load dictionary info')
+      ).toBeInTheDocument();
     });
 
     it('should display custom error messages', () => {
       const error = { code: 'API_ERROR', message: 'API failed' };
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={error}
         >
-          <DictionaryEntry.ErrorMessage 
-            errorMessage="Custom error"
-            wordNotFoundMessage="Custom not found"
+          <DictionaryEntry.ErrorMessage
+            errorMessage='Custom error'
+            wordNotFoundMessage='Custom not found'
           />
         </DictionaryEntry.Root>
       );
@@ -422,7 +444,7 @@ describe('DictionaryEntry', () => {
     it('should return null when no error', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -439,7 +461,7 @@ describe('DictionaryEntry', () => {
     it('should display default message when no data', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={null}
@@ -449,18 +471,20 @@ describe('DictionaryEntry', () => {
       );
 
       expect(screen.getByText('hello')).toBeInTheDocument();
-      expect(screen.getByText('Hover to see dictionary info')).toBeInTheDocument();
+      expect(
+        screen.getByText('Hover to see dictionary info')
+      ).toBeInTheDocument();
     });
 
     it('should display custom default message', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={null}
         >
-          <DictionaryEntry.DefaultMessage message="Custom default" />
+          <DictionaryEntry.DefaultMessage message='Custom default' />
         </DictionaryEntry.Root>
       );
 
@@ -470,7 +494,7 @@ describe('DictionaryEntry', () => {
     it('should return null when loading', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={true}
           error={null}
@@ -485,7 +509,7 @@ describe('DictionaryEntry', () => {
     it('should return null when there is an error', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={{ code: 'ERROR' }}
@@ -500,7 +524,7 @@ describe('DictionaryEntry', () => {
     it('should return null when there is wordInfo', () => {
       const { container } = render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -517,7 +541,7 @@ describe('DictionaryEntry', () => {
     it('should render loading message when loading', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={true}
           error={null}
@@ -526,14 +550,16 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('Loading dictionary info...')).toBeInTheDocument();
+      expect(
+        screen.getByText('Loading dictionary info...')
+      ).toBeInTheDocument();
     });
 
     it('should render error message when there is an error', () => {
       const error = { code: 'API_ERROR', message: 'API failed' };
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={error}
@@ -542,13 +568,15 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('Failed to load dictionary info')).toBeInTheDocument();
+      expect(
+        screen.getByText('Failed to load dictionary info')
+      ).toBeInTheDocument();
     });
 
     it('should render default content when there is wordInfo', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -558,7 +586,9 @@ describe('DictionaryEntry', () => {
       );
 
       expect(screen.getByText('hello')).toBeInTheDocument();
-      expect(screen.getByText('A greeting or an expression of goodwill.')).toBeInTheDocument();
+      expect(
+        screen.getByText('A greeting or an expression of goodwill.')
+      ).toBeInTheDocument();
       expect(screen.getByText('Synonyms:')).toBeInTheDocument();
       expect(screen.getByText(/Test Dictionary/)).toBeInTheDocument();
     });
@@ -566,13 +596,13 @@ describe('DictionaryEntry', () => {
     it('should render custom children when provided', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
         >
           <DictionaryEntry.Content>
-            <div data-testid="custom-content">Custom content</div>
+            <div data-testid='custom-content'>Custom content</div>
           </DictionaryEntry.Content>
         </DictionaryEntry.Root>
       );
@@ -584,7 +614,7 @@ describe('DictionaryEntry', () => {
     it('should render default message when no data', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={null}
           isLoading={false}
           error={null}
@@ -593,7 +623,9 @@ describe('DictionaryEntry', () => {
         </DictionaryEntry.Root>
       );
 
-      expect(screen.getByText('Hover to see dictionary info')).toBeInTheDocument();
+      expect(
+        screen.getByText('Hover to see dictionary info')
+      ).toBeInTheDocument();
     });
   });
 
@@ -601,7 +633,7 @@ describe('DictionaryEntry', () => {
     it('should allow custom layout with individual components', () => {
       render(
         <DictionaryEntry.Root
-          word="hello"
+          word='hello'
           wordInfo={mockWordInfo}
           isLoading={false}
           error={null}
@@ -616,8 +648,12 @@ describe('DictionaryEntry', () => {
       expect(screen.getByText('hello')).toBeInTheDocument();
       expect(screen.getByText('[həˈloʊ]')).toBeInTheDocument();
       expect(screen.queryByText('common')).not.toBeInTheDocument();
-      expect(screen.getByText('A greeting or an expression of goodwill.')).toBeInTheDocument();
-      expect(screen.queryByText('"She gave me a warm hello."')).not.toBeInTheDocument();
+      expect(
+        screen.getByText('A greeting or an expression of goodwill.')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('"She gave me a warm hello."')
+      ).not.toBeInTheDocument();
       expect(screen.getByText('Synonyms:')).toBeInTheDocument();
       expect(screen.queryByText('Antonyms:')).not.toBeInTheDocument();
       expect(screen.queryByText('Source:')).not.toBeInTheDocument();

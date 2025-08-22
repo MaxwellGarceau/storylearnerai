@@ -8,10 +8,9 @@ export interface DictionaryEntryDefaultMessageProps {
   className?: string;
 }
 
-const DictionaryEntryDefaultMessage: React.FC<DictionaryEntryDefaultMessageProps> = ({
-  message = 'Hover to see dictionary info',
-  className,
-}) => {
+const DictionaryEntryDefaultMessage: React.FC<
+  DictionaryEntryDefaultMessageProps
+> = ({ message = 'Hover to see dictionary info', className }) => {
   const { word, wordInfo, isLoading, error } = useDictionaryEntryContext();
 
   // Only show default message if no other state is active
@@ -20,7 +19,9 @@ const DictionaryEntryDefaultMessage: React.FC<DictionaryEntryDefaultMessageProps
   return (
     <>
       <span className='font-medium block'>{word}</span>
-      <span className={cn('text-xs text-muted-foreground mt-1 block', className)}>
+      <span
+        className={cn('text-xs text-muted-foreground mt-1 block', className)}
+      >
         {message}
       </span>
     </>

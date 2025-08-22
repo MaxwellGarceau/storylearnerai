@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDictionary } from '../useDictionary';
 import { dictionaryService } from '../../lib/dictionary/dictionaryService';
 
+// Mock the environment config
+vi.mock('../../lib/config/env', () => ({
+  EnvironmentConfig: {
+    isDictionaryDisabled: vi.fn(() => false),
+  },
+}));
+
 // Mock the dictionary service
 vi.mock('../../lib/dictionary/dictionaryService', () => ({
   dictionaryService: {

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  render,
-  fireEvent,
-  screen,
-  cleanup,
-} from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordTooltip from '../WordTooltip';
@@ -23,11 +18,11 @@ vi.mock('../../ui/Tooltip', () => ({
     children: React.ReactNode;
     asChild?: boolean;
   }) => <div data-testid='tooltip-trigger'>{children}</div>,
-  TooltipContent: ({ 
-    children, 
-    side, 
-    className 
-  }: { 
+  TooltipContent: ({
+    children,
+    side,
+    className,
+  }: {
     children: React.ReactNode;
     side?: string;
     className?: string;
@@ -50,8 +45,10 @@ describe('WordTooltip Component', () => {
         <span>Hello World</span>
       </WordTooltip>
     );
-    
-    const wordElement = screen.getByTestId('tooltip-trigger').querySelector('span');
+
+    const wordElement = screen
+      .getByTestId('tooltip-trigger')
+      .querySelector('span');
     expect(wordElement).toHaveTextContent('Hello World');
   });
 
@@ -61,12 +58,10 @@ describe('WordTooltip Component', () => {
         <span>Hello</span>
       </WordTooltip>
     );
-    
+
     const tooltipContent = screen.getByTestId('tooltip-content');
     expect(tooltipContent).toHaveTextContent('Custom tooltip content');
   });
-
-
 
   it('applies custom side prop', () => {
     render(
@@ -74,7 +69,7 @@ describe('WordTooltip Component', () => {
         <span>Hello</span>
       </WordTooltip>
     );
-    
+
     const tooltipContent = screen.getByTestId('tooltip-content');
     expect(tooltipContent).toHaveAttribute('data-side', 'bottom');
   });
@@ -85,7 +80,7 @@ describe('WordTooltip Component', () => {
         <span>Hello</span>
       </WordTooltip>
     );
-    
+
     const tooltipContent = screen.getByTestId('tooltip-content');
     expect(tooltipContent).toHaveClass('custom-class');
   });
@@ -96,7 +91,7 @@ describe('WordTooltip Component', () => {
         <span>Hello</span>
       </WordTooltip>
     );
-    
+
     const tooltipContent = screen.getByTestId('tooltip-content');
     expect(tooltipContent).toHaveClass('p-0');
   });
@@ -117,8 +112,8 @@ describe('WordTooltip Component', () => {
   it('supports controlled open state', () => {
     const mockOnOpenChange = vi.fn();
     render(
-      <WordTooltip 
-        content={<div>Content</div>} 
+      <WordTooltip
+        content={<div>Content</div>}
         open={true}
         onOpenChange={mockOnOpenChange}
       >

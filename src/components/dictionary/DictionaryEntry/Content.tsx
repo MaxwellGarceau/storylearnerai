@@ -7,7 +7,9 @@ export interface DictionaryEntryContentProps {
   children?: React.ReactNode;
 }
 
-const DictionaryEntryContent: React.FC<DictionaryEntryContentProps> = ({ children }) => {
+const DictionaryEntryContent: React.FC<DictionaryEntryContentProps> = ({
+  children,
+}) => {
   const { isLoading, error, wordInfo } = useDictionaryEntryContext();
 
   if (isLoading) {
@@ -19,13 +21,15 @@ const DictionaryEntryContent: React.FC<DictionaryEntryContentProps> = ({ childre
   }
 
   if (wordInfo) {
-    return children || (
-      <>
-        <DictionaryEntry.Header />
-        <DictionaryEntry.Definition />
-        <DictionaryEntry.AdditionalInfo />
-        <DictionaryEntry.Source />
-      </>
+    return (
+      children ?? (
+        <>
+          <DictionaryEntry.Header />
+          <DictionaryEntry.Definition />
+          <DictionaryEntry.AdditionalInfo />
+          <DictionaryEntry.Source />
+        </>
+      )
     );
   }
 

@@ -3,7 +3,10 @@ import {
   DictionaryApiClient,
   DictionarySearchParams,
   DictionaryWord,
+  DictionaryError,
+  DictionaryErrorCode,
   ApiManagerConfig,
+  DictionaryWordPromise,
   DictionaryDataTransformer,
 } from '../../types/dictionary';
 import { LanguageCode } from '../../types/llm/prompts';
@@ -44,10 +47,13 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   constructor(config: ApiManagerConfig = { primaryApi: 'lexicala' }) {
     // Get configuration from environment
     const envConfig = EnvironmentConfig.getDictionaryConfig();
-    
+
     // If dictionary is disabled, don't initialize API clients
     if (EnvironmentConfig.isDictionaryDisabled()) {
-      logger.debug('dictionary', 'Dictionary is disabled, skipping API client initialization');
+      logger.debug(
+        'dictionary',
+        'Dictionary is disabled, skipping API client initialization'
+      );
       this.config = {
         timeout: 10000,
         retryAttempts: 2,
@@ -55,18 +61,18 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
       };
       return;
     }
-    
+
     // Ensure required configuration is present
     if (!envConfig.endpoint || !envConfig.apiKey) {
       throw new Error('Dictionary API endpoint and API key are required');
     }
-    
+
     this.config = {
       timeout: 10000,
       retryAttempts: 2,
       ...config,
     };
-    
+
     this.initializeApiClients(envConfig);
     this.initializeTransformers();
   }
@@ -74,9 +80,15 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   /**
    * Initialize all available API clients
    */
-  private initializeApiClients(envConfig: { endpoint: string; apiKey: string }): void {
-    this.apiClients.set('lexicala', new LexicalaApiClient(envConfig.endpoint, envConfig.apiKey));
-    
+  private initializeApiClients(envConfig: {
+    endpoint: string;
+    apiKey: string;
+  }): void {
+    this.apiClients.set(
+      'lexicala',
+      new LexicalaApiClient(envConfig.endpoint, envConfig.apiKey)
+    );
+
     logger.debug('dictionary', 'Initialized API clients', {
       availableClients: Array.from(this.apiClients.keys()),
       primaryApi: this.config.primaryApi,
@@ -89,7 +101,7 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
    */
   private initializeTransformers(): void {
     this.transformers.set('lexicala', new LexicalaDataTransformerAdapter());
-    
+
     logger.debug('dictionary', 'Initialized transformers', {
       availableTransformers: Array.from(this.transformers.keys()),
       primaryApi: this.config.primaryApi,
@@ -97,9 +109,9 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   }
 
   /**
-   * Search for a word with fallback support
+   * Search for a word using the configured API
    */
-  async searchWord(params: DictionarySearchParams): Promise<DictionaryWord> {
+  async searchWord(params: DictionarySearchParams): DictionaryWordPromise {
     // Check if dictionary is disabled
     if (EnvironmentConfig.isDictionaryDisabled()) {
       logger.debug('dictionary', 'Dictionary is disabled, throwing error', {
@@ -108,17 +120,21 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
       throw new Error('Dictionary service is disabled');
     }
 
-    const { word, targetLanguage = 'en' } = params;
-    
+    // Set default target language if not provided
+    const searchParams = {
+      ...params,
+      targetLanguage: params.targetLanguage || 'en'
+    };
+
     logger.debug('dictionary', 'Starting word search', {
-      word,
-      targetLanguage,
+      word: searchParams.word,
+      targetLanguage: searchParams.targetLanguage,
       primaryApi: this.config.primaryApi,
     });
 
     try {
       // Try primary API
-      return await this.tryApiRequest(this.config.primaryApi, params);
+      return await this.tryApiRequest(this.config.primaryApi, searchParams);
     } catch (error) {
       logger.warn('dictionary', 'API request failed', {
         primaryApi: this.config.primaryApi,
@@ -130,14 +146,18 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   }
 
   /**
-   * Get detailed word information with fallback support
+   * Get detailed word information
    */
   async getWordDetails(
     word: string,
     fromLanguage?: LanguageCode,
-    targetLanguage: LanguageCode = 'en'
-  ): Promise<DictionaryWord> {
-    return this.searchWord({ word, fromLanguage, targetLanguage });
+    targetLanguage?: LanguageCode
+  ): DictionaryWordPromise {
+    return this.searchWord({ 
+      word, 
+      fromLanguage, 
+      targetLanguage: targetLanguage || 'en' 
+    });
   }
 
   /**
@@ -157,8 +177,12 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
     }
 
     let lastError: Error | null = null;
-    
-    for (let attempt = 1; attempt <= (this.config.retryAttempts || 1); attempt++) {
+
+    for (
+      let attempt = 1;
+      attempt <= (this.config.retryAttempts ?? 1);
+      attempt++
+    ) {
       try {
         logger.debug('dictionary', `Attempting API request`, {
           apiType,
@@ -168,9 +192,9 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
 
         // Make API request
         const response = await client.searchWord(params);
-        
+
         if (!response.success) {
-          throw new Error(response.error || 'API request failed');
+          throw new Error(response.error ?? 'API request failed');
         }
 
         // Transform the response using the appropriate transformer
@@ -178,7 +202,7 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
         if (!transformer) {
           throw new Error(`No transformer available for API type: ${apiType}`);
         }
-        
+
         const transformedWord = transformer.transformApiResponse(response.word);
 
         logger.info('dictionary', 'Successfully processed API request', {
@@ -188,33 +212,32 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
         });
 
         return transformedWord;
-
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
-        
+
         logger.debug('dictionary', 'API request attempt failed', {
           apiType,
           attempt,
           error: lastError.message,
         });
 
-        if (attempt < (this.config.retryAttempts || 1)) {
+        if (attempt < (this.config.retryAttempts ?? 1)) {
           // Wait before retry (exponential backoff)
           await this.delay(Math.pow(2, attempt) * 1000);
         }
       }
     }
 
-    throw lastError || new Error(`All attempts failed for API: ${apiType}`);
+    throw lastError ?? new Error(`All attempts failed for API: ${apiType}`);
   }
-
-
 
   /**
    * Check if any API is available
    */
   isAvailable(): boolean {
-    return Array.from(this.apiClients.values()).some(client => client.isAvailable());
+    return Array.from(this.apiClients.values()).some(client =>
+      client.isAvailable()
+    );
   }
 
   /**
@@ -229,7 +252,7 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
    */
   updateConfig(newConfig: Partial<ApiManagerConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     logger.debug('dictionary', 'Updated API manager configuration', {
       newConfig: this.config,
     });
@@ -261,7 +284,10 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   /**
    * Add a custom transformer
    */
-  addTransformer(apiType: string, transformer: DictionaryDataTransformer): void {
+  addTransformer(
+    apiType: string,
+    transformer: DictionaryDataTransformer
+  ): void {
     this.transformers.set(apiType, transformer);
     logger.debug('dictionary', 'Added custom transformer', { apiType });
   }
@@ -292,6 +318,8 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
 /**
  * Factory function to create API manager
  */
-export function createDictionaryApiManager(config?: ApiManagerConfig): DictionaryApiManager {
+export function createDictionaryApiManager(
+  config?: ApiManagerConfig
+): DictionaryApiManager {
   return new DictionaryApiManagerImpl(config);
 }

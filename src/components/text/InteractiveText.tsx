@@ -22,8 +22,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   enableTooltips = true,
   disabled = false,
 }) => {
-                const [clickedWordIndex, setClickedWordIndex] = useState<number | null>(null);
-              const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
+  const [clickedWordIndex, setClickedWordIndex] = useState<number | null>(null);
+  const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
 
   // Search for word info when clicked
@@ -41,8 +41,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
       }
     }
   }, [clickedWordIndex, text, fromLanguage, targetLanguage, searchWord]);
-
-
 
   // Handle empty text
   if (!text.trim()) {
@@ -65,15 +63,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         if (wordMatch) {
           const [, cleanWord, punctuation] = wordMatch;
           const normalizedWord = cleanWord.toLowerCase();
-          
+
           // If tooltips are disabled or the component is disabled, just use WordHighlight
           if (!enableTooltips || disabled) {
             return (
               <span key={index}>
-                <WordHighlight
-                  word={normalizedWord}
-                  disabled={disabled}
-                >
+                <WordHighlight word={normalizedWord} disabled={disabled}>
                   {cleanWord}
                 </WordHighlight>
                 {punctuation}
@@ -81,55 +76,55 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
             );
           }
 
-                                // Create tooltip content for clicked word
-                      const wordTooltipContent = (
-                        <div className="p-2 min-w-[250px] max-w-[350px]">
-                          {clickedWordIndex === index ? (
-                            <DictionaryEntry.Root
-                              word={normalizedWord}
-                              wordInfo={wordInfo}
-                              isLoading={isLoading}
-                              error={error}
-                            >
-                              <DictionaryEntry.Content />
-                            </DictionaryEntry.Root>
-                          ) : (
-                            <div className="text-center">
-                              <div className="font-medium">{cleanWord}</div>
-                              <div className="text-xs text-muted-foreground mt-1">
-                                Click to see dictionary info
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
+          // Create tooltip content for clicked word
+          const wordTooltipContent = (
+            <div className='p-2 min-w-[250px] max-w-[350px]'>
+              {clickedWordIndex === index ? (
+                <DictionaryEntry.Root
+                  word={normalizedWord}
+                  wordInfo={wordInfo}
+                  isLoading={isLoading}
+                  error={error}
+                >
+                  <DictionaryEntry.Content />
+                </DictionaryEntry.Root>
+              ) : (
+                <div className='text-center'>
+                  <div className='font-medium'>{cleanWord}</div>
+                  <div className='text-xs text-muted-foreground mt-1'>
+                    Click to see dictionary info
+                  </div>
+                </div>
+              )}
+            </div>
+          );
 
-                      // Use WordTooltip only for clicked words
-                      return (
-                        <span key={index}>
-                          <WordTooltip
-                            content={wordTooltipContent}
-                            open={openTooltipIndex === index}
-                            onOpenChange={(open) => {
-                              if (!open && openTooltipIndex === index) {
-                                setOpenTooltipIndex(null);
-                              }
-                            }}
-                          >
-                            <WordHighlight
-                              word={normalizedWord}
-                              disabled={disabled}
-                              onClick={() => {
-                                setClickedWordIndex(index);
-                                setOpenTooltipIndex(index);
-                              }}
-                            >
-                              {cleanWord}
-                            </WordHighlight>
-                          </WordTooltip>
-                          {punctuation}
-                        </span>
-                      );
+          // Use WordTooltip only for clicked words
+          return (
+            <span key={index}>
+              <WordTooltip
+                content={wordTooltipContent}
+                open={openTooltipIndex === index}
+                onOpenChange={open => {
+                  if (!open && openTooltipIndex === index) {
+                    setOpenTooltipIndex(null);
+                  }
+                }}
+              >
+                <WordHighlight
+                  word={normalizedWord}
+                  disabled={disabled}
+                  onClick={() => {
+                    setClickedWordIndex(index);
+                    setOpenTooltipIndex(index);
+                  }}
+                >
+                  {cleanWord}
+                </WordHighlight>
+              </WordTooltip>
+              {punctuation}
+            </span>
+          );
         }
 
         // For words without letters (pure punctuation), just return as is

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveText from '../InteractiveText';
@@ -15,6 +15,8 @@ vi.mock('../../../hooks/useDictionary', () => ({
   }),
 }));
 
+type ClickHandler = () => void;
+
 // Mock the WordHighlight component
 vi.mock('../WordHighlight', () => ({
   default: ({
@@ -26,7 +28,11 @@ vi.mock('../WordHighlight', () => ({
     children?: React.ReactNode;
     disabled?: boolean;
   }) => (
-    <span data-testid={`word-highlight-${word}`} data-word={word} data-disabled={disabled}>
+    <span
+      data-testid={`word-highlight-${word}`}
+      data-word={word}
+      data-disabled={disabled}
+    >
       {children}
     </span>
   ),
@@ -42,10 +48,14 @@ vi.mock('../WordTooltip', () => ({
   }: {
     content: React.ReactNode;
     children: React.ReactNode;
-    onMouseEnter?: () => void;
-    onMouseLeave?: () => void;
+    onMouseEnter?: ClickHandler;
+    onMouseLeave?: ClickHandler;
   }) => (
-    <div data-testid='word-tooltip' onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div
+      data-testid='word-tooltip'
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {children}
       <div data-testid='tooltip-content'>{content}</div>
     </div>
@@ -58,7 +68,9 @@ vi.mock('../../dictionary/DictionaryEntry', () => ({
     Root: ({ children }: { children: React.ReactNode }) => (
       <div data-testid='dictionary-root'>{children}</div>
     ),
-    Content: () => <div data-testid='dictionary-content'>Dictionary content</div>,
+    Content: () => (
+      <div data-testid='dictionary-content'>Dictionary content</div>
+    ),
   },
 }));
 
@@ -73,16 +85,24 @@ describe('InteractiveText Component', () => {
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
     // Check that the words are rendered in the highlights (not in tooltips)
-    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
-    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent(
+      'hello'
+    );
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent(
+      'world'
+    );
   });
 
   it('preserves whitespace between words', () => {
     render(<InteractiveText text='hello  world' />);
 
     // Check that both words are rendered in highlights
-    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
-    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent(
+      'hello'
+    );
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent(
+      'world'
+    );
   });
 
   it('handles punctuation correctly', () => {
@@ -90,8 +110,12 @@ describe('InteractiveText Component', () => {
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
-    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent('hello');
-    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent('world');
+    expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent(
+      'hello'
+    );
+    expect(screen.getByTestId('word-highlight-world')).toHaveTextContent(
+      'world'
+    );
     expect(screen.getByText(',')).toBeInTheDocument();
     expect(screen.getByText('!')).toBeInTheDocument();
   });
@@ -121,12 +145,20 @@ describe('InteractiveText Component', () => {
     render(<InteractiveText text='hello world' className='custom-class' />);
 
     // The className should be applied to the root span
-    const container = screen.getByTestId('word-highlight-hello').closest('.custom-class');
+    const container = screen
+      .getByTestId('word-highlight-hello')
+      .closest('.custom-class');
     expect(container).toHaveClass('custom-class');
   });
 
   it('renders with tooltips by default', () => {
-    render(<InteractiveText text='hello world' fromLanguage='en' targetLanguage='es' />);
+    render(
+      <InteractiveText
+        text='hello world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     // Check that individual tooltips are rendered for each word
     const tooltips = screen.getAllByTestId('word-tooltip');
@@ -144,8 +176,14 @@ describe('InteractiveText Component', () => {
   it('renders disabled highlights when disabled is true', () => {
     render(<InteractiveText text='hello world' disabled={true} />);
 
-    expect(screen.getByTestId('word-highlight-hello')).toHaveAttribute('data-disabled', 'true');
-    expect(screen.getByTestId('word-highlight-world')).toHaveAttribute('data-disabled', 'true');
+    expect(screen.getByTestId('word-highlight-hello')).toHaveAttribute(
+      'data-disabled',
+      'true'
+    );
+    expect(screen.getByTestId('word-highlight-world')).toHaveAttribute(
+      'data-disabled',
+      'true'
+    );
   });
 
   it('renders without tooltips when disabled is true', () => {
@@ -153,6 +191,4 @@ describe('InteractiveText Component', () => {
 
     expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
   });
-
-
 });

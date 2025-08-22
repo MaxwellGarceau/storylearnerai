@@ -96,13 +96,17 @@ export class EnvironmentConfig {
     const endpoint = import.meta.env.VITE_DICTIONARY_API_ENDPOINT as string;
 
     if (!endpoint) {
-      throw new Error('VITE_DICTIONARY_API_ENDPOINT environment variable is required');
+      throw new Error(
+        'VITE_DICTIONARY_API_ENDPOINT environment variable is required'
+      );
     }
-    
+
     const apiKey = import.meta.env.VITE_DICTIONARY_API_KEY as string;
 
     if (!apiKey) {
-      throw new Error('VITE_DICTIONARY_API_KEY environment variable is required');
+      throw new Error(
+        'VITE_DICTIONARY_API_KEY environment variable is required'
+      );
     }
 
     return {

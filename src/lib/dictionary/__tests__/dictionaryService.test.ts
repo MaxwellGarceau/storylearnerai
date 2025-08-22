@@ -16,7 +16,7 @@ vi.mock('../../config/env', () => ({
 }));
 
 // Mock LexicalaApiClient
-vi.mock('../apiClient', () => ({
+vi.mock('../clients/lexicalaApiClient', () => ({
   LexicalaApiClient: vi.fn(),
 }));
 
@@ -97,7 +97,7 @@ describe('DictionaryService', () => {
       getWordDetails: vi.fn(),
       isAvailable: vi.fn().mockReturnValue(true),
     };
-    
+
     // Default mock response for searchWord
     mockApiClient.searchWord.mockResolvedValue({
       word: mockApiResponse,
@@ -105,15 +105,15 @@ describe('DictionaryService', () => {
       source: 'Lexicala API',
       timestamp: new Date().toISOString(),
     });
-    
+
     // Mock the LexicalaApiClient constructor to return our mock
     vi.mocked(LexicalaApiClient).mockImplementation(() => mockApiClient);
-    
+
     // Create API manager (it will use the mocked client)
     apiManager = new DictionaryApiManagerImpl({
       primaryApi: 'lexicala',
     });
-    
+
     service = new DictionaryServiceImpl(apiManager);
   });
 

@@ -13,7 +13,10 @@ interface BadgeProps
 function Badge({ className, variant, as = 'div', ...props }: BadgeProps) {
   const Component = as;
   return (
-    <Component className={cn(badgeVariants({ variant }), className)} {...props} />
+    <Component
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
   );
 }
 

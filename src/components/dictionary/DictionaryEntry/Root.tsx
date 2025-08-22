@@ -8,7 +8,7 @@ export interface DictionaryEntryRootProps {
   word: string;
   wordInfo: DictionaryWord | null;
   isLoading: boolean;
-  error: any;
+  error: Error | null;
   children: React.ReactNode;
   className?: string;
 }

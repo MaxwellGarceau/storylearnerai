@@ -27,20 +27,18 @@ const WordTooltip: React.FC<WordTooltipProps> = ({
     <TooltipProvider>
       <Tooltip open={open} onOpenChange={onOpenChange}>
         <TooltipTrigger asChild>
-          <span>
-            {children}
-          </span>
+          <span>{children}</span>
         </TooltipTrigger>
-        <TooltipContent 
-          side={side} 
-          className={className || 'p-0'}
-          onPointerDownOutside={(e) => {
+        <TooltipContent
+          side={side}
+          className={className ?? 'p-0'}
+          onPointerDownOutside={e => {
             // Don't close when clicking inside the tooltip content
             if (open) {
               e.preventDefault();
             }
           }}
-          onEscapeKeyDown={(e) => {
+          onEscapeKeyDown={e => {
             // Don't close on escape when open
             if (open) {
               e.preventDefault();

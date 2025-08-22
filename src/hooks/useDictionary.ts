@@ -4,10 +4,8 @@ import {
   DictionaryWord,
   DictionaryError,
 } from '../types/dictionary';
-import {
-  dictionaryService,
-  createDictionaryError,
-} from '../lib/dictionary/dictionaryService';
+import { dictionaryService } from '../lib/dictionary/dictionaryService';
+import { createDictionaryError } from '../lib/dictionary/utils';
 import { logger } from '../lib/logger';
 import { LanguageCode } from '../types/llm/prompts';
 import { EnvironmentConfig } from '../lib/config/env';
@@ -35,9 +33,13 @@ export function useDictionary(): UseDictionaryReturn {
     ) => {
       // Check if dictionary is disabled
       if (EnvironmentConfig.isDictionaryDisabled()) {
-        logger.debug('dictionary-hook', 'Dictionary is disabled, skipping search', {
-          word,
-        });
+        logger.debug(
+          'dictionary-hook',
+          'Dictionary is disabled, skipping search',
+          {
+            word,
+          }
+        );
         setError(
           createDictionaryError('API_ERROR', 'Dictionary service is disabled', {
             word,

@@ -63,11 +63,33 @@ export type DictionaryErrorCode =
   | 'INVALID_REQUEST'
   | 'TIMEOUT';
 
-export interface DictionaryError {
+export class DictionaryError extends Error {
+  public readonly code: DictionaryErrorCode;
+  public readonly details?: Record<string, unknown>;
+
+  constructor(
+    code: DictionaryErrorCode,
+    message: string,
+    details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'DictionaryError';
+    this.code = code;
+    this.details = details;
+  }
+}
+
+// Legacy interface for backward compatibility
+export interface DictionaryErrorInterface {
   code: DictionaryErrorCode;
   message: string;
   details?: Record<string, unknown>;
 }
+
+// Reusable type aliases to avoid duplication
+export type DictionaryResponsePromise = Promise<DictionaryResponse>;
+export type DictionaryWordPromise = Promise<DictionaryWord>;
+export type DictionaryWordOrNull = DictionaryWord | null;
 
 // Data transformation layer interfaces
 export interface DictionaryDataTransformer {
@@ -83,23 +105,23 @@ export interface LexicalaDataTransformer {
 
 // API Client interfaces
 export interface DictionaryApiClient {
-  searchWord(params: DictionarySearchParams): Promise<DictionaryResponse>;
+  searchWord(params: DictionarySearchParams): DictionaryResponsePromise;
   getWordDetails(
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
-  ): Promise<DictionaryResponse>;
+  ): DictionaryResponsePromise;
   isAvailable(): boolean;
 }
 
 // API Manager interfaces
 export interface DictionaryApiManager {
-  searchWord(params: DictionarySearchParams): Promise<DictionaryWord>;
+  searchWord(params: DictionarySearchParams): DictionaryWordPromise;
   getWordDetails(
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
-  ): Promise<DictionaryWord>;
+  ): DictionaryWordPromise;
   isAvailable(): boolean;
   getAvailableApis(): string[];
   updateConfig(config: Partial<ApiManagerConfig>): void;
@@ -117,19 +139,19 @@ export interface DictionaryService {
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
-  ): Promise<DictionaryWord>;
-  searchWord(params: DictionarySearchParams): Promise<DictionaryWord>;
+  ): DictionaryWordPromise;
+  searchWord(params: DictionarySearchParams): DictionaryWordPromise;
   getCachedWord(
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
-  ): DictionaryWord | null;
+  ): DictionaryWordOrNull;
   clearCache(): void;
 }
 
 // Hook return type
 export interface UseDictionaryReturn {
-  wordInfo: DictionaryWord | null;
+  wordInfo: DictionaryWordOrNull;
   isLoading: boolean;
   error: DictionaryError | null;
   searchWord: (

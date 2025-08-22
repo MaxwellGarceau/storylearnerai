@@ -9,7 +9,9 @@ export interface DictionaryEntryErrorMessageProps {
   className?: string;
 }
 
-const DictionaryEntryErrorMessage: React.FC<DictionaryEntryErrorMessageProps> = ({
+const DictionaryEntryErrorMessage: React.FC<
+  DictionaryEntryErrorMessageProps
+> = ({
   errorMessage = 'Failed to load dictionary info',
   wordNotFoundMessage = 'Word not found in dictionary',
   className,
@@ -18,7 +20,8 @@ const DictionaryEntryErrorMessage: React.FC<DictionaryEntryErrorMessageProps> = 
 
   if (!error) return null;
 
-  const message = error.code === 'WORD_NOT_FOUND' ? wordNotFoundMessage : errorMessage;
+  const message =
+    error.code === 'WORD_NOT_FOUND' ? wordNotFoundMessage : errorMessage;
 
   return (
     <>
