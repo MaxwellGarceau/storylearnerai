@@ -108,7 +108,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       const result = await client.searchWord(mockParams);
@@ -130,7 +132,9 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
@@ -142,7 +146,9 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
@@ -155,7 +161,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => ({ results: [] }),
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
@@ -168,7 +176,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => ({}),
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
@@ -228,7 +238,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await client.searchWord({ word: 'hello' });
@@ -248,7 +260,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await client.searchWord({ word: 'hello world' });
@@ -270,7 +284,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await client.getWordDetails('hello', 'es', 'en');
@@ -290,7 +306,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await client.getWordDetails('hello', 'es');
@@ -378,7 +396,9 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         json: async () => mockResponse,
-        clone: function() { return this; },
+        clone: function () {
+          return this;
+        },
       });
 
       await client.searchWord({ word: 'hello' });

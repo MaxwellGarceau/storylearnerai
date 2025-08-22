@@ -123,7 +123,7 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
     // Set default target language if not provided
     const searchParams = {
       ...params,
-      targetLanguage: params.targetLanguage || 'en'
+      targetLanguage: params.targetLanguage || 'en',
     };
 
     logger.debug('dictionary', 'Starting word search', {
@@ -153,10 +153,10 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
   ): DictionaryWordPromise {
-    return this.searchWord({ 
-      word, 
-      fromLanguage, 
-      targetLanguage: targetLanguage || 'en' 
+    return this.searchWord({
+      word,
+      fromLanguage,
+      targetLanguage: targetLanguage || 'en',
     });
   }
 
