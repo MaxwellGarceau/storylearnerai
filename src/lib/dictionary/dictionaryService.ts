@@ -1,32 +1,20 @@
 import {
-  DictionaryService,
   DictionaryWord,
-  DictionarySearchParams,
   DictionaryError,
   DictionaryErrorCode,
+  DictionarySearchParams,
+  DictionaryService,
+  DictionaryWordPromise,
+  DictionaryWordOrNull,
 } from '../../types/dictionary';
-import { DictionaryApiManagerImpl, createDictionaryApiManager } from './dictionaryApiManager';
+import {
+  DictionaryApiManagerImpl,
+  createDictionaryApiManager,
+} from './dictionaryApiManager';
 import { logger } from '../logger';
 import { LanguageCode } from '../../types/llm/prompts';
 import { EnvironmentConfig } from '../config/env';
-
-/**
- * Creates a standardized dictionary error
- */
-export function createDictionaryError(
-  code: DictionaryErrorCode,
-  message: string,
-  details?: Record<string, unknown>
-): DictionaryError {
-  return {
-    code,
-    message,
-    details: {
-      ...details,
-      timestamp: new Date().toISOString(),
-    },
-  };
-}
+import { createDictionaryError } from './utils';
 
 /**
  * Main dictionary service that orchestrates API calls, data transformation, and caching
@@ -38,9 +26,11 @@ export class DictionaryServiceImpl implements DictionaryService {
   private readonly cacheTimeout = 30 * 60 * 1000; // 30 minutes
 
   constructor(apiManager?: DictionaryApiManagerImpl) {
-    this.apiManager = apiManager || (createDictionaryApiManager({
-      primaryApi: 'lexicala',
-    }) as DictionaryApiManagerImpl);
+    this.apiManager =
+      apiManager ||
+      (createDictionaryApiManager({
+        primaryApi: 'lexicala',
+      }) as DictionaryApiManagerImpl);
   }
 
   /**
@@ -50,12 +40,16 @@ export class DictionaryServiceImpl implements DictionaryService {
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage: LanguageCode = 'en'
-  ): Promise<DictionaryWord> {
+  ): DictionaryWordPromise {
     // Check if dictionary is disabled
     if (EnvironmentConfig.isDictionaryDisabled()) {
-      logger.debug('dictionary', 'Dictionary is disabled, returning empty result', {
-        word,
-      });
+      logger.debug(
+        'dictionary',
+        'Dictionary is disabled, returning empty result',
+        {
+          word,
+        }
+      );
       throw createDictionaryError(
         'API_ERROR',
         'Dictionary service is disabled',
@@ -64,7 +58,7 @@ export class DictionaryServiceImpl implements DictionaryService {
     }
 
     const normalizedWord = word.toLowerCase().trim();
-    const cacheKey = `${normalizedWord}:${fromLanguage || 'default'}:${targetLanguage}`;
+    const cacheKey = `${normalizedWord}:${fromLanguage ?? 'default'}:${targetLanguage}`;
 
     // Check cache first
     const cachedWord = this.getCachedWord(
@@ -126,7 +120,7 @@ export class DictionaryServiceImpl implements DictionaryService {
   /**
    * Search for a word with specific parameters
    */
-  async searchWord(params: DictionarySearchParams): Promise<DictionaryWord> {
+  async searchWord(params: DictionarySearchParams): DictionaryWordPromise {
     return this.getWordInfo(
       params.word,
       params.fromLanguage,
@@ -141,8 +135,8 @@ export class DictionaryServiceImpl implements DictionaryService {
     word: string,
     fromLanguage?: LanguageCode,
     targetLanguage?: LanguageCode
-  ): DictionaryWord | null {
-    const cacheKey = `${word}:${fromLanguage || 'default'}:${targetLanguage || 'en'}`;
+  ): DictionaryWordOrNull {
+    const cacheKey = `${word}:${fromLanguage ?? 'default'}:${targetLanguage ?? 'en'}`;
     const expiryTime = this.cacheExpiry.get(cacheKey);
     const now = Date.now();
 
@@ -233,14 +227,16 @@ export function createDictionaryService(config?: {
   mockData?: Record<string, DictionaryWord>;
   cacheTimeout?: number;
 }): DictionaryServiceImpl {
-  const { cacheTimeout } = config || {};
+  const { cacheTimeout } = config ?? {};
 
   // Create API manager with appropriate configuration
   const apiManager = createDictionaryApiManager({
     primaryApi: 'lexicala',
   });
 
-  const service = new DictionaryServiceImpl(apiManager as DictionaryApiManagerImpl);
+  const service = new DictionaryServiceImpl(
+    apiManager as DictionaryApiManagerImpl
+  );
 
   if (cacheTimeout) {
     // Note: This would require exposing cacheTimeout as a public property

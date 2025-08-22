@@ -2,9 +2,10 @@ import {
   DictionaryApiClient,
   DictionarySearchParams,
   DictionaryResponse,
+  DictionaryResponsePromise,
 } from '../../../types/dictionary';
 import { LanguageCode } from '../../../types/llm/prompts';
-import { createDictionaryError } from '../dictionaryService';
+import { createDictionaryError } from '../utils';
 
 /**
  * API Client for dictionary services
@@ -27,9 +28,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
   /**
    * Search for a word in the dictionary
    */
-  async searchWord(
-    params: DictionarySearchParams
-  ): Promise<DictionaryResponse> {
+  async searchWord(params: DictionarySearchParams): DictionaryResponsePromise {
     const { word, targetLanguage = 'en' } = params;
 
     if (!this.isOnline) {
@@ -106,7 +105,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
     word: string,
     _fromLanguage?: LanguageCode,
     targetLanguage: LanguageCode = 'en'
-  ): Promise<DictionaryResponse> {
+  ): DictionaryResponsePromise {
     return this.searchWord({ word, targetLanguage });
   }
 
