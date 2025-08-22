@@ -76,4 +76,26 @@ export class EnvironmentConfig {
   static isMockTranslationEnabled(): boolean {
     return import.meta.env.VITE_ENABLE_MOCK_TRANSLATION === 'true';
   }
+
+  static getDictionaryConfig(): {
+    endpoint: string;
+    apiKey: string;
+  } {
+    const endpoint = import.meta.env.VITE_DICTIONARY_API_ENDPOINT as 'https://lexicala1.p.rapidapi.com';
+
+    if (!endpoint) {
+      throw new Error('VITE_DICTIONARY_API_ENDPOINT environment variable is required');
+    }
+    
+    const apiKey = import.meta.env.VITE_DICTIONARY_API_KEY as string;
+
+    if (!apiKey) {
+      throw new Error('VITE_DICTIONARY_API_KEY environment variable is required');
+    }
+
+    return {
+      endpoint,
+      apiKey,
+    };
+  }
 }
