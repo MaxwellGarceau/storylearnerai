@@ -2,9 +2,9 @@ import {
   DictionaryApiClient,
   DictionarySearchParams,
   DictionaryResponse,
-} from '../../types/dictionary';
-import { LanguageCode } from '../../types/llm/prompts';
-import { createDictionaryError } from './dictionaryService';
+} from '../../../types/dictionary';
+import { LanguageCode } from '../../../types/llm/prompts';
+import { createDictionaryError } from '../dictionaryService';
 
 /**
  * API Client for dictionary services

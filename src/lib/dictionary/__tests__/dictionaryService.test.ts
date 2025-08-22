@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DictionaryServiceImpl } from '../dictionaryService';
 import { DictionaryApiManagerImpl } from '../dictionaryApiManager';
-import { LexicalaApiClient } from '../apiClient';
+import { LexicalaApiClient } from '../clients/lexicalaApiClient';
 import { DictionaryWord } from '../../../types/dictionary';
 
 // Mock EnvironmentConfig

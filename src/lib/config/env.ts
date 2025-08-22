@@ -93,7 +93,7 @@ export class EnvironmentConfig {
       };
     }
 
-    const endpoint = import.meta.env.VITE_DICTIONARY_API_ENDPOINT as 'https://lexicala1.p.rapidapi.com';
+    const endpoint = import.meta.env.VITE_DICTIONARY_API_ENDPOINT as string;
 
     if (!endpoint) {
       throw new Error('VITE_DICTIONARY_API_ENDPOINT environment variable is required');

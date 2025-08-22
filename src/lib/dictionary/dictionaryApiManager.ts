@@ -7,7 +7,7 @@ import {
   DictionaryDataTransformer,
 } from '../../types/dictionary';
 import { LanguageCode } from '../../types/llm/prompts';
-import { LexicalaApiClient } from './apiClient';
+import { LexicalaApiClient } from './clients/lexicalaApiClient';
 import { LexicalaDataTransformerImpl } from './transformers/lexicalaTransformer';
 import { EnvironmentConfig } from '../config/env';
 import { logger } from '../logger';
