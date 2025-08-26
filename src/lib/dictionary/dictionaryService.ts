@@ -1,7 +1,6 @@
 import {
   DictionaryWord,
   DictionaryError,
-  DictionaryErrorCode,
   DictionarySearchParams,
   DictionaryService,
   DictionaryWordPromise,

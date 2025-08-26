@@ -3,8 +3,6 @@ import {
   DictionaryApiClient,
   DictionarySearchParams,
   DictionaryWord,
-  DictionaryError,
-  DictionaryErrorCode,
   ApiManagerConfig,
   DictionaryWordPromise,
   DictionaryDataTransformer,

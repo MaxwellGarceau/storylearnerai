@@ -21,7 +21,7 @@ const DictionaryEntryErrorMessage: React.FC<
   if (!error) return null;
 
   const message =
-    error.code === 'WORD_NOT_FOUND' ? wordNotFoundMessage : errorMessage;
+    (error as any).code === 'WORD_NOT_FOUND' ? wordNotFoundMessage : errorMessage;
 
   return (
     <>

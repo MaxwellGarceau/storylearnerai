@@ -1,7 +1,6 @@
 import {
   DictionaryApiClient,
   DictionarySearchParams,
-  DictionaryResponse,
   DictionaryResponsePromise,
 } from '../../../types/dictionary';
 import { LanguageCode } from '../../../types/llm/prompts';
