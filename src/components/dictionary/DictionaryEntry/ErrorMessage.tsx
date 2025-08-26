@@ -20,8 +20,14 @@ const DictionaryEntryErrorMessage: React.FC<
 
   if (!error) return null;
 
-  const message =
-    (error as any).code === 'WORD_NOT_FOUND' ? wordNotFoundMessage : errorMessage;
+    // Check for specific error messages
+  let message = errorMessage;
+  
+  if ('code' in error && error.code === 'WORD_NOT_FOUND') {
+    message = wordNotFoundMessage;
+  } else if (error.message === 'Dictionary service is disabled') {
+    message = 'Dictionary has been disabled';
+  }
 
   return (
     <>

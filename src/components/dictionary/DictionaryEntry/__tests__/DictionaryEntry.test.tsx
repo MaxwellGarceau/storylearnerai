@@ -1,7 +1,7 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, afterEach } from 'vitest';
 import DictionaryEntry from '../DictionaryEntry';
-import { DictionaryWord } from '../../../../types/dictionary';
+import { DictionaryWord, DictionaryError } from '../../../../types/dictionary';
 
 const mockWordInfo: DictionaryWord = {
   word: 'hello',
@@ -386,7 +386,7 @@ describe('DictionaryEntry', () => {
 
   describe('ErrorMessage Component', () => {
     it('should display word not found error', () => {
-      const error = { code: 'WORD_NOT_FOUND', message: 'Word not found' };
+      const error = new DictionaryError('WORD_NOT_FOUND', 'Word not found');
       render(
         <DictionaryEntry.Root
           word='nonexistent'
@@ -405,7 +405,7 @@ describe('DictionaryEntry', () => {
     });
 
     it('should display generic error message', () => {
-      const error = { code: 'API_ERROR', message: 'API failed' };
+      const error = new DictionaryError('API_ERROR', 'API failed');
       render(
         <DictionaryEntry.Root
           word='hello'
@@ -423,7 +423,7 @@ describe('DictionaryEntry', () => {
     });
 
     it('should display custom error messages', () => {
-      const error = { code: 'API_ERROR', message: 'API failed' };
+      const error = new DictionaryError('API_ERROR', 'API failed');
       render(
         <DictionaryEntry.Root
           word='hello'
@@ -454,6 +454,28 @@ describe('DictionaryEntry', () => {
       );
 
       expect(container.firstChild?.firstChild).toBeNull();
+    });
+
+    it('should display disabled dictionary message', () => {
+      const error = new DictionaryError(
+        'API_ERROR',
+        'Dictionary service is disabled'
+      );
+      render(
+        <DictionaryEntry.Root
+          word='hello'
+          wordInfo={null}
+          isLoading={false}
+          error={error}
+        >
+          <DictionaryEntry.ErrorMessage />
+        </DictionaryEntry.Root>
+      );
+
+      expect(screen.getByText('hello')).toBeInTheDocument();
+      expect(
+        screen.getByText('Dictionary has been disabled')
+      ).toBeInTheDocument();
     });
   });
 
@@ -512,7 +534,7 @@ describe('DictionaryEntry', () => {
           word='hello'
           wordInfo={null}
           isLoading={false}
-          error={{ code: 'ERROR' }}
+          error={new DictionaryError('API_ERROR', 'Test error')}
         >
           <DictionaryEntry.DefaultMessage />
         </DictionaryEntry.Root>
@@ -556,7 +578,7 @@ describe('DictionaryEntry', () => {
     });
 
     it('should render error message when there is an error', () => {
-      const error = { code: 'API_ERROR', message: 'API failed' };
+      const error = new DictionaryError('API_ERROR', 'API failed');
       render(
         <DictionaryEntry.Root
           word='hello'
