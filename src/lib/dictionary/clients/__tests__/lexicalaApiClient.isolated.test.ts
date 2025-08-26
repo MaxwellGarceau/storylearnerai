@@ -95,16 +95,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'blew'
+              text: 'blew',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'blow'
-              }
-            ]
-          }
-        ]
+                see: 'blow',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -246,16 +246,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello'
+              text: 'hello',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'hello'
-              }
-            ]
-          }
-        ]
+                see: 'hello',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -289,16 +289,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello world'
+              text: 'hello world',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'hello world'
-              }
-            ]
-          }
-        ]
+                see: 'hello world',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -334,16 +334,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello'
+              text: 'hello',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'hello'
-              }
-            ]
-          }
-        ]
+                see: 'hello',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -377,16 +377,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello'
+              text: 'hello',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'hello'
-              }
-            ]
-          }
-        ]
+                see: 'hello',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -488,16 +488,16 @@ describe('LexicalaApiClient (Isolated)', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello'
+              text: 'hello',
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'hello'
-              }
-            ]
-          }
-        ]
+                see: 'hello',
+              },
+            ],
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -513,7 +513,9 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: expect.stringContaining('/search-entries?text=hello&language=en'),
+          url: expect.stringContaining(
+            '/search-entries?text=hello&language=en'
+          ),
           method: 'GET',
         })
       );

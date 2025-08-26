@@ -73,7 +73,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
     const word = firstResult.headword.text;
     const phonetic = firstResult.headword.pronunciation?.value;
     const partOfSpeech = firstResult.headword.pos;
-    
+
     const definitions: WordDefinition[] = [];
     const partsOfSpeech: PartOfSpeech[] = [];
     const examples: string[] = [];
@@ -94,7 +94,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
         // Handle direct definitions
         if (sense.definition) {
           const exampleTexts = sense.examples?.map(ex => ex.text) || [];
-          
+
           definitions.push({
             definition: sense.definition,
             partOfSpeech: sense.partOfSpeech,
@@ -110,13 +110,15 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
         // Process part of speech
         if (sense.partOfSpeech && sense.definition) {
           const exampleTexts = sense.examples?.map(ex => ex.text) || [];
-          
+
           partsOfSpeech.push({
             type: sense.partOfSpeech,
-            definitions: [{
-              definition: sense.definition,
-              examples: exampleTexts.length > 0 ? exampleTexts : undefined,
-            }],
+            definitions: [
+              {
+                definition: sense.definition,
+                examples: exampleTexts.length > 0 ? exampleTexts : undefined,
+              },
+            ],
           });
         }
 
@@ -129,7 +131,10 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
         }
 
         // Handle compositional phrases (idioms, expressions)
-        if (sense.compositional_phrases && Array.isArray(sense.compositional_phrases)) {
+        if (
+          sense.compositional_phrases &&
+          Array.isArray(sense.compositional_phrases)
+        ) {
           sense.compositional_phrases.forEach(phrase => {
             definitions.push({
               definition: `${phrase.text}: ${phrase.definition}`,
@@ -154,7 +159,11 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
     }
 
     // Determine frequency level based on API data or word characteristics
-    const frequency = this.estimateFrequency(word, definitions.length, firstResult.frequency);
+    const frequency = this.estimateFrequency(
+      word,
+      definitions.length,
+      firstResult.frequency
+    );
 
     return {
       word,

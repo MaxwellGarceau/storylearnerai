@@ -27,9 +27,9 @@ describe('LexicalaDataTransformerImpl', () => {
             headword: {
               text: 'straw',
               pronunciation: {
-                value: 'strɔ'
+                value: 'strɔ',
               },
-              pos: 'noun'
+              pos: 'noun',
             },
             senses: [
               {
@@ -37,13 +37,13 @@ describe('LexicalaDataTransformerImpl', () => {
                 definition: 'dried stems of some crops used to feed animals',
                 examples: [
                   {
-                    text: 'Feed the horse straw to reduce calories.'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                    text: 'Feed the horse straw to reduce calories.',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       };
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
@@ -51,8 +51,12 @@ describe('LexicalaDataTransformerImpl', () => {
       expect(result.word).toBe('straw');
       expect(result.phonetic).toBe('strɔ');
       expect(result.definitions).toHaveLength(1);
-      expect(result.definitions[0].definition).toBe('dried stems of some crops used to feed animals');
-      expect(result.examples).toEqual(['Feed the horse straw to reduce calories.']);
+      expect(result.definitions[0].definition).toBe(
+        'dried stems of some crops used to feed animals'
+      );
+      expect(result.examples).toEqual([
+        'Feed the horse straw to reduce calories.',
+      ]);
       expect(result.frequency?.rank).toBe(215629);
       expect(result.source).toBe('Lexicala API');
       expect(result.lastUpdated).toBeDefined();
@@ -70,7 +74,7 @@ describe('LexicalaDataTransformerImpl', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'hello'
+              text: 'hello',
             },
             senses: [
               {
@@ -79,20 +83,22 @@ describe('LexicalaDataTransformerImpl', () => {
                 partOfSpeech: 'noun',
                 examples: [
                   {
-                    text: 'She gave me a warm hello.'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                    text: 'She gave me a warm hello.',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       };
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
 
       expect(result.word).toBe('hello');
       expect(result.definitions).toHaveLength(1);
-      expect(result.definitions[0].definition).toBe('A greeting or an expression of goodwill.');
+      expect(result.definitions[0].definition).toBe(
+        'A greeting or an expression of goodwill.'
+      );
       expect(result.definitions[0].partOfSpeech).toBe('noun');
       expect(result.examples).toEqual(['She gave me a warm hello.']);
       expect(result.partsOfSpeech).toHaveLength(1);
@@ -111,7 +117,7 @@ describe('LexicalaDataTransformerImpl', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'happy'
+              text: 'happy',
             },
             senses: [
               {
@@ -119,11 +125,11 @@ describe('LexicalaDataTransformerImpl', () => {
                 definition: 'Feeling or showing pleasure or contentment.',
                 partOfSpeech: 'adjective',
                 synonyms: ['joyful', 'cheerful', 'glad'],
-                antonyms: ['sad', 'unhappy', 'miserable']
-              }
-            ]
-          }
-        ]
+                antonyms: ['sad', 'unhappy', 'miserable'],
+              },
+            ],
+          },
+        ],
       };
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
@@ -145,7 +151,7 @@ describe('LexicalaDataTransformerImpl', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'straw'
+              text: 'straw',
             },
             senses: [
               {
@@ -153,26 +159,31 @@ describe('LexicalaDataTransformerImpl', () => {
                 compositional_phrases: [
                   {
                     text: 'the last/final straw',
-                    definition: 'the last of several bad things, that makes you unable to deal with the situation anymore',
+                    definition:
+                      'the last of several bad things, that makes you unable to deal with the situation anymore',
                     examples: [
                       {
-                        text: 'The new law was the final straw for many dairy farmers.'
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                        text: 'The new law was the final straw for many dairy farmers.',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       };
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
 
       expect(result.word).toBe('straw');
       expect(result.definitions).toHaveLength(1);
-      expect(result.definitions[0].definition).toBe('the last/final straw: the last of several bad things, that makes you unable to deal with the situation anymore');
-      expect(result.examples).toEqual(['The new law was the final straw for many dairy farmers.']);
+      expect(result.definitions[0].definition).toBe(
+        'the last/final straw: the last of several bad things, that makes you unable to deal with the situation anymore'
+      );
+      expect(result.examples).toEqual([
+        'The new law was the final straw for many dairy farmers.',
+      ]);
     });
 
     it('should handle empty results array', () => {
@@ -182,7 +193,7 @@ describe('LexicalaDataTransformerImpl', () => {
         results_per_page: 10,
         n_pages: 0,
         available_n_pages: 0,
-        results: []
+        results: [],
       };
 
       expect(() => {
@@ -202,11 +213,11 @@ describe('LexicalaDataTransformerImpl', () => {
             id: 'EN_DE2d686591a3f3',
             language: 'en',
             headword: {
-              text: 'test'
+              text: 'test',
             },
-            senses: []
-          }
-        ]
+            senses: [],
+          },
+        ],
       };
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
@@ -246,14 +257,18 @@ describe('LexicalaDataTransformerImpl', () => {
       expect(transformer.validateWordData({})).toBe(false);
       expect(transformer.validateWordData({ word: '' })).toBe(false);
       expect(transformer.validateWordData({ word: 'test' })).toBe(false);
-      expect(transformer.validateWordData({ 
-        word: 'test', 
-        definitions: [] 
-      })).toBe(false);
-      expect(transformer.validateWordData({ 
-        word: 'test', 
-        definitions: [{ definition: '' }] 
-      })).toBe(false);
+      expect(
+        transformer.validateWordData({
+          word: 'test',
+          definitions: [],
+        })
+      ).toBe(false);
+      expect(
+        transformer.validateWordData({
+          word: 'test',
+          definitions: [{ definition: '' }],
+        })
+      ).toBe(false);
     });
   });
 });

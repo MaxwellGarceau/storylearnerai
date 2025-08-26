@@ -64,7 +64,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
         );
       }
 
-      const data = await response.json() as LexicalaApiResponse;
+      const data = (await response.json()) as LexicalaApiResponse;
 
       // Check if results exist
       if (!data.results || data.results.length === 0) {

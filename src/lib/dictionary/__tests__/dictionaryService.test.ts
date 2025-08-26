@@ -32,7 +32,7 @@ const mockApiResponse = {
       id: 'EN_DE2d686591a3f3',
       language: 'en',
       headword: {
-        text: 'hello'
+        text: 'hello',
       },
       senses: [
         {
@@ -41,17 +41,17 @@ const mockApiResponse = {
           partOfSpeech: 'noun',
           examples: ['She gave me a warm hello.'],
           synonyms: ['greeting', 'salutation'],
-          antonyms: ['goodbye', 'farewell']
+          antonyms: ['goodbye', 'farewell'],
         },
         {
           id: 'EN_SEc21dc4afd440',
           definition: 'To greet with "hello".',
           partOfSpeech: 'verb',
-          examples: ['He helloed me from across the street.']
-        }
-      ]
-    }
-  ]
+          examples: ['He helloed me from across the street.'],
+        },
+      ],
+    },
+  ],
 };
 
 // Mock data in DictionaryWord format for MockDictionaryApiClient
@@ -208,17 +208,17 @@ describe('DictionaryService', () => {
               id: 'ES_DE2d686591a3f3',
               language: 'es',
               headword: {
-                text: 'hola'
+                text: 'hola',
               },
               senses: [
                 {
                   id: 'ES_SEc21dc4afd439',
                   definition: 'Hello in Spanish',
-                  partOfSpeech: 'noun'
-                }
-              ]
-            }
-          ]
+                  partOfSpeech: 'noun',
+                },
+              ],
+            },
+          ],
         },
         success: true,
         source: 'Lexicala API',
