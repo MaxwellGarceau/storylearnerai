@@ -76,23 +76,26 @@ describe('LexicalaApiClient', () => {
 
     it('should successfully search for a word', async () => {
       const mockResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
         results: [
           {
-            word: 'hello',
-            phonetic: 'həˈloʊ',
-            meanings: [
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'blew'
+            },
+            senses: [
               {
-                partOfSpeech: 'noun',
-                definitions: [
-                  {
-                    definition: 'A greeting or an expression of goodwill.',
-                    example: 'She gave me a warm hello.',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+                id: 'EN_SEc21dc4afd439',
+                see: 'blow'
+              }
+            ]
+          }
+        ]
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -223,7 +226,28 @@ describe('LexicalaApiClient', () => {
     });
 
     it('should use default target language when not provided', async () => {
-      const mockResponse = { results: [{ word: 'hello' }] };
+      const mockResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
+        results: [
+          {
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'hello'
+            },
+            senses: [
+              {
+                id: 'EN_SEc21dc4afd439',
+                see: 'hello'
+              }
+            ]
+          }
+        ]
+      };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -245,7 +269,28 @@ describe('LexicalaApiClient', () => {
     });
 
     it('should URL encode the word parameter', async () => {
-      const mockResponse = { results: [{ word: 'hello world' }] };
+      const mockResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
+        results: [
+          {
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'hello world'
+            },
+            senses: [
+              {
+                id: 'EN_SEc21dc4afd439',
+                see: 'hello world'
+              }
+            ]
+          }
+        ]
+      };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -269,7 +314,28 @@ describe('LexicalaApiClient', () => {
 
   describe('getWordDetails', () => {
     it('should call searchWord with correct parameters', async () => {
-      const mockResponse = { results: [{ word: 'hello' }] };
+      const mockResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
+        results: [
+          {
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'hello'
+            },
+            senses: [
+              {
+                id: 'EN_SEc21dc4afd439',
+                see: 'hello'
+              }
+            ]
+          }
+        ]
+      };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -291,7 +357,28 @@ describe('LexicalaApiClient', () => {
     });
 
     it('should use default target language when not provided', async () => {
-      const mockResponse = { results: [{ word: 'hello' }] };
+      const mockResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
+        results: [
+          {
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'hello'
+            },
+            senses: [
+              {
+                id: 'EN_SEc21dc4afd439',
+                see: 'hello'
+              }
+            ]
+          }
+        ]
+      };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
