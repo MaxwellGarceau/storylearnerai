@@ -28,7 +28,7 @@ function App() {
 function AppContent() {
   // Initialize walkthrough hook inside Router context
   useWalkthrough();
-  
+
   // Initialize popover safeguard hook
   usePopoverSafeguard();
 

@@ -21,10 +21,10 @@ const WordTooltip: React.FC<WordTooltipProps> = ({
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <span 
+        <span
           className={`cursor-pointer transition-colors duration-200 ${
-            open 
-              ? 'bg-primary/30 rounded px-0.5 mx-0.5 ring-2 ring-primary/50' 
+            open
+              ? 'bg-primary/30 rounded px-0.5 mx-0.5 ring-2 ring-primary/50'
               : 'hover:bg-muted/50 rounded px-0.5 mx-0.5'
           }`}
         >
