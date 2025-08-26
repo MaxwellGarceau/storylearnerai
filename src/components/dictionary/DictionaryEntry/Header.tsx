@@ -25,7 +25,7 @@ const DictionaryEntryHeader: React.FC<DictionaryEntryHeaderProps> = ({
     <span className={cn('flex items-center gap-2 mb-2 block', className)}>
       <span className='font-semibold text-base'>{wordInfo.word}</span>
       {showPhonetic && wordInfo.phonetic && (
-        <span className='text-sm text-muted-foreground'>
+        <span className='text-sm text-muted-foreground ml-1'>
           [{wordInfo.phonetic}]
         </span>
       )}
