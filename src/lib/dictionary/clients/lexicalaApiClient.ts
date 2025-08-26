@@ -50,7 +50,6 @@ export class LexicalaApiClient implements DictionaryApiClient {
       const searchParams = new URLSearchParams({
         text: word.trim(),
         language: targetLanguage,
-        source: 'password',
       });
       const url = `${this.baseUrl}/search-entries?${searchParams.toString()}`;
       const response = await this.makeRequest(url);

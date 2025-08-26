@@ -115,7 +115,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        // eslint-disable-next-line @typescript-eslint/require-await
+
         // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
@@ -170,7 +170,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        // eslint-disable-next-line @typescript-eslint/require-await
+
         // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => ({ results: [] }),
         clone: function () {
@@ -187,7 +187,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        // eslint-disable-next-line @typescript-eslint/require-await
+
         // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => ({}),
         clone: function () {
@@ -272,7 +272,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        // eslint-disable-next-line @typescript-eslint/require-await
+
         // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
