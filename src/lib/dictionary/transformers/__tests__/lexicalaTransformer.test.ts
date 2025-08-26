@@ -20,14 +20,26 @@ describe('LexicalaDataTransformerImpl', () => {
         results: [
           {
             id: 'EN_DE2d686591a3f3',
+            source: 'global',
             language: 'en',
+            version: 1,
+            frequency: '215629',
             headword: {
-              text: 'blew'
+              text: 'straw',
+              pronunciation: {
+                value: 'strɔ'
+              },
+              pos: 'noun'
             },
             senses: [
               {
                 id: 'EN_SEc21dc4afd439',
-                see: 'blow'
+                definition: 'dried stems of some crops used to feed animals',
+                examples: [
+                  {
+                    text: 'Feed the horse straw to reduce calories.'
+                  }
+                ]
               }
             ]
           }
@@ -36,9 +48,12 @@ describe('LexicalaDataTransformerImpl', () => {
 
       const result = transformer.transformLexicalaResponse(mockApiResponse);
 
-      expect(result.word).toBe('blew');
+      expect(result.word).toBe('straw');
+      expect(result.phonetic).toBe('strɔ');
       expect(result.definitions).toHaveLength(1);
-      expect(result.definitions[0].definition).toBe('See: blow');
+      expect(result.definitions[0].definition).toBe('dried stems of some crops used to feed animals');
+      expect(result.examples).toEqual(['Feed the horse straw to reduce calories.']);
+      expect(result.frequency?.rank).toBe(215629);
       expect(result.source).toBe('Lexicala API');
       expect(result.lastUpdated).toBeDefined();
     });
@@ -62,7 +77,11 @@ describe('LexicalaDataTransformerImpl', () => {
                 id: 'EN_SEc21dc4afd439',
                 definition: 'A greeting or an expression of goodwill.',
                 partOfSpeech: 'noun',
-                examples: ['She gave me a warm hello.']
+                examples: [
+                  {
+                    text: 'She gave me a warm hello.'
+                  }
+                ]
               }
             ]
           }
@@ -112,6 +131,48 @@ describe('LexicalaDataTransformerImpl', () => {
       expect(result.word).toBe('happy');
       expect(result.synonyms).toEqual(['joyful', 'cheerful', 'glad']);
       expect(result.antonyms).toEqual(['sad', 'unhappy', 'miserable']);
+    });
+
+    it('should handle compositional phrases', () => {
+      const mockApiResponse: LexicalaApiResponse = {
+        n_results: 1,
+        page_number: 1,
+        results_per_page: 10,
+        n_pages: 1,
+        available_n_pages: 1,
+        results: [
+          {
+            id: 'EN_DE2d686591a3f3',
+            language: 'en',
+            headword: {
+              text: 'straw'
+            },
+            senses: [
+              {
+                id: 'EN_SEc21dc4afd439',
+                compositional_phrases: [
+                  {
+                    text: 'the last/final straw',
+                    definition: 'the last of several bad things, that makes you unable to deal with the situation anymore',
+                    examples: [
+                      {
+                        text: 'The new law was the final straw for many dairy farmers.'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+
+      const result = transformer.transformLexicalaResponse(mockApiResponse);
+
+      expect(result.word).toBe('straw');
+      expect(result.definitions).toHaveLength(1);
+      expect(result.definitions[0].definition).toBe('the last/final straw: the last of several bad things, that makes you unable to deal with the situation anymore');
+      expect(result.examples).toEqual(['The new law was the final straw for many dairy farmers.']);
     });
 
     it('should handle empty results array', () => {

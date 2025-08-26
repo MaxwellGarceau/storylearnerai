@@ -115,23 +115,56 @@ export interface LexicalaApiResponse {
 
 export interface LexicalaResult {
   id: string;
+  source?: string;
   language: string;
+  version?: number;
+  frequency?: string;
   headword: LexicalaHeadword;
   senses: LexicalaSense[];
 }
 
 export interface LexicalaHeadword {
   text: string;
+  pronunciation?: {
+    value: string;
+  };
+  pos?: string; // part of speech
 }
 
 export interface LexicalaSense {
   id: string;
   see?: string;
   definition?: string;
-  examples?: string[];
+  subcategory?: string;
+  examples?: LexicalaExample[];
   synonyms?: string[];
   antonyms?: string[];
   partOfSpeech?: string;
+  translations?: Record<string, LexicalaTranslation>;
+  compositional_phrases?: LexicalaCompositionalPhrase[];
+}
+
+export interface LexicalaExample {
+  text: string;
+  translations?: Record<string, LexicalaTranslation>;
+}
+
+export interface LexicalaTranslation {
+  text: string;
+  gender?: string;
+  alternative_scripts?: LexicalaAlternativeScript[];
+}
+
+export interface LexicalaAlternativeScript {
+  type: string;
+  text: string;
+}
+
+export interface LexicalaCompositionalPhrase {
+  text: string;
+  definition: string;
+  translations?: Record<string, LexicalaTranslation>;
+  examples?: LexicalaExample[];
 }
 
 // API Client interfaces

@@ -125,7 +125,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search?text=hello&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello&language=en`,
           method: 'GET',
         })
       );
@@ -271,7 +271,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search?text=hello&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello&language=en`,
           method: 'GET',
         })
       );
@@ -314,7 +314,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search?text=hello%20world&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello%20world&language=en`,
           method: 'GET',
         })
       );
@@ -359,7 +359,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search?text=hello&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello&language=en`,
           method: 'GET',
         })
       );
@@ -402,7 +402,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search?text=hello&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello&language=en`,
           method: 'GET',
         })
       );
@@ -513,7 +513,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: expect.stringContaining('/search?text=hello&language=en'),
+          url: expect.stringContaining('/search-entries?text=hello&language=en'),
           method: 'GET',
         })
       );
