@@ -2,6 +2,7 @@ import {
   DictionaryApiClient,
   DictionarySearchParams,
   DictionaryResponsePromise,
+  LexicalaApiResponse,
 } from '../../../types/dictionary';
 import { LanguageCode } from '../../../types/llm/prompts';
 import { createDictionaryError } from '../utils';
@@ -63,7 +64,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
         );
       }
 
-      const data = await response.json();
+      const data = await response.json() as LexicalaApiResponse;
 
       // Check if results exist
       if (!data.results || data.results.length === 0) {

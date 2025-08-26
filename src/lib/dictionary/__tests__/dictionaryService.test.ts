@@ -22,40 +22,36 @@ vi.mock('../clients/lexicalaApiClient', () => ({
 
 // Mock data for testing - raw API response format
 const mockApiResponse = {
-  word: 'hello',
-  phonetic: 'həˈloʊ',
-  phonetics: [
+  n_results: 1,
+  page_number: 1,
+  results_per_page: 10,
+  n_pages: 1,
+  available_n_pages: 1,
+  results: [
     {
-      text: 'həˈloʊ',
-      audio:
-        'https://api.dictionaryapi.dev/media/pronunciations/en/hello-au.mp3',
-    },
-  ],
-  meanings: [
-    {
-      partOfSpeech: 'noun',
-      definitions: [
+      id: 'EN_DE2d686591a3f3',
+      language: 'en',
+      headword: {
+        text: 'hello'
+      },
+      senses: [
         {
+          id: 'EN_SEc21dc4afd439',
           definition: 'A greeting or an expression of goodwill.',
-          example: 'She gave me a warm hello.',
+          partOfSpeech: 'noun',
+          examples: ['She gave me a warm hello.'],
           synonyms: ['greeting', 'salutation'],
-          antonyms: ['goodbye', 'farewell'],
+          antonyms: ['goodbye', 'farewell']
         },
-      ],
-      synonyms: ['greeting', 'salutation'],
-      antonyms: ['goodbye', 'farewell'],
-    },
-    {
-      partOfSpeech: 'verb',
-      definitions: [
         {
+          id: 'EN_SEc21dc4afd440',
           definition: 'To greet with "hello".',
-          example: 'He helloed me from across the street.',
-        },
-      ],
-    },
-  ],
-  origin: 'From Old English hēlā, a compound of hēl and ā.',
+          partOfSpeech: 'verb',
+          examples: ['He helloed me from across the street.']
+        }
+      ]
+    }
+  ]
 };
 
 // Mock data in DictionaryWord format for MockDictionaryApiClient
@@ -134,7 +130,6 @@ describe('DictionaryService', () => {
       const result = await service.getWordInfo('hello', undefined, 'en');
 
       expect(result.word).toBe('hello');
-      expect(result.phonetic).toBe('həˈloʊ');
       expect(result.definitions).toHaveLength(2);
       expect(result.definitions[0].definition).toContain('greeting');
       expect(result.definitions[0].partOfSpeech).toBe('noun');
@@ -145,14 +140,6 @@ describe('DictionaryService', () => {
       expect(result.antonyms).toBeDefined();
       if (result.antonyms) {
         expect(result.antonyms).toContain('goodbye');
-      }
-      if (result.etymology) {
-        expect(result.etymology).toContain('Old English');
-      }
-      if (result.audioUrl) {
-        expect(result.audioUrl).toBe(
-          'https://api.dictionaryapi.dev/media/pronunciations/en/hello-au.mp3'
-        );
       }
       expect(result.source).toBe('Lexicala API');
     });
@@ -211,8 +198,27 @@ describe('DictionaryService', () => {
       // Override the default mock for this specific test
       mockApiClient.searchWord.mockResolvedValueOnce({
         word: {
-          word: 'hola',
-          definitions: [{ definition: 'Hello in Spanish' }],
+          n_results: 1,
+          page_number: 1,
+          results_per_page: 10,
+          n_pages: 1,
+          available_n_pages: 1,
+          results: [
+            {
+              id: 'ES_DE2d686591a3f3',
+              language: 'es',
+              headword: {
+                text: 'hola'
+              },
+              senses: [
+                {
+                  id: 'ES_SEc21dc4afd439',
+                  definition: 'Hello in Spanish',
+                  partOfSpeech: 'noun'
+                }
+              ]
+            }
+          ]
         },
         success: true,
         source: 'Lexicala API',

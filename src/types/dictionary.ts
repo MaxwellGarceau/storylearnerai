@@ -103,6 +103,37 @@ export interface LexicalaDataTransformer {
   validateWordData(data: unknown): data is DictionaryWord;
 }
 
+// Lexicala API Response Interfaces
+export interface LexicalaApiResponse {
+  n_results: number;
+  page_number: number;
+  results_per_page: number;
+  n_pages: number;
+  available_n_pages: number;
+  results: LexicalaResult[];
+}
+
+export interface LexicalaResult {
+  id: string;
+  language: string;
+  headword: LexicalaHeadword;
+  senses: LexicalaSense[];
+}
+
+export interface LexicalaHeadword {
+  text: string;
+}
+
+export interface LexicalaSense {
+  id: string;
+  see?: string;
+  definition?: string;
+  examples?: string[];
+  synonyms?: string[];
+  antonyms?: string[];
+  partOfSpeech?: string;
+}
+
 // API Client interfaces
 export interface DictionaryApiClient {
   searchWord(params: DictionarySearchParams): DictionaryResponsePromise;

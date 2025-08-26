@@ -4,6 +4,8 @@ import {
   WordDefinition,
   PartOfSpeech,
   WordFrequency,
+  LexicalaApiResponse,
+  LexicalaResult,
 } from '../../../types/dictionary';
 
 /**
@@ -16,9 +18,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
    */
   transformLexicalaResponse(rawData: unknown): DictionaryWord {
     if (typeof rawData === 'object' && rawData !== null) {
-      return this.transformLexicalaApiResponse(
-        rawData as Record<string, unknown>
-      );
+      return this.transformLexicalaApiResponse(rawData as LexicalaApiResponse);
     }
 
     throw new Error('Invalid Lexicala API response format');
@@ -39,7 +39,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
       return false;
     }
 
-    if (!Array.isArray(word.definitions)) {
+    if (!Array.isArray(word.definitions) || word.definitions.length === 0) {
       return false;
     }
 
@@ -61,71 +61,72 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
    * https://api.lexicala.com/
    */
   private transformLexicalaApiResponse(
-    data: Record<string, unknown>
+    data: LexicalaApiResponse
   ): DictionaryWord {
-    const word = data.word as string;
-    const phonetic = data.phonetic as string | undefined;
-    const meanings = data.meanings as
-      | Array<Record<string, unknown>>
-      | undefined;
-    const etymology = data.etymology as string | undefined;
+    // Get the first result (most relevant)
+    if (!data.results || data.results.length === 0) {
+      throw new Error('No results found in Lexicala API response');
+    }
 
+    const firstResult = data.results[0];
+    const word = firstResult.headword.text;
+    
     const definitions: WordDefinition[] = [];
     const partsOfSpeech: PartOfSpeech[] = [];
     const examples: string[] = [];
     const synonyms: string[] = [];
     const antonyms: string[] = [];
 
-    // Process meanings (definitions and parts of speech)
-    if (Array.isArray(meanings)) {
-      meanings.forEach(meaning => {
-        const partOfSpeech = meaning.partOfSpeech as string | undefined;
-        const defs = meaning.definitions as
-          | Array<Record<string, unknown>>
-          | undefined;
-        const syns = meaning.synonyms as string[] | undefined;
-        const ants = meaning.antonyms as string[] | undefined;
-
-        // Process definitions
-        if (Array.isArray(defs)) {
-          defs.forEach(def => {
-            const definition = def.definition as string;
-            const example = def.example as string | undefined;
-
-            if (definition) {
-              definitions.push({
-                definition,
-                partOfSpeech,
-                examples: example ? [example] : undefined,
-                context: def.context as string | undefined,
-              });
-
-              if (example) {
-                examples.push(example);
-              }
-            }
+    // Process senses (definitions and parts of speech)
+    if (firstResult.senses && Array.isArray(firstResult.senses)) {
+      firstResult.senses.forEach(sense => {
+        // Handle "see" references (like "blew" -> "blow")
+        if (sense.see) {
+          definitions.push({
+            definition: `See: ${sense.see}`,
+            partOfSpeech: sense.partOfSpeech,
           });
         }
 
+        // Handle direct definitions
+        if (sense.definition) {
+          definitions.push({
+            definition: sense.definition,
+            partOfSpeech: sense.partOfSpeech,
+            examples: sense.examples,
+          });
+
+          // Collect examples
+          if (sense.examples && Array.isArray(sense.examples)) {
+            examples.push(...sense.examples);
+          }
+        }
+
         // Process part of speech
-        if (partOfSpeech && Array.isArray(defs)) {
+        if (sense.partOfSpeech && sense.definition) {
           partsOfSpeech.push({
-            type: partOfSpeech,
-            definitions: defs.map(def => ({
-              definition: def.definition as string,
-              examples: def.example ? [def.example as string] : undefined,
-              context: def.context as string | undefined,
-            })),
+            type: sense.partOfSpeech,
+            definitions: [{
+              definition: sense.definition,
+              examples: sense.examples,
+            }],
           });
         }
 
         // Collect synonyms and antonyms
-        if (Array.isArray(syns)) {
-          synonyms.push(...syns);
+        if (sense.synonyms && Array.isArray(sense.synonyms)) {
+          synonyms.push(...sense.synonyms);
         }
-        if (Array.isArray(ants)) {
-          antonyms.push(...ants);
+        if (sense.antonyms && Array.isArray(sense.antonyms)) {
+          antonyms.push(...sense.antonyms);
         }
+      });
+    }
+
+    // If no definitions were found, create a basic one
+    if (definitions.length === 0) {
+      definitions.push({
+        definition: `Word: ${word}`,
       });
     }
 
@@ -134,10 +135,8 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
 
     return {
       word,
-      phonetic,
       definitions,
       partsOfSpeech: partsOfSpeech.length > 0 ? partsOfSpeech : undefined,
-      etymology,
       examples: examples.length > 0 ? examples : undefined,
       synonyms: synonyms.length > 0 ? [...new Set(synonyms)] : undefined,
       antonyms: antonyms.length > 0 ? [...new Set(antonyms)] : undefined,
