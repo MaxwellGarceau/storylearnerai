@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DictionarySearchParams } from '../../../../types/dictionary';
-import { LanguageCode } from '../../../../types/llm/prompts';
+import {
+  DictionarySearchParams,
+  DictionaryApiClient,
+} from '../../../../types/dictionary';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -22,12 +24,15 @@ Object.defineProperty(window, 'addEventListener', {
 // Mock createDictionaryError to avoid import chain
 const mockCreateDictionaryError = vi.fn((code: string, message: string) => {
   const error = new Error(message);
-  (error as any).code = code;
+  (error as Error & { code: string }).code = code;
   return error;
 });
 
 // Import the class directly and mock its dependencies
-let LexicalaApiClient: any;
+let LexicalaApiClient: new (
+  endpoint: string,
+  apiKey: string
+) => DictionaryApiClient;
 
 // Mock the utils module before importing
 vi.doMock('../utils', () => ({
@@ -35,7 +40,7 @@ vi.doMock('../utils', () => ({
 }));
 
 describe('LexicalaApiClient (Isolated)', () => {
-  let client: any;
+  let client: DictionaryApiClient;
   const mockEndpoint = 'https://lexicala1.p.rapidapi.com';
   const mockApiKey = 'test-api-key';
 
@@ -110,6 +115,8 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
@@ -163,6 +170,8 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => ({ results: [] }),
         clone: function () {
           return this;
@@ -178,6 +187,8 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => ({}),
         clone: function () {
           return this;
@@ -261,6 +272,8 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
@@ -304,6 +317,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
@@ -349,6 +363,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
@@ -392,6 +407,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
@@ -503,6 +519,7 @@ describe('LexicalaApiClient (Isolated)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        // eslint-disable-next-line @typescript-eslint/require-await
         json: async () => mockResponse,
         clone: function () {
           return this;
