@@ -2,6 +2,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDictionary } from '../useDictionary';
 import { dictionaryService } from '../../lib/dictionary/dictionaryService';
+import { DictionaryWord } from '../../types/dictionary';
 
 // Mock the environment config
 vi.mock('../../lib/config/env', () => ({
@@ -72,8 +73,8 @@ describe('useDictionary', () => {
 
   it('should handle loading state during search', async () => {
     // Create a promise that we can control
-    let resolvePromise: (value: any) => void;
-    const promise = new Promise<any>(resolve => {
+    let resolvePromise: (value: DictionaryWord) => void;
+    const promise = new Promise<DictionaryWord>(resolve => {
       resolvePromise = resolve;
     });
 
@@ -82,7 +83,7 @@ describe('useDictionary', () => {
     const { result } = renderHook(() => useDictionary());
 
     act(() => {
-      result.current.searchWord('hello');
+      void result.current.searchWord('hello');
     });
 
     // Should be loading immediately
