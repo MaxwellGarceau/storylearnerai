@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveText from '../InteractiveText';
@@ -23,15 +23,18 @@ vi.mock('../WordHighlight', () => ({
     word,
     children,
     disabled,
+    onClick,
   }: {
     word: string;
     children?: React.ReactNode;
     disabled?: boolean;
+    onClick?: () => void;
   }) => (
     <span
       data-testid={`word-highlight-${word}`}
       data-word={word}
       data-disabled={disabled}
+      onClick={onClick}
     >
       {children}
     </span>
@@ -151,7 +154,7 @@ describe('InteractiveText Component', () => {
     expect(container).toHaveClass('custom-class');
   });
 
-  it('renders with tooltips by default', () => {
+  it('renders word highlights by default without tooltips', () => {
     render(
       <InteractiveText
         text='hello world'
@@ -160,9 +163,10 @@ describe('InteractiveText Component', () => {
       />
     );
 
-    // Check that individual tooltips are rendered for each word
-    const tooltips = screen.getAllByTestId('word-tooltip');
-    expect(tooltips).toHaveLength(2); // One tooltip per word
+    // Check that word highlights are rendered but no tooltips initially
+    expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
+    expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
+    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
   });
 
   it('renders without tooltips when enableTooltips is false', () => {
@@ -190,5 +194,25 @@ describe('InteractiveText Component', () => {
     render(<InteractiveText text='hello world' disabled={true} />);
 
     expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+  });
+
+  it('shows tooltip when word is clicked', async () => {
+    render(
+      <InteractiveText
+        text='hello world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
+
+    // Initially no tooltip should be visible
+    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+
+    // Click on a word
+    const helloWord = screen.getByTestId('word-highlight-hello');
+    fireEvent.click(helloWord);
+
+    // Now a tooltip should be rendered
+    expect(screen.getByTestId('word-tooltip')).toBeInTheDocument();
   });
 });

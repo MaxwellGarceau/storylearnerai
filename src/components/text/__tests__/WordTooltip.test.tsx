@@ -22,12 +22,22 @@ vi.mock('../../ui/Tooltip', () => ({
     children,
     side,
     className,
+    onPointerDownOutside,
+    onEscapeKeyDown,
   }: {
     children: React.ReactNode;
     side?: string;
     className?: string;
+    onPointerDownOutside?: (e: React.PointerEvent) => void;
+    onEscapeKeyDown?: (e: React.KeyboardEvent) => void;
   }) => (
-    <div data-testid='tooltip-content' data-side={side} className={className}>
+    <div
+      data-testid='tooltip-content'
+      data-side={side}
+      className={className}
+      onPointerDown={e => onPointerDownOutside?.(e)}
+      onKeyDown={e => e.key === 'Escape' && onEscapeKeyDown?.(e)}
+    >
       {children}
     </div>
   ),
@@ -135,5 +145,96 @@ describe('WordTooltip Component', () => {
     // The tooltip provider should be configured for persistence
     const tooltipProvider = screen.getByTestId('tooltip-provider');
     expect(tooltipProvider).toBeInTheDocument();
+  });
+
+  it('prevents tooltip from closing when clicking inside tooltip content', () => {
+    const mockOnOpenChange = vi.fn();
+    render(
+      <WordTooltip
+        content={<div data-testid='tooltip-inner-content'>Tooltip content</div>}
+        open={true}
+        onOpenChange={mockOnOpenChange}
+      >
+        <span>Hello</span>
+      </WordTooltip>
+    );
+
+    const tooltipContent = screen.getByTestId('tooltip-content');
+
+    // Simulate clicking inside the tooltip content
+    const clickEvent = new MouseEvent('pointerdown', {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    // Mock preventDefault to track if it's called
+    const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+
+    // Trigger the onPointerDown event on the tooltip content
+    tooltipContent.dispatchEvent(clickEvent);
+
+    // Verify that preventDefault was called, preventing the tooltip from closing
+    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(mockOnOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('prevents tooltip from closing when pressing escape key', () => {
+    const mockOnOpenChange = vi.fn();
+    render(
+      <WordTooltip
+        content={<div>Tooltip content</div>}
+        open={true}
+        onOpenChange={mockOnOpenChange}
+      >
+        <span>Hello</span>
+      </WordTooltip>
+    );
+
+    const tooltipContent = screen.getByTestId('tooltip-content');
+
+    // Simulate pressing escape key
+    const escapeEvent = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
+
+    // Mock preventDefault to track if it's called
+    const preventDefaultSpy = vi.spyOn(escapeEvent, 'preventDefault');
+
+    // Trigger the onKeyDown event on the tooltip content
+    tooltipContent.dispatchEvent(escapeEvent);
+
+    // Verify that preventDefault was called, preventing the tooltip from closing
+    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(mockOnOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('allows tooltip to close when not in controlled open state', () => {
+    const mockOnOpenChange = vi.fn();
+    render(
+      <WordTooltip
+        content={<div>Tooltip content</div>}
+        onOpenChange={mockOnOpenChange}
+      >
+        <span>Hello</span>
+      </WordTooltip>
+    );
+
+    const tooltipContent = screen.getByTestId('tooltip-content');
+
+    // Simulate clicking inside the tooltip content when not in controlled state
+    const clickEvent = new MouseEvent('pointerdown', {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
+
+    // Trigger the onPointerDown event on the tooltip content
+    tooltipContent.dispatchEvent(clickEvent);
+
+    // Verify that preventDefault was NOT called when not in controlled state
+    expect(preventDefaultSpy).not.toHaveBeenCalled();
   });
 });

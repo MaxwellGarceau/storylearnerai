@@ -119,21 +119,40 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
             </div>
           );
 
-          // Use WordTooltip only for clicked words
-          return (
-            <span key={index}>
-              <WordTooltip
-                content={wordTooltipContent}
-                open={openTooltipIndex === index}
-                onOpenChange={open => {
-                  // Only handle opening, ignore closing attempts
-                  // The tooltip should only close when user clicks outside
-                  if (open) {
-                    setOpenTooltipIndex(index);
-                  }
-                  // Don't call setOpenTooltipIndex(null) here - let click-outside handle it
-                }}
-              >
+          // Only show tooltip for clicked words
+          if (clickedWordIndex === index) {
+            return (
+              <span key={index}>
+                <WordTooltip
+                  content={wordTooltipContent}
+                  open={openTooltipIndex === index}
+                  onOpenChange={open => {
+                    // Only handle opening, ignore closing attempts
+                    // The tooltip should only close when user clicks outside
+                    if (open) {
+                      setOpenTooltipIndex(index);
+                    }
+                    // Don't call setOpenTooltipIndex(null) here - let click-outside handle it
+                  }}
+                >
+                  <WordHighlight
+                    word={normalizedWord}
+                    disabled={disabled}
+                    onClick={() => {
+                      setClickedWordIndex(index);
+                      setOpenTooltipIndex(index);
+                    }}
+                  >
+                    {cleanWord}
+                  </WordHighlight>
+                </WordTooltip>
+                {punctuation}
+              </span>
+            );
+          } else {
+            // For non-clicked words, just use WordHighlight without tooltip
+            return (
+              <span key={index}>
                 <WordHighlight
                   word={normalizedWord}
                   disabled={disabled}
@@ -144,10 +163,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 >
                   {cleanWord}
                 </WordHighlight>
-              </WordTooltip>
-              {punctuation}
-            </span>
-          );
+                {punctuation}
+              </span>
+            );
+          }
         }
 
         // For words without letters (pure punctuation), just return as is
