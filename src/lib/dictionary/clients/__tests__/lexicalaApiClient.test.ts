@@ -115,7 +115,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },
@@ -168,7 +171,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => ({ results: [] }),
+        json: async () => {
+          await Promise.resolve();
+          return { results: [] };
+        },
         clone: function () {
           return this;
         },
@@ -183,7 +189,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => ({}),
+        json: async () => {
+          await Promise.resolve();
+          return {};
+        },
         clone: function () {
           return this;
         },
@@ -266,7 +275,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },
@@ -309,7 +321,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },
@@ -354,7 +369,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },
@@ -397,7 +415,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },
@@ -487,7 +508,10 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => mockResponse,
+        json: async () => {
+          await Promise.resolve();
+          return mockResponse;
+        },
         clone: function () {
           return this;
         },

@@ -5,9 +5,9 @@ import {
   DictionaryWord,
   DictionaryResponse,
   DictionaryApiClient,
-  DictionaryDataTransformer,
   LexicalaDataTransformer,
   ApiManagerConfig,
+  DictionaryApiManager as DictionaryApiManagerInterface,
 } from '../../../types/dictionary';
 
 // Mock EnvironmentConfig
@@ -41,22 +41,30 @@ vi.doMock('../../logger', () => ({
 }));
 
 // Import the classes directly and mock their dependencies
-let DictionaryApiManagerImpl: new (config?: ApiManagerConfig) => any;
-let createDictionaryApiManager: (config?: ApiManagerConfig) => any;
+let DictionaryApiManagerImpl: new (config?: ApiManagerConfig) => unknown;
+let createDictionaryApiManager: (
+  config?: ApiManagerConfig
+) => DictionaryApiManagerInterface;
 
 describe('DictionaryApiManagerImpl', () => {
-  let apiManager: any;
+  let apiManager: DictionaryApiManagerInterface;
   let mockApiClient: {
     searchWord: MockedFunction<DictionaryApiClient['searchWord']>;
     getWordDetails: MockedFunction<DictionaryApiClient['getWordDetails']>;
     isAvailable: MockedFunction<DictionaryApiClient['isAvailable']>;
   };
   let mockTransformer: {
-    transformLexicalaResponse: MockedFunction<LexicalaDataTransformer['transformLexicalaResponse']>;
-    validateWordData: MockedFunction<LexicalaDataTransformer['validateWordData']>;
+    transformLexicalaResponse: MockedFunction<
+      LexicalaDataTransformer['transformLexicalaResponse']
+    >;
+    validateWordData: MockedFunction<
+      LexicalaDataTransformer['validateWordData']
+    >;
   };
-  let mockEnvironmentConfig: any;
-  let mockLogger: any;
+  let mockEnvironmentConfig: {
+    getDictionaryConfig: vi.Mock;
+    isDictionaryDisabled: vi.Mock;
+  };
 
   const mockDictionaryWord: DictionaryWord = {
     word: 'hello',
@@ -107,12 +115,6 @@ describe('DictionaryApiManagerImpl', () => {
       validateWordData: vi.fn().mockReturnValue(true),
     };
 
-    mockLogger = {
-      debug: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-    };
-
     // Import the modules after mocking
     const module = await import('../dictionaryApiManager');
     DictionaryApiManagerImpl = module.DictionaryApiManagerImpl;
@@ -120,7 +122,6 @@ describe('DictionaryApiManagerImpl', () => {
 
     // Mock the modules - use the mocked versions directly
     const { EnvironmentConfig } = await import('../../config/env');
-    const { logger } = await import('../../logger');
 
     // Store reference to the actual mock and reset it to default values
     mockEnvironmentConfig = EnvironmentConfig;
@@ -132,13 +133,17 @@ describe('DictionaryApiManagerImpl', () => {
 
     // Mock LexicalaApiClient constructor
     const { LexicalaApiClient } = await import('../clients/lexicalaApiClient');
-    (LexicalaApiClient as any).mockImplementation(() => mockApiClient);
+    (LexicalaApiClient as unknown as vi.Mock).mockImplementation(
+      () => mockApiClient
+    );
 
     // Mock LexicalaDataTransformerImpl constructor
     const { LexicalaDataTransformerImpl } = await import(
       '../transformers/lexicalaTransformer'
     );
-    (LexicalaDataTransformerImpl as any).mockImplementation(() => mockTransformer);
+    (LexicalaDataTransformerImpl as unknown as vi.Mock).mockImplementation(
+      () => mockTransformer
+    );
 
     apiManager = new DictionaryApiManagerImpl();
   });
@@ -496,9 +501,14 @@ describe('DictionaryApiManagerImpl', () => {
     });
 
     it('should use validateWordData from the adapter', () => {
-      const adapter = apiManager['transformers'].get('lexicala');
+      const transformers = (
+        apiManager as unknown as { transformers: Map<string, unknown> }
+      ).transformers;
+      const adapter = transformers.get('lexicala');
       expect(adapter).toBeDefined();
-      expect(typeof adapter!.validateWordData).toBe('function');
+      const validate = (adapter as { validateWordData?: unknown })
+        ?.validateWordData;
+      expect(typeof validate).toBe('function');
     });
   });
 });
@@ -529,8 +539,12 @@ describe('error handling and edge cases', () => {
     isAvailable: MockedFunction<DictionaryApiClient['isAvailable']>;
   };
   let mockTransformer: {
-    transformLexicalaResponse: MockedFunction<LexicalaDataTransformer['transformLexicalaResponse']>;
-    validateWordData: MockedFunction<LexicalaDataTransformer['validateWordData']>;
+    transformLexicalaResponse: MockedFunction<
+      LexicalaDataTransformer['transformLexicalaResponse']
+    >;
+    validateWordData: MockedFunction<
+      LexicalaDataTransformer['validateWordData']
+    >;
   };
 
   beforeEach(async () => {
@@ -546,9 +560,6 @@ describe('error handling and edge cases', () => {
       transformLexicalaResponse: vi.fn(),
       validateWordData: vi.fn().mockReturnValue(true),
     };
-
-    // Mock the modules - use the mocked versions directly
-    const { EnvironmentConfig } = await import('../../config/env');
 
     const { LexicalaApiClient } = await import('../clients/lexicalaApiClient');
     LexicalaApiClient.mockImplementation(() => mockApiClient);

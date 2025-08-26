@@ -26,7 +26,7 @@ export class DictionaryServiceImpl implements DictionaryService {
 
   constructor(apiManager?: DictionaryApiManagerImpl) {
     this.apiManager =
-      apiManager ||
+      apiManager ??
       (createDictionaryApiManager({
         primaryApi: 'lexicala',
       }) as DictionaryApiManagerImpl);

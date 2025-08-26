@@ -196,7 +196,7 @@ describe('InteractiveText Component', () => {
     expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
   });
 
-  it('shows tooltip when word is clicked', async () => {
+  it('shows tooltip when word is clicked', () => {
     render(
       <InteractiveText
         text='hello world'

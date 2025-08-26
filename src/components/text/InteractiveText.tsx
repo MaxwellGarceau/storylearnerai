@@ -32,8 +32,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
       const target = event.target as Element;
       // Check if the click is outside any tooltip content or trigger
       const isInsideTooltip =
-        target.closest('[data-radix-tooltip-content]') ||
-        target.closest('[data-radix-tooltip-trigger]') ||
+        target.closest('[data-radix-tooltip-content]') ??
+        target.closest('[data-radix-tooltip-trigger]') ??
         target.closest('[data-radix-tooltip-root]');
 
       if (!isInsideTooltip && openTooltipIndex !== null) {

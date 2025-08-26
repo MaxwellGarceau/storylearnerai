@@ -5,8 +5,6 @@ import {
   PartOfSpeech,
   WordFrequency,
   LexicalaApiResponse,
-  LexicalaResult,
-  LexicalaSense,
 } from '../../../types/dictionary';
 
 /**
@@ -72,7 +70,6 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
     const firstResult = data.results[0];
     const word = firstResult.headword.text;
     const phonetic = firstResult.headword.pronunciation?.value;
-    const partOfSpeech = firstResult.headword.pos;
 
     const definitions: WordDefinition[] = [];
     const partsOfSpeech: PartOfSpeech[] = [];
@@ -93,7 +90,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
 
         // Handle direct definitions
         if (sense.definition) {
-          const exampleTexts = sense.examples?.map(ex => ex.text) || [];
+          const exampleTexts = sense.examples?.map(ex => ex.text) ?? [];
 
           definitions.push({
             definition: sense.definition,
@@ -109,7 +106,7 @@ export class LexicalaDataTransformerImpl implements LexicalaDataTransformer {
 
         // Process part of speech
         if (sense.partOfSpeech && sense.definition) {
-          const exampleTexts = sense.examples?.map(ex => ex.text) || [];
+          const exampleTexts = sense.examples?.map(ex => ex.text) ?? [];
 
           partsOfSpeech.push({
             type: sense.partOfSpeech,
