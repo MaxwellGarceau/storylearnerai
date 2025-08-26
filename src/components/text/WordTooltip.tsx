@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/Tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 
 interface WordTooltipProps {
   children: React.ReactNode;
@@ -24,31 +19,14 @@ const WordTooltip: React.FC<WordTooltipProps> = ({
   onOpenChange,
 }) => {
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip open={open} onOpenChange={onOpenChange}>
-        <TooltipTrigger asChild>
-          <span>{children}</span>
-        </TooltipTrigger>
-        <TooltipContent
-          side={side}
-          className={className ?? 'p-0'}
-          onPointerDownOutside={e => {
-            // Don't close when clicking inside the tooltip content
-            if (open) {
-              e.preventDefault();
-            }
-          }}
-          onEscapeKeyDown={e => {
-            // Don't close on escape when open
-            if (open) {
-              e.preventDefault();
-            }
-          }}
-        >
-          {content}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        <span>{children}</span>
+      </PopoverTrigger>
+      <PopoverContent side={side} className={className ?? 'p-0'} sideOffset={8}>
+        {content}
+      </PopoverContent>
+    </Popover>
   );
 };
 

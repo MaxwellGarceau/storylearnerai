@@ -4,39 +4,48 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordTooltip from '../WordTooltip';
 
-// Mock the Tooltip components
-vi.mock('../../ui/Tooltip', () => ({
-  TooltipProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid='tooltip-provider'>{children}</div>
+// Mock the Popover components
+vi.mock('../../ui/Popover', () => ({
+  Popover: ({
+    children,
+    open,
+    onOpenChange: _onOpenChange,
+  }: {
+    children: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }) => (
+    <div data-testid='popover' data-open={open?.toString() ?? 'undefined'}>
+      {children}
+      {open && (
+        <div data-testid='popover-content-wrapper'>
+          {/* This simulates the portal content that would be rendered */}
+        </div>
+      )}
+    </div>
   ),
-  Tooltip: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid='tooltip'>{children}</div>
-  ),
-  TooltipTrigger: ({
+  PopoverTrigger: ({
     children,
   }: {
     children: React.ReactNode;
     asChild?: boolean;
-  }) => <div data-testid='tooltip-trigger'>{children}</div>,
-  TooltipContent: ({
+  }) => <div data-testid='popover-trigger'>{children}</div>,
+  PopoverContent: ({
     children,
     side,
     className,
-    onPointerDownOutside,
-    onEscapeKeyDown,
+    sideOffset,
   }: {
     children: React.ReactNode;
     side?: string;
     className?: string;
-    onPointerDownOutside?: (e: React.PointerEvent) => void;
-    onEscapeKeyDown?: (e: React.KeyboardEvent) => void;
+    sideOffset?: number;
   }) => (
     <div
-      data-testid='tooltip-content'
+      data-testid='popover-content'
       data-side={side}
       className={className}
-      onPointerDown={e => onPointerDownOutside?.(e)}
-      onKeyDown={e => e.key === 'Escape' && onEscapeKeyDown?.(e)}
+      data-side-offset={sideOffset}
     >
       {children}
     </div>
@@ -57,7 +66,7 @@ describe('WordTooltip Component', () => {
     );
 
     const wordElement = screen
-      .getByTestId('tooltip-trigger')
+      .getByTestId('popover-trigger')
       .querySelector('span');
     expect(wordElement).toHaveTextContent('Hello World');
   });
@@ -69,7 +78,7 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    const tooltipContent = screen.getByTestId('tooltip-content');
+    const tooltipContent = screen.getByTestId('popover-content');
     expect(tooltipContent).toHaveTextContent('Custom tooltip content');
   });
 
@@ -80,7 +89,7 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    const tooltipContent = screen.getByTestId('tooltip-content');
+    const tooltipContent = screen.getByTestId('popover-content');
     expect(tooltipContent).toHaveAttribute('data-side', 'bottom');
   });
 
@@ -91,7 +100,7 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    const tooltipContent = screen.getByTestId('tooltip-content');
+    const tooltipContent = screen.getByTestId('popover-content');
     expect(tooltipContent).toHaveClass('custom-class');
   });
 
@@ -102,21 +111,20 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    const tooltipContent = screen.getByTestId('tooltip-content');
+    const tooltipContent = screen.getByTestId('popover-content');
     expect(tooltipContent).toHaveClass('p-0');
   });
 
-  it('renders tooltip structure correctly', () => {
+  it('renders popover structure correctly', () => {
     render(
       <WordTooltip content={<div>Content</div>}>
         <span>Hello</span>
       </WordTooltip>
     );
 
-    expect(screen.getByTestId('tooltip-provider')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip-trigger')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
+    expect(screen.getByTestId('popover')).toBeInTheDocument();
+    expect(screen.getByTestId('popover-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('popover-content')).toBeInTheDocument();
   });
 
   it('supports controlled open state', () => {
@@ -131,25 +139,23 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    // The tooltip should be open when open prop is true
-    expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
+    // The popover should be open when open prop is true
+    const popover = screen.getByTestId('popover');
+    expect(popover).toHaveAttribute('data-open', 'true');
   });
 
-  it('configures tooltip provider with persistence settings', () => {
+  it('applies default sideOffset', () => {
     render(
       <WordTooltip content={<div>Content</div>}>
         <span>Hello</span>
       </WordTooltip>
     );
 
-    // The tooltip provider should be configured for persistence
-    const tooltipProvider = screen.getByTestId('tooltip-provider');
-    expect(tooltipProvider).toBeInTheDocument();
+    const tooltipContent = screen.getByTestId('popover-content');
+    expect(tooltipContent).toHaveAttribute('data-side-offset', '8');
   });
 
-
-
-  it('allows tooltip to close when not in controlled open state', () => {
+  it('allows popover to close when not in controlled open state', () => {
     const mockOnOpenChange = vi.fn();
     render(
       <WordTooltip
@@ -160,24 +166,12 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    const tooltipContent = screen.getByTestId('tooltip-content');
-
-    // Simulate clicking inside the tooltip content when not in controlled state
-    const clickEvent = new MouseEvent('pointerdown', {
-      bubbles: true,
-      cancelable: true,
-    });
-
-    const preventDefaultSpy = vi.spyOn(clickEvent, 'preventDefault');
-
-    // Trigger the onPointerDown event on the tooltip content
-    tooltipContent.dispatchEvent(clickEvent);
-
-    // Verify that preventDefault was NOT called when not in controlled state
-    expect(preventDefaultSpy).not.toHaveBeenCalled();
+    // The popover should be closed by default when not controlled
+    const popover = screen.getByTestId('popover');
+    expect(popover).toHaveAttribute('data-open', 'undefined');
   });
 
-  it('properly handles tooltip state changes through onOpenChange', () => {
+  it('properly handles popover state changes through onOpenChange', () => {
     const mockOnOpenChange = vi.fn();
     render(
       <WordTooltip
@@ -189,21 +183,11 @@ describe('WordTooltip Component', () => {
       </WordTooltip>
     );
 
-    // Verify that the tooltip is open
-    expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
+    // Verify that the popover is open
+    const popover = screen.getByTestId('popover');
+    expect(popover).toHaveAttribute('data-open', 'true');
 
-    // Simulate the tooltip being closed (e.g., by clicking outside)
-    // This would typically be triggered by Radix UI's internal logic
-    const closeEvent = new MouseEvent('pointerdown', {
-      bubbles: true,
-      cancelable: true,
-    });
-
-    // Simulate clicking outside the tooltip
-    document.dispatchEvent(closeEvent);
-
-    // The onOpenChange should be called with false when the tooltip closes
-    // Note: This is a simplified test - in reality, Radix UI handles this internally
+    // The onOpenChange should be defined
     expect(mockOnOpenChange).toBeDefined();
   });
 });
