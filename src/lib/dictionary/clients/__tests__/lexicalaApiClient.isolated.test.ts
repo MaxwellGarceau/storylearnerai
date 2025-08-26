@@ -328,7 +328,7 @@ describe('LexicalaApiClient (Isolated)', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: `${mockEndpoint}/search-entries?text=hello%20world&language=en`,
+          url: `${mockEndpoint}/search-entries?text=hello+world&language=en`,
           method: 'GET',
         })
       );

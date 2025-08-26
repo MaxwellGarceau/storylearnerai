@@ -26,27 +26,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
 
-  // Close tooltip when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      // Check if the click is outside any tooltip content or trigger
-      const isInsideTooltip =
-        target.closest('[data-radix-tooltip-content]') ??
-        target.closest('[data-radix-tooltip-trigger]') ??
-        target.closest('[data-radix-tooltip-root]');
-
-      if (!isInsideTooltip && openTooltipIndex !== null) {
-        setOpenTooltipIndex(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [openTooltipIndex]);
-
   // Search for word info when clicked
   useEffect(() => {
     if (clickedWordIndex !== null) {
@@ -128,12 +107,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                   content={wordTooltipContent}
                   open={openTooltipIndex === index}
                   onOpenChange={open => {
-                    // Only handle opening, ignore closing attempts
-                    // The tooltip should only close when user clicks outside
+                    // Handle both opening and closing
                     if (open) {
                       setOpenTooltipIndex(index);
+                    } else {
+                      setOpenTooltipIndex(null);
                     }
-                    // Don't call setOpenTooltipIndex(null) here - let click-outside handle it
                   }}
                 >
                   <WordHighlight

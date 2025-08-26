@@ -30,7 +30,7 @@ const DictionaryEntryHeader: React.FC<DictionaryEntryHeaderProps> = ({
         </span>
       )}
       {showFrequency && wordInfo.frequency && (
-        <Badge variant='secondary' className='text-xs' as='span'>
+        <Badge variant='secondary' className='text-xs ml-2' as='span'>
           {wordInfo.frequency.level}
         </Badge>
       )}

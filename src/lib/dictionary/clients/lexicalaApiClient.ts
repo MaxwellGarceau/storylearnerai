@@ -47,7 +47,12 @@ export class LexicalaApiClient implements DictionaryApiClient {
 
     try {
       // Lexicala API endpoint format: /search-entries?text=word&language=en
-      const url = `${this.baseUrl}/search-entries?text=${encodeURIComponent(word.trim())}&language=${targetLanguage}`;
+      const searchParams = new URLSearchParams({
+        text: word.trim(),
+        language: targetLanguage,
+        source: 'password',
+      });
+      const url = `${this.baseUrl}/search-entries?${searchParams.toString()}`;
       const response = await this.makeRequest(url);
 
       if (response.status === 404) {
