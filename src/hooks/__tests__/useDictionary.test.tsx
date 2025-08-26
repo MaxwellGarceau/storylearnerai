@@ -4,8 +4,9 @@ import { useDictionary } from '../useDictionary';
 import { dictionaryService } from '../../lib/dictionary/dictionaryService';
 import { DictionaryWord } from '../../types/dictionary';
 
-// Type alias for promise resolver functions
+// Reusable type alias for promise resolver functions
 type PromiseResolver<T> = (value: T) => void;
+type DictionaryWordResolver = PromiseResolver<DictionaryWord>;
 
 // Mock the environment config
 vi.mock('../../lib/config/env', () => ({
@@ -78,7 +79,7 @@ describe('useDictionary', () => {
 
   it('should handle loading state during search', async () => {
     // Create a promise that we can control
-    let resolvePromise: PromiseResolver<DictionaryWord>;
+    let resolvePromise: DictionaryWordResolver;
     const promise = new Promise<DictionaryWord>(resolve => {
       resolvePromise = resolve;
     });
@@ -191,12 +192,12 @@ describe('useDictionary', () => {
 
   it('should cancel previous requests when new search is initiated', async () => {
     // Create a promise that we can control
-    let resolveFirstPromise: PromiseResolver<DictionaryWord>;
+    let resolveFirstPromise: DictionaryWordResolver;
     const firstPromise = new Promise<DictionaryWord>(resolve => {
       resolveFirstPromise = resolve;
     });
 
-    let resolveSecondPromise: PromiseResolver<DictionaryWord>;
+    let resolveSecondPromise: DictionaryWordResolver;
     const secondPromise = new Promise<DictionaryWord>(resolve => {
       resolveSecondPromise = resolve;
     });

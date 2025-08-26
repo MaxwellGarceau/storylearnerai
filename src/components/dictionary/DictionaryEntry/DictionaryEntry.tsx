@@ -9,20 +9,7 @@ import DictionaryEntryErrorMessage from './ErrorMessage';
 import DictionaryEntryDefaultMessage from './DefaultMessage';
 import DictionaryEntryContent from './Content';
 
-// Export individual component types for external use
-export type { DictionaryEntryRootProps } from './Root';
-export type { DictionaryEntryHeaderProps } from './Header';
-export type { DictionaryEntryDefinitionProps } from './Definition';
-export type { DictionaryEntryAdditionalInfoProps } from './AdditionalInfo';
-export type { DictionaryEntrySourceProps } from './Source';
-export type { DictionaryEntryLoadingMessageProps } from './LoadingMessage';
-export type { DictionaryEntryErrorMessageProps } from './ErrorMessage';
-export type { DictionaryEntryDefaultMessageProps } from './DefaultMessage';
-export type { DictionaryEntryContentProps } from './Content';
-
-// Export context and hook
-export { DictionaryEntryContext, useDictionaryEntryContext } from './Context';
-export type { DictionaryEntryContextValue } from './Context';
+// Types and context re-exports moved to index.ts to satisfy react-refresh rule
 
 // Compound component export
 const DictionaryEntry = {
@@ -37,4 +24,6 @@ const DictionaryEntry = {
   Content: DictionaryEntryContent,
 };
 
+// Named export to satisfy react-refresh rule; default preserved for convenience
+export { DictionaryEntry };
 export default DictionaryEntry;

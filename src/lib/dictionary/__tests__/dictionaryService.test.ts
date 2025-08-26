@@ -91,10 +91,11 @@ const _mockDictionaryWord: DictionaryWord = {
 };
 
 describe('DictionaryService', () => {
+  type ViFn = ReturnType<typeof vi.fn>;
   type MockApiClient = {
-    searchWord: ReturnType<typeof vi.fn>;
-    getWordDetails: ReturnType<typeof vi.fn>;
-    isAvailable: ReturnType<typeof vi.fn>;
+    searchWord: ViFn;
+    getWordDetails: ViFn;
+    isAvailable: ViFn;
   };
 
   let service: import('../dictionaryService').DictionaryServiceImpl;

@@ -24,10 +24,8 @@ const DictionaryEntryAdditionalInfo: React.FC<
 
   if (!wordInfo || (!showSynonyms && !showAntonyms)) return null;
 
-  const hasSynonyms =
-    showSynonyms && wordInfo.synonyms && wordInfo.synonyms.length > 0;
-  const hasAntonyms =
-    showAntonyms && wordInfo.antonyms && wordInfo.antonyms.length > 0;
+  const hasSynonyms = showSynonyms && (wordInfo.synonyms?.length ?? 0) > 0;
+  const hasAntonyms = showAntonyms && (wordInfo.antonyms?.length ?? 0) > 0;
 
   if (!hasSynonyms && !hasAntonyms) return null;
 
@@ -36,13 +34,17 @@ const DictionaryEntryAdditionalInfo: React.FC<
       {hasSynonyms && (
         <span className='text-xs block'>
           <span className='text-muted-foreground'>Synonyms: </span>
-          <span>{wordInfo.synonyms!.slice(0, maxSynonyms).join(', ')}</span>
+          <span>
+            {(wordInfo.synonyms ?? []).slice(0, maxSynonyms).join(', ')}
+          </span>
         </span>
       )}
       {hasAntonyms && (
         <span className='text-xs mt-1 block'>
           <span className='text-muted-foreground'>Antonyms: </span>
-          <span>{wordInfo.antonyms!.slice(0, maxAntonyms).join(', ')}</span>
+          <span>
+            {(wordInfo.antonyms ?? []).slice(0, maxAntonyms).join(', ')}
+          </span>
         </span>
       )}
     </span>

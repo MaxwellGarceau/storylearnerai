@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import WordHighlight from './WordHighlight';
 import WordTooltip from './WordTooltip';
 import { useDictionary } from '../../hooks/useDictionary';
-import DictionaryEntry from '../dictionary/DictionaryEntry';
+import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
 
 interface InteractiveTextProps {
