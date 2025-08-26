@@ -24,7 +24,7 @@ const WordTooltip: React.FC<WordTooltipProps> = ({
         <span 
           className={`cursor-pointer transition-colors duration-200 ${
             open 
-              ? 'bg-primary/30 text-primary-foreground rounded px-1 -mx-1 ring-2 ring-primary/50' 
+              ? 'bg-primary/30 rounded px-1 -mx-1 ring-2 ring-primary/50' 
               : 'hover:bg-muted/50 rounded px-1 -mx-1'
           }`}
         >
