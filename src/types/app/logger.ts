@@ -11,7 +11,10 @@ export type LogChannel =
   | 'performance'
   | 'security'
   | 'general'
-  | 'walkthrough';
+  | 'walkthrough'
+  | 'dictionary'
+  | 'dictionary-hook'
+  | 'api-manager';
 
 export interface LogEntry {
   timestamp: string;

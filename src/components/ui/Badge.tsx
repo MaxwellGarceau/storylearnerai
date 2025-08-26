@@ -6,11 +6,17 @@ import { badgeVariants } from './badge-variants';
 
 interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  as?: 'div' | 'span';
+}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, as = 'div', ...props }: BadgeProps) {
+  const Component = as;
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <Component
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
   );
 }
 
