@@ -1,11 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DictionaryServiceImpl } from '../dictionaryService';
-import { DictionaryApiManagerImpl } from '../dictionaryApiManager';
-import { LexicalaApiClient } from '../clients/lexicalaApiClient';
 import { DictionaryWord } from '../../../types/dictionary';
 
 // Mock EnvironmentConfig
-vi.mock('../../config/env', () => ({
+vi.doMock('../../config/env', () => ({
   EnvironmentConfig: {
     getDictionaryConfig: () => ({
       endpoint: 'https://lexicala1.p.rapidapi.com',
@@ -16,9 +13,21 @@ vi.mock('../../config/env', () => ({
 }));
 
 // Mock LexicalaApiClient
-vi.mock('../clients/lexicalaApiClient', () => ({
+vi.doMock('../clients/lexicalaApiClient', () => ({
   LexicalaApiClient: vi.fn(),
 }));
+
+// Import the classes directly and mock their dependencies
+let DictionaryServiceImpl: new (
+  apiManager?: import('../dictionaryApiManager').DictionaryApiManagerImpl
+) => import('../dictionaryService').DictionaryServiceImpl;
+let DictionaryApiManagerImpl: new (
+  config?: import('../../../types/dictionary').ApiManagerConfig
+) => import('../dictionaryApiManager').DictionaryApiManagerImpl;
+let LexicalaApiClient: new (
+  endpoint: string,
+  apiKey: string
+) => import('../clients/lexicalaApiClient').LexicalaApiClient;
 
 // Mock data for testing - raw API response format
 const mockApiResponse = {
@@ -82,11 +91,26 @@ const _mockDictionaryWord: DictionaryWord = {
 };
 
 describe('DictionaryService', () => {
-  let service: DictionaryServiceImpl;
-  let apiManager: DictionaryApiManagerImpl;
-  let mockApiClient: any;
+  type MockApiClient = {
+    searchWord: ReturnType<typeof vi.fn>;
+    getWordDetails: ReturnType<typeof vi.fn>;
+    isAvailable: ReturnType<typeof vi.fn>;
+  };
 
-  beforeEach(() => {
+  let service: import('../dictionaryService').DictionaryServiceImpl;
+  let apiManager: import('../dictionaryApiManager').DictionaryApiManagerImpl;
+  let mockApiClient: MockApiClient;
+
+  beforeEach(async () => {
+    // Import the modules after mocking
+    const serviceModule = await import('../dictionaryService');
+    const managerModule = await import('../dictionaryApiManager');
+    const clientModule = await import('../clients/lexicalaApiClient');
+
+    DictionaryServiceImpl = serviceModule.DictionaryServiceImpl;
+    DictionaryApiManagerImpl = managerModule.DictionaryApiManagerImpl;
+    LexicalaApiClient = clientModule.LexicalaApiClient;
+
     // Create mock API client instance
     mockApiClient = {
       searchWord: vi.fn(),
@@ -103,7 +127,10 @@ describe('DictionaryService', () => {
     });
 
     // Mock the LexicalaApiClient constructor to return our mock
-    vi.mocked(LexicalaApiClient).mockImplementation(() => mockApiClient);
+    vi.mocked(LexicalaApiClient).mockImplementation(
+      () =>
+        mockApiClient as unknown as import('../clients/lexicalaApiClient').LexicalaApiClient
+    );
 
     // Create API manager (it will use the mocked client)
     apiManager = new DictionaryApiManagerImpl({
@@ -173,7 +200,7 @@ describe('DictionaryService', () => {
     it('should handle word not found errors', async () => {
       // Mock the API to throw a WORD_NOT_FOUND error
       const notFoundError = new Error('Word not found');
-      (notFoundError as any).code = 'WORD_NOT_FOUND';
+      (notFoundError as Error & { code: string }).code = 'WORD_NOT_FOUND';
       mockApiClient.searchWord.mockRejectedValue(notFoundError);
 
       await expect(
@@ -250,7 +277,9 @@ describe('DictionaryService', () => {
 
       // Manually expire cache by setting expiry time in the past
       const cacheKey = 'hello:default:en';
-      const privateCacheExpiry = (service as any).cacheExpiry;
+      const privateCacheExpiry = (
+        service as unknown as { cacheExpiry: Map<string, number> }
+      ).cacheExpiry;
 
       privateCacheExpiry.set(cacheKey, Date.now() - 1000); // Expired 1 second ago
 
@@ -267,7 +296,7 @@ describe('DictionaryService', () => {
       // Clear the default mock and set up error response
       mockApiClient.searchWord.mockReset();
       const apiError = new Error('API is down');
-      (apiError as any).code = 'API_ERROR';
+      (apiError as Error & { code: string }).code = 'API_ERROR';
       mockApiClient.searchWord.mockRejectedValue(apiError);
 
       await expect(

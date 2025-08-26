@@ -1,17 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  DictionaryApiManagerImpl,
-  createDictionaryApiManager,
-} from '../dictionaryApiManager';
+import type { MockedFunction } from 'vitest';
 import {
   DictionarySearchParams,
   DictionaryWord,
   DictionaryResponse,
+  DictionaryApiClient,
+  DictionaryDataTransformer,
+  LexicalaDataTransformer,
+  ApiManagerConfig,
 } from '../../../types/dictionary';
-import { LanguageCode } from '../../../types/llm/prompts';
 
 // Mock EnvironmentConfig
-vi.mock('../../config/env', () => ({
+vi.doMock('../../config/env', () => ({
   EnvironmentConfig: {
     getDictionaryConfig: vi.fn().mockReturnValue({
       endpoint: 'https://lexicala1.p.rapidapi.com',
@@ -22,17 +22,17 @@ vi.mock('../../config/env', () => ({
 }));
 
 // Mock LexicalaApiClient
-vi.mock('../clients/lexicalaApiClient', () => ({
+vi.doMock('../clients/lexicalaApiClient', () => ({
   LexicalaApiClient: vi.fn(),
 }));
 
 // Mock LexicalaDataTransformerImpl
-vi.mock('../transformers/lexicalaTransformer', () => ({
+vi.doMock('../transformers/lexicalaTransformer', () => ({
   LexicalaDataTransformerImpl: vi.fn(),
 }));
 
 // Mock logger
-vi.mock('../../logger', () => ({
+vi.doMock('../../logger', () => ({
   logger: {
     debug: vi.fn(),
     warn: vi.fn(),
@@ -40,10 +40,21 @@ vi.mock('../../logger', () => ({
   },
 }));
 
+// Import the classes directly and mock their dependencies
+let DictionaryApiManagerImpl: new (config?: ApiManagerConfig) => any;
+let createDictionaryApiManager: (config?: ApiManagerConfig) => any;
+
 describe('DictionaryApiManagerImpl', () => {
-  let apiManager: DictionaryApiManagerImpl;
-  let mockApiClient: any;
-  let mockTransformer: any;
+  let apiManager: any;
+  let mockApiClient: {
+    searchWord: MockedFunction<DictionaryApiClient['searchWord']>;
+    getWordDetails: MockedFunction<DictionaryApiClient['getWordDetails']>;
+    isAvailable: MockedFunction<DictionaryApiClient['isAvailable']>;
+  };
+  let mockTransformer: {
+    transformLexicalaResponse: MockedFunction<LexicalaDataTransformer['transformLexicalaResponse']>;
+    validateWordData: MockedFunction<LexicalaDataTransformer['validateWordData']>;
+  };
   let mockEnvironmentConfig: any;
   let mockLogger: any;
 
@@ -102,6 +113,11 @@ describe('DictionaryApiManagerImpl', () => {
       info: vi.fn(),
     };
 
+    // Import the modules after mocking
+    const module = await import('../dictionaryApiManager');
+    DictionaryApiManagerImpl = module.DictionaryApiManagerImpl;
+    createDictionaryApiManager = module.createDictionaryApiManager;
+
     // Mock the modules - use the mocked versions directly
     const { EnvironmentConfig } = await import('../../config/env');
     const { logger } = await import('../../logger');
@@ -116,13 +132,13 @@ describe('DictionaryApiManagerImpl', () => {
 
     // Mock LexicalaApiClient constructor
     const { LexicalaApiClient } = await import('../clients/lexicalaApiClient');
-    LexicalaApiClient.mockImplementation(() => mockApiClient);
+    (LexicalaApiClient as any).mockImplementation(() => mockApiClient);
 
     // Mock LexicalaDataTransformerImpl constructor
     const { LexicalaDataTransformerImpl } = await import(
       '../transformers/lexicalaTransformer'
     );
-    LexicalaDataTransformerImpl.mockImplementation(() => mockTransformer);
+    (LexicalaDataTransformerImpl as any).mockImplementation(() => mockTransformer);
 
     apiManager = new DictionaryApiManagerImpl();
   });
@@ -507,8 +523,15 @@ describe('createDictionaryApiManager', () => {
 
 describe('error handling and edge cases', () => {
   let apiManager: DictionaryApiManagerImpl;
-  let mockApiClient: any;
-  let mockTransformer: any;
+  let mockApiClient: {
+    searchWord: MockedFunction<DictionaryApiClient['searchWord']>;
+    getWordDetails: MockedFunction<DictionaryApiClient['getWordDetails']>;
+    isAvailable: MockedFunction<DictionaryApiClient['isAvailable']>;
+  };
+  let mockTransformer: {
+    transformLexicalaResponse: MockedFunction<LexicalaDataTransformer['transformLexicalaResponse']>;
+    validateWordData: MockedFunction<LexicalaDataTransformer['validateWordData']>;
+  };
 
   beforeEach(async () => {
     vi.clearAllMocks();

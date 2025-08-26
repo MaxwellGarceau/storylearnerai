@@ -1,16 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { LexicalaApiClient } from '../lexicalaApiClient';
-import { DictionarySearchParams } from '../../../../types/dictionary';
-import { LanguageCode } from '../../../../types/llm/prompts';
-
-// Mock the utils import to prevent import chain issues
-vi.mock('../utils', () => ({
-  createDictionaryError: vi.fn((code: string, message: string) => {
-    const error = new Error(message);
-    (error as any).code = code;
-    return error;
-  }),
-}));
+import {
+  DictionarySearchParams,
+  DictionaryApiClient,
+} from '../../../../types/dictionary';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -29,12 +21,30 @@ Object.defineProperty(window, 'addEventListener', {
   value: mockAddEventListener,
 });
 
+// Mock createDictionaryError to avoid import chain
+const mockCreateDictionaryError = vi.fn((code: string, message: string) => {
+  const error = new Error(message);
+  (error as Error & { code: string }).code = code;
+  return error;
+});
+
+// Import the class directly and mock its dependencies
+let LexicalaApiClient: new (
+  endpoint: string,
+  apiKey: string
+) => DictionaryApiClient;
+
+// Mock the utils module before importing
+vi.doMock('../utils', () => ({
+  createDictionaryError: mockCreateDictionaryError,
+}));
+
 describe('LexicalaApiClient', () => {
-  let client: LexicalaApiClient;
+  let client: DictionaryApiClient;
   const mockEndpoint = 'https://lexicala1.p.rapidapi.com';
   const mockApiKey = 'test-api-key';
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
 
     // Ensure client is online
@@ -42,6 +52,10 @@ describe('LexicalaApiClient', () => {
       writable: true,
       value: true,
     });
+
+    // Import the class after mocking
+    const module = await import('../lexicalaApiClient');
+    LexicalaApiClient = module.LexicalaApiClient;
 
     client = new LexicalaApiClient(mockEndpoint, mockApiKey);
   });
