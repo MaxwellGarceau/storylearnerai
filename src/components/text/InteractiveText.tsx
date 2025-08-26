@@ -26,6 +26,22 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
 
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      // Check if the click is outside any tooltip content
+      if (!target.closest('[data-radix-tooltip-content]') && !target.closest('[data-radix-tooltip-trigger]')) {
+        setOpenTooltipIndex(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Search for word info when clicked
   useEffect(() => {
     if (clickedWordIndex !== null) {

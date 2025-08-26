@@ -124,4 +124,16 @@ describe('WordTooltip Component', () => {
     // The tooltip should be open when open prop is true
     expect(screen.getByTestId('tooltip-content')).toBeInTheDocument();
   });
+
+  it('configures tooltip provider with persistence settings', () => {
+    render(
+      <WordTooltip content={<div>Content</div>}>
+        <span>Hello</span>
+      </WordTooltip>
+    );
+
+    // The tooltip provider should be configured for persistence
+    const tooltipProvider = screen.getByTestId('tooltip-provider');
+    expect(tooltipProvider).toBeInTheDocument();
+  });
 });

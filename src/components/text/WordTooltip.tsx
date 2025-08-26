@@ -24,7 +24,7 @@ const WordTooltip: React.FC<WordTooltipProps> = ({
   onOpenChange,
 }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0} disableHoverableContent={true}>
       <Tooltip open={open} onOpenChange={onOpenChange}>
         <TooltipTrigger asChild>
           <span>{children}</span>
