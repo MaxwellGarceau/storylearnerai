@@ -4,6 +4,9 @@ import { useDictionary } from '../useDictionary';
 import { dictionaryService } from '../../lib/dictionary/dictionaryService';
 import { DictionaryWord } from '../../types/dictionary';
 
+// Type alias for promise resolver functions
+type PromiseResolver<T> = (value: T) => void;
+
 // Mock the environment config
 vi.mock('../../lib/config/env', () => ({
   EnvironmentConfig: {
@@ -16,14 +19,16 @@ vi.mock('../../lib/dictionary/dictionaryService', () => ({
   dictionaryService: {
     getWordInfo: vi.fn(),
   },
-  createDictionaryError: vi.fn((code, message, details) => ({
-    code,
-    message,
-    details: {
-      ...details,
-      timestamp: new Date().toISOString(),
-    },
-  })),
+  createDictionaryError: vi.fn(
+    (code: string, message: string, details?: Record<string, unknown>) => ({
+      code,
+      message,
+      details: {
+        ...details,
+        timestamp: new Date().toISOString(),
+      },
+    })
+  ),
 }));
 
 const mockDictionaryService = vi.mocked(dictionaryService);
@@ -73,7 +78,7 @@ describe('useDictionary', () => {
 
   it('should handle loading state during search', async () => {
     // Create a promise that we can control
-    let resolvePromise: (value: DictionaryWord) => void;
+    let resolvePromise: PromiseResolver<DictionaryWord>;
     const promise = new Promise<DictionaryWord>(resolve => {
       resolvePromise = resolve;
     });
@@ -92,10 +97,12 @@ describe('useDictionary', () => {
 
     // Resolve the promise
     await act(async () => {
-      resolvePromise!({
-        word: 'hello',
-        definitions: [{ definition: 'A greeting' }],
-      });
+      if (resolvePromise) {
+        resolvePromise({
+          word: 'hello',
+          definitions: [{ definition: 'A greeting' }],
+        });
+      }
       await promise;
     });
 
@@ -184,13 +191,13 @@ describe('useDictionary', () => {
 
   it('should cancel previous requests when new search is initiated', async () => {
     // Create a promise that we can control
-    let resolveFirstPromise: (value: any) => void;
-    const firstPromise = new Promise<any>(resolve => {
+    let resolveFirstPromise: PromiseResolver<DictionaryWord>;
+    const firstPromise = new Promise<DictionaryWord>(resolve => {
       resolveFirstPromise = resolve;
     });
 
-    let resolveSecondPromise: (value: any) => void;
-    const secondPromise = new Promise<any>(resolve => {
+    let resolveSecondPromise: PromiseResolver<DictionaryWord>;
+    const secondPromise = new Promise<DictionaryWord>(resolve => {
       resolveSecondPromise = resolve;
     });
 
@@ -202,22 +209,24 @@ describe('useDictionary', () => {
 
     // Start first search
     act(() => {
-      result.current.searchWord('first');
+      void result.current.searchWord('first');
     });
 
     expect(result.current.isLoading).toBe(true);
 
     // Start second search before first completes
     act(() => {
-      result.current.searchWord('second');
+      void result.current.searchWord('second');
     });
 
     // Resolve first promise - should not affect state since it was cancelled
     await act(async () => {
-      resolveFirstPromise!({
-        word: 'first',
-        definitions: [{ definition: 'First word' }],
-      });
+      if (resolveFirstPromise) {
+        resolveFirstPromise({
+          word: 'first',
+          definitions: [{ definition: 'First word' }],
+        });
+      }
       await firstPromise;
     });
 
@@ -227,10 +236,12 @@ describe('useDictionary', () => {
 
     // Resolve second promise
     await act(async () => {
-      resolveSecondPromise!({
-        word: 'second',
-        definitions: [{ definition: 'Second word' }],
-      });
+      if (resolveSecondPromise) {
+        resolveSecondPromise({
+          word: 'second',
+          definitions: [{ definition: 'Second word' }],
+        });
+      }
       await secondPromise;
     });
 
