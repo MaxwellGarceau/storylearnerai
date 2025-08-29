@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Badge } from '../ui/Badge';
-import { X, BookOpen, Settings } from 'lucide-react';
+import { X, BookOpen, Settings, BookMarked } from 'lucide-react';
+import { VocabularySidebar } from '../vocabulary/VocabularySidebar';
 import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStories.json';
 import { useNavigate } from 'react-router-dom';
@@ -55,9 +56,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   };
 
   const [isOpen, setIsOpen] = useState(getInitialSidebarState);
-  const [activeSection, setActiveSection] = useState<'stories' | 'info'>(
-    'stories'
-  );
+  const [activeSection, setActiveSection] = useState<
+    'stories' | 'vocabulary' | 'info'
+  >('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -182,7 +183,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
             </div>
 
             {/* Section Tabs */}
-            <div className='flex gap-1 mt-3'>
+            <div className='flex gap-1 mt-3 flex-wrap'>
               <Button
                 variant={activeSection === 'stories' ? 'default' : 'ghost'}
                 size='sm'
@@ -191,6 +192,15 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
               >
                 <BookOpen className='w-4 h-4 mr-2' />
                 {t('storySidebar.stories')}
+              </Button>
+              <Button
+                variant={activeSection === 'vocabulary' ? 'default' : 'ghost'}
+                size='sm'
+                onClick={() => setActiveSection('vocabulary')}
+                className='flex-1'
+              >
+                <BookMarked className='w-4 h-4 mr-2' />
+                {t('storySidebar.vocabulary')}
               </Button>
               <Button
                 variant={activeSection === 'info' ? 'default' : 'ghost'}
@@ -335,6 +345,29 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
               </div>
             )}
 
+            {activeSection === 'vocabulary' && (
+              <div className='p-4'>
+                <VocabularySidebar
+                  currentLanguageId={
+                    translationData?.toLanguage
+                      ? // Find language ID by code - this is a simplified approach
+                        // In a real app, you'd want to use a proper language service
+                        translationData.toLanguage === 'es'
+                        ? 2
+                        : 1
+                      : undefined
+                  }
+                  currentFromLanguageId={
+                    translationData?.fromLanguage
+                      ? translationData.fromLanguage === 'es'
+                        ? 2
+                        : 1
+                      : undefined
+                  }
+                />
+              </div>
+            )}
+
             {activeSection === 'info' && translationData && (
               <div className='p-4 space-y-6'>
                 {/* Header */}
@@ -399,6 +432,14 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
               </div>
             )}
 
+            {activeSection === 'vocabulary' && !translationData && (
+              <div className='p-4 text-center'>
+                <p className='text-muted-foreground'>
+                  {t('storySidebar.noTranslationData')}
+                </p>
+              </div>
+            )}
+
             {activeSection === 'info' && !translationData && (
               <div className='p-4 text-center'>
                 <p className='text-muted-foreground'>
@@ -413,7 +454,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
             <p className='text-xs text-muted-foreground text-center'>
               {activeSection === 'stories'
                 ? t('storySidebar.demoStories')
-                : t('storySidebar.translationSettings')}
+                : activeSection === 'vocabulary'
+                  ? t('storySidebar.vocabularySettings')
+                  : t('storySidebar.translationSettings')}
             </p>
           </div>
         </div>

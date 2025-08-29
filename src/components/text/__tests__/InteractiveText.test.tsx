@@ -15,7 +15,15 @@ vi.mock('../../../hooks/useDictionary', () => ({
   }),
 }));
 
-// Removed unused ClickHandler type
+// Mock the useWordTranslation hook
+vi.mock('../../../hooks/useWordTranslation', () => ({
+  useWordTranslation: () => ({
+    translateWord: vi.fn().mockResolvedValue('translated'),
+    isTranslating: false,
+    error: null,
+    clearError: vi.fn(),
+  }),
+}));
 
 // Mock the WordHighlight component
 vi.mock('../WordHighlight', () => ({
@@ -52,6 +60,7 @@ vi.mock('../WordMenu', () => ({
     onSave,
     fromLanguage,
     targetLanguage,
+    translatedWord,
   }: {
     word: string;
     children: React.ReactNode;
@@ -61,10 +70,12 @@ vi.mock('../WordMenu', () => ({
     onSave?: (word: string) => void;
     fromLanguage?: string;
     targetLanguage?: string;
+    translatedWord?: string;
   }) => {
     // Use the parameters to avoid unused variable warnings
     void fromLanguage;
     void targetLanguage;
+    void translatedWord;
     return (
       <span data-word={word}>
         {children}

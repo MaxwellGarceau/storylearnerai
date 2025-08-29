@@ -13,6 +13,49 @@ vi.mock('../../../hooks/useDictionary', () => ({
   }),
 }));
 
+// Mock the useLanguages hook
+vi.mock('../../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    getLanguageIdByCode: vi.fn((code: string) => {
+      const languageMap: Record<string, number> = {
+        en: 1,
+        es: 2,
+      };
+      return languageMap[code] || null;
+    }),
+  }),
+}));
+
+// Mock the VocabularySaveButton component
+vi.mock('../../vocabulary/VocabularySaveButton', () => ({
+  VocabularySaveButton: ({
+    originalWord,
+    translatedWord,
+    fromLanguageId,
+    translatedLanguageId,
+    onClick,
+    children,
+  }: {
+    originalWord: string;
+    translatedWord: string;
+    fromLanguageId: number;
+    translatedLanguageId: number;
+    onClick?: () => void;
+    children?: React.ReactNode;
+  }) => (
+    <button
+      data-testid='vocabulary-save-button'
+      data-original-word={originalWord}
+      data-translated-word={translatedWord}
+      data-from-language-id={fromLanguageId}
+      data-translated-language-id={translatedLanguageId}
+      onClick={onClick}
+    >
+      {children || 'Save'}
+    </button>
+  ),
+}));
+
 // Mock the Popover components
 vi.mock('../../ui/Popover', () => ({
   Popover: ({
@@ -80,7 +123,6 @@ vi.mock('../../ui/Button', () => ({
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Languages: () => <span data-testid='translate-icon'>Translate</span>,
-  Bookmark: () => <span data-testid='bookmark-icon'>Bookmark</span>,
   BookOpen: () => <span data-testid='dictionary-icon'>Dictionary</span>,
 }));
 
@@ -91,7 +133,7 @@ describe('WordMenu Component', () => {
 
   it('renders with word text', () => {
     render(
-      <WordMenu word='hello' open={true}>
+      <WordMenu word='hello' open={true} fromLanguage='en' targetLanguage='es'>
         <span>hello</span>
       </WordMenu>
     );
@@ -101,7 +143,7 @@ describe('WordMenu Component', () => {
 
   it('displays the word in the menu header', () => {
     render(
-      <WordMenu word='world' open={true}>
+      <WordMenu word='world' open={true} fromLanguage='en' targetLanguage='es'>
         <span>world</span>
       </WordMenu>
     );
@@ -113,15 +155,18 @@ describe('WordMenu Component', () => {
     expect(menuHeader).toBeInTheDocument();
   });
 
-  it('renders translate, dictionary, and save buttons', () => {
+  it('renders translate, dictionary, and vocabulary save buttons', () => {
     render(
-      <WordMenu word='test' open={true}>
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
 
     const buttons = screen.getAllByTestId('button');
-    expect(buttons).toHaveLength(3);
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+
+    expect(buttons).toHaveLength(2); // Translate and Dictionary buttons
+    expect(vocabularySaveButton).toBeInTheDocument(); // VocabularySaveButton
   });
 
   it('calls onTranslate when translate button is clicked', () => {
@@ -134,6 +179,8 @@ describe('WordMenu Component', () => {
         open={true}
         onTranslate={handleTranslate}
         onOpenChange={handleOpenChange}
+        fromLanguage='en'
+        targetLanguage='es'
       >
         <span>hello</span>
       </WordMenu>
@@ -146,31 +193,35 @@ describe('WordMenu Component', () => {
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('calls onSave when save button is clicked', () => {
-    const handleSave = vi.fn();
-    const handleOpenChange = vi.fn();
-
+  it('renders VocabularySaveButton with correct props', () => {
     render(
       <WordMenu
         word='world'
         open={true}
-        onSave={handleSave}
-        onOpenChange={handleOpenChange}
+        fromLanguage='en'
+        targetLanguage='es'
+        translatedWord='mundo'
       >
         <span>world</span>
       </WordMenu>
     );
 
-    const buttons = screen.getAllByTestId('button');
-    fireEvent.click(buttons[2]); // Third button should be save
-
-    expect(handleSave).toHaveBeenCalledWith('world');
-    expect(handleOpenChange).toHaveBeenCalledWith(false);
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'world');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-translated-word',
+      'mundo'
+    );
+    expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-translated-language-id',
+      '2'
+    );
   });
 
   it('shows dictionary content when dictionary button is clicked', () => {
     render(
-      <WordMenu word='test' open={true}>
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -184,7 +235,7 @@ describe('WordMenu Component', () => {
 
   it('renders with correct open state', () => {
     render(
-      <WordMenu word='test' open={true}>
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -194,7 +245,7 @@ describe('WordMenu Component', () => {
 
   it('renders with closed state', () => {
     render(
-      <WordMenu word='test' open={false}>
+      <WordMenu word='test' open={false} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -204,7 +255,7 @@ describe('WordMenu Component', () => {
 
   it('renders trigger with asChild prop', () => {
     render(
-      <WordMenu word='test' open={true}>
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -213,5 +264,21 @@ describe('WordMenu Component', () => {
       'data-as-child',
       'true'
     );
+  });
+
+  it('does not render VocabularySaveButton when language IDs are not available', () => {
+    render(
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage='unsupported'
+        targetLanguage='unsupported'
+      >
+        <span>test</span>
+      </WordMenu>
+    );
+
+    const vocabularySaveButton = screen.queryByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).not.toBeInTheDocument();
   });
 });

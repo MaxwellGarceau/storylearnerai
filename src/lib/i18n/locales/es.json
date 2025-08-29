@@ -239,6 +239,7 @@
     "closeLibrary": "Cerrar biblioteca de historias",
     "stories": "Historias",
     "info": "Información",
+    "vocabulary": "Vocabulario",
     "clickOnStoryToRead": "Haz clic en una historia para leerla",
     "savedStories": "Historias Guardadas",
     "loadingSavedStories": "Cargando historias guardadas...",
@@ -255,6 +256,7 @@
     "storyAdaptedToLevel": "La historia se adaptó a este nivel de competencia en inglés.",
     "noTranslationData": "No hay datos de traducción disponibles para mostrar.",
     "demoStories": "Historias de demostración • Español a Inglés",
+    "vocabularySettings": "Configuración de vocabulario",
     "translationSettings": "Configuración de traducción",
     "untitledStory": "Historia Sin Título",
     "untitled": "Sin Título",
@@ -381,5 +383,136 @@
       "title": "Importante: Puede ser necesario limpiar el texto",
       "description": "Nuestro sistema intenta identificar el contenido de la historia, pero los PDFs pueden contener varios elementos de texto. Es posible que necesites revisar y limpiar el texto extraído para eliminar cualquier contenido no relacionado, encabezados, notas al pie u otros elementos que no sean parte de la historia."
     }
+  },
+  "vocabulary": {
+    "title": "Vocabulario",
+    "subtitle": "Tus palabras de vocabulario guardadas",
+    "saveWord": "Guardar Palabra",
+    "editWord": "Editar Palabra",
+    "deleteWord": "Eliminar Palabra",
+    "viewDetails": "Ver Detalles",
+    "searchPlaceholder": "Buscar vocabulario...",
+    "noVocabulary": "Aún no hay palabras de vocabulario guardadas",
+    "noVocabularyDescription": "Guarda palabras de tus historias para construir tu vocabulario",
+    "saveSuccess": "Palabra de vocabulario guardada exitosamente",
+    "updateSuccess": "Palabra de vocabulario actualizada exitosamente",
+    "deleteSuccess": "Palabra de vocabulario eliminada exitosamente",
+    "saveError": "Error al guardar la palabra de vocabulario",
+    "updateError": "Error al actualizar la palabra de vocabulario",
+    "deleteError": "Error al eliminar la palabra de vocabulario",
+    "alreadyExists": "Esta palabra ya está guardada en tu vocabulario",
+    "form": {
+      "originalWord": "Palabra Original",
+      "translatedWord": "Palabra Traducida",
+      "originalContext": "Contexto Original",
+      "translatedContext": "Contexto Traducido",
+      "definition": "Definición",
+      "partOfSpeech": "Parte de la Oración",
+      "frequencyLevel": "Nivel de Frecuencia",
+      "fromLanguage": "Desde Idioma",
+      "toLanguage": "A Idioma",
+      "originalWordPlaceholder": "Ingresa la palabra original...",
+      "translatedWordPlaceholder": "Ingresa la palabra traducida...",
+      "originalContextPlaceholder": "Ingresa la oración de contexto...",
+      "translatedContextPlaceholder": "Ingresa el contexto traducido...",
+      "definitionPlaceholder": "Ingresa la definición...",
+      "partOfSpeechPlaceholder": "Selecciona parte de la oración...",
+      "frequencyLevelPlaceholder": "Selecciona nivel de frecuencia...",
+      "selectLanguage": "Selecciona idioma...",
+      "selectPartOfSpeech": "Selecciona parte de la oración...",
+      "selectFrequency": "Selecciona nivel de frecuencia...",
+      "languages": "Idiomas"
+    },
+    "partsOfSpeech": {
+      "noun": "Sustantivo",
+      "verb": "Verbo",
+      "adjective": "Adjetivo",
+      "adverb": "Adverbio",
+      "pronoun": "Pronombre",
+      "preposition": "Preposición",
+      "conjunction": "Conjunción",
+      "interjection": "Interjección",
+      "article": "Artículo",
+      "numeral": "Numeral"
+    },
+    "frequencyLevels": {
+      "common": "Común",
+      "uncommon": "Poco Común",
+      "rare": "Raro",
+      "veryRare": "Muy Raro"
+    },
+    "details": {
+      "title": "Detalles del Vocabulario",
+      "originalWord": "Palabra Original",
+      "translatedWord": "Palabra Traducida",
+      "definition": "Definición",
+      "partOfSpeech": "Parte de la Oración",
+      "frequencyLevel": "Nivel de Frecuencia",
+      "originalContext": "Contexto Original",
+      "translatedContext": "Contexto Traducido",
+      "fromLanguage": "Desde Idioma",
+      "toLanguage": "A Idioma",
+      "savedFrom": "Guardado de la historia",
+      "noContext": "Sin contexto proporcionado",
+      "noDefinition": "Sin definición proporcionada"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Palabra de Vocabulario",
+      "message": "¿Estás seguro de que quieres eliminar esta palabra de vocabulario? Esta acción no se puede deshacer.",
+      "confirm": "Eliminar Palabra",
+      "cancel": "Cancelar"
+    },
+    "sidebar": {
+      "title": "Vocabulario",
+      "description": "Tus palabras de vocabulario guardadas de las historias",
+      "saveNewWord": "Guardar Nueva Palabra",
+      "searchWords": "Buscar palabras...",
+      "noWordsFound": "No se encontraron palabras",
+      "filterByLanguage": "Filtrar por par de idiomas",
+      "allLanguages": "Todos los Idiomas"
+    },
+    "filters": {
+      "title": "Filtros",
+      "language": "Idioma",
+      "allLanguages": "Todos los Idiomas"
+    },
+    "validation": {
+      "originalWordRequired": "La palabra original es requerida",
+      "translatedWordRequired": "La palabra traducida es requerida",
+      "fromLanguageRequired": "El idioma de origen es requerido",
+      "translatedLanguageRequired": "El idioma de destino es requerido",
+      "alreadyExists": "Esta palabra ya está guardada en tu vocabulario"
+    },
+    "save": {
+      "title": "Guardar Palabra de Vocabulario",
+      "tooltip": "Guardar esta palabra en tu vocabulario"
+    },
+    "edit": {
+      "title": "Editar Palabra de Vocabulario"
+    },
+    "delete": {
+      "title": "Eliminar Palabra de Vocabulario",
+      "description": "¿Estás seguro de que quieres eliminar esta palabra de vocabulario? Esta acción no se puede deshacer."
+    },
+    "detail": {
+      "title": "Detalles del Vocabulario",
+      "definition": "Definición",
+      "context": "Contexto"
+    },
+    "empty": {
+      "title": "Aún no hay palabras de vocabulario guardadas",
+      "description": "Guarda palabras de tus historias para construir tu vocabulario",
+      "sidebar": "No se encontraron palabras de vocabulario"
+    },
+    "search": {
+      "placeholder": "Buscar vocabulario..."
+    },
+    "context": {
+      "original": "Contexto Original",
+      "translated": "Contexto Traducido"
+    },
+    "noResults": "No se encontraron palabras",
+    "checking": "Verificando...",
+    "saved": "Guardado"
   }
 }

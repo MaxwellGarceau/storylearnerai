@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import WordHighlight from './WordHighlight';
 import WordMenu from './WordMenu';
 import { LanguageCode } from '../../types/llm/prompts';
+import { useWordTranslation } from '../../hooks/useWordTranslation';
 
 interface InteractiveTextProps {
   text: string;
@@ -21,6 +22,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   disabled = false,
 }) => {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const [translatedWords, setTranslatedWords] = useState<Map<string, string>>(
+    new Map()
+  );
+  const { translateWord } = useWordTranslation();
 
   // Handle empty text
   if (!text.trim()) {
@@ -30,12 +35,31 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   // Split text into words while preserving whitespace and punctuation
   const words = text.split(/(\s+)/);
 
-  const handleTranslate = (_word: string) => {
-    // TODO: Implement translation functionality
+  const handleTranslate = async (word: string) => {
+    if (!_fromLanguage || !_targetLanguage) {
+      console.warn('Language codes not provided for translation');
+      return;
+    }
+
+    // Check if we already have a translation for this word
+    if (translatedWords.has(word)) {
+      return;
+    }
+
+    const translatedText = await translateWord(
+      word,
+      _fromLanguage,
+      _targetLanguage
+    );
+    if (translatedText) {
+      setTranslatedWords(prev => new Map(prev).set(word, translatedText));
+    }
   };
 
-  const handleSave = (_word: string) => {
-    // TODO: Implement save functionality
+  const handleSave = (word: string) => {
+    // This function will be called by the VocabularySaveButton
+    // The actual save functionality is handled within the VocabularySaveButton component
+    // Log for debugging purposes
   };
 
   return (
@@ -47,18 +71,19 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         }
 
         // For words with punctuation, handle Unicode letters/numbers correctly
-        const wordMatch = word.match(/^[\p{L}\p{N}’']+(.*)$/u)
+        const wordMatch = word.match(/^[\p{L}\p{N}'']+(.*)$/u)
           ? [
               '',
               // Extract the leading word (letters/numbers/apostrophes)
-              (word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0],
+              (word.match(/^[\p{L}\p{N}'']+/u) ?? [''])[0],
               // The remaining punctuation/symbols/spaces after the word
-              word.slice((word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0].length),
+              word.slice((word.match(/^[\p{L}\p{N}'']+/u) ?? [''])[0].length),
             ]
           : null;
         if (wordMatch) {
           const [, cleanWord, punctuation] = wordMatch;
           const normalizedWord = cleanWord.toLowerCase();
+          const translatedWord = translatedWords.get(normalizedWord);
 
           // If tooltips are disabled or the component is disabled, just use WordHighlight
           if (!enableTooltips || disabled) {
@@ -86,10 +111,13 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     setOpenMenuIndex(null);
                   }
                 }}
-                onTranslate={handleTranslate}
+                onTranslate={(word) => {
+                  void handleTranslate(word);
+                }}
                 onSave={handleSave}
                 fromLanguage={_fromLanguage}
                 targetLanguage={_targetLanguage}
+                translatedWord={translatedWord}
               >
                 <WordHighlight
                   word={normalizedWord}
@@ -103,6 +131,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 </WordHighlight>
               </WordMenu>
               {punctuation}
+              {/* Show translation if available */}
+              {translatedWord && (
+                <span className='ml-1 text-sm text-muted-foreground'>
+                  ({translatedWord})
+                </span>
+              )}
             </span>
           );
         }

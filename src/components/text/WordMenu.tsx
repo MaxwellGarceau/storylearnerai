@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
-import { Languages, Bookmark, BookOpen } from 'lucide-react';
+import { Languages, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
+import { VocabularySaveButton } from '../vocabulary/VocabularySaveButton';
+import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
 
@@ -12,9 +14,10 @@ interface WordMenuProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onTranslate?: (word: string) => void;
-  onSave?: (word: string) => void;
+  onSave?: (_word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
+  translatedWord?: string;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -26,9 +29,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
   onSave,
   fromLanguage,
   targetLanguage = 'en',
+  translatedWord,
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
+  const { getLanguageIdByCode } = useLanguages();
 
   // Search for word info when dictionary is shown
   useEffect(() => {
@@ -36,13 +41,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
       void searchWord(word, fromLanguage, targetLanguage);
     }
   }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
+
   const handleTranslate = () => {
     onTranslate?.(word);
-    onOpenChange?.(false);
-  };
-
-  const handleSave = () => {
-    onSave?.(word);
     onOpenChange?.(false);
   };
 
@@ -53,6 +54,14 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const handleBackToMenu = () => {
     setShowDictionary(false);
   };
+
+  // Get language IDs for the VocabularySaveButton
+  const fromLanguageId = fromLanguage
+    ? getLanguageIdByCode(fromLanguage)
+    : null;
+  const targetLanguageId = targetLanguage
+    ? getLanguageIdByCode(targetLanguage)
+    : null;
 
   return (
     <Popover
@@ -112,15 +121,16 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   <BookOpen className='h-3 w-3' />
                   Dictionary
                 </Button>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={handleSave}
-                  className='flex items-center gap-1'
-                >
-                  <Bookmark className='h-3 w-3' />
-                  Save
-                </Button>
+                {fromLanguageId && targetLanguageId && (
+                  <VocabularySaveButton
+                    originalWord={word}
+                    translatedWord={translatedWord ?? ''}
+                    fromLanguageId={fromLanguageId}
+                    translatedLanguageId={targetLanguageId}
+                    size='sm'
+                    variant='outline'
+                  />
+                )}
               </div>
             </>
           ) : (

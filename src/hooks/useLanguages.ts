@@ -30,6 +30,15 @@ export const useLanguages = () => {
     return map;
   }, [languages]);
 
+  // Create a memoized map for language IDs
+  const languageIdMap = useMemo(() => {
+    const map = new Map<LanguageCode, number>();
+    languages.forEach(lang => {
+      map.set(lang.code, lang.id);
+    });
+    return map;
+  }, [languages]);
+
   // Get language name with fallback
   const getLanguageName = (code: LanguageCode): string => {
     return languageMap.get(code) ?? (code === 'en' ? 'English' : 'Spanish');
@@ -40,6 +49,11 @@ export const useLanguages = () => {
     return (
       nativeLanguageMap.get(code) ?? (code === 'en' ? 'English' : 'Español')
     );
+  };
+
+  // Get language ID by code with fallback
+  const getLanguageIdByCode = (code: LanguageCode): number | null => {
+    return languageIdMap.get(code) ?? null;
   };
 
   // Map language names to ISO codes
@@ -95,6 +109,7 @@ export const useLanguages = () => {
     getLanguageName,
     getNativeLanguageName,
     getLanguageCode,
+    getLanguageIdByCode,
     languageMap,
   };
 };
