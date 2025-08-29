@@ -5,7 +5,7 @@ import type {
   VocabularyInsert,
   VocabularyUpdate,
   VocabularyWithLanguages,
-  VocabularyWithLanguagesAndStory
+  VocabularyWithLanguagesAndStory,
 } from '../types/database/vocabulary';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
@@ -98,10 +98,10 @@ export function useVocabulary(): UseVocabularyReturn {
         const savedWord =
           await VocabularyService.saveVocabularyWord(vocabularyData);
 
-      // Refresh the vocabulary list
+        // Refresh the vocabulary list
         await loadVocabulary();
 
-      toast({
+        toast({
           title: 'Success',
           description: 'Vocabulary word saved successfully',
           variant: 'default',
@@ -142,7 +142,7 @@ export function useVocabulary(): UseVocabularyReturn {
         // Refresh the vocabulary list
         await loadVocabulary();
 
-      toast({
+        toast({
           title: 'Success',
           description: 'Vocabulary word updated successfully',
           variant: 'default',
@@ -176,10 +176,10 @@ export function useVocabulary(): UseVocabularyReturn {
       try {
         await VocabularyService.deleteVocabularyWord(id);
 
-      // Refresh the vocabulary list
+        // Refresh the vocabulary list
         await loadVocabulary();
 
-      toast({
+        toast({
           title: 'Success',
           description: 'Vocabulary word deleted successfully',
           variant: 'default',

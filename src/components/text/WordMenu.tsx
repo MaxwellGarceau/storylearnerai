@@ -28,7 +28,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   onTranslate,
   onSave,
   fromLanguage,
-  targetLanguage = 'en',
+  targetLanguage,
   translatedWord,
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
@@ -62,7 +62,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const targetLanguageId = targetLanguage
     ? getLanguageIdByCode(targetLanguage)
     : null;
-
+  console.log(fromLanguage, fromLanguageId);
+  console.log(fromLanguageId, targetLanguageId);
   return (
     <Popover
       open={open}

@@ -7,8 +7,8 @@ import { useWordTranslation } from '../../hooks/useWordTranslation';
 interface InteractiveTextProps {
   text: string;
   className?: string;
-  fromLanguage?: LanguageCode;
-  targetLanguage?: LanguageCode;
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   enableTooltips?: boolean;
   disabled?: boolean;
 }
@@ -16,8 +16,8 @@ interface InteractiveTextProps {
 const InteractiveText: React.FC<InteractiveTextProps> = ({
   text,
   className,
-  fromLanguage: _fromLanguage,
-  targetLanguage: _targetLanguage = 'en',
+  fromLanguage,
+  targetLanguage,
   enableTooltips = true,
   disabled = false,
 }) => {
@@ -36,11 +36,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const words = text.split(/(\s+)/);
 
   const handleTranslate = async (word: string) => {
-    if (!_fromLanguage || !_targetLanguage) {
-      console.warn('Language codes not provided for translation');
-      return;
-    }
-
     // Check if we already have a translation for this word
     if (translatedWords.has(word)) {
       return;
@@ -48,8 +43,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
     const translatedText = await translateWord(
       word,
-      _fromLanguage,
-      _targetLanguage
+      fromLanguage,
+      targetLanguage
     );
     if (translatedText) {
       setTranslatedWords(prev => new Map(prev).set(word, translatedText));
@@ -111,12 +106,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     setOpenMenuIndex(null);
                   }
                 }}
-                onTranslate={(word) => {
+                onTranslate={word => {
                   void handleTranslate(word);
                 }}
                 onSave={handleSave}
-                fromLanguage={_fromLanguage}
-                targetLanguage={_targetLanguage}
+                fromLanguage={fromLanguage}
+                targetLanguage={targetLanguage}
                 translatedWord={translatedWord}
               >
                 <WordHighlight

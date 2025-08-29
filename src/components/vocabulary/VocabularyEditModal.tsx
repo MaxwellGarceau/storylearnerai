@@ -211,13 +211,21 @@ export function VocabularyEditModal({
                 <option value=''>
                   {t('vocabulary.form.selectPartOfSpeech')}
                 </option>
-                <option value='noun'>{t('vocabulary.partsOfSpeech.noun')}</option>
-                <option value='verb'>{t('vocabulary.partsOfSpeech.verb')}</option>
+                <option value='noun'>
+                  {t('vocabulary.partsOfSpeech.noun')}
+                </option>
+                <option value='verb'>
+                  {t('vocabulary.partsOfSpeech.verb')}
+                </option>
                 <option value='adjective'>
                   {t('vocabulary.partsOfSpeech.adjective')}
                 </option>
-                <option value='adverb'>{t('vocabulary.partsOfSpeech.adverb')}</option>
-                <option value='pronoun'>{t('vocabulary.partsOfSpeech.pronoun')}</option>
+                <option value='adverb'>
+                  {t('vocabulary.partsOfSpeech.adverb')}
+                </option>
+                <option value='pronoun'>
+                  {t('vocabulary.partsOfSpeech.pronoun')}
+                </option>
                 <option value='preposition'>
                   {t('vocabulary.partsOfSpeech.preposition')}
                 </option>
@@ -249,7 +257,9 @@ export function VocabularyEditModal({
                 <option value='uncommon'>
                   {t('vocabulary.frequencyLevels.uncommon')}
                 </option>
-                <option value='rare'>{t('vocabulary.frequencyLevels.rare')}</option>
+                <option value='rare'>
+                  {t('vocabulary.frequencyLevels.rare')}
+                </option>
                 <option value='veryRare'>
                   {t('vocabulary.frequencyLevels.veryRare')}
                 </option>

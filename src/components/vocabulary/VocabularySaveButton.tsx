@@ -106,7 +106,7 @@ export function VocabularySaveButton({
         title={t('vocabulary.save.tooltip')}
       >
         <BookOpen className='h-3 w-3 mr-1' />
-        {t('vocabulary.save')}
+        {t('vocabulary.save.title')}
       </Button>
 
       {showSaveModal && (

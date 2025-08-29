@@ -15,14 +15,22 @@ const StoryContent: React.FC<StoryContentProps> = ({
     ? translationData.originalText
     : translationData.translatedText;
 
-  const targetLanguage = showOriginal
+  const fromLanguage = showOriginal
     ? translationData.fromLanguage
     : translationData.toLanguage;
+
+  const targetLanguage = showOriginal
+    ? translationData.toLanguage
+    : translationData.fromLanguage;
 
   return (
     <div className='relative overflow-hidden'>
       <div className='text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed'>
-        <InteractiveText text={displayText} targetLanguage={targetLanguage} />
+        <InteractiveText
+          text={displayText}
+          fromLanguage={fromLanguage}
+          targetLanguage={targetLanguage}
+        />
       </div>
     </div>
   );
