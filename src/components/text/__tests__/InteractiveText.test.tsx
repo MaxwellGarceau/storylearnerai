@@ -15,7 +15,7 @@ vi.mock('../../../hooks/useDictionary', () => ({
   }),
 }));
 
-type ClickHandler = () => void;
+// Removed unused ClickHandler type
 
 // Mock the WordHighlight component
 vi.mock('../WordHighlight', () => ({
@@ -41,28 +41,60 @@ vi.mock('../WordHighlight', () => ({
   ),
 }));
 
-// Mock the WordTooltip component
-vi.mock('../WordTooltip', () => ({
+// Mock the WordMenu component
+vi.mock('../WordMenu', () => ({
   default: ({
-    content,
+    word,
     children,
-    onMouseEnter,
-    onMouseLeave,
+    open,
+    onOpenChange,
+    onTranslate,
+    onSave,
+    fromLanguage,
+    targetLanguage,
   }: {
-    content: React.ReactNode;
+    word: string;
     children: React.ReactNode;
-    onMouseEnter?: ClickHandler;
-    onMouseLeave?: ClickHandler;
-  }) => (
-    <div
-      data-testid='word-tooltip'
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {children}
-      <div data-testid='tooltip-content'>{content}</div>
-    </div>
-  ),
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    onTranslate?: (word: string) => void;
+    onSave?: (word: string) => void;
+    fromLanguage?: string;
+    targetLanguage?: string;
+  }) => {
+    // Use the parameters to avoid unused variable warnings
+    void fromLanguage;
+    void targetLanguage;
+    return (
+      <span data-word={word}>
+        {children}
+        {open ? (
+          <div data-testid='word-menu' data-open={open}>
+            <div data-testid='menu-content'>
+              <button
+                data-testid='translate-button'
+                onClick={() => {
+                  onTranslate?.(word);
+                  onOpenChange?.(false);
+                }}
+              >
+                Translate
+              </button>
+              <button
+                data-testid='save-button'
+                onClick={() => {
+                  onSave?.(word);
+                  onOpenChange?.(false);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </span>
+    );
+  },
 }));
 
 // Mock the DictionaryEntry component
@@ -87,7 +119,7 @@ describe('InteractiveText Component', () => {
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
-    // Check that the words are rendered in the highlights (not in tooltips)
+    // Check that the words are rendered in the highlights
     expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent(
       'hello'
     );
@@ -154,7 +186,7 @@ describe('InteractiveText Component', () => {
     expect(container).toHaveClass('custom-class');
   });
 
-  it('renders word highlights by default without tooltips', () => {
+  it('renders word highlights by default without menus', () => {
     render(
       <InteractiveText
         text='hello world'
@@ -163,16 +195,16 @@ describe('InteractiveText Component', () => {
       />
     );
 
-    // Check that word highlights are rendered but no tooltips initially
+    // Check that word highlights are rendered but no menus initially
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
-    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
   });
 
-  it('renders without tooltips when enableTooltips is false', () => {
+  it('renders without menus when enableTooltips is false', () => {
     render(<InteractiveText text='hello world' enableTooltips={false} />);
 
-    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
   });
@@ -190,13 +222,13 @@ describe('InteractiveText Component', () => {
     );
   });
 
-  it('renders without tooltips when disabled is true', () => {
+  it('renders without menus when disabled is true', () => {
     render(<InteractiveText text='hello world' disabled={true} />);
 
-    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
   });
 
-  it('shows tooltip when word is clicked', () => {
+  it('shows menu when word is clicked', () => {
     render(
       <InteractiveText
         text='hello world'
@@ -205,14 +237,56 @@ describe('InteractiveText Component', () => {
       />
     );
 
-    // Initially no tooltip should be visible
-    expect(screen.queryByTestId('word-tooltip')).not.toBeInTheDocument();
+    // Initially no menu should be visible
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
 
     // Click on a word
     const helloWord = screen.getByTestId('word-highlight-hello');
     fireEvent.click(helloWord);
 
-    // Now a tooltip should be rendered
-    expect(screen.getByTestId('word-tooltip')).toBeInTheDocument();
+    // Now a menu should be rendered
+    expect(screen.getByTestId('word-menu')).toBeInTheDocument();
+  });
+
+  it('calls translate handler when translate button is clicked', () => {
+    render(
+      <InteractiveText
+        text='hello world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
+
+    // Click on a word to open menu
+    const helloWord = screen.getByTestId('word-highlight-hello');
+    fireEvent.click(helloWord);
+
+    // Click translate button
+    const translateButton = screen.getByTestId('translate-button');
+    fireEvent.click(translateButton);
+
+    // The menu should close after clicking the button
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
+  });
+
+  it('calls save handler when save button is clicked', () => {
+    render(
+      <InteractiveText
+        text='hello world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
+
+    // Click on a word to open menu
+    const helloWord = screen.getByTestId('word-highlight-hello');
+    fireEvent.click(helloWord);
+
+    // Click save button
+    const saveButton = screen.getByTestId('save-button');
+    fireEvent.click(saveButton);
+
+    // The menu should close after clicking the button
+    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
   });
 });

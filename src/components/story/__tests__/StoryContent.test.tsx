@@ -159,9 +159,9 @@ describe('StoryContent Component', () => {
     );
 
     // Check that key words are present in the original text
-    expect(within(originalContainer).getByText('Hab')).toBeInTheDocument();
+    expect(within(originalContainer).getByText('Había')).toBeInTheDocument();
     expect(within(originalContainer).getByText('vez')).toBeInTheDocument();
-    expect(within(originalContainer).getByText('ni')).toBeInTheDocument();
+    expect(within(originalContainer).getByText('niño')).toBeInTheDocument();
 
     // Check that key words are present in the translated text
     expect(within(translatedContainer).getByText('Once')).toBeInTheDocument();

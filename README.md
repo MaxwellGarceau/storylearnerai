@@ -341,6 +341,7 @@ npm run db:reset:no-user
 ### Database Seeding
 
 Essential data is seeded in migration files:
+
 - **Languages**: `002_languages.sql` - English and Spanish
 - **Difficulty levels**: `003_difficulty_levels.sql` - A1 to B2 CEFR levels
 
