@@ -72,4 +72,4 @@ INSERT INTO difficulty_levels (code, name, description) VALUES
 ('a2', 'A2 (Elementary)', 'Elementary level - Can communicate in simple and routine tasks requiring simple information exchange'),
 ('b1', 'B1 (Intermediate)', 'Intermediate level - Can deal with most situations likely to arise while traveling'),
 ('b2', 'B2 (Upper Intermediate)', 'Upper intermediate level - Can interact with a degree of fluency and spontaneity')
-ON CONFLICT (code) DO NOTHING; 
+ON CONFLICT (code) DO NOTHING;
