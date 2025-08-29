@@ -4,7 +4,7 @@
 /**
  * Script to create a test user for local development
  * Uses Supabase Admin API to create a valid user
- * 
+ *
  * SECURITY NOTE: This script should only be used in development environments.
  * Never run this in production or commit real credentials to version control.
  */
@@ -61,8 +61,10 @@ async function createTestUser() {
 
     // Check if user already exists
     const { data: existingUser } = await supabase.auth.admin.listUsers();
-    const userExists = existingUser.users.some(user => user.email === testUser.email);
-    
+    const userExists = existingUser.users.some(
+      user => user.email === testUser.email
+    );
+
     if (userExists) {
       console.log('⚠️  User already exists!');
       console.log('You can log in with:');
@@ -98,8 +100,12 @@ async function createTestUser() {
       'The user profile will be created automatically by the database trigger.'
     );
     console.log('');
-    console.log('💡 Tip: You can customize the test user by setting these environment variables:');
-    console.log('   TEST_USER_EMAIL, TEST_USER_PASSWORD, TEST_USER_USERNAME, TEST_USER_DISPLAY_NAME');
+    console.log(
+      '💡 Tip: You can customize the test user by setting these environment variables:'
+    );
+    console.log(
+      '   TEST_USER_EMAIL, TEST_USER_PASSWORD, TEST_USER_USERNAME, TEST_USER_DISPLAY_NAME'
+    );
   } catch (error) {
     console.error('❌ Unexpected error:', error.message);
     process.exit(1);

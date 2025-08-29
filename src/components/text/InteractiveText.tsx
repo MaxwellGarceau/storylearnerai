@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import WordHighlight from './WordHighlight';
-import WordTooltip from './WordTooltip';
-import { useDictionary } from '../../hooks/useDictionary';
-import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
+import WordMenu from './WordMenu';
 import { LanguageCode } from '../../types/llm/prompts';
 
 interface InteractiveTextProps {
@@ -17,30 +15,12 @@ interface InteractiveTextProps {
 const InteractiveText: React.FC<InteractiveTextProps> = ({
   text,
   className,
-  fromLanguage,
-  targetLanguage = 'en',
+  fromLanguage: _fromLanguage,
+  targetLanguage: _targetLanguage = 'en',
   enableTooltips = true,
   disabled = false,
 }) => {
-  const [clickedWordIndex, setClickedWordIndex] = useState<number | null>(null);
-  const [openTooltipIndex, setOpenTooltipIndex] = useState<number | null>(null);
-  const { wordInfo, isLoading, error, searchWord } = useDictionary();
-
-  // Search for word info when clicked
-  useEffect(() => {
-    if (clickedWordIndex !== null) {
-      const words = text.split(/(\s+)/);
-      const clickedWordText = words[clickedWordIndex];
-      if (clickedWordText) {
-        const wordMatch = clickedWordText.match(/^(\w+)(.*)$/);
-        if (wordMatch) {
-          const [, cleanWord] = wordMatch;
-          const normalizedWord = cleanWord.toLowerCase();
-          void searchWord(normalizedWord, fromLanguage, targetLanguage);
-        }
-      }
-    }
-  }, [clickedWordIndex, text, fromLanguage, targetLanguage, searchWord]);
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   // Handle empty text
   if (!text.trim()) {
@@ -49,6 +29,14 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
   // Split text into words while preserving whitespace and punctuation
   const words = text.split(/(\s+)/);
+
+  const handleTranslate = (_word: string) => {
+    // TODO: Implement translation functionality
+  };
+
+  const handleSave = (_word: string) => {
+    // TODO: Implement save functionality
+  };
 
   return (
     <span className={className}>
@@ -76,77 +64,37 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
             );
           }
 
-          // Create tooltip content for clicked word
-          const wordTooltipContent = (
-            <div className='p-2 min-w-[250px] max-w-[350px]'>
-              {clickedWordIndex === index ? (
-                <DictionaryEntry.Root
-                  word={normalizedWord}
-                  wordInfo={wordInfo}
-                  isLoading={isLoading}
-                  error={error}
-                >
-                  <DictionaryEntry.Content />
-                </DictionaryEntry.Root>
-              ) : (
-                <div className='text-center'>
-                  <div className='font-medium'>{cleanWord}</div>
-                  <div className='text-xs text-muted-foreground mt-1'>
-                    Click to see dictionary info
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-
-          // Only show tooltip for clicked words
-          if (clickedWordIndex === index) {
-            return (
-              <span key={index}>
-                <WordTooltip
-                  content={wordTooltipContent}
-                  open={openTooltipIndex === index}
-                  onOpenChange={open => {
-                    // Handle both opening and closing
-                    if (open) {
-                      setOpenTooltipIndex(index);
-                    } else {
-                      setOpenTooltipIndex(null);
-                    }
-                  }}
-                >
-                  <WordHighlight
-                    word={normalizedWord}
-                    disabled={disabled}
-                    onClick={() => {
-                      setClickedWordIndex(index);
-                      setOpenTooltipIndex(index);
-                    }}
-                  >
-                    {cleanWord}
-                  </WordHighlight>
-                </WordTooltip>
-                {punctuation}
-              </span>
-            );
-          } else {
-            // For non-clicked words, just use WordHighlight without tooltip
-            return (
-              <span key={index}>
+          // Always render WordMenu so Radix trigger exists before click
+          return (
+            <span key={index}>
+              <WordMenu
+                word={normalizedWord}
+                open={openMenuIndex === index}
+                onOpenChange={open => {
+                  if (open) {
+                    setOpenMenuIndex(index);
+                  } else {
+                    setOpenMenuIndex(null);
+                  }
+                }}
+                onTranslate={handleTranslate}
+                onSave={handleSave}
+                fromLanguage={_fromLanguage}
+                targetLanguage={_targetLanguage}
+              >
                 <WordHighlight
                   word={normalizedWord}
                   disabled={disabled}
                   onClick={() => {
-                    setClickedWordIndex(index);
-                    setOpenTooltipIndex(index);
+                    setOpenMenuIndex(index);
                   }}
                 >
                   {cleanWord}
                 </WordHighlight>
-                {punctuation}
-              </span>
-            );
-          }
+              </WordMenu>
+              {punctuation}
+            </span>
+          );
         }
 
         // For words without letters (pure punctuation), just return as is
