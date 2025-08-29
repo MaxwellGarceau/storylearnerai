@@ -80,7 +80,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
         side='bottom'
         align='start'
         updatePositionStrategy='always'
-        className={'p-2 min-w-[200px] max-w-[300px] z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
+        className={'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
         sideOffset={8}
         onPointerDownOutside={e => {
           const target = e.target as HTMLElement | null;
@@ -97,7 +97,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
           {!showDictionary ? (
             <>
               <div className='text-sm font-medium text-center mb-2'>{word}</div>
-              <div className='flex gap-2 justify-center'>
+              <div className='flex flex-wrap gap-2 justify-center'>
                 <Button
                   variant='outline'
                   size='sm'
