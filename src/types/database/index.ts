@@ -120,32 +120,6 @@ export interface Database {
           updated_at?: string;
         };
       };
-      translations: {
-        Row: {
-          id: string;
-          story_id: string;
-          target_language: LanguageCode;
-          translated_content: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          story_id: string;
-          target_language: LanguageCode;
-          translated_content: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          story_id?: string;
-          target_language?: LanguageCode;
-          translated_content?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
       // Saved translations
       saved_translations: {
         Row: {
