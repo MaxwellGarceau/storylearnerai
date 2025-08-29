@@ -15,13 +15,15 @@ const StoryContent: React.FC<StoryContentProps> = ({
     ? translationData.originalText
     : translationData.translatedText;
 
-  const fromLanguage = showOriginal
-    ? translationData.fromLanguage
-    : translationData.toLanguage;
+  // Default from and target language
+  let fromLanguage = translationData.fromLanguage;
+  let targetLanguage = translationData.toLanguage;
 
-  const targetLanguage = showOriginal
-    ? translationData.toLanguage
-    : translationData.fromLanguage;
+  // If showOriginal is toggled then swap from and target language
+  if (showOriginal) {
+    fromLanguage = translationData.toLanguage;
+    targetLanguage = translationData.fromLanguage;
+  }
 
   return (
     <div className='relative overflow-hidden'>

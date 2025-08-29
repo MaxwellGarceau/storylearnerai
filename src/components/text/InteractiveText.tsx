@@ -27,6 +27,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   );
   const { translateWord } = useWordTranslation();
 
+  console.log('fromLanguage', fromLanguage);
+  console.log('targetLanguage', targetLanguage);
+
   // Handle empty text
   if (!text.trim()) {
     return <span className={className} />;
