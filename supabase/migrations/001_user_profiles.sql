@@ -1,3 +1,12 @@
+-- Create updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
 -- Create users table to store additional user information
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -31,22 +40,6 @@ CREATE POLICY "Users can update their own profile" ON users
 
 CREATE POLICY "Users can delete their own profile" ON users
     FOR DELETE USING (auth.uid() = id);
-
--- Update existing RLS policies for stories and translations to include user_id
--- Drop existing policies first
-DROP POLICY IF EXISTS "Users can create stories" ON stories;
-DROP POLICY IF EXISTS "Users can update own stories" ON stories;
-DROP POLICY IF EXISTS "Users can delete own stories" ON stories;
-
--- Create updated policies for stories
-CREATE POLICY "Users can create stories" ON stories
-    FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
-
-CREATE POLICY "Users can update own stories" ON stories
-    FOR UPDATE USING (auth.uid() = user_id OR user_id IS NULL);
-
-CREATE POLICY "Users can delete own stories" ON stories
-    FOR DELETE USING (auth.uid() = user_id OR user_id IS NULL);
 
 -- Function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()

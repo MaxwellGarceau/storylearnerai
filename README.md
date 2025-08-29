@@ -78,8 +78,11 @@ npm install -g supabase
 # Start Supabase locally
 supabase start
 
-# Apply migrations
-supabase db reset
+# Apply migrations and create test user (recommended)
+npm run db:reset
+
+# Or apply migrations without creating test user
+npm run db:reset:no-user
 ```
 
 4. The initial schema includes:
@@ -295,3 +298,66 @@ Supabase real-time subscriptions enable:
 ## License
 
 This project is licensed under the MIT License.
+
+## User Seeding and Security
+
+### Why User Seeding is Not in seed.sql
+
+For security reasons, user accounts are **not** seeded in the `supabase/seed.sql` file. Here's why:
+
+- **Credential Security**: Hardcoded passwords in seed files pose security risks
+- **Production Safety**: Seed files can run in production, potentially creating unwanted test accounts
+- **Service Role Exposure**: User creation requires elevated privileges that shouldn't be in seed files
+- **Version Control**: Credentials in seed files would be committed to version control
+
+### Proper User Creation for Development
+
+Use the dedicated script for creating test users:
+
+```bash
+# Create a test user with default credentials
+npm run create-test-user
+
+# Or set custom credentials via environment variables
+TEST_USER_EMAIL=your-email@example.com \
+TEST_USER_PASSWORD=YourSecurePass123! \
+TEST_USER_USERNAME=yourusername \
+TEST_USER_DISPLAY_NAME="Your Name" \
+npm run create-test-user
+```
+
+### Database Reset with Test User
+
+For a complete development setup, use the enhanced database reset:
+
+```bash
+# Reset database and automatically create test user
+npm run db:reset
+
+# Reset database without creating test user
+npm run db:reset:no-user
+```
+
+### Database Seeding
+
+Essential data is seeded in migration files:
+- **Languages**: `002_languages.sql` - English and Spanish
+- **Difficulty levels**: `003_difficulty_levels.sql` - A1 to B2 CEFR levels
+
+Additional seed data can be added to migration files as needed, following the pattern of using `ON CONFLICT (column) DO NOTHING` to handle duplicate inserts.
+
+### Supabase Migration Best Practices
+
+1. **Essential data in migrations**: Seed data that's required for the schema to function should be in migration files
+2. **Additional data in seed.sql**: Non-essential data (samples, demos) should be in `seed.sql`
+3. **Use ON CONFLICT**: Always use `ON CONFLICT (column) DO NOTHING` to handle duplicate inserts
+4. **Version control**: Migration files are versioned and should be immutable once applied
+5. **Test migrations**: Always test migrations in a development environment first
+
+### Security Best Practices
+
+1. **Never commit real credentials** to version control
+2. **Use environment variables** for sensitive data
+3. **Keep test user scripts separate** from database seeds
+4. **Add production safeguards** to prevent accidental execution
+5. **Use service role keys carefully** and only in development

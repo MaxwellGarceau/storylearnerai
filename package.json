@@ -18,7 +18,10 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "ci-check": "./scripts/ci-check.sh",
-    "knip": "knip"
+    "knip": "knip",
+    "db:reset": "supabase db reset && ./scripts/post-db-reset.sh",
+    "db:reset:no-user": "supabase db reset",
+    "create-test-user": "node scripts/create-test-user.js"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
@@ -31,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.6",
+    "dotenv": "^17.2.1",
     "i18next": "^25.3.6",
     "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.454.0",

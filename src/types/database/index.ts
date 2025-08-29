@@ -87,65 +87,6 @@ export interface Database {
           updated_at?: string;
         };
       };
-      // Story management
-      stories: {
-        Row: {
-          id: string;
-          title: string;
-          content: string;
-          language: LanguageCode;
-          difficulty_level: DifficultyLevel;
-          user_id: string; // Foreign key reference to users.id (UUID)
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          content: string;
-          language: LanguageCode;
-          difficulty_level: DifficultyLevel;
-          user_id?: string; // Foreign key reference to users.id (UUID)
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          content?: string;
-          language?: LanguageCode;
-          difficulty_level?: DifficultyLevel;
-          user_id?: string; // Foreign key reference to users.id (UUID)
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      translations: {
-        Row: {
-          id: string;
-          story_id: string;
-          target_language: LanguageCode;
-          translated_content: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          story_id: string;
-          target_language: LanguageCode;
-          translated_content: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          story_id?: string;
-          target_language?: LanguageCode;
-          translated_content?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
       // Saved translations
       saved_translations: {
         Row: {
