@@ -30,8 +30,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   // Split text into words while preserving whitespace and punctuation
   const words = text.split(/(\s+)/);
 
-  
-
   const handleTranslate = (_word: string) => {
     // TODO: Implement translation functionality
   };

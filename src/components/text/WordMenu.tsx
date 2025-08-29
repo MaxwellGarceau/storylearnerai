@@ -5,7 +5,6 @@ import { Languages, Bookmark, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
- 
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -30,7 +29,6 @@ const WordMenu: React.FC<WordMenuProps> = ({
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
-  
 
   // Search for word info when dictionary is shown
   useEffect(() => {
@@ -65,11 +63,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
     >
       <PopoverTrigger asChild>
         <span
-          className={`cursor-pointer transition-colors duration-200 ${
-            open
-              ? 'bg-primary/30 ring-2 ring-primary/50'
-              : 'hover:bg-muted/50'
-          }`}
+          className={`cursor-pointer transition-colors duration-200 ${open ? 'bg-primary/30 ring-2 ring-primary/50' : 'hover:bg-muted/50'}`}
           data-word-trigger
           onClick={() => {}}
         >
@@ -80,7 +74,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
         side='bottom'
         align='start'
         updatePositionStrategy='always'
-        className={'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
+        className={
+          'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'
+        }
         sideOffset={8}
         onPointerDownOutside={e => {
           const target = e.target as HTMLElement | null;

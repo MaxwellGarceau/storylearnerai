@@ -51,10 +51,8 @@ export const usePopoverSafeguard = () => {
           if (tx != null && ty != null) {
             // Only clamp if going too far above the viewport
             if (ty < 10) {
-              (wrapper as HTMLElement).style.transform = `translate3d(${tx}px, ${Math.max(
-                ty,
-                10
-              )}px, 0)`;
+              (wrapper as HTMLElement).style.transform =
+                `translate3d(${tx}px, ${Math.max(ty, 10)}px, 0)`;
               processedWrappers.current.add(wrapper);
             }
           }
