@@ -30,6 +30,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   // Split text into words while preserving whitespace and punctuation
   const words = text.split(/(\s+)/);
 
+  
+
   const handleTranslate = (_word: string) => {
     // TODO: Implement translation functionality
   };
@@ -46,8 +48,16 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
           return <span key={index}>{word}</span>;
         }
 
-        // For words with punctuation, we need to handle them carefully
-        const wordMatch = word.match(/^(\w+)(.*)$/);
+        // For words with punctuation, handle Unicode letters/numbers correctly
+        const wordMatch = word.match(/^[\p{L}\p{N}’']+(.*)$/u)
+          ? [
+              '',
+              // Extract the leading word (letters/numbers/apostrophes)
+              (word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0],
+              // The remaining punctuation/symbols/spaces after the word
+              word.slice((word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0].length),
+            ]
+          : null;
         if (wordMatch) {
           const [, cleanWord, punctuation] = wordMatch;
           const normalizedWord = cleanWord.toLowerCase();
@@ -72,8 +82,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 open={openMenuIndex === index}
                 onOpenChange={open => {
                   if (open) {
+                    // Accept open events from Radix trigger as well (covers clicks on trigger padding)
                     setOpenMenuIndex(index);
-                  } else {
+                  } else if (openMenuIndex === index) {
                     setOpenMenuIndex(null);
                   }
                 }}
@@ -86,7 +97,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                   word={normalizedWord}
                   disabled={disabled}
                   onClick={() => {
-                    setOpenMenuIndex(index);
+                    setOpenMenuIndex(prev => (prev === index ? null : index));
                   }}
                 >
                   {cleanWord}

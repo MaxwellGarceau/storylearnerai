@@ -12,7 +12,7 @@ import { TooltipProvider } from './components/ui/Tooltip';
 import { Walkthrough } from './components/walkthrough/Walkthrough';
 import { WalkthroughDebug } from './components/walkthrough/WalkthroughDebug';
 import { useWalkthrough } from './hooks/useWalkthrough';
-import { usePopoverSafeguard } from './hooks/usePopoverSafeguard';
+// import { usePopoverSafeguard } from './hooks/usePopoverSafeguard';
 import './lib/i18n';
 
 function App() {
@@ -29,8 +29,7 @@ function AppContent() {
   // Initialize walkthrough hook inside Router context
   useWalkthrough();
 
-  // Initialize popover safeguard hook
-  usePopoverSafeguard();
+  // Popover safeguard disabled by default; enable only via explicit opt-in
 
   // Enable debug panel in development or when needed
   const showDebug =

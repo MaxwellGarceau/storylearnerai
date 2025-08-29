@@ -9,6 +9,10 @@ export const usePopoverSafeguard = () => {
   const processedWrappers = useRef<WeakSet<Element>>(new WeakSet());
 
   useEffect(() => {
+    // Disabled: safeguard is off by default and only enabled when explicitly opted-in.
+    const enabled = false;
+    if (!enabled) return;
+
     // Function to check and fix popover positioning
     const checkPopoverPosition = () => {
       const popoverWrappers = document.querySelectorAll(
@@ -26,20 +30,31 @@ export const usePopoverSafeguard = () => {
 
         // Parse the transform matrix to get the Y translation
         if (transform && transform !== 'none') {
-          const matrix = transform.match(/matrix.*\((.+)\)/);
-          if (matrix) {
-            const values = matrix[1].split(', ');
-            const translateY = parseFloat(values[5]); // Y translation is the 6th value
+          const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
+          const matrix3dMatch = transform.match(/matrix3d\(([^)]+)\)/);
 
-            // Only intervene if the Y translation is significantly negative (going above viewport)
-            if (translateY < -5) {
-              const newTransform = transform.replace(
-                /translate3d\([^)]+\)/,
-                `translate3d(${values[0]}, ${Math.max(translateY, 10)}px, ${values[2]})`
-              );
-              (wrapper as HTMLElement).style.transform = newTransform;
+          let tx: number | null = null;
+          let ty: number | null = null;
 
-              // Mark this wrapper as processed to avoid repeated interventions
+          if (matrix3dMatch) {
+            const values = matrix3dMatch[1].split(/,\s*/);
+            // matrix3d has translate at indices 12 (tx) and 13 (ty)
+            tx = parseFloat(values[12]);
+            ty = parseFloat(values[13]);
+          } else if (matrixMatch) {
+            const values = matrixMatch[1].split(/,\s*/);
+            // matrix has translate at indices 4 (tx) and 5 (ty)
+            tx = parseFloat(values[4]);
+            ty = parseFloat(values[5]);
+          }
+
+          if (tx != null && ty != null) {
+            // Only clamp if going too far above the viewport
+            if (ty < 10) {
+              (wrapper as HTMLElement).style.transform = `translate3d(${tx}px, ${Math.max(
+                ty,
+                10
+              )}px, 0)`;
               processedWrappers.current.add(wrapper);
             }
           }

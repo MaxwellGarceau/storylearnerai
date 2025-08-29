@@ -5,6 +5,7 @@ import { Languages, Bookmark, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
+ 
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
+  
 
   // Search for word info when dictionary is shown
   useEffect(() => {
@@ -55,7 +57,12 @@ const WordMenu: React.FC<WordMenuProps> = ({
   };
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
+    <Popover
+      open={open}
+      onOpenChange={isOpen => {
+        onOpenChange?.(isOpen);
+      }}
+    >
       <PopoverTrigger asChild>
         <span
           className={`cursor-pointer transition-colors duration-200 ${
@@ -63,14 +70,28 @@ const WordMenu: React.FC<WordMenuProps> = ({
               ? 'bg-primary/30 rounded px-0.5 mx-0.5 ring-2 ring-primary/50'
               : 'hover:bg-muted/50 rounded px-0.5 mx-0.5'
           }`}
+          data-word-trigger
+          onClick={() => {}}
         >
           {children}
         </span>
       </PopoverTrigger>
       <PopoverContent
-        side='top'
-        className='p-2 min-w-[200px] max-w-[300px] z-[9999]'
+        side='bottom'
+        align='start'
+        updatePositionStrategy='always'
+        className={'p-2 min-w-[200px] max-w-[300px] z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
         sideOffset={8}
+        onPointerDownOutside={e => {
+          const target = e.target as HTMLElement | null;
+          const prevent = target?.closest('[data-word-trigger]') != null;
+          if (prevent) e.preventDefault();
+        }}
+        onInteractOutside={e => {
+          const target = e.target as HTMLElement | null;
+          const prevent = target?.closest('[data-word-trigger]') != null;
+          if (prevent) e.preventDefault();
+        }}
       >
         <div className='flex flex-col gap-2'>
           {!showDictionary ? (
