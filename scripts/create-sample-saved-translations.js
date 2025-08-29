@@ -22,7 +22,7 @@ const supabaseServiceKey =
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Test user ID (you can update this to match your test user)
-const testUserId = 'fd909440-1aec-4e68-8ba2-91d3366b28dc';
+const testUserId = '3675a4dd-ab91-42a0-8b8c-40c5323b47d0';
 
 // Sample stories data (migrated from old stories table)
 const sampleStories = [
