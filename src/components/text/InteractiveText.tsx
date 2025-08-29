@@ -45,7 +45,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
       {words.map((word, index) => {
         // Skip pure whitespace
         if (/^\s+$/.test(word)) {
-          return <span key={index}>{word}</span>;
+          return <React.Fragment key={index}>{word}</React.Fragment>;
         }
 
         // For words with punctuation, handle Unicode letters/numbers correctly
@@ -96,6 +96,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 <WordHighlight
                   word={normalizedWord}
                   disabled={disabled}
+                  active={openMenuIndex === index}
                   onClick={() => {
                     setOpenMenuIndex(prev => (prev === index ? null : index));
                   }}
