@@ -18,7 +18,10 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "ci-check": "./scripts/ci-check.sh",
-    "knip": "knip"
+    "knip": "knip",
+    "db:reset": "supabase db reset && ./scripts/post-db-reset.sh",
+    "db:reset:no-user": "supabase db reset",
+    "create-test-user": "node scripts/create-test-user.js"
   },
   "dependencies": {
     "@google/genai": "^1.10.0",
