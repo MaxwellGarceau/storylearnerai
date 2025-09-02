@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { BookOpen, Check } from 'lucide-react';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import { useLocalization } from '../../hooks/useLocalization';
-import { VocabularySaveModal } from './VocabularySaveModal';
+import type { VocabularyInsert } from '../../types/database/vocabulary';
 
 interface VocabularySaveButtonProps {
   originalWord: string;
@@ -37,11 +37,10 @@ export function VocabularySaveButton({
   onBeforeOpen,
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
-  const { checkVocabularyExists } = useVocabulary();
-  const [showSaveModal, setShowSaveModal] = useState(false);
+  const { checkVocabularyExists, saveVocabularyWord } = useVocabulary();
   const [isSaved, setIsSaved] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
-  const [isOpening, setIsOpening] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Check if word is already saved
   React.useEffect(() => {
@@ -74,14 +73,42 @@ export function VocabularySaveButton({
   ]);
 
   const handleSaveClick = async () => {
-    try {
-      setIsOpening(true);
-      if (onBeforeOpen) {
-        await onBeforeOpen();
-      }
-    } finally {
-      setIsOpening(false);
-      setShowSaveModal(true);
+    // Ensure translation (and any other prep) occurs first
+    if (onBeforeOpen) {
+      await onBeforeOpen();
+    }
+
+    // Guard: need translatedWord available
+    if (!originalWord || !translatedWord) {
+      return;
+    }
+
+    // Avoid duplicate saves
+    const exists = await checkVocabularyExists(
+      originalWord,
+      translatedWord,
+      fromLanguageId,
+      translatedLanguageId
+    );
+    if (exists) {
+      setIsSaved(true);
+      return;
+    }
+
+    const payload: VocabularyInsert = {
+      original_word: originalWord,
+      translated_word: translatedWord,
+      from_language_id: fromLanguageId,
+      translated_language_id: translatedLanguageId,
+      original_word_context: originalContext,
+      translated_word_context: translatedContext,
+    };
+
+    setIsSaving(true);
+    const saved = await saveVocabularyWord(payload);
+    setIsSaving(false);
+    if (saved) {
+      setIsSaved(true);
     }
   };
 
@@ -122,27 +149,12 @@ export function VocabularySaveButton({
         onClick={handleSaveClick}
         className={className}
         title={t('vocabulary.save.tooltip')}
-        disabled={isOpening}
+        disabled={isSaving}
         type='button'
       >
         <BookOpen className='h-3 w-3 mr-1' />
         {showTextOnly ? t('vocabulary.save.button') : t('vocabulary.save.title')}
       </Button>
-
-      {showSaveModal && (
-        <VocabularySaveModal
-          onClose={() => setShowSaveModal(false)}
-          currentLanguageId={translatedLanguageId}
-          currentFromLanguageId={fromLanguageId}
-          initialData={{
-            originalWord,
-            translatedWord,
-            originalContext,
-            translatedContext,
-          }}
-          onSaveSuccess={handleSaveSuccess}
-        />
-      )}
     </>
   );
 }
