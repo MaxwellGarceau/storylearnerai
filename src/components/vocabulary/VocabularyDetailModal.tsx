@@ -30,7 +30,7 @@ export function VocabularyDetailModal({
       <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
         <div className='bg-background rounded-lg shadow-lg sm:max-w-[500px] m-4 max-h-[90vh] overflow-y-auto p-4'>
           <div className='p-6 border-b relative'>
-            <h2 className='text-lg font-semibold flex items-center gap-2 pr-8'>
+            <h2 className='text-lg font-semibold flex items-center gap-2'>
               <BookOpen className='h-5 w-5' />
               {t('vocabulary.detail.title')}
             </h2>
