@@ -131,7 +131,7 @@ export function VocabularyDetailModal({
                 {vocabulary.original_word_context && (
                   <div className='space-y-1'>
                     <p className='text-sm font-medium text-muted-foreground'>
-                      {vocabulary.from_language.name}:
+                      Original:
                     </p>
                     <p className='text-sm bg-muted p-2 rounded'>
                       {vocabulary.original_word_context}
@@ -142,7 +142,7 @@ export function VocabularyDetailModal({
                 {vocabulary.translated_word_context && (
                   <div className='space-y-1'>
                     <p className='text-sm font-medium text-muted-foreground'>
-                      {vocabulary.translated_language.name}:
+                      Translated:
                     </p>
                     <p className='text-sm bg-muted p-2 rounded'>
                       {vocabulary.translated_word_context}
