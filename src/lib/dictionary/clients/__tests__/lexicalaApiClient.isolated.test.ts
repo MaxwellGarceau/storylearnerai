@@ -301,7 +301,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         status: 200,
 
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<MockLexicalaResponse> => mockResponse,
         clone: function () {
           return this;
         },
