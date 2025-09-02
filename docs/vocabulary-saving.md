@@ -1,8 +1,38 @@
 ## Vocabulary Saving Behavior
 
-- The `VocabularySaveButton` now saves a word immediately on click.
-- The modal form (`VocabularySaveModal`) is no longer invoked from the button.
-- The save payload includes:
+## Vocabulary upsert modal consolidation
+
+- The save and edit flows now share a single UI component: `VocabularyUpsertModal`.
+- `VocabularySaveModal` and `VocabularyEditModal` are thin wrappers around this unified component to preserve existing imports/usages.
+- Create mode (`mode="create"`) supports language selection and duplicate checks via `checkVocabularyExists`.
+- Edit mode (`mode="edit"`) displays read-only language info and updates the word via `updateVocabularyWord`.
+- Localization keys are reused; no user-facing text changes were introduced.
+
+### Native dropdowns
+
+- Language, part of speech, and frequency fields now use native `<select>` elements for a standard dropdown experience (no slide-in menus).
+
+### Wrapper usage examples
+
+```tsx
+// Save (create) wrapper
+<VocabularySaveModal
+  onClose={onClose}
+  currentLanguageId={currentLanguageId}
+  currentFromLanguageId={currentFromLanguageId}
+  initialData={initialData}
+  onSaveSuccess={onSaveSuccess}
+/>
+```
+
+```tsx
+// Edit wrapper
+<VocabularyEditModal
+  vocabulary={vocabulary}
+  onClose={onClose}
+  onSaveSuccess={onSaveSuccess}
+/>
+```
   - `original_word`, `translated_word`
   - `from_language_id`, `translated_language_id`
   - `original_word_context`, `translated_word_context` (nullable)
