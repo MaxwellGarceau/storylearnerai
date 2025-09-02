@@ -494,6 +494,7 @@
     },
     "save": {
       "title": "Save Vocabulary Word",
+      "button": "Save",
       "tooltip": "Save this word to your vocabulary"
     },
     "edit": {

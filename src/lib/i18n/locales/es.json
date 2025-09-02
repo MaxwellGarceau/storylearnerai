@@ -485,6 +485,7 @@
     },
     "save": {
       "title": "Guardar Palabra de Vocabulario",
+      "button": "Guardar",
       "tooltip": "Guardar esta palabra en tu vocabulario"
     },
     "edit": {

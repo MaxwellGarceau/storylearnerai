@@ -14,7 +14,7 @@ interface WordMenuProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onTranslate?: (word: string) => void;
-  onSave?: (_word: string) => void;
+  _onSave?: (_word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
   translatedWord?: string;
@@ -26,7 +26,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   open,
   onOpenChange,
   onTranslate,
-  onSave,
+  _onSave,
   fromLanguage,
   targetLanguage,
   translatedWord,
@@ -137,14 +137,28 @@ const WordMenu: React.FC<WordMenuProps> = ({
             <div className='min-w-[300px] max-w-[400px]'>
               <div className='flex items-center justify-between mb-2'>
                 <h3 className='text-sm font-medium'>Dictionary</h3>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={handleBackToMenu}
-                  className='h-6 w-6 p-0'
-                >
-                  ×
-                </Button>
+                <div className='flex items-center gap-2'>
+                  {fromLanguageId && targetLanguageId && (
+                    <VocabularySaveButton
+                      originalWord={word}
+                      translatedWord={translatedWord ?? ''}
+                      fromLanguageId={fromLanguageId}
+                      translatedLanguageId={targetLanguageId}
+                      size='sm'
+                      variant='outline'
+                      className='mr-2'
+                      showTextOnly={true}
+                    />
+                  )}
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={handleBackToMenu}
+                    className='h-6 w-6 p-0'
+                  >
+                    ×
+                  </Button>
+                </div>
               </div>
               <DictionaryEntry.Root
                 word={word}

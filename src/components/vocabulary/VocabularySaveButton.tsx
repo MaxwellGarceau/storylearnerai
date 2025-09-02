@@ -15,6 +15,7 @@ interface VocabularySaveButtonProps {
   className?: string;
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
+  showTextOnly?: boolean;
 }
 
 export function VocabularySaveButton({
@@ -27,6 +28,7 @@ export function VocabularySaveButton({
   className,
   variant = 'outline',
   size = 'sm',
+  showTextOnly = false,
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
   const { checkVocabularyExists } = useVocabulary();
@@ -106,7 +108,7 @@ export function VocabularySaveButton({
         title={t('vocabulary.save.tooltip')}
       >
         <BookOpen className='h-3 w-3 mr-1' />
-        {t('vocabulary.save.title')}
+        {showTextOnly ? t('vocabulary.save.button') : t('vocabulary.save.title')}
       </Button>
 
       {showSaveModal && (
