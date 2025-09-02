@@ -58,16 +58,22 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   }, [vocabulary, fromLanguageId, targetLanguageId]);
 
   // Function to find saved word data
-  const findSavedWordData = useCallback((word: string) => {
-    if (fromLanguageId == null || targetLanguageId == null) return null;
+  const findSavedWordData = useCallback(
+    (word: string) => {
+      if (fromLanguageId == null || targetLanguageId == null) return null;
 
-    const normalizedWord = word.toLowerCase();
-    return vocabulary.find(item =>
-      item.from_language_id === fromLanguageId &&
-      item.translated_language_id === targetLanguageId &&
-      item.original_word?.toLowerCase() === normalizedWord
-    ) || null;
-  }, [vocabulary, fromLanguageId, targetLanguageId]);
+      const normalizedWord = word.toLowerCase();
+      return (
+        vocabulary.find(
+          item =>
+            item.from_language_id === fromLanguageId &&
+            item.translated_language_id === targetLanguageId &&
+            item.original_word?.toLowerCase() === normalizedWord
+        ) ?? null
+      );
+    },
+    [vocabulary, fromLanguageId, targetLanguageId]
+  );
 
   // Handle empty text
   if (!text.trim()) {
@@ -226,9 +232,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
           // Get saved word data for saved words
           const savedWordData = findSavedWordData(normalizedWord);
-          const savedTranslation = savedWordData?.translated_word || null;
+          const savedTranslation = savedWordData?.translated_word ?? null;
 
           // Use saved translation if available, otherwise use current translation
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           const displayTranslation = savedTranslation || translatedWord;
 
           // Always render WordMenu so Radix trigger exists before click

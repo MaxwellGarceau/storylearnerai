@@ -2,6 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { VocabularyService } from '../../lib/vocabularyService';
 import { supabase } from '../../api/supabase/client';
 
+// Mock types for Supabase query builder
+type MockSupabaseResponse = Promise<{ data: unknown; error: null }>;
+type MockSupabaseInsertFn = (data: unknown) => MockSupabaseQueryBuilder;
+type MockSupabaseQueryBuilder = {
+  insert: MockSupabaseInsertFn;
+  select: (columns?: string) => MockSupabaseQueryBuilder;
+  eq: (column: string, value: unknown) => MockSupabaseQueryBuilder;
+  order: (
+    column: string,
+    options?: { ascending?: boolean }
+  ) => MockSupabaseResponse;
+  single: () => MockSupabaseResponse;
+  update: (data: unknown) => MockSupabaseQueryBuilder;
+  delete: () => MockSupabaseQueryBuilder;
+};
+
 // Mock Supabase client with specific method mocking
 vi.mock('../../api/supabase/client', () => ({
   supabase: {
@@ -71,15 +87,26 @@ describe('VocabularyService', () => {
         error: null,
       };
 
-      const mockSupabaseChain = {
+      const mockSupabaseChain: MockSupabaseQueryBuilder = {
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue(mockResponse),
           }),
+          eq: vi.fn(),
+          order: vi.fn(),
+          single: vi.fn(),
+          update: vi.fn(),
+          delete: vi.fn(),
         }),
+        select: vi.fn(),
+        eq: vi.fn(),
+        order: vi.fn(),
+        single: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
       };
 
-      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain);
 
       const result =
         await VocabularyService.saveVocabularyWord(mockVocabularyData);
@@ -103,15 +130,26 @@ describe('VocabularyService', () => {
         error: { message: 'Database error' },
       };
 
-      const mockSupabaseChain = {
+      const mockSupabaseChain: MockSupabaseQueryBuilder = {
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue(mockResponse),
           }),
+          eq: vi.fn(),
+          order: vi.fn(),
+          single: vi.fn(),
+          update: vi.fn(),
+          delete: vi.fn(),
         }),
+        select: vi.fn(),
+        eq: vi.fn(),
+        order: vi.fn(),
+        single: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
       };
 
-      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain);
 
       await expect(
         VocabularyService.saveVocabularyWord(mockVocabularyData)
@@ -149,15 +187,21 @@ describe('VocabularyService', () => {
         error: null,
       };
 
-      const mockSupabaseChain = {
+      const mockSupabaseChain: MockSupabaseQueryBuilder = {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValue(mockResponse),
           }),
         }),
+        insert: vi.fn(),
+        eq: vi.fn(),
+        order: vi.fn(),
+        single: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
       };
 
-      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain);
 
       const result = await VocabularyService.getUserVocabulary('test-user-id');
 
@@ -173,23 +217,23 @@ describe('VocabularyService', () => {
         error: null,
       };
 
-      const mockSupabaseChain = {
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue({
-                  eq: vi.fn().mockReturnValue({
-                    single: vi.fn().mockResolvedValue(mockResponse),
-                  }),
-                }),
-              }),
-            }),
-          }),
-        }),
+      // Simple mock that chains eq() calls and resolves on single()
+      const mockQueryBuilder = {
+        eq: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue(mockResponse),
       };
 
-      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
+      const mockSupabaseChain: MockSupabaseQueryBuilder = {
+        select: vi.fn().mockReturnValue(mockQueryBuilder),
+        insert: vi.fn(),
+        eq: vi.fn(),
+        order: vi.fn(),
+        single: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      };
+
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain);
 
       const result = await VocabularyService.checkVocabularyExists(
         'test-user-id',
@@ -208,23 +252,23 @@ describe('VocabularyService', () => {
         error: { code: 'PGRST116' }, // Not found error
       };
 
-      const mockSupabaseChain = {
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue({
-                  eq: vi.fn().mockReturnValue({
-                    single: vi.fn().mockResolvedValue(mockResponse),
-                  }),
-                }),
-              }),
-            }),
-          }),
-        }),
+      // Simple mock that chains eq() calls and resolves on single()
+      const mockQueryBuilder = {
+        eq: vi.fn().mockReturnThis(),
+        single: vi.fn().mockResolvedValue(mockResponse),
       };
 
-      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
+      const mockSupabaseChain: MockSupabaseQueryBuilder = {
+        select: vi.fn().mockReturnValue(mockQueryBuilder),
+        insert: vi.fn(),
+        eq: vi.fn(),
+        order: vi.fn(),
+        single: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      };
+
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain);
 
       const result = await VocabularyService.checkVocabularyExists(
         'test-user-id',

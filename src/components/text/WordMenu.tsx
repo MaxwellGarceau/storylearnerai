@@ -50,8 +50,6 @@ const WordMenu: React.FC<WordMenuProps> = ({
     }
   }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
 
-
-
   const handleTranslate = () => {
     if (!savedTranslation && !translatedWord && !isTranslating) {
       onTranslate?.(word);
@@ -126,7 +124,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   variant='outline'
                   size='sm'
                   onClick={handleTranslate}
-                  disabled={!!savedTranslation || !!translatedWord || isTranslating}
+                  disabled={
+                    !!savedTranslation || !!translatedWord || isTranslating
+                  }
                   className='flex items-center gap-1'
                 >
                   {isTranslating ? (
@@ -137,7 +137,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   ) : (
                     <>
                       <Languages className='h-3 w-3' />
-                      {savedTranslation ? 'Already Saved' : translatedWord ? 'Translated' : 'Translate'}
+                      {savedTranslation
+                        ? 'Already Saved'
+                        : translatedWord
+                          ? 'Translated'
+                          : 'Translate'}
                     </>
                   )}
                 </Button>

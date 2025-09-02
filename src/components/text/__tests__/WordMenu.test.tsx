@@ -432,6 +432,4 @@ describe('WordMenu Component', () => {
     // Should not be disabled
     expect(translateButton).not.toBeDisabled();
   });
-
-
 });
