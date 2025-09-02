@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import WordHighlight from './WordHighlight';
 import WordMenu from './WordMenu';
 import { LanguageCode } from '../../types/llm/prompts';
 import { useWordTranslation } from '../../hooks/useWordTranslation';
+import { useVocabulary } from '../../hooks/useVocabulary';
+import { useLanguages } from '../../hooks/useLanguages';
 
 interface InteractiveTextProps {
   text: string;
@@ -29,6 +31,27 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     Map<string, string>
   >(new Map());
   const { translateWordInSentence, translateSentence } = useWordTranslation();
+  const { vocabulary } = useVocabulary();
+  const { getLanguageIdByCode } = useLanguages();
+
+  const fromLanguageId = getLanguageIdByCode(fromLanguage);
+  const targetLanguageId = getLanguageIdByCode(targetLanguage);
+
+  // Build a set of saved original words for this language pair (lowercased)
+  const savedOriginalWords = useMemo(() => {
+    if (fromLanguageId == null || targetLanguageId == null) return new Set<string>();
+    const set = new Set<string>();
+    for (const item of vocabulary) {
+      if (
+        item.from_language_id === fromLanguageId &&
+        item.translated_language_id === targetLanguageId &&
+        item.original_word
+      ) {
+        set.add(item.original_word.toLowerCase());
+      }
+    }
+    return set;
+  }, [vocabulary, fromLanguageId, targetLanguageId]);
 
   // Handle empty text
   if (!text.trim()) {
@@ -131,6 +154,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
           const [, cleanWord, punctuation] = wordMatch;
           const normalizedWord = cleanWord.toLowerCase();
           const translatedWord = translatedWords.get(normalizedWord);
+          const isSaved = savedOriginalWords.has(normalizedWord);
+          const savedHighlightClass = isSaved
+            ? 'bg-yellow-200 dark:bg-yellow-900/30'
+            : '';
 
           // If tooltips are disabled or the component is disabled, just render the word inline
           if (!enableTooltips || disabled) {
@@ -144,13 +171,17 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     <WordHighlight
                       word={normalizedWord}
                       disabled={disabled}
-                      className='line-through decoration-2 decoration-red-500'
+                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
                     >
                       {cleanWord}
                     </WordHighlight>
                   </span>
                 ) : (
-                  <WordHighlight word={normalizedWord} disabled={disabled}>
+                  <WordHighlight
+                    word={normalizedWord}
+                    disabled={disabled}
+                    className={savedHighlightClass}
+                  >
                     {cleanWord}
                   </WordHighlight>
                 )}
@@ -199,7 +230,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                       word={normalizedWord}
                       disabled={disabled}
                       active={openMenuIndex === index}
-                      className='line-through decoration-2 decoration-red-500'
+                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
                       onClick={() => {
                         setOpenMenuIndex(prev => (prev === index ? null : index));
                         // Auto-translate when word is clicked
@@ -216,6 +247,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     word={normalizedWord}
                     disabled={disabled}
                     active={openMenuIndex === index}
+                    className={savedHighlightClass}
                     onClick={() => {
                       setOpenMenuIndex(prev => (prev === index ? null : index));
                       // Auto-translate when word is clicked
