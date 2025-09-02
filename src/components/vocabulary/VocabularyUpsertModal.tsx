@@ -11,11 +11,14 @@ import type {
   VocabularyWithLanguages,
 } from '../../types/database/vocabulary';
 
+// Common type aliases
+type VoidFunction = () => void;
+
 // Using a union in props instead of a separate Mode type
 
 interface BaseProps {
-  onClose: () => void;
-  onSaveSuccess?: () => void;
+  onClose: VoidFunction;
+  onSaveSuccess?: VoidFunction;
 }
 
 interface CreateProps extends BaseProps {
@@ -40,27 +43,34 @@ type VocabularyUpsertModalProps = CreateProps | EditProps;
 export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   const { t } = useLocalization();
   const { languages } = useLanguages();
-  const { saveVocabularyWord, updateVocabularyWord, vocabulary: userVocabulary } =
-    useVocabulary();
+  const {
+    saveVocabularyWord,
+    updateVocabularyWord,
+    vocabulary: userVocabulary,
+  } = useVocabulary();
 
   const isCreateMode = props.mode === 'create';
   const editVocabulary = (props as EditProps).vocabulary;
 
   const [formData, setFormData] = useState({
-    original_word: isCreateMode ? props.initialData?.originalWord ?? '' : editVocabulary.original_word,
-    translated_word: isCreateMode ? props.initialData?.translatedWord ?? '' : editVocabulary.translated_word,
+    original_word: isCreateMode
+      ? (props.initialData?.originalWord ?? '')
+      : editVocabulary.original_word,
+    translated_word: isCreateMode
+      ? (props.initialData?.translatedWord ?? '')
+      : editVocabulary.translated_word,
     // Language IDs are only needed in create mode (selection). Defaults mirror existing Save modal.
-    from_language_id: isCreateMode ? props.currentFromLanguageId ?? 1 : 0,
-    translated_language_id: isCreateMode ? props.currentLanguageId ?? 2 : 0,
+    from_language_id: isCreateMode ? (props.currentFromLanguageId ?? 1) : 0,
+    translated_language_id: isCreateMode ? (props.currentLanguageId ?? 2) : 0,
     original_word_context: isCreateMode
-      ? props.initialData?.originalContext ?? ''
-      : editVocabulary.original_word_context ?? '',
+      ? (props.initialData?.originalContext ?? '')
+      : (editVocabulary.original_word_context ?? ''),
     translated_word_context: isCreateMode
-      ? props.initialData?.translatedContext ?? ''
-      : editVocabulary.translated_word_context ?? '',
-    definition: isCreateMode ? '' : editVocabulary.definition ?? '',
-    part_of_speech: isCreateMode ? '' : editVocabulary.part_of_speech ?? '',
-    frequency_level: isCreateMode ? '' : editVocabulary.frequency_level ?? '',
+      ? (props.initialData?.translatedContext ?? '')
+      : (editVocabulary.translated_word_context ?? ''),
+    definition: isCreateMode ? '' : (editVocabulary.definition ?? ''),
+    part_of_speech: isCreateMode ? '' : (editVocabulary.part_of_speech ?? ''),
+    frequency_level: isCreateMode ? '' : (editVocabulary.frequency_level ?? ''),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -75,9 +85,18 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
       { value: 'adjective', label: t('vocabulary.partsOfSpeech.adjective') },
       { value: 'adverb', label: t('vocabulary.partsOfSpeech.adverb') },
       { value: 'pronoun', label: t('vocabulary.partsOfSpeech.pronoun') },
-      { value: 'preposition', label: t('vocabulary.partsOfSpeech.preposition') },
-      { value: 'conjunction', label: t('vocabulary.partsOfSpeech.conjunction') },
-      { value: 'interjection', label: t('vocabulary.partsOfSpeech.interjection') },
+      {
+        value: 'preposition',
+        label: t('vocabulary.partsOfSpeech.preposition'),
+      },
+      {
+        value: 'conjunction',
+        label: t('vocabulary.partsOfSpeech.conjunction'),
+      },
+      {
+        value: 'interjection',
+        label: t('vocabulary.partsOfSpeech.interjection'),
+      },
       { value: 'article', label: t('vocabulary.partsOfSpeech.article') },
       { value: 'numeral', label: t('vocabulary.partsOfSpeech.numeral') },
     ],
@@ -94,7 +113,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     [t]
   );
 
-  const validateForm = async () => {
+  const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.original_word.trim()) {
@@ -133,8 +152,8 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
       const trimmedOriginalLower = formData.original_word.trim().toLowerCase();
       if (trimmedOriginalLower) {
-        const existsLocal = userVocabulary.some((v) =>
-          v.original_word.trim().toLowerCase() === trimmedOriginalLower
+        const existsLocal = userVocabulary.some(
+          v => v.original_word.trim().toLowerCase() === trimmedOriginalLower
         );
         if (existsLocal) {
           newErrors.general = t('vocabulary.validation.alreadyExists');
@@ -149,7 +168,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!(await validateForm())) {
+    if (!validateForm()) {
       return;
     }
 
@@ -230,19 +249,23 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     const currentCheckId = ++lastDuplicateCheckIdRef.current;
     setIsCheckingDuplicate(true);
 
-    const timeoutId = setTimeout(async () => {
+    const timeoutId = setTimeout(() => {
       try {
         // Only apply result if it's the latest request
         if (lastDuplicateCheckIdRef.current === currentCheckId) {
-          const existsLocal = userVocabulary.some(v =>
-            v.original_word.trim().toLowerCase() === trimmedOriginal.toLowerCase()
+          const existsLocal = userVocabulary.some(
+            v =>
+              v.original_word.trim().toLowerCase() ===
+              trimmedOriginal.toLowerCase()
           );
           if (existsLocal) {
             setErrors(prev => ({
               ...prev,
               general: t('vocabulary.validation.alreadyExists'),
             }));
-          } else if (errors.general === t('vocabulary.validation.alreadyExists')) {
+          } else if (
+            errors.general === t('vocabulary.validation.alreadyExists')
+          ) {
             setErrors(prev => ({ ...prev, general: '' }));
           }
         }
@@ -271,7 +294,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
       <div className='bg-background rounded-lg shadow-lg sm:max-w-[600px] max-h-[90vh] overflow-y-auto m-4 p-4'>
         <div className='p-6 border-b'>
           <h2 className='text-lg font-semibold'>
-            {isCreateMode ? t('vocabulary.save.title') : t('vocabulary.edit.title')}
+            {isCreateMode
+              ? t('vocabulary.save.title')
+              : t('vocabulary.edit.title')}
           </h2>
         </div>
 
@@ -286,8 +311,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           <div className='grid grid-cols-2 gap-4 pt-4'>
             <div className='space-y-2'>
               <Label htmlFor='original_word'>
-                {t('vocabulary.form.originalWord')}{' '}
-                {isCreateMode ? ' *' : ''}
+                {t('vocabulary.form.originalWord')} {isCreateMode ? ' *' : ''}
               </Label>
               <input
                 type='text'
@@ -308,8 +332,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
             <div className='space-y-2'>
               <Label htmlFor='translated_word'>
-                {t('vocabulary.form.translatedWord')}{' '}
-                {isCreateMode ? ' *' : ''}
+                {t('vocabulary.form.translatedWord')} {isCreateMode ? ' *' : ''}
               </Label>
               <input
                 type='text'
@@ -340,7 +363,10 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                   id='from_language'
                   value={formData.from_language_id}
                   onChange={e =>
-                    handleInputChange('from_language_id', Number(e.target.value))
+                    handleInputChange(
+                      'from_language_id',
+                      Number(e.target.value)
+                    )
                   }
                   className={`w-full p-2 text-sm border rounded-md ${errors.from_language_id ? 'border-destructive' : ''}`}
                 >
@@ -395,7 +421,8 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             <div className='text-sm text-muted-foreground'>
               <p>
                 <strong>{t('vocabulary.form.languages')}:</strong>{' '}
-                {editVocabulary.from_language.name} → {editVocabulary.translated_language.name}
+                {editVocabulary.from_language.name} →{' '}
+                {editVocabulary.translated_language.name}
               </p>
             </div>
           )}
@@ -424,7 +451,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
               <select
                 id='part_of_speech'
                 value={formData.part_of_speech}
-                onChange={e => handleInputChange('part_of_speech', e.target.value)}
+                onChange={e =>
+                  handleInputChange('part_of_speech', e.target.value)
+                }
                 className='w-full p-2 text-sm border rounded-md'
               >
                 <option value=''>
@@ -445,12 +474,12 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
               <select
                 id='frequency_level'
                 value={formData.frequency_level}
-                onChange={e => handleInputChange('frequency_level', e.target.value)}
+                onChange={e =>
+                  handleInputChange('frequency_level', e.target.value)
+                }
                 className='w-full p-2 text-sm border rounded-md'
               >
-                <option value=''>
-                  {t('vocabulary.form.selectFrequency')}
-                </option>
+                <option value=''>{t('vocabulary.form.selectFrequency')}</option>
                 {frequencyLevelOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -530,5 +559,3 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 }
 
 export default VocabularyUpsertModal;
-
-

@@ -33,10 +33,11 @@
   onSaveSuccess={onSaveSuccess}
 />
 ```
-  - `original_word`, `translated_word`
-  - `from_language_id`, `translated_language_id`
-  - `original_word_context`, `translated_word_context` (nullable)
-  - `definition: null`
+
+- `original_word`, `translated_word`
+- `from_language_id`, `translated_language_id`
+- `original_word_context`, `translated_word_context` (nullable)
+- `definition: null`
 
 ### Saving Indicator and Pending Translation
 
