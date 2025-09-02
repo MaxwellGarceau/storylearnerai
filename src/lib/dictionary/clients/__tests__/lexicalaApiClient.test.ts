@@ -171,7 +171,7 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<{ results: never[] }> => {
           await Promise.resolve();
           return { results: [] };
         },
@@ -189,7 +189,7 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<Record<string, never>> => {
           await Promise.resolve();
           return {};
         },
