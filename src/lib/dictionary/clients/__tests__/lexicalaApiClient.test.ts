@@ -4,6 +4,14 @@ import {
   DictionaryApiClient,
 } from '../../../../types/dictionary';
 
+// Typed fetch Response mock used across tests
+type TestFetchResponse<T> = {
+  ok: boolean;
+  status: number;
+  json: () => Promise<T>;
+  clone: () => TestFetchResponse<T>;
+};
+
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -115,14 +123,14 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<typeof mockResponse> => {
           await Promise.resolve();
           return mockResponse;
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<typeof mockResponse>) {
           return this;
         },
-      });
+      } as TestFetchResponse<typeof mockResponse>);
 
       const result = await client.searchWord(mockParams);
 
@@ -175,10 +183,10 @@ describe('LexicalaApiClient', () => {
           await Promise.resolve();
           return { results: [] };
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<{ results: never[] }>) {
           return this;
         },
-      });
+      } as TestFetchResponse<{ results: never[] }>);
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
         'Word "hello" not found in dictionary'
@@ -193,10 +201,10 @@ describe('LexicalaApiClient', () => {
           await Promise.resolve();
           return {};
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<Record<string, never>>) {
           return this;
         },
-      });
+      } as TestFetchResponse<Record<string, never>>);
 
       await expect(client.searchWord(mockParams)).rejects.toThrow(
         'Word "hello" not found in dictionary'
@@ -275,14 +283,14 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<typeof mockResponse> => {
           await Promise.resolve();
           return mockResponse;
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<typeof mockResponse>) {
           return this;
         },
-      });
+      } as TestFetchResponse<typeof mockResponse>);
 
       await client.searchWord({ word: 'hello' });
 
@@ -321,14 +329,14 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<typeof mockResponse> => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<typeof mockResponse>) {
           return this;
         },
-      });
+      } as TestFetchResponse<typeof mockResponse>);
 
       await client.searchWord({ word: 'hello world' });
 
@@ -369,14 +377,14 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<typeof mockResponse> => {
           await Promise.resolve();
           return mockResponse;
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<typeof mockResponse>) {
           return this;
         },
-      });
+      } as TestFetchResponse<typeof mockResponse>);
 
       await client.getWordDetails('hello', 'es', 'en');
 
@@ -415,14 +423,14 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<typeof mockResponse> => {
           await Promise.resolve();
           return mockResponse;
         },
-        clone: function () {
+        clone: function (this: TestFetchResponse<typeof mockResponse>) {
           return this;
         },
-      });
+      } as TestFetchResponse<typeof mockResponse>);
 
       await client.getWordDetails('hello', 'es');
 
@@ -508,14 +516,17 @@ describe('LexicalaApiClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => {
+        json: async (): Promise<{ results: { word: string }[] }> => {
           await Promise.resolve();
           return mockResponse;
         },
-        clone: function () {
+        clone: function (
+          // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+          this: TestFetchResponse<{ results: { word: string }[] }>
+        ) {
           return this;
         },
-      });
+      } as TestFetchResponse<{ results: { word: string }[] }>);
 
       await client.searchWord({ word: 'hello' });
 

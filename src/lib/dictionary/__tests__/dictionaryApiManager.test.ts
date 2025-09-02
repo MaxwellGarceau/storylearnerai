@@ -64,21 +64,15 @@ let createDictionaryApiManager: (
 
 describe('DictionaryApiManagerImpl', () => {
   let apiManager: DictionaryApiManagerInterface;
-  let mockApiClient: {
-    searchWord: MockedFunction<DictionaryApiClient['searchWord']>;
-    getWordDetails: MockedFunction<DictionaryApiClient['getWordDetails']>;
-    isAvailable: MockedFunction<DictionaryApiClient['isAvailable']>;
-  };
-  let mockTransformer: {
-    transformLexicalaResponse: MockedFunction<
-      LexicalaDataTransformer['transformLexicalaResponse']
-    >;
-    validateWordData: MockedFunction<
-      LexicalaDataTransformer['validateWordData']
-    >;
-  };
+  let mockApiClient: MockApiClient;
+  let mockTransformer: MockTransformer;
   let mockEnvironmentConfig: {
-    getDictionaryConfig: MockedFunction<() => any>;
+    getDictionaryConfig: MockedFunction<
+      () => {
+        endpoint: string;
+        apiKey: string;
+      }
+    >;
     isDictionaryDisabled: MockedFunction<() => boolean>;
   };
 
@@ -124,12 +118,12 @@ describe('DictionaryApiManagerImpl', () => {
       searchWord: vi.fn(),
       getWordDetails: vi.fn(),
       isAvailable: vi.fn().mockReturnValue(true),
-    };
+    } as MockApiClient;
 
     mockTransformer = {
       transformLexicalaResponse: vi.fn().mockReturnValue(mockDictionaryWord),
       validateWordData: vi.fn().mockReturnValue(true),
-    };
+    } as MockTransformer;
 
     // Import the modules after mocking
     const module = await import('../dictionaryApiManager');
