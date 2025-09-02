@@ -7,6 +7,15 @@ import { TranslationResponse } from '../../../lib/translationService';
 // Mock the environment config
 vi.mock('../../../lib/config/env', () => ({
   EnvironmentConfig: {
+    getLLMConfig: () => ({
+      provider: 'gemini',
+      apiKey: 'test-api-key',
+      endpoint: 'https://test-endpoint.com',
+      model: 'test-model',
+      maxTokens: 2000,
+      temperature: 0.7,
+      projectId: 'test-project',
+    }),
     isDictionaryDisabled: vi.fn(() => false),
     getDictionaryConfig: vi.fn(() => ({
       endpoint: 'https://lexicala1.p.rapidapi.com',

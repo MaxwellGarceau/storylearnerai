@@ -27,7 +27,7 @@ export interface WordTranslationRequest {
   sentence: string;
   focusWord: string;
   fromLanguage: LanguageCode; // language of sentence/focus word
-  toLanguage: LanguageCode;   // desired output language
+  toLanguage: LanguageCode; // desired output language
   difficulty: DifficultyLevel;
 }
 
@@ -135,9 +135,13 @@ class TranslationService {
         model: llmResponse.model,
       };
     } catch (error) {
-      logger.error('translation', 'Word-with-context translation error', { error });
+      logger.error('translation', 'Word-with-context translation error', {
+        error,
+      });
       const errorMessage =
-        error instanceof Error ? error.message : 'Translation service unavailable';
+        error instanceof Error
+          ? error.message
+          : 'Translation service unavailable';
       throw new Error(
         this.getUserFriendlyErrorMessage({
           message: errorMessage,

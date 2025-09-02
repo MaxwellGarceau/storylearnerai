@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import WordHighlight from './WordHighlight';
 import WordMenu from './WordMenu';
 import { LanguageCode } from '../../types/llm/prompts';
@@ -30,6 +30,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const [translatedSentences, setTranslatedSentences] = useState<
     Map<string, string>
   >(new Map());
+  const [translatingWords, setTranslatingWords] = useState<Set<string>>(
+    new Set()
+  );
   const { translateWordInSentence, translateSentence } = useWordTranslation();
   const { vocabulary } = useVocabulary();
   const { getLanguageIdByCode } = useLanguages();
@@ -39,7 +42,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
   // Build a set of saved original words for this language pair (lowercased)
   const savedOriginalWords = useMemo(() => {
-    if (fromLanguageId == null || targetLanguageId == null) return new Set<string>();
+    if (fromLanguageId == null || targetLanguageId == null)
+      return new Set<string>();
     const set = new Set<string>();
     for (const item of vocabulary) {
       if (
@@ -51,6 +55,18 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
       }
     }
     return set;
+  }, [vocabulary, fromLanguageId, targetLanguageId]);
+
+  // Function to find saved word data
+  const findSavedWordData = useCallback((word: string) => {
+    if (fromLanguageId == null || targetLanguageId == null) return null;
+
+    const normalizedWord = word.toLowerCase();
+    return vocabulary.find(item =>
+      item.from_language_id === fromLanguageId &&
+      item.translated_language_id === targetLanguageId &&
+      item.original_word?.toLowerCase() === normalizedWord
+    ) || null;
   }, [vocabulary, fromLanguageId, targetLanguageId]);
 
   // Handle empty text
@@ -99,32 +115,44 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
       return;
     }
 
-    // Extract the sentence context from the target-language text
-    const sentenceContext = extractSentenceContext(wordIndex);
+    // Set loading state
+    setTranslatingWords(prev => new Set(prev).add(word));
 
-    // Translate the entire sentence from target language -> from language for context
-    if (!translatedSentences.has(sentenceContext)) {
-      const translatedSentence = await translateSentence(
-        sentenceContext,
-        targetLanguage, // from target
-        fromLanguage // to from
-      );
-      if (translatedSentence) {
-        setTranslatedSentences(prev =>
-          new Map(prev).set(sentenceContext, translatedSentence)
+    try {
+      // Extract the sentence context from the target-language text
+      const sentenceContext = extractSentenceContext(wordIndex);
+
+      // Translate the entire sentence from target language -> from language for context
+      if (!translatedSentences.has(sentenceContext)) {
+        const translatedSentence = await translateSentence(
+          sentenceContext,
+          targetLanguage, // from target
+          fromLanguage // to from
         );
+        if (translatedSentence) {
+          setTranslatedSentences(prev =>
+            new Map(prev).set(sentenceContext, translatedSentence)
+          );
+        }
       }
-    }
 
-    // Translate the clicked word (target -> from) for display next to the word
-    const translatedText = await translateWordInSentence(
-      word,
-      sentenceContext,
-      targetLanguage,
-      fromLanguage
-    );
-    if (translatedText) {
-      setTranslatedWords(prev => new Map(prev).set(word, translatedText));
+      // Translate the clicked word (target -> from) for display next to the word
+      const translatedText = await translateWordInSentence(
+        word,
+        sentenceContext,
+        targetLanguage,
+        fromLanguage
+      );
+      if (translatedText) {
+        setTranslatedWords(prev => new Map(prev).set(word, translatedText));
+      }
+    } finally {
+      // Clear loading state
+      setTranslatingWords(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(word);
+        return newSet;
+      });
     }
   };
 
@@ -133,7 +161,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   };
 
   return (
-    <span className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}>
+    <span
+      className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
+    >
       {words.map((word, index) => {
         // Skip pure whitespace
         if (/^\s+$/.test(word)) {
@@ -191,9 +221,15 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
           }
 
           const originalSentence = extractSentenceContext(index);
-          const translatedSentenceForMenu = translatedSentences.get(
-            originalSentence
-          );
+          const translatedSentenceForMenu =
+            translatedSentences.get(originalSentence);
+
+          // Get saved word data for saved words
+          const savedWordData = findSavedWordData(normalizedWord);
+          const savedTranslation = savedWordData?.translated_word || null;
+
+          // Use saved translation if available, otherwise use current translation
+          const displayTranslation = savedTranslation || translatedWord;
 
           // Always render WordMenu so Radix trigger exists before click
           return (
@@ -215,9 +251,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 _onSave={handleSave}
                 fromLanguage={fromLanguage}
                 targetLanguage={targetLanguage}
-                translatedWord={translatedWord}
+                translatedWord={displayTranslation}
                 originalSentence={originalSentence}
                 translatedSentence={translatedSentenceForMenu}
+                isSaved={isSaved}
+                isTranslating={translatingWords.has(normalizedWord)}
+                savedTranslation={savedTranslation}
               >
                 {translatedWord ? (
                   <span className='relative inline-block align-baseline'>
@@ -230,7 +269,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                       active={openMenuIndex === index}
                       className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
                       onClick={() => {
-                        setOpenMenuIndex(prev => (prev === index ? null : index));
+                        setOpenMenuIndex(prev =>
+                          prev === index ? null : index
+                        );
                       }}
                     >
                       {cleanWord}

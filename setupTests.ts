@@ -6,17 +6,22 @@ import 'vitest';
 vi.mock('./src/lib/config/env', () => ({
   EnvironmentConfig: {
     getLLMConfig: () => ({
-      provider: 'openai',
+      provider: 'gemini',
       apiKey: 'test-api-key',
       endpoint: 'https://test-endpoint.com',
       model: 'test-model',
       maxTokens: 2000,
       temperature: 0.7,
-      organization: 'test-org',
+      projectId: 'test-project',
+    }),
+    getDictionaryConfig: () => ({
+      endpoint: 'https://test-dictionary-endpoint.com',
+      apiKey: 'test-dictionary-api-key',
     }),
     isDevelopment: () => false,
     isProduction: () => false,
     isMockTranslationEnabled: () => true,
+    isDictionaryDisabled: () => false,
   },
 }));
 

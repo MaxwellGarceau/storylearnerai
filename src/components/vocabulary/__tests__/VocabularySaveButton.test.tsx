@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { VocabularySaveButton } from '../VocabularySaveButton';
@@ -20,13 +20,16 @@ vi.mock('../../../hooks/useLocalization', () => ({
 }));
 
 describe('VocabularySaveButton', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('saves directly on click and disables while saving', async () => {
     const user = userEvent.setup();
 
     render(
       <VocabularySaveButton
-        originalWord="hola"
-        translatedWord="hello"
+        originalWord='hola'
+        translatedWord='hello'
         fromLanguageId={2}
         translatedLanguageId={1}
       />
@@ -67,7 +70,7 @@ describe('VocabularySaveButton', () => {
       return (
         <div>
           <VocabularySaveButton
-            originalWord="hola"
+            originalWord='hola'
             translatedWord={translated}
             fromLanguageId={2}
             translatedLanguageId={1}
@@ -108,5 +111,3 @@ describe('VocabularySaveButton', () => {
     });
   });
 });
-
-

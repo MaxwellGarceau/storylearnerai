@@ -21,6 +21,8 @@ interface VocabularySaveButtonProps {
   translatedSentence?: string;
   // New lifecycle hook to run before opening the modal (e.g., trigger translation)
   onBeforeOpen?: () => Promise<void> | void;
+  // Override internal saved state check - useful for consistency with other UI elements
+  isSaved?: boolean;
 }
 
 export function VocabularySaveButton({
@@ -35,6 +37,7 @@ export function VocabularySaveButton({
   size = 'sm',
   showTextOnly = false,
   onBeforeOpen,
+  isSaved: externalIsSaved,
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
   const { checkVocabularyExists, saveVocabularyWord } = useVocabulary();
@@ -43,8 +46,15 @@ export function VocabularySaveButton({
   const [isSaving, setIsSaving] = useState(false);
   const [isPendingSave, setIsPendingSave] = useState(false);
 
-  // Check if word is already saved
+  // Check if word is already saved (only if external isSaved is not provided)
   React.useEffect(() => {
+    // If external isSaved is provided, use it directly
+    if (externalIsSaved !== undefined) {
+      setIsSaved(externalIsSaved);
+      setIsChecking(false);
+      return;
+    }
+
     const checkIfSaved = async () => {
       setIsChecking(true);
       try {
@@ -71,6 +81,7 @@ export function VocabularySaveButton({
     fromLanguageId,
     translatedLanguageId,
     checkVocabularyExists,
+    externalIsSaved,
   ]);
 
   const hasAttemptedSaveRef = React.useRef(false);

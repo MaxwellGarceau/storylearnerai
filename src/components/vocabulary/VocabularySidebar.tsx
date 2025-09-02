@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { useState } from 'react';
+import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import {
@@ -57,7 +57,7 @@ export function VocabularySidebar({
 
   const getLanguageName = (languageId: number) => {
     const language = languages.find(lang => lang.id === languageId);
-    return language?.name || 'Unknown';
+    return language?.name ?? 'Unknown';
   };
 
   const handleSaveVocabulary = () => {
@@ -124,7 +124,7 @@ export function VocabularySidebar({
               {t('vocabulary.filters.language')}
             </label>
             <select
-              value={selectedLanguageFilter || ''}
+              value={selectedLanguageFilter ?? ''}
               onChange={e =>
                 setSelectedLanguageFilter(
                   e.target.value ? Number(e.target.value) : null

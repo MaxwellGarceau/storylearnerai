@@ -37,9 +37,9 @@ describe('InteractiveText saved word highlighting', () => {
   it('applies yellow highlight to saved words', () => {
     render(
       <InteractiveText
-        text="Hola amigo."
-        fromLanguage="es"
-        targetLanguage="en"
+        text='Hola amigo.'
+        fromLanguage='es'
+        targetLanguage='en'
         enableTooltips={false}
       />
     );
@@ -50,5 +50,3 @@ describe('InteractiveText saved word highlighting', () => {
     expect(hola.parentElement?.querySelector('.bg-yellow-200')).toBeTruthy();
   });
 });
-
-

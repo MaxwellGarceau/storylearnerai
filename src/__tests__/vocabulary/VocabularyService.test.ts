@@ -1,29 +1,46 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { VocabularyService } from '../../lib/vocabularyService';
+import { supabase } from '../../api/supabase/client';
 
-// Mock Supabase client
-vi.mock('../../lib/supabase/client', () => ({
+// Mock Supabase client with specific method mocking
+vi.mock('../../api/supabase/client', () => ({
   supabase: {
     from: vi.fn(() => ({
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
-          single: vi.fn(),
+          single: vi.fn(() =>
+            Promise.resolve({ data: { id: 1 }, error: null })
+          ),
         })),
       })),
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          order: vi.fn(),
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                eq: vi.fn(() => ({
+                  eq: vi.fn(() => ({
+                    single: vi.fn(() =>
+                      Promise.resolve({ data: { id: 1 }, error: null })
+                    ),
+                  })),
+                })),
+              })),
+            })),
+          })),
         })),
       })),
       update: vi.fn(() => ({
         eq: vi.fn(() => ({
           select: vi.fn(() => ({
-            single: vi.fn(),
+            single: vi.fn(() =>
+              Promise.resolve({ data: { id: 1 }, error: null })
+            ),
           })),
         })),
       })),
       delete: vi.fn(() => ({
-        eq: vi.fn(),
+        eq: vi.fn(() => Promise.resolve({ data: null, error: null })),
       })),
     })),
   },
@@ -62,7 +79,7 @@ describe('VocabularyService', () => {
         }),
       };
 
-      (supabase.from as any).mockReturnValue(mockSupabaseChain);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
 
       const result =
         await VocabularyService.saveVocabularyWord(mockVocabularyData);
@@ -94,7 +111,7 @@ describe('VocabularyService', () => {
         }),
       };
 
-      (supabase.from as any).mockReturnValue(mockSupabaseChain);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
 
       await expect(
         VocabularyService.saveVocabularyWord(mockVocabularyData)
@@ -140,7 +157,7 @@ describe('VocabularyService', () => {
         }),
       };
 
-      (supabase.from as any).mockReturnValue(mockSupabaseChain);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
 
       const result = await VocabularyService.getUserVocabulary('test-user-id');
 
@@ -162,7 +179,9 @@ describe('VocabularyService', () => {
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
                 eq: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue(mockResponse),
+                  eq: vi.fn().mockReturnValue({
+                    single: vi.fn().mockResolvedValue(mockResponse),
+                  }),
                 }),
               }),
             }),
@@ -170,7 +189,7 @@ describe('VocabularyService', () => {
         }),
       };
 
-      (supabase.from as any).mockReturnValue(mockSupabaseChain);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
 
       const result = await VocabularyService.checkVocabularyExists(
         'test-user-id',
@@ -195,7 +214,9 @@ describe('VocabularyService', () => {
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
                 eq: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue(mockResponse),
+                  eq: vi.fn().mockReturnValue({
+                    single: vi.fn().mockResolvedValue(mockResponse),
+                  }),
                 }),
               }),
             }),
@@ -203,7 +224,7 @@ describe('VocabularyService', () => {
         }),
       };
 
-      (supabase.from as any).mockReturnValue(mockSupabaseChain);
+      vi.mocked(supabase.from).mockReturnValue(mockSupabaseChain as any);
 
       const result = await VocabularyService.checkVocabularyExists(
         'test-user-id',

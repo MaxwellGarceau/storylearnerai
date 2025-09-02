@@ -28,4 +28,3 @@
 
 - New keys added:
   - `vocabulary.saving` (en: "Saving...", es: "Guardando...")
-

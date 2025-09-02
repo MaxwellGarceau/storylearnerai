@@ -292,7 +292,7 @@ export function useVocabulary(): UseVocabularyReturn {
   // Load vocabulary when user changes
   useEffect(() => {
     if (user?.id) {
-      loadVocabulary();
+      void loadVocabulary();
     } else {
       setVocabulary([]);
       setVocabularyWithStories([]);
@@ -308,7 +308,8 @@ export function useVocabulary(): UseVocabularyReturn {
     };
     try {
       window.addEventListener('vocabulary:updated', handleUpdated);
-      return () => window.removeEventListener('vocabulary:updated', handleUpdated);
+      return () =>
+        window.removeEventListener('vocabulary:updated', handleUpdated);
     } catch {
       return () => {};
     }

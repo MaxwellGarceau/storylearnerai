@@ -38,12 +38,12 @@ export function VocabularySaveModal({
   const { languages } = useLanguages();
 
   const [formData, setFormData] = useState({
-    original_word: initialData?.originalWord || '',
-    translated_word: initialData?.translatedWord || '',
-    from_language_id: currentFromLanguageId || 1, // Default to English
-    translated_language_id: currentLanguageId || 2, // Default to Spanish
-    original_word_context: initialData?.originalContext || '',
-    translated_word_context: initialData?.translatedContext || '',
+    original_word: initialData?.originalWord ?? '',
+    translated_word: initialData?.translatedWord ?? '',
+    from_language_id: currentFromLanguageId ?? 1, // Default to English
+    translated_language_id: currentLanguageId ?? 2, // Default to Spanish
+    original_word_context: initialData?.originalContext ?? '',
+    translated_word_context: initialData?.translatedContext ?? '',
     definition: '',
     part_of_speech: '',
     frequency_level: '',
@@ -175,7 +175,13 @@ export function VocabularySaveModal({
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className='space-y-4'>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            void handleSubmit(e);
+          }}
+          className='space-y-4'
+        >
           {/* Word Fields */}
           <div className='grid grid-cols-2 gap-4'>
             <div className='space-y-2'>

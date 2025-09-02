@@ -14,12 +14,14 @@ interface WordMenuProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onTranslate?: (word: string) => void;
-  _onSave?: (_word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
   translatedWord?: string;
   originalSentence?: string;
   translatedSentence?: string;
+  isSaved?: boolean;
+  isTranslating?: boolean;
+  savedTranslation?: string | null;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -28,12 +30,14 @@ const WordMenu: React.FC<WordMenuProps> = ({
   open,
   onOpenChange,
   onTranslate,
-  _onSave,
   fromLanguage,
   targetLanguage,
   translatedWord,
   originalSentence,
   translatedSentence,
+  isSaved = false,
+  isTranslating = false,
+  savedTranslation,
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
@@ -46,8 +50,12 @@ const WordMenu: React.FC<WordMenuProps> = ({
     }
   }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
 
+
+
   const handleTranslate = () => {
-    onTranslate?.(word);
+    if (!savedTranslation && !translatedWord && !isTranslating) {
+      onTranslate?.(word);
+    }
   };
 
   const handleDictionary = () => {
@@ -59,8 +67,12 @@ const WordMenu: React.FC<WordMenuProps> = ({
   };
 
   // Get language IDs for the VocabularySaveButton
-  const fromLanguageId = fromLanguage ? getLanguageIdByCode(fromLanguage) : null;
-  const targetLanguageId = targetLanguage ? getLanguageIdByCode(targetLanguage) : null;
+  const fromLanguageId = fromLanguage
+    ? getLanguageIdByCode(fromLanguage)
+    : null;
+  const targetLanguageId = targetLanguage
+    ? getLanguageIdByCode(targetLanguage)
+    : null;
 
   return (
     <Popover
@@ -83,7 +95,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
         side='bottom'
         align='start'
         updatePositionStrategy='always'
-        className={'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
+        className={
+          'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'
+        }
         sideOffset={8}
         onPointerDownOutside={e => {
           const target = e.target as HTMLElement | null;
@@ -112,10 +126,20 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   variant='outline'
                   size='sm'
                   onClick={handleTranslate}
+                  disabled={!!savedTranslation || !!translatedWord || isTranslating}
                   className='flex items-center gap-1'
                 >
-                  <Languages className='h-3 w-3' />
-                  Translate
+                  {isTranslating ? (
+                    <>
+                      <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
+                      Translating...
+                    </>
+                  ) : (
+                    <>
+                      <Languages className='h-3 w-3' />
+                      {savedTranslation ? 'Already Saved' : translatedWord ? 'Translated' : 'Translate'}
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant='outline'
@@ -136,7 +160,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     translatedLanguageId={targetLanguageId}
                     size='sm'
                     variant='outline'
-                    onBeforeOpen={async () => {
+                    isSaved={isSaved}
+                    onBeforeOpen={() => {
                       if (!translatedWord) {
                         onTranslate?.(word);
                       }
@@ -162,7 +187,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       variant='outline'
                       className='mr-2'
                       showTextOnly={true}
-                      onBeforeOpen={async () => {
+                      isSaved={isSaved}
+                      onBeforeOpen={() => {
                         if (!translatedWord) {
                           onTranslate?.(word);
                         }

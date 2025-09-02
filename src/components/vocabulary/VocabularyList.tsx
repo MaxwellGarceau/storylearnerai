@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
-import {
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Search,
-  BookOpen,
-  Calendar,
-} from 'lucide-react';
+import { Edit, Trash2, Search, BookOpen, Calendar } from 'lucide-react';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import { useLanguages } from '../../hooks/useLanguages';
 import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
@@ -22,17 +15,13 @@ interface VocabularyListProps {
 
 export function VocabularyList({ className }: VocabularyListProps) {
   const { t } = useLocalization();
-  const { vocabulary, loading, searchVocabulary } = useVocabulary();
+  const { vocabulary, loading } = useVocabulary();
   const { languages } = useLanguages();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredVocabulary, setFilteredVocabulary] = useState<
     VocabularyWithLanguages[]
   >([]);
-  const [editingVocabulary, setEditingVocabulary] =
-    useState<VocabularyWithLanguages | null>(null);
-  const [deletingVocabulary, setDeletingVocabulary] =
-    useState<VocabularyWithLanguages | null>(null);
 
   // Filter vocabulary based on search term
   React.useEffect(() => {
@@ -50,7 +39,7 @@ export function VocabularyList({ className }: VocabularyListProps) {
 
   const getLanguageName = (languageId: number) => {
     const language = languages.find(lang => lang.id === languageId);
-    return language?.name || 'Unknown';
+    return language?.name ?? 'Unknown';
   };
 
   const formatDate = (dateString: string) => {

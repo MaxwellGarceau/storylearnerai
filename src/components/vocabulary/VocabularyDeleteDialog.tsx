@@ -50,7 +50,7 @@ export function VocabularyDeleteDialog({
               {t('common.cancel')}
             </Button>
             <Button
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               disabled={isDeleting}
               variant='destructive'
             >

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import Label from '../ui/Label';
 import { useVocabulary } from '../../hooks/useVocabulary';
-import { useLanguages } from '../../hooks/useLanguages';
+
 import type {
   VocabularyWithLanguages,
   VocabularyUpdate,
@@ -20,16 +20,15 @@ export function VocabularyEditModal({
 }: VocabularyEditModalProps) {
   const { t } = useLocalization();
   const { updateVocabularyWord } = useVocabulary();
-  const { languages } = useLanguages();
 
   const [formData, setFormData] = useState({
     original_word: vocabulary.original_word,
     translated_word: vocabulary.translated_word,
-    original_word_context: vocabulary.original_word_context || '',
-    translated_word_context: vocabulary.translated_word_context || '',
-    definition: vocabulary.definition || '',
-    part_of_speech: vocabulary.part_of_speech || '',
-    frequency_level: vocabulary.frequency_level || '',
+    original_word_context: vocabulary.original_word_context ?? '',
+    translated_word_context: vocabulary.translated_word_context ?? '',
+    definition: vocabulary.definition ?? '',
+    part_of_speech: vocabulary.part_of_speech ?? '',
+    frequency_level: vocabulary.frequency_level ?? '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -52,9 +51,7 @@ export function VocabularyEditModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -103,7 +100,13 @@ export function VocabularyEditModal({
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className='space-y-4'>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            void handleSubmit();
+          }}
+          className='space-y-4'
+        >
           <div className='grid grid-cols-2 gap-4'>
             <div className='space-y-2'>
               <Label htmlFor='original_word'>
