@@ -72,7 +72,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
     >
       <PopoverTrigger asChild>
         <span
-          className={`cursor-pointer transition-colors duration-200 ${open ? 'bg-primary/30 ring-2 ring-primary/50' : 'hover:bg-muted/50'}`}
+          className={`inline-block align-baseline rounded-sm px-0.5 py-0 transition-colors duration-200 cursor-pointer ${open ? 'bg-primary/30 ring-1 ring-primary/40' : 'hover:bg-primary/20 hover:ring-1 hover:ring-primary/30'}`}
+          style={{ lineHeight: '1.35em' }}
           data-word-trigger
           onClick={() => {}}
         >

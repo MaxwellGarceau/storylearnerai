@@ -110,7 +110,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   };
 
   return (
-    <span className={className}>
+    <span className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}>
       {words.map((word, index) => {
         // Skip pure whitespace
         if (/^\s+$/.test(word)) {
@@ -132,13 +132,28 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
           const normalizedWord = cleanWord.toLowerCase();
           const translatedWord = translatedWords.get(normalizedWord);
 
-          // If tooltips are disabled or the component is disabled, just use WordHighlight
+          // If tooltips are disabled or the component is disabled, just render the word inline
           if (!enableTooltips || disabled) {
             return (
               <span key={index}>
-                <WordHighlight word={normalizedWord} disabled={disabled}>
-                  {cleanWord}
-                </WordHighlight>
+                {translatedWord ? (
+                  <span className='relative inline-block align-baseline'>
+                    <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+                      {translatedWord}
+                    </span>
+                    <WordHighlight
+                      word={normalizedWord}
+                      disabled={disabled}
+                      className='line-through decoration-2 decoration-red-500'
+                    >
+                      {cleanWord}
+                    </WordHighlight>
+                  </span>
+                ) : (
+                  <WordHighlight word={normalizedWord} disabled={disabled}>
+                    {cleanWord}
+                  </WordHighlight>
+                )}
                 {punctuation}
               </span>
             );
@@ -175,28 +190,45 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 originalSentence={originalSentence}
                 translatedSentence={translatedSentenceForMenu}
               >
-                <WordHighlight
-                  word={normalizedWord}
-                  disabled={disabled}
-                  active={openMenuIndex === index}
-                  onClick={() => {
-                    setOpenMenuIndex(prev => (prev === index ? null : index));
-                    // Auto-translate when word is clicked
-                    if (openMenuIndex !== index) {
-                      void handleTranslate(normalizedWord, index);
-                    }
-                  }}
-                >
-                  {cleanWord}
-                </WordHighlight>
+                {translatedWord ? (
+                  <span className='relative inline-block align-baseline'>
+                    <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+                      {translatedWord}
+                    </span>
+                    <WordHighlight
+                      word={normalizedWord}
+                      disabled={disabled}
+                      active={openMenuIndex === index}
+                      className='line-through decoration-2 decoration-red-500'
+                      onClick={() => {
+                        setOpenMenuIndex(prev => (prev === index ? null : index));
+                        // Auto-translate when word is clicked
+                        if (openMenuIndex !== index) {
+                          void handleTranslate(normalizedWord, index);
+                        }
+                      }}
+                    >
+                      {cleanWord}
+                    </WordHighlight>
+                  </span>
+                ) : (
+                  <WordHighlight
+                    word={normalizedWord}
+                    disabled={disabled}
+                    active={openMenuIndex === index}
+                    onClick={() => {
+                      setOpenMenuIndex(prev => (prev === index ? null : index));
+                      // Auto-translate when word is clicked
+                      if (openMenuIndex !== index) {
+                        void handleTranslate(normalizedWord, index);
+                      }
+                    }}
+                  >
+                    {cleanWord}
+                  </WordHighlight>
+                )}
               </WordMenu>
               {punctuation}
-              {/* Show translation if available */}
-              {translatedWord && (
-                <span className='ml-1 text-sm text-muted-foreground'>
-                  ({translatedWord})
-                </span>
-              )}
             </span>
           );
         }
