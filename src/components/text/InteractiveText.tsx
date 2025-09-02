@@ -228,7 +228,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                       word={normalizedWord}
                       disabled={disabled}
                       active={openMenuIndex === index}
-                      className='line-through decoration-2 decoration-red-500'
+                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
                       onClick={() => {
                         setOpenMenuIndex(prev => (prev === index ? null : index));
                       }}
@@ -241,6 +241,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     word={normalizedWord}
                     disabled={disabled}
                     active={openMenuIndex === index}
+                    className={savedHighlightClass}
                     onClick={() => {
                       setOpenMenuIndex(prev => (prev === index ? null : index));
                     }}
