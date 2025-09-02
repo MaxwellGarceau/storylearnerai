@@ -246,6 +246,13 @@ export class DictionaryApiManagerImpl implements DictionaryApiManager {
   }
 
   /**
+   * Get available transformer types
+   */
+  getAvailableTransformers(): string[] {
+    return Array.from(this.transformers.keys());
+  }
+
+  /**
    * Update configuration
    */
   updateConfig(newConfig: Partial<ApiManagerConfig>): void {
