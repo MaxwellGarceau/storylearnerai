@@ -101,6 +101,13 @@ export function useVocabulary(): UseVocabularyReturn {
         // Refresh the vocabulary list
         await loadVocabulary();
 
+        // Notify other listeners (e.g., sidebars) to refresh immediately
+        try {
+          window.dispatchEvent(new CustomEvent('vocabulary:updated'));
+        } catch {
+          // no-op in non-browser/test environments
+        }
+
         toast({
           title: 'Success',
           description: 'Vocabulary word saved successfully',
@@ -142,6 +149,13 @@ export function useVocabulary(): UseVocabularyReturn {
         // Refresh the vocabulary list
         await loadVocabulary();
 
+        // Notify other listeners to refresh
+        try {
+          window.dispatchEvent(new CustomEvent('vocabulary:updated'));
+        } catch {
+          // no-op
+        }
+
         toast({
           title: 'Success',
           description: 'Vocabulary word updated successfully',
@@ -178,6 +192,13 @@ export function useVocabulary(): UseVocabularyReturn {
 
         // Refresh the vocabulary list
         await loadVocabulary();
+
+        // Notify other listeners to refresh
+        try {
+          window.dispatchEvent(new CustomEvent('vocabulary:updated'));
+        } catch {
+          // no-op
+        }
 
         toast({
           title: 'Success',
@@ -275,6 +296,21 @@ export function useVocabulary(): UseVocabularyReturn {
     } else {
       setVocabulary([]);
       setVocabularyWithStories([]);
+    }
+  }, [user?.id, loadVocabulary]);
+
+  // Listen for cross-component updates to refresh immediately
+  useEffect(() => {
+    const handleUpdated = () => {
+      if (user?.id) {
+        void loadVocabulary();
+      }
+    };
+    try {
+      window.addEventListener('vocabulary:updated', handleUpdated);
+      return () => window.removeEventListener('vocabulary:updated', handleUpdated);
+    } catch {
+      return () => {};
     }
   }, [user?.id, loadVocabulary]);
 
