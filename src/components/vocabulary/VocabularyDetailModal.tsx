@@ -37,7 +37,7 @@ export function VocabularyDetailModal({
           >
             <X className='h-4 w-4' />
           </Button>
-          <div className='py-6 border-b'>
+          <div className='py-6 pt-4 border-b'>
             <h2 className='text-lg font-semibold flex items-center gap-2'>
               <BookOpen className='h-5 w-5' />
               {t('vocabulary.detail.title')}
@@ -47,8 +47,8 @@ export function VocabularyDetailModal({
           <div className='space-y-4'>
             {/* Word Information */}
             <div className='space-y-3'>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-2'>
+              <div className='flex items-center justify-between py-3'>
+                <div className='flex items-center gap-2 mr-2'>
                   <span className='font-semibold text-lg'>
                     {vocabulary.original_word}
                   </span>
@@ -88,8 +88,6 @@ export function VocabularyDetailModal({
                 <span>{formatDate(vocabulary.created_at)}</span>
               </div>
             </div>
-
-            <hr className='border-t border-border' />
 
             {/* Definition */}
             {vocabulary.definition && (
