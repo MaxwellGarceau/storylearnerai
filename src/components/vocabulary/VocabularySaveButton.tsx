@@ -92,7 +92,7 @@ export function VocabularySaveButton({
 
   if (isChecking) {
     return (
-      <Button variant={variant} size={size} disabled className={className}>
+      <Button variant={variant} size={size} disabled className={className} type='button'>
         <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
         {t('vocabulary.checking')}
       </Button>
@@ -106,6 +106,7 @@ export function VocabularySaveButton({
         size={size}
         disabled
         className={`text-green-600 ${className}`}
+        type='button'
       >
         <Check className='h-3 w-3 mr-1' />
         {t('vocabulary.saved')}
@@ -122,6 +123,7 @@ export function VocabularySaveButton({
         className={className}
         title={t('vocabulary.save.tooltip')}
         disabled={isOpening}
+        type='button'
       >
         <BookOpen className='h-3 w-3 mr-1' />
         {showTextOnly ? t('vocabulary.save.button') : t('vocabulary.save.title')}
