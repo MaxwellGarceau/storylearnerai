@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../ui/Button';
 import Label from '../ui/Label';
@@ -65,6 +65,8 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+  const lastDuplicateCheckIdRef = useRef(0);
 
   const partOfSpeechOptions = useMemo(
     () => [
@@ -217,6 +219,66 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
       setErrors(prev => ({ ...prev, general: '' }));
     }
   };
+
+  // Real-time duplicate validation (create mode only)
+  useEffect(() => {
+    if (!isCreateMode) {
+      return;
+    }
+
+    const trimmedOriginal = formData.original_word.trim();
+    const trimmedTranslated = formData.translated_word.trim();
+    const fromId = formData.from_language_id;
+    const toId = formData.translated_language_id;
+
+    // Require required fields and different languages before checking
+    if (!trimmedOriginal || !trimmedTranslated || !fromId || !toId || fromId === toId) {
+      setIsCheckingDuplicate(false);
+      return;
+    }
+
+    const currentCheckId = ++lastDuplicateCheckIdRef.current;
+    setIsCheckingDuplicate(true);
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const exists = await checkVocabularyExists(
+          trimmedOriginal,
+          trimmedTranslated,
+          fromId,
+          toId
+        );
+
+        // Only apply result if it's the latest request
+        if (lastDuplicateCheckIdRef.current === currentCheckId) {
+          if (exists) {
+            setErrors(prev => ({
+              ...prev,
+              general: t('vocabulary.validation.alreadyExists'),
+            }));
+          } else if (errors.general === t('vocabulary.validation.alreadyExists')) {
+            setErrors(prev => ({ ...prev, general: '' }));
+          }
+        }
+      } finally {
+        if (lastDuplicateCheckIdRef.current === currentCheckId) {
+          setIsCheckingDuplicate(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isCreateMode,
+    formData.original_word,
+    formData.translated_word,
+    formData.from_language_id,
+    formData.translated_language_id,
+    t,
+  ]);
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
@@ -458,7 +520,20 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             >
               {t('common.cancel')}
             </Button>
-            <Button type='submit' disabled={isSubmitting}>
+            <Button
+              type='submit'
+              disabled={
+                isSubmitting ||
+                isCheckingDuplicate ||
+                Boolean(
+                  errors.original_word ||
+                    errors.translated_word ||
+                    errors.from_language_id ||
+                    errors.translated_language_id ||
+                    errors.general
+                )
+              }
+            >
               {isSubmitting ? t('common.saving') : t('common.save')}
             </Button>
           </div>
