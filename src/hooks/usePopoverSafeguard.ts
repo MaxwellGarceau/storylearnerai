@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { NullableNumber } from '../types/common';
 
 /**
  * Custom hook to safeguard popover positioning
@@ -33,8 +34,8 @@ export const usePopoverSafeguard = () => {
           const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
           const matrix3dMatch = transform.match(/matrix3d\(([^)]+)\)/);
 
-          let tx: number | null = null;
-          let ty: number | null = null;
+          let tx: NullableNumber = null;
+          let ty: NullableNumber = null;
 
           if (matrix3dMatch) {
             const values = matrix3dMatch[1].split(/,\s*/);

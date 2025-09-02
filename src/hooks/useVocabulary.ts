@@ -137,10 +137,7 @@ export function useVocabulary(): UseVocabularyReturn {
   );
 
   const updateVocabularyWord = useCallback(
-    async (
-      id: number,
-      updates: VocabularyUpdate
-    ): Promise<Vocabulary | null> => {
+    async (id: number, updates: VocabularyUpdate): VocabularyPromise => {
       setLoading(true);
       setError(null);
 
@@ -266,7 +263,7 @@ export function useVocabulary(): UseVocabularyReturn {
       translatedWord: string,
       fromLanguageId: number,
       translatedLanguageId: number
-    ): Promise<boolean> => {
+    ): BooleanPromise => {
       if (!user?.id) return false;
 
       try {

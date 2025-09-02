@@ -5,6 +5,8 @@ import type {
   VocabularyUpdate,
   VocabularyWithLanguages,
   VocabularyWithLanguagesAndStory,
+  VocabularyPromise,
+  VocabularyArrayPromise,
 } from '../types/database/vocabulary';
 import { logger } from './logger';
 
@@ -22,7 +24,7 @@ export class VocabularyService {
    */
   static async saveVocabularyWord(
     vocabularyData: VocabularyInsert
-  ): Promise<Vocabulary> {
+  ): VocabularyPromise {
     try {
       const { data, error } = await supabase
         .from('vocabulary')
@@ -35,14 +37,16 @@ export class VocabularyService {
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
-        throw new Error(`Failed to save vocabulary word: ${errorMessage}`);
+        throw new Error(
+          `Failed to save vocabulary word: ${String(errorMessage)}`
+        );
       }
 
       if (!data) {
         throw new Error('No data returned when saving vocabulary word');
       }
 
-      return data;
+      return data as Vocabulary;
     } catch (error) {
       logger.error('general', 'Error in saveVocabularyWord', { error });
       if (this.isPostgrestError(error)) {
@@ -55,9 +59,7 @@ export class VocabularyService {
   /**
    * Get all vocabulary words for a user with language information
    */
-  static async getUserVocabulary(
-    userId: string
-  ): Promise<VocabularyWithLanguages[]> {
+  static async getUserVocabulary(userId: string): VocabularyArrayPromise {
     try {
       const { data, error } = await supabase
         .from('vocabulary')
@@ -79,7 +81,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return data || [];
+      return (data ?? []) as VocabularyWithLanguages[];
     } catch (error) {
       logger.error('Error in getUserVocabulary:', error);
       if (this.isPostgrestError(error)) {
@@ -96,7 +98,7 @@ export class VocabularyService {
     userId: string,
     fromLanguageId: number,
     translatedLanguageId: number
-  ): Promise<VocabularyWithLanguages[]> {
+  ): VocabularyArrayPromise {
     try {
       const { data, error } = await supabase
         .from('vocabulary')
@@ -120,7 +122,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return data || [];
+      return (data ?? []) as VocabularyWithLanguages[];
     } catch (error) {
       logger.error('Error in getUserVocabularyByLanguages:', error);
       if (this.isPostgrestError(error)) {
@@ -160,7 +162,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return data || [];
+      return (data ?? []) as VocabularyWithLanguages[];
     } catch (error) {
       logger.error('Error in getUserVocabularyWithStories:', error);
       if (this.isPostgrestError(error)) {
@@ -178,7 +180,7 @@ export class VocabularyService {
   static async updateVocabularyWord(
     id: number,
     updates: VocabularyUpdate
-  ): Promise<Vocabulary> {
+  ): VocabularyPromise {
     try {
       const { data, error } = await supabase
         .from('vocabulary')
@@ -199,7 +201,7 @@ export class VocabularyService {
         throw new Error('No data returned when updating vocabulary word');
       }
 
-      return data;
+      return data as Vocabulary;
     } catch (error) {
       logger.error('Error in updateVocabularyWord:', error);
       if (this.isPostgrestError(error)) {
@@ -253,14 +255,14 @@ export class VocabularyService {
         .eq('translated_language_id', translatedLanguageId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && (error as { code?: string }).code !== 'PGRST116') {
         // PGRST116 is "not found" error
         logger.error('Error checking vocabulary existence:', error);
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
         throw new Error(
-          `Failed to check vocabulary existence: ${errorMessage}`
+          `Failed to check vocabulary existence: ${String(errorMessage)}`
         );
       }
 
@@ -284,7 +286,7 @@ export class VocabularyService {
     searchTerm: string,
     fromLanguageId?: number,
     translatedLanguageId?: number
-  ): Promise<VocabularyWithLanguages[]> {
+  ): VocabularyArrayPromise {
     try {
       let query = supabase
         .from('vocabulary')
@@ -319,7 +321,7 @@ export class VocabularyService {
         throw new Error(`Failed to search vocabulary: ${errorMessage}`);
       }
 
-      return data || [];
+      return (data ?? []) as VocabularyWithLanguages[];
     } catch (error) {
       logger.error('Error in searchVocabulary:', error);
       if (this.isPostgrestError(error)) {

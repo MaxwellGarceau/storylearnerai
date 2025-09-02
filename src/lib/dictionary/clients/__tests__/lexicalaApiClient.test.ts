@@ -117,7 +117,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;
@@ -277,7 +277,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;
@@ -323,7 +323,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;
@@ -371,7 +371,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;
@@ -417,7 +417,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;
@@ -510,7 +510,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse as unknown;
+          return mockResponse;
         },
         clone: function () {
           return this;

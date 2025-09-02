@@ -155,9 +155,10 @@ describe('DictionaryApiManagerImpl', () => {
   describe('constructor', () => {
     it('should initialize with default configuration', () => {
       expect(apiManager).toBeInstanceOf(DictionaryApiManagerImpl);
-      expect(apiManager.getConfig().primaryApi).toBe('lexicala');
-      expect(apiManager.getConfig().timeout).toBe(10000);
-      expect(apiManager.getConfig().retryAttempts).toBe(2);
+      const config = apiManager.getConfig();
+      expect(config.primaryApi).toBe('lexicala');
+      expect(config.timeout).toBe(10000);
+      expect(config.retryAttempts).toBe(2);
     });
 
     it('should initialize with custom configuration', () => {

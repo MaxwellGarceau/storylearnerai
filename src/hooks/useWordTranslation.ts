@@ -43,7 +43,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
       sentence: string,
       fromLanguage: LanguageCode,
       toLanguage: LanguageCode
-    ): Promise<string | null> => {
+    ): NullableStringPromise => {
       setIsTranslating(true);
       setError(null);
 
@@ -98,7 +98,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
       sentence: string,
       fromLanguage: LanguageCode,
       toLanguage: LanguageCode
-    ): Promise<string | null> => {
+    ): NullableStringPromise => {
       setIsTranslating(true);
       setError(null);
 
@@ -154,7 +154,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
       word: string,
       fromLanguage: LanguageCode,
       toLanguage: LanguageCode
-    ): Promise<string | null> => {
+    ): NullableStringPromise => {
       // Backward-compatible: when no sentence is provided, fall back to simple translation
       return translateSentence(word, fromLanguage, toLanguage);
     },
