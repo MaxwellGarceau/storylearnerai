@@ -34,7 +34,7 @@ export function VocabularyDeleteDialog({
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-      <div className='bg-background rounded-lg shadow-lg max-w-md m-4'>
+      <div className='bg-background rounded-lg shadow-lg max-w-md m-4 p-4'>
         <div className='p-6'>
           <h2 className='text-lg font-semibold mb-2'>
             {t('vocabulary.delete.title')}

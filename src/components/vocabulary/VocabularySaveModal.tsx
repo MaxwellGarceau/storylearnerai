@@ -168,7 +168,7 @@ export function VocabularySaveModal({
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-      <div className='bg-background rounded-lg shadow-lg sm:max-w-[600px] max-h-[90vh] overflow-y-auto m-4'>
+      <div className='bg-background rounded-lg shadow-lg sm:max-w-[600px] max-h-[90vh] overflow-y-auto m-4 p-4'>
         <div className='p-6 border-b'>
           <h2 className='text-lg font-semibold'>
             {t('vocabulary.save.title')}
