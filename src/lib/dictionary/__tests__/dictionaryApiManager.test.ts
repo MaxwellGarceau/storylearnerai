@@ -77,7 +77,10 @@ describe('DictionaryApiManagerImpl', () => {
       LexicalaDataTransformer['validateWordData']
     >;
   };
-  let mockEnvironmentConfig: any;
+  let mockEnvironmentConfig: {
+    getDictionaryConfig: MockedFunction<() => any>;
+    isDictionaryDisabled: MockedFunction<() => boolean>;
+  };
 
   const mockDictionaryWord: DictionaryWord = {
     word: 'hello',
