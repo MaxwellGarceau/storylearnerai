@@ -136,6 +136,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     translatedLanguageId={targetLanguageId}
                     size='sm'
                     variant='outline'
+                    onBeforeOpen={async () => {
+                      if (!translatedWord) {
+                        onTranslate?.(word);
+                      }
+                    }}
                   />
                 )}
               </div>
@@ -157,6 +162,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       variant='outline'
                       className='mr-2'
                       showTextOnly={true}
+                      onBeforeOpen={async () => {
+                        if (!translatedWord) {
+                          onTranslate?.(word);
+                        }
+                      }}
                     />
                   )}
                   <Button
