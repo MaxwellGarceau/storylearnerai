@@ -23,6 +23,25 @@ export interface TranslationResponse {
   model?: string;
 }
 
+export interface WordTranslationRequest {
+  sentence: string;
+  focusWord: string;
+  fromLanguage: LanguageCode; // language of sentence/focus word
+  toLanguage: LanguageCode;   // desired output language
+  difficulty: DifficultyLevel;
+}
+
+export interface WordTranslationResponse {
+  originalWord: string;
+  translatedWord: string;
+  sentence: string;
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  difficulty: DifficultyLevel;
+  provider?: string;
+  model?: string;
+}
+
 type TranslationResponsePromise = Promise<TranslationResponse>;
 
 export interface TranslationError {
@@ -89,6 +108,46 @@ class TranslationService {
     }
   }
 
+  async translateWordWithContext(
+    request: WordTranslationRequest
+  ): Promise<WordTranslationResponse> {
+    try {
+      const prompt = this.buildWordTranslationPrompt(request);
+
+      const llmResponse = await llmServiceManager.generateCompletion({
+        prompt,
+        maxTokens: 8,
+        temperature: 0.2,
+      });
+
+      // Ensure we only keep the first line/token as the word
+      const raw = (llmResponse.content ?? '').trim();
+      const singleWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
+
+      return {
+        originalWord: request.focusWord,
+        translatedWord: singleWord,
+        sentence: request.sentence,
+        fromLanguage: request.fromLanguage,
+        toLanguage: request.toLanguage,
+        difficulty: request.difficulty,
+        provider: llmResponse.provider,
+        model: llmResponse.model,
+      };
+    } catch (error) {
+      logger.error('translation', 'Word-with-context translation error', { error });
+      const errorMessage =
+        error instanceof Error ? error.message : 'Translation service unavailable';
+      throw new Error(
+        this.getUserFriendlyErrorMessage({
+          message: errorMessage,
+          code: 'TRANSLATION_ERROR',
+          provider: 'unknown',
+        })
+      );
+    }
+  }
+
   /**
    * Build a customized translation prompt based on language and difficulty level
    */
@@ -120,6 +179,34 @@ class TranslationService {
 
     // Use the prompt configuration service to build a customized prompt
     return generalPromptConfigService.buildPrompt(context);
+  }
+
+  /**
+   * Prompt for translating a single focus word using sentence context
+   */
+  private buildWordTranslationPrompt(request: WordTranslationRequest): string {
+    return `You are a precise translator.
+
+Task: Translate ONLY the specified focus word from {fromLanguage} to {toLanguage}, using the full sentence for context.
+
+Rules:
+- Output ONLY the single translated word.
+- No explanations, punctuation, quotes, or extra words.
+- Choose the most common, natural everyday term in {toLanguage}.
+- If multiple translations exist, pick the most likely given the sentence.
+- If the word is a proper noun that should remain unchanged, return it unchanged.
+- If no single-word translation exists, return the closest single-word equivalent.
+
+Context sentence ({fromLanguage}):
+"{sentence}"
+
+Focus word: {focusWord}
+
+Return: ONLY the translation of the focus word in {toLanguage}.`
+      .replace(/{fromLanguage}/g, request.fromLanguage)
+      .replace(/{toLanguage}/g, request.toLanguage)
+      .replace(/{sentence}/g, request.sentence)
+      .replace(/{focusWord}/g, request.focusWord);
   }
 
   /**

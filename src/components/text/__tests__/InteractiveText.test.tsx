@@ -19,6 +19,7 @@ vi.mock('../../../hooks/useDictionary', () => ({
 vi.mock('../../../hooks/useWordTranslation', () => ({
   useWordTranslation: () => ({
     translateWord: vi.fn().mockResolvedValue('translated'),
+    translateSentence: vi.fn().mockResolvedValue('translated sentence'),
     isTranslating: false,
     error: null,
     clearError: vi.fn(),

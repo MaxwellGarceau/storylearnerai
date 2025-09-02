@@ -25,10 +25,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const [translatedWords, setTranslatedWords] = useState<Map<string, string>>(
     new Map()
   );
-  const { translateWord } = useWordTranslation();
-
-  console.log('fromLanguage', fromLanguage);
-  console.log('targetLanguage', targetLanguage);
+  const [translatedSentences, setTranslatedSentences] = useState<
+    Map<string, string>
+  >(new Map());
+  const { translateWordInSentence, translateSentence } = useWordTranslation();
 
   // Handle empty text
   if (!text.trim()) {
@@ -38,26 +38,75 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   // Split text into words while preserving whitespace and punctuation
   const words = text.split(/(\s+)/);
 
-  const handleTranslate = async (word: string) => {
+  // Function to extract sentence context around a word
+  const extractSentenceContext = (wordIndex: number): string => {
+    const sentenceStart = findSentenceStart(wordIndex);
+    const sentenceEnd = findSentenceEnd(wordIndex);
+    return words
+      .slice(sentenceStart, sentenceEnd + 1)
+      .join('')
+      .trim();
+  };
+
+  // Find the start of the sentence (looking backwards for sentence endings)
+  const findSentenceStart = (wordIndex: number): number => {
+    for (let i = wordIndex; i >= 0; i--) {
+      const token = words[i];
+      if (token && /[.!?]\s*$/.test(token)) {
+        return i + 1;
+      }
+    }
+    return 0;
+  };
+
+  // Find the end of the sentence (looking forwards for sentence endings)
+  const findSentenceEnd = (wordIndex: number): number => {
+    for (let i = wordIndex; i < words.length; i++) {
+      const token = words[i];
+      if (token && /[.!?]\s*$/.test(token)) {
+        return i;
+      }
+    }
+    return words.length - 1;
+  };
+
+  const handleTranslate = async (word: string, wordIndex: number) => {
     // Check if we already have a translation for this word
     if (translatedWords.has(word)) {
       return;
     }
 
-    const translatedText = await translateWord(
+    // Extract the sentence context from the target-language text
+    const sentenceContext = extractSentenceContext(wordIndex);
+
+    // Translate the entire sentence from target language -> from language for context
+    if (!translatedSentences.has(sentenceContext)) {
+      const translatedSentence = await translateSentence(
+        sentenceContext,
+        targetLanguage, // from target
+        fromLanguage // to from
+      );
+      if (translatedSentence) {
+        setTranslatedSentences(prev =>
+          new Map(prev).set(sentenceContext, translatedSentence)
+        );
+      }
+    }
+
+    // Translate the clicked word (target -> from) for display next to the word
+    const translatedText = await translateWordInSentence(
       word,
-      fromLanguage,
-      targetLanguage
+      sentenceContext,
+      targetLanguage,
+      fromLanguage
     );
     if (translatedText) {
       setTranslatedWords(prev => new Map(prev).set(word, translatedText));
     }
   };
 
-  const handleSave = (word: string) => {
-    // This function will be called by the VocabularySaveButton
-    // The actual save functionality is handled within the VocabularySaveButton component
-    // Log for debugging purposes
+  const handleSave = (_word: string) => {
+    // Saving handled by VocabularySaveButton
   };
 
   return (
@@ -95,6 +144,11 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
             );
           }
 
+          const originalSentence = extractSentenceContext(index);
+          const translatedSentenceForMenu = translatedSentences.get(
+            originalSentence
+          );
+
           // Always render WordMenu so Radix trigger exists before click
           return (
             <span key={index}>
@@ -105,17 +159,21 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                   if (open) {
                     // Accept open events from Radix trigger as well (covers clicks on trigger padding)
                     setOpenMenuIndex(index);
+                    // Auto-translate when menu opens
+                    void handleTranslate(normalizedWord, index);
                   } else if (openMenuIndex === index) {
                     setOpenMenuIndex(null);
                   }
                 }}
-                onTranslate={word => {
-                  void handleTranslate(word);
+                onTranslate={w => {
+                  void handleTranslate(w, index);
                 }}
-                onSave={handleSave}
+                _onSave={handleSave}
                 fromLanguage={fromLanguage}
                 targetLanguage={targetLanguage}
                 translatedWord={translatedWord}
+                originalSentence={originalSentence}
+                translatedSentence={translatedSentenceForMenu}
               >
                 <WordHighlight
                   word={normalizedWord}
@@ -123,6 +181,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                   active={openMenuIndex === index}
                   onClick={() => {
                     setOpenMenuIndex(prev => (prev === index ? null : index));
+                    // Auto-translate when word is clicked
+                    if (openMenuIndex !== index) {
+                      void handleTranslate(normalizedWord, index);
+                    }
                   }}
                 >
                   {cleanWord}

@@ -514,6 +514,15 @@
     },
     "noResults": "No se encontraron palabras",
     "checking": "Verificando...",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "autoTranslate": {
+      "title": "Traducción Automática",
+      "description": "Haz clic en cualquier palabra para traducirla automáticamente con contexto",
+      "translating": "Traduciendo...",
+      "translationComplete": "Traducción completa",
+      "translationError": "Error en la traducción",
+      "sentenceContext": "Contexto de la oración",
+      "wordTranslation": "Traducción de la palabra"
+    }
   }
 }

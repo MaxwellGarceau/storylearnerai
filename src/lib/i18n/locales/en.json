@@ -523,6 +523,15 @@
     },
     "noResults": "No words found",
     "checking": "Checking...",
-    "saved": "Saved"
+    "saved": "Saved",
+    "autoTranslate": {
+      "title": "Auto-Translation",
+      "description": "Click on any word to automatically translate it with context",
+      "translating": "Translating...",
+      "translationComplete": "Translation complete",
+      "translationError": "Translation failed",
+      "sentenceContext": "Sentence context",
+      "wordTranslation": "Word translation"
+    }
   }
 }

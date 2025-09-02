@@ -18,6 +18,8 @@ interface WordMenuProps {
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
   translatedWord?: string;
+  originalSentence?: string;
+  translatedSentence?: string;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -30,6 +32,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   fromLanguage,
   targetLanguage,
   translatedWord,
+  originalSentence,
+  translatedSentence,
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
@@ -56,12 +60,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   };
 
   // Get language IDs for the VocabularySaveButton
-  const fromLanguageId = fromLanguage
-    ? getLanguageIdByCode(fromLanguage)
-    : null;
-  const targetLanguageId = targetLanguage
-    ? getLanguageIdByCode(targetLanguage)
-    : null;
+  const fromLanguageId = fromLanguage ? getLanguageIdByCode(fromLanguage) : null;
+  const targetLanguageId = targetLanguage ? getLanguageIdByCode(targetLanguage) : null;
 
   return (
     <Popover
@@ -83,9 +83,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
         side='bottom'
         align='start'
         updatePositionStrategy='always'
-        className={
-          'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'
-        }
+        className={'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'}
         sideOffset={8}
         onPointerDownOutside={e => {
           const target = e.target as HTMLElement | null;
@@ -101,7 +99,14 @@ const WordMenu: React.FC<WordMenuProps> = ({
         <div className='flex flex-col gap-2'>
           {!showDictionary ? (
             <>
-              <div className='text-sm font-medium text-center mb-2'>{word}</div>
+              <div className='text-center mb-3'>
+                <div className='text-sm font-medium mb-1'>{word}</div>
+                {translatedWord && (
+                  <div className='text-sm text-muted-foreground'>
+                    {translatedWord}
+                  </div>
+                )}
+              </div>
               <div className='flex flex-wrap gap-2 justify-center'>
                 <Button
                   variant='outline'
@@ -125,6 +130,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   <VocabularySaveButton
                     originalWord={word}
                     translatedWord={translatedWord ?? ''}
+                    originalContext={originalSentence}
+                    translatedContext={translatedSentence}
                     fromLanguageId={fromLanguageId}
                     translatedLanguageId={targetLanguageId}
                     size='sm'
@@ -142,6 +149,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     <VocabularySaveButton
                       originalWord={word}
                       translatedWord={translatedWord ?? ''}
+                      originalContext={originalSentence}
+                      translatedContext={translatedSentence}
                       fromLanguageId={fromLanguageId}
                       translatedLanguageId={targetLanguageId}
                       size='sm'

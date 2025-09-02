@@ -16,6 +16,9 @@ interface VocabularySaveButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
   showTextOnly?: boolean;
+  // New props for sentence-level context
+  originalSentence?: string;
+  translatedSentence?: string;
 }
 
 export function VocabularySaveButton({
