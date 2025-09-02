@@ -3,6 +3,7 @@ import { translationService } from '../lib/translationService';
 import { useLanguages } from './useLanguages';
 import { useToast } from './useToast';
 import type { LanguageCode, DifficultyLevel } from '../types/llm/prompts';
+import type { NullableStringPromise } from '../types/common';
 import { logger } from '../lib/logger';
 
 interface UseWordTranslationReturn {
@@ -10,18 +11,18 @@ interface UseWordTranslationReturn {
     word: string,
     fromLanguage: LanguageCode,
     toLanguage: LanguageCode
-  ) => Promise<string | null>;
+  ) => NullableStringPromise;
   translateWordInSentence: (
     focusWord: string,
     sentence: string,
     fromLanguage: LanguageCode,
     toLanguage: LanguageCode
-  ) => Promise<string | null>;
+  ) => NullableStringPromise;
   translateSentence: (
     sentence: string,
     fromLanguage: LanguageCode,
     toLanguage: LanguageCode
-  ) => Promise<string | null>;
+  ) => NullableStringPromise;
   isTranslating: boolean;
   error: string | null;
   clearError: () => void;

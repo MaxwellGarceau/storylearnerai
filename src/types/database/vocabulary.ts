@@ -1,5 +1,19 @@
 import type { LanguageCode } from '../llm/prompts';
-import type { NullableString } from '../common';
+import type { NullableString, NullableNumber } from '../common';
+
+// Language record type for joined language information
+export type LanguageRecord = {
+  id: number;
+  code: LanguageCode;
+  name: string;
+  native_name: string;
+};
+
+// Promise types for vocabulary operations
+export type VocabularyPromise = Promise<Vocabulary | null>;
+export type VocabularyArrayPromise = Promise<VocabularyWithLanguages[]>;
+export type BooleanPromise = Promise<boolean>;
+export type VoidPromise = Promise<void>;
 
 export interface Vocabulary {
   id: number;
@@ -30,7 +44,7 @@ export interface VocabularyInsert {
   definition?: NullableString; // Definition of the word
   part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
   frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
-  saved_translation_id?: number | null; // Optional link to the story where this word was found
+  saved_translation_id?: NullableNumber; // Optional link to the story where this word was found
   created_at?: string;
   updated_at?: string;
 }
@@ -47,25 +61,15 @@ export interface VocabularyUpdate {
   definition?: NullableString; // Definition of the word
   part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
   frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
-  saved_translation_id?: number | null; // Optional link to the story where this word was found
+  saved_translation_id?: NullableNumber; // Optional link to the story where this word was found
   created_at?: string;
   updated_at?: string;
 }
 
 // Extended vocabulary type with joined language information
 export interface VocabularyWithLanguages extends Vocabulary {
-  translated_language: {
-    id: number;
-    code: LanguageCode;
-    name: string;
-    native_name: string;
-  };
-  from_language: {
-    id: number;
-    code: LanguageCode;
-    name: string;
-    native_name: string;
-  };
+  translated_language: LanguageRecord;
+  from_language: LanguageRecord;
 }
 
 // Extended vocabulary type with joined language and saved translation information

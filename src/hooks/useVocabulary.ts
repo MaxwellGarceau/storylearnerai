@@ -6,6 +6,10 @@ import type {
   VocabularyUpdate,
   VocabularyWithLanguages,
   VocabularyWithLanguagesAndStory,
+  VocabularyPromise,
+  VocabularyArrayPromise,
+  BooleanPromise,
+  VoidPromise,
 } from '../types/database/vocabulary';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
@@ -15,24 +19,24 @@ interface UseVocabularyReturn {
   vocabularyWithStories: VocabularyWithLanguagesAndStory[];
   loading: boolean;
   error: string | null;
-  saveVocabularyWord: (data: VocabularyInsert) => Promise<Vocabulary | null>;
+  saveVocabularyWord: (data: VocabularyInsert) => VocabularyPromise;
   updateVocabularyWord: (
     id: number,
     updates: VocabularyUpdate
-  ) => Promise<Vocabulary | null>;
-  deleteVocabularyWord: (id: number) => Promise<boolean>;
+  ) => VocabularyPromise;
+  deleteVocabularyWord: (id: number) => BooleanPromise;
   searchVocabulary: (
     searchTerm: string,
     fromLanguageId?: number,
     translatedLanguageId?: number
-  ) => Promise<VocabularyWithLanguages[]>;
+  ) => VocabularyArrayPromise;
   checkVocabularyExists: (
     originalWord: string,
     translatedWord: string,
     fromLanguageId: number,
     translatedLanguageId: number
-  ) => Promise<boolean>;
-  refreshVocabulary: () => Promise<void>;
+  ) => BooleanPromise;
+  refreshVocabulary: () => VoidPromise;
   clearError: () => void;
 }
 

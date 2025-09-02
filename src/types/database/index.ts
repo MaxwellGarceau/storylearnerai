@@ -1,5 +1,5 @@
 import type { LanguageCode, DifficultyLevel } from '../llm/prompts';
-import type { NullableString } from '../common';
+import type { NullableString, NullableNumber } from '../common';
 
 // Re-export all database types
 export * from './user';
@@ -118,7 +118,7 @@ export interface Database {
           definition?: NullableString; // Definition of the word
           part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
           frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
-          saved_translation_id?: number | null; // Optional link to the story where this word was found
+          saved_translation_id?: NullableNumber; // Optional link to the story where this word was found
           created_at?: string;
           updated_at?: string;
         };
@@ -134,7 +134,7 @@ export interface Database {
           definition?: NullableString; // Definition of the word
           part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
           frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
-          saved_translation_id?: number | null; // Optional link to the story where this word was found
+          saved_translation_id?: NullableNumber; // Optional link to the story where this word was found
           created_at?: string;
           updated_at?: string;
         };

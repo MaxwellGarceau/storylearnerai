@@ -1,7 +1,8 @@
 import VocabularyUpsertModal from './VocabularyUpsertModal';
+import type { VoidFunction } from '../../types/common';
 
 interface VocabularySaveModalProps {
-  onClose: () => void;
+  onClose: VoidFunction;
   currentLanguageId?: number;
   currentFromLanguageId?: number;
   initialData?: {
@@ -10,7 +11,7 @@ interface VocabularySaveModalProps {
     originalContext?: string;
     translatedContext?: string;
   };
-  onSaveSuccess?: () => void;
+  onSaveSuccess?: VoidFunction;
 }
 
 export function VocabularySaveModal({

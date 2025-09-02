@@ -117,7 +117,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;
@@ -277,7 +277,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;
@@ -323,7 +323,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;
@@ -371,7 +371,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;
@@ -417,7 +417,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;
@@ -463,7 +463,7 @@ describe('LexicalaApiClient', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = (offlineCall as [string, () => void])[1];
 
       offlineHandler();
       expect(client.isAvailable()).toBe(false);
@@ -475,7 +475,7 @@ describe('LexicalaApiClient', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = (offlineCall as [string, () => void])[1];
       offlineHandler();
 
       // Then go online
@@ -483,7 +483,7 @@ describe('LexicalaApiClient', () => {
         call => call[0] === 'online'
       );
       expect(onlineCall).toBeDefined();
-      const onlineHandler = onlineCall![1];
+      const onlineHandler = (onlineCall as [string, () => void])[1];
       onlineHandler();
 
       expect(client.isAvailable()).toBe(true);
@@ -510,7 +510,7 @@ describe('LexicalaApiClient', () => {
         status: 200,
         json: async () => {
           await Promise.resolve();
-          return mockResponse;
+          return mockResponse as unknown;
         },
         clone: function () {
           return this;

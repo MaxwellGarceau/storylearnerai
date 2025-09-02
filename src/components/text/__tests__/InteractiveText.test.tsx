@@ -3,6 +3,10 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveText from '../InteractiveText';
+// VoidFunction imported but not used in this test file
+
+// Test helper types
+type WordCallback = (word: string) => void;
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -68,8 +72,8 @@ vi.mock('../WordMenu', () => ({
     children: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
-    onTranslate?: (word: string) => void;
-    onSave?: (word: string) => void;
+    onTranslate?: WordCallback;
+    onSave?: WordCallback;
     fromLanguage?: string;
     targetLanguage?: string;
     translatedWord?: string;

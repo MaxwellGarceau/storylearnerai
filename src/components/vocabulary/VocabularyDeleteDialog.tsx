@@ -3,11 +3,12 @@ import { Button } from '../ui/Button';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
 import { useLocalization } from '../../hooks/useLocalization';
+import type { VoidFunction } from '../../types/common';
 
 interface VocabularyDeleteDialogProps {
   vocabulary: VocabularyWithLanguages;
-  onClose: () => void;
-  onDeleteSuccess?: () => void;
+  onClose: VoidFunction;
+  onDeleteSuccess?: VoidFunction;
 }
 
 export function VocabularyDeleteDialog({

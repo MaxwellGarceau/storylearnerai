@@ -5,6 +5,7 @@
 
 // Nullable types
 export type NullableString = string | null;
+export type NullableNumber = number | null;
 
 // Function types
 export type VoidFunction = () => void;
@@ -13,6 +14,7 @@ export type VoidFunction = () => void;
 export type BooleanPromise = Promise<boolean>;
 export type VoidPromise = Promise<void>;
 export type UnknownPromise = Promise<unknown>;
+export type NullableStringPromise = Promise<string | null>;
 
 // React event types
 export type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>;

@@ -22,6 +22,10 @@ export function VocabularyList({ className }: VocabularyListProps) {
   const [filteredVocabulary, setFilteredVocabulary] = useState<
     VocabularyWithLanguages[]
   >([]);
+  const [_editingVocabulary, _setEditingVocabulary] =
+    useState<VocabularyWithLanguages | null>(null);
+  const [_deletingVocabulary, _setDeletingVocabulary] =
+    useState<VocabularyWithLanguages | null>(null);
 
   // Filter vocabulary based on search term
   React.useEffect(() => {
@@ -147,7 +151,7 @@ export function VocabularyList({ className }: VocabularyListProps) {
                     variant='ghost'
                     size='sm'
                     className='h-8 w-8 p-0'
-                    onClick={() => setEditingVocabulary(item)}
+                    onClick={() => _setEditingVocabulary(item)}
                   >
                     <Edit className='h-4 w-4' />
                   </Button>
@@ -155,7 +159,7 @@ export function VocabularyList({ className }: VocabularyListProps) {
                     variant='ghost'
                     size='sm'
                     className='h-8 w-8 p-0 ml-1'
-                    onClick={() => setDeletingVocabulary(item)}
+                    onClick={() => _setDeletingVocabulary(item)}
                   >
                     <Trash2 className='h-4 w-4' />
                   </Button>

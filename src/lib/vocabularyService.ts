@@ -10,6 +10,14 @@ import { logger } from './logger';
 
 export class VocabularyService {
   /**
+   * Type guard to check if an error is a Supabase PostgrestError
+   */
+  private static isPostgrestError(
+    error: unknown
+  ): error is { message: string } {
+    return typeof error === 'object' && error !== null && 'message' in error;
+  }
+  /**
    * Save a new vocabulary word
    */
   static async saveVocabularyWord(
@@ -24,7 +32,10 @@ export class VocabularyService {
 
       if (error) {
         logger.error('general', 'Error saving vocabulary word', { error });
-        throw new Error(`Failed to save vocabulary word: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to save vocabulary word: ${errorMessage}`);
       }
 
       if (!data) {
@@ -34,7 +45,10 @@ export class VocabularyService {
       return data;
     } catch (error) {
       logger.error('general', 'Error in saveVocabularyWord', { error });
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error('Unknown error occurred while saving vocabulary word');
     }
   }
 
@@ -59,13 +73,19 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error fetching user vocabulary:', error);
-        throw new Error(`Failed to fetch vocabulary: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       logger.error('Error in getUserVocabulary:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error('Unknown error occurred while fetching user vocabulary');
     }
   }
 
@@ -94,13 +114,21 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error fetching vocabulary by languages:', error);
-        throw new Error(`Failed to fetch vocabulary: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       logger.error('Error in getUserVocabularyByLanguages:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error(
+        'Unknown error occurred while fetching vocabulary by languages'
+      );
     }
   }
 
@@ -126,13 +154,21 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error fetching vocabulary with stories:', error);
-        throw new Error(`Failed to fetch vocabulary: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       logger.error('Error in getUserVocabularyWithStories:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error(
+        'Unknown error occurred while fetching vocabulary with stories'
+      );
     }
   }
 
@@ -153,7 +189,10 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error updating vocabulary word:', error);
-        throw new Error(`Failed to update vocabulary word: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to update vocabulary word: ${errorMessage}`);
       }
 
       if (!data) {
@@ -163,7 +202,10 @@ export class VocabularyService {
       return data;
     } catch (error) {
       logger.error('Error in updateVocabularyWord:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error('Unknown error occurred while updating vocabulary word');
     }
   }
 
@@ -176,11 +218,17 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error deleting vocabulary word:', error);
-        throw new Error(`Failed to delete vocabulary word: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to delete vocabulary word: ${errorMessage}`);
       }
     } catch (error) {
       logger.error('Error in deleteVocabularyWord:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error('Unknown error occurred while deleting vocabulary word');
     }
   }
 
@@ -208,15 +256,23 @@ export class VocabularyService {
       if (error && error.code !== 'PGRST116') {
         // PGRST116 is "not found" error
         logger.error('Error checking vocabulary existence:', error);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
         throw new Error(
-          `Failed to check vocabulary existence: ${error.message}`
+          `Failed to check vocabulary existence: ${errorMessage}`
         );
       }
 
       return !!data;
     } catch (error) {
       logger.error('Error in checkVocabularyExists:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error(
+        'Unknown error occurred while checking vocabulary existence'
+      );
     }
   }
 
@@ -257,13 +313,19 @@ export class VocabularyService {
 
       if (error) {
         logger.error('Error searching vocabulary:', error);
-        throw new Error(`Failed to search vocabulary: ${error.message}`);
+        const errorMessage = this.isPostgrestError(error)
+          ? error.message
+          : 'Unknown error';
+        throw new Error(`Failed to search vocabulary: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       logger.error('Error in searchVocabulary:', error);
-      throw error;
+      if (this.isPostgrestError(error)) {
+        throw error;
+      }
+      throw new Error('Unknown error occurred while searching vocabulary');
     }
   }
 }

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordMenu from '../WordMenu';
+import type { VoidFunction } from '../../../types/common';
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -104,7 +105,7 @@ vi.mock('../../ui/Button', () => ({
     disabled,
   }: {
     children: React.ReactNode;
-    onClick?: () => void;
+    onClick?: VoidFunction;
     variant?: string;
     size?: string;
     className?: string;
