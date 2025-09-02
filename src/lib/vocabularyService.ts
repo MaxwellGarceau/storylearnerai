@@ -10,6 +10,12 @@ import type {
 } from '../types/database/vocabulary';
 import { logger } from './logger';
 
+// Type for Supabase response destructuring
+type SupabaseResponse<T> = {
+  data: T | null;
+  error: { message: string; code?: string } | null;
+};
+
 export class VocabularyService {
   /**
    * Type guard to check if an error is a Supabase PostgrestError
@@ -26,7 +32,7 @@ export class VocabularyService {
     vocabularyData: VocabularyInsert
   ): VocabularyPromise {
     try {
-      const { data, error } = await supabase
+      const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
         .insert(vocabularyData)
         .select()
@@ -46,7 +52,7 @@ export class VocabularyService {
         throw new Error('No data returned when saving vocabulary word');
       }
 
-      return data as Vocabulary;
+      return data;
     } catch (error) {
       logger.error('general', 'Error in saveVocabularyWord', { error });
       if (this.isPostgrestError(error)) {
@@ -61,17 +67,18 @@ export class VocabularyService {
    */
   static async getUserVocabulary(userId: string): VocabularyArrayPromise {
     try {
-      const { data, error } = await supabase
-        .from('vocabulary')
-        .select(
-          `
+      const { data, error }: SupabaseResponse<VocabularyWithLanguages[]> =
+        await supabase
+          .from('vocabulary')
+          .select(
+            `
           *,
           translated_language:languages!vocabulary_translated_language_id_fkey(*),
           from_language:languages!vocabulary_from_language_id_fkey(*)
         `
-        )
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+          )
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
 
       if (error) {
         logger.error('Error fetching user vocabulary:', error);
@@ -81,7 +88,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return (data ?? []) as VocabularyWithLanguages[];
+      return data ?? [];
     } catch (error) {
       logger.error('Error in getUserVocabulary:', error);
       if (this.isPostgrestError(error)) {
@@ -100,19 +107,20 @@ export class VocabularyService {
     translatedLanguageId: number
   ): VocabularyArrayPromise {
     try {
-      const { data, error } = await supabase
-        .from('vocabulary')
-        .select(
-          `
+      const { data, error }: SupabaseResponse<VocabularyWithLanguages[]> =
+        await supabase
+          .from('vocabulary')
+          .select(
+            `
           *,
           translated_language:languages!vocabulary_translated_language_id_fkey(*),
           from_language:languages!vocabulary_from_language_id_fkey(*)
         `
-        )
-        .eq('user_id', userId)
-        .eq('from_language_id', fromLanguageId)
-        .eq('translated_language_id', translatedLanguageId)
-        .order('created_at', { ascending: false });
+          )
+          .eq('user_id', userId)
+          .eq('from_language_id', fromLanguageId)
+          .eq('translated_language_id', translatedLanguageId)
+          .order('created_at', { ascending: false });
 
       if (error) {
         logger.error('Error fetching vocabulary by languages:', error);
@@ -122,7 +130,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return (data ?? []) as VocabularyWithLanguages[];
+      return data ?? [];
     } catch (error) {
       logger.error('Error in getUserVocabularyByLanguages:', error);
       if (this.isPostgrestError(error)) {
@@ -141,7 +149,10 @@ export class VocabularyService {
     userId: string
   ): Promise<VocabularyWithLanguagesAndStory[]> {
     try {
-      const { data, error } = await supabase
+      const {
+        data,
+        error,
+      }: SupabaseResponse<VocabularyWithLanguagesAndStory[]> = await supabase
         .from('vocabulary')
         .select(
           `
@@ -162,7 +173,7 @@ export class VocabularyService {
         throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
       }
 
-      return (data ?? []) as VocabularyWithLanguages[];
+      return data ?? [];
     } catch (error) {
       logger.error('Error in getUserVocabularyWithStories:', error);
       if (this.isPostgrestError(error)) {
@@ -182,7 +193,7 @@ export class VocabularyService {
     updates: VocabularyUpdate
   ): VocabularyPromise {
     try {
-      const { data, error } = await supabase
+      const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
         .update(updates)
         .eq('id', id)
@@ -201,7 +212,7 @@ export class VocabularyService {
         throw new Error('No data returned when updating vocabulary word');
       }
 
-      return data as Vocabulary;
+      return data;
     } catch (error) {
       logger.error('Error in updateVocabularyWord:', error);
       if (this.isPostgrestError(error)) {
@@ -245,7 +256,7 @@ export class VocabularyService {
     translatedLanguageId: number
   ): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { data, error }: SupabaseResponse<{ id: number }> = await supabase
         .from('vocabulary')
         .select('id')
         .eq('user_id', userId)
@@ -311,7 +322,8 @@ export class VocabularyService {
         query = query.eq('translated_language_id', translatedLanguageId);
       }
 
-      const { data, error } = await query;
+      const { data, error }: SupabaseResponse<VocabularyWithLanguages[]> =
+        await query;
 
       if (error) {
         logger.error('Error searching vocabulary:', error);
@@ -321,7 +333,7 @@ export class VocabularyService {
         throw new Error(`Failed to search vocabulary: ${errorMessage}`);
       }
 
-      return (data ?? []) as VocabularyWithLanguages[];
+      return data ?? [];
     } catch (error) {
       logger.error('Error in searchVocabulary:', error);
       if (this.isPostgrestError(error)) {

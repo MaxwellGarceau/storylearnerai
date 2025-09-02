@@ -453,7 +453,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = offlineCall![1] as () => void;
 
       offlineHandler();
       expect(client.isAvailable()).toBe(false);
@@ -465,7 +465,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = offlineCall![1] as () => void;
       offlineHandler();
 
       // Then go online
@@ -473,7 +473,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'online'
       );
       expect(onlineCall).toBeDefined();
-      const onlineHandler = onlineCall![1];
+      const onlineHandler = onlineCall![1] as () => void;
       onlineHandler();
 
       expect(client.isAvailable()).toBe(true);

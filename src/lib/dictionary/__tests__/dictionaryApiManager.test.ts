@@ -21,9 +21,7 @@ type MockTransformer = {
   transformLexicalaResponse: MockedFunction<
     LexicalaDataTransformer['transformLexicalaResponse']
   >;
-  validateWordData: MockedFunction<
-    LexicalaDataTransformer['validateWordData']
-  >;
+  validateWordData: MockedFunction<LexicalaDataTransformer['validateWordData']>;
 };
 
 // Mock EnvironmentConfig
@@ -57,7 +55,9 @@ vi.doMock('../../logger', () => ({
 }));
 
 // Import the classes directly and mock their dependencies
-let DictionaryApiManagerImpl: new (config?: ApiManagerConfig) => DictionaryApiManagerInterface;
+let DictionaryApiManagerImpl: new (
+  config?: ApiManagerConfig
+) => DictionaryApiManagerInterface;
 let createDictionaryApiManager: (
   config?: ApiManagerConfig
 ) => DictionaryApiManagerInterface;
