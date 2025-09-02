@@ -481,6 +481,7 @@
       "translatedWordRequired": "La palabra traducida es requerida",
       "fromLanguageRequired": "El idioma de origen es requerido",
       "translatedLanguageRequired": "El idioma de destino es requerido",
+      "languagesMustDiffer": "Los idiomas de origen y destino deben ser diferentes",
       "alreadyExists": "Esta palabra ya está guardada en tu vocabulario"
     },
     "save": {

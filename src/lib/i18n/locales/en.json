@@ -490,6 +490,7 @@
       "translatedWordRequired": "Translated word is required",
       "fromLanguageRequired": "From language is required",
       "translatedLanguageRequired": "To language is required",
+      "languagesMustDiffer": "From and To languages must be different",
       "alreadyExists": "This word is already saved in your vocabulary"
     },
     "save": {

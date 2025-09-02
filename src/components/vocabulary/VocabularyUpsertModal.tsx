@@ -118,11 +118,23 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         );
       }
 
+      // Prevent same language pair
+      if (
+        formData.from_language_id &&
+        formData.translated_language_id &&
+        formData.from_language_id === formData.translated_language_id
+      ) {
+        const msg = t('vocabulary.validation.languagesMustDiffer');
+        newErrors.from_language_id = msg;
+        newErrors.translated_language_id = msg;
+      }
+
       if (
         formData.original_word.trim() &&
         formData.translated_word.trim() &&
         formData.from_language_id &&
-        formData.translated_language_id
+        formData.translated_language_id &&
+        formData.from_language_id !== formData.translated_language_id
       ) {
         const exists = await checkVocabularyExists(
           formData.original_word.trim(),
