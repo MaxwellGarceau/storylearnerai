@@ -48,7 +48,6 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const handleTranslate = () => {
     onTranslate?.(word);
-    onOpenChange?.(false);
   };
 
   const handleDictionary = () => {
