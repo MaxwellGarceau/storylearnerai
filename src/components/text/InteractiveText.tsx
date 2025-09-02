@@ -205,8 +205,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                   if (open) {
                     // Accept open events from Radix trigger as well (covers clicks on trigger padding)
                     setOpenMenuIndex(index);
-                    // Auto-translate when menu opens
-                    void handleTranslate(normalizedWord, index);
                   } else if (openMenuIndex === index) {
                     setOpenMenuIndex(null);
                   }
@@ -230,13 +228,9 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                       word={normalizedWord}
                       disabled={disabled}
                       active={openMenuIndex === index}
-                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+                      className='line-through decoration-2 decoration-red-500'
                       onClick={() => {
                         setOpenMenuIndex(prev => (prev === index ? null : index));
-                        // Auto-translate when word is clicked
-                        if (openMenuIndex !== index) {
-                          void handleTranslate(normalizedWord, index);
-                        }
                       }}
                     >
                       {cleanWord}
@@ -247,13 +241,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                     word={normalizedWord}
                     disabled={disabled}
                     active={openMenuIndex === index}
-                    className={savedHighlightClass}
                     onClick={() => {
                       setOpenMenuIndex(prev => (prev === index ? null : index));
-                      // Auto-translate when word is clicked
-                      if (openMenuIndex !== index) {
-                        void handleTranslate(normalizedWord, index);
-                      }
                     }}
                   >
                     {cleanWord}
