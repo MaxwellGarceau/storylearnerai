@@ -7,11 +7,13 @@ import { useLocalization } from '../../hooks/useLocalization';
 interface VocabularyDeleteDialogProps {
   vocabulary: VocabularyWithLanguages;
   onClose: () => void;
+  onDeleteSuccess?: () => void;
 }
 
 export function VocabularyDeleteDialog({
   vocabulary,
   onClose,
+  onDeleteSuccess,
 }: VocabularyDeleteDialogProps) {
   const { t } = useLocalization();
   const { deleteVocabularyWord } = useVocabulary();
@@ -24,6 +26,7 @@ export function VocabularyDeleteDialog({
       const success = await deleteVocabularyWord(vocabulary.id);
       if (success) {
         onClose();
+        onDeleteSuccess?.();
       }
     } catch (error) {
       console.error('Error deleting vocabulary word:', error);
@@ -35,7 +38,7 @@ export function VocabularyDeleteDialog({
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
       <div className='bg-background rounded-lg shadow-lg max-w-md max-h-[90vh] overflow-y-auto m-4 p-4'>
-        <div className='p-6'>
+        <div className='p-2'>
           <h2 className='text-lg font-semibold mb-2'>
             {t('vocabulary.delete.title')}
           </h2>

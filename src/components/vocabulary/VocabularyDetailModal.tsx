@@ -166,6 +166,7 @@ export function VocabularyDetailModal({
         <VocabularyDeleteDialog
           vocabulary={vocabulary}
           onClose={() => setShowDeleteDialog(false)}
+          onDeleteSuccess={_onClose}
         />
       )}
     </>
