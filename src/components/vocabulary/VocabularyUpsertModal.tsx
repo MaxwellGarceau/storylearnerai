@@ -40,27 +40,27 @@ type VocabularyUpsertModalProps = CreateProps | EditProps;
 export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   const { t } = useLocalization();
   const { languages } = useLanguages();
-  const { saveVocabularyWord, checkVocabularyExists, updateVocabularyWord } =
+  const { saveVocabularyWord, updateVocabularyWord, vocabulary: userVocabulary } =
     useVocabulary();
 
   const isCreateMode = props.mode === 'create';
-  const vocabulary = (props as EditProps).vocabulary;
+  const editVocabulary = (props as EditProps).vocabulary;
 
   const [formData, setFormData] = useState({
-    original_word: isCreateMode ? props.initialData?.originalWord ?? '' : vocabulary.original_word,
-    translated_word: isCreateMode ? props.initialData?.translatedWord ?? '' : vocabulary.translated_word,
+    original_word: isCreateMode ? props.initialData?.originalWord ?? '' : editVocabulary.original_word,
+    translated_word: isCreateMode ? props.initialData?.translatedWord ?? '' : editVocabulary.translated_word,
     // Language IDs are only needed in create mode (selection). Defaults mirror existing Save modal.
     from_language_id: isCreateMode ? props.currentFromLanguageId ?? 1 : 0,
     translated_language_id: isCreateMode ? props.currentLanguageId ?? 2 : 0,
     original_word_context: isCreateMode
       ? props.initialData?.originalContext ?? ''
-      : vocabulary.original_word_context ?? '',
+      : editVocabulary.original_word_context ?? '',
     translated_word_context: isCreateMode
       ? props.initialData?.translatedContext ?? ''
-      : vocabulary.translated_word_context ?? '',
-    definition: isCreateMode ? '' : vocabulary.definition ?? '',
-    part_of_speech: isCreateMode ? '' : vocabulary.part_of_speech ?? '',
-    frequency_level: isCreateMode ? '' : vocabulary.frequency_level ?? '',
+      : editVocabulary.translated_word_context ?? '',
+    definition: isCreateMode ? '' : editVocabulary.definition ?? '',
+    part_of_speech: isCreateMode ? '' : editVocabulary.part_of_speech ?? '',
+    frequency_level: isCreateMode ? '' : editVocabulary.frequency_level ?? '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -131,21 +131,12 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         newErrors.translated_language_id = msg;
       }
 
-      if (
-        formData.original_word.trim() &&
-        formData.translated_word.trim() &&
-        formData.from_language_id &&
-        formData.translated_language_id &&
-        formData.from_language_id !== formData.translated_language_id
-      ) {
-        const exists = await checkVocabularyExists(
-          formData.original_word.trim(),
-          formData.translated_word.trim(),
-          formData.from_language_id,
-          formData.translated_language_id
+      const trimmedOriginalLower = formData.original_word.trim().toLowerCase();
+      if (trimmedOriginalLower) {
+        const existsLocal = userVocabulary.some((v) =>
+          v.original_word.trim().toLowerCase() === trimmedOriginalLower
         );
-
-        if (exists) {
+        if (existsLocal) {
           newErrors.general = t('vocabulary.validation.alreadyExists');
         }
       }
@@ -196,7 +187,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           frequency_level: formData.frequency_level || null,
         };
 
-        const result = await updateVocabularyWord(vocabulary.id, updates);
+        const result = await updateVocabularyWord(editVocabulary.id, updates);
         if (result) {
           props.onSaveSuccess?.();
           props.onClose();
@@ -227,12 +218,11 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     }
 
     const trimmedOriginal = formData.original_word.trim();
-    const trimmedTranslated = formData.translated_word.trim();
     const fromId = formData.from_language_id;
     const toId = formData.translated_language_id;
 
-    // Require required fields and different languages before checking
-    if (!trimmedOriginal || !trimmedTranslated || !fromId || !toId || fromId === toId) {
+    // Require original word and valid languages before checking
+    if (!trimmedOriginal || !fromId || !toId || fromId === toId) {
       setIsCheckingDuplicate(false);
       return;
     }
@@ -242,16 +232,12 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const exists = await checkVocabularyExists(
-          trimmedOriginal,
-          trimmedTranslated,
-          fromId,
-          toId
-        );
-
         // Only apply result if it's the latest request
         if (lastDuplicateCheckIdRef.current === currentCheckId) {
-          if (exists) {
+          const existsLocal = userVocabulary.some(v =>
+            v.original_word.trim().toLowerCase() === trimmedOriginal.toLowerCase()
+          );
+          if (existsLocal) {
             setErrors(prev => ({
               ...prev,
               general: t('vocabulary.validation.alreadyExists'),
@@ -274,10 +260,10 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   }, [
     isCreateMode,
     formData.original_word,
-    formData.translated_word,
     formData.from_language_id,
     formData.translated_language_id,
     t,
+    userVocabulary,
   ]);
 
   return (
@@ -409,7 +395,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             <div className='text-sm text-muted-foreground'>
               <p>
                 <strong>{t('vocabulary.form.languages')}:</strong>{' '}
-                {vocabulary.from_language.name} → {vocabulary.translated_language.name}
+                {editVocabulary.from_language.name} → {editVocabulary.translated_language.name}
               </p>
             </div>
           )}
