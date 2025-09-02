@@ -114,9 +114,8 @@ export function VocabularyEditModal({
             e.preventDefault();
             void handleSubmit();
           }}
-          className='space-y-4'
         >
-          <div className='grid grid-cols-2 gap-4 pt-4'>
+          <div className='grid grid-cols-2 gap-4 pt-4 mb-4'>
             <div className='space-y-2'>
               <Label htmlFor='original_word'>
                 {t('vocabulary.form.originalWord')}
@@ -160,7 +159,7 @@ export function VocabularyEditModal({
             </div>
           </div>
 
-          <div className='space-y-2'>
+          <div className='space-y-2 mb-4'>
             <Label htmlFor='original_word_context'>
               {t('vocabulary.form.originalContext')}
             </Label>
@@ -176,7 +175,7 @@ export function VocabularyEditModal({
             />
           </div>
 
-          <div className='space-y-2'>
+          <div className='space-y-2 mb-4'>
             <Label htmlFor='translated_word_context'>
               {t('vocabulary.form.translatedContext')}
             </Label>
@@ -192,7 +191,7 @@ export function VocabularyEditModal({
             />
           </div>
 
-          <div className='space-y-2'>
+          <div className='space-y-2 mb-4'>
             <Label htmlFor='definition'>
               {t('vocabulary.form.definition')}
             </Label>
@@ -207,7 +206,7 @@ export function VocabularyEditModal({
           </div>
 
           {/* Part of Speech and Frequency */}
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-2 gap-4 mb-6'>
             <div className='space-y-2'>
               <Label htmlFor='part_of_speech'>
                 {t('vocabulary.form.partOfSpeech')}
