@@ -514,6 +514,7 @@
     },
     "noResults": "No se encontraron palabras",
     "checking": "Verificando...",
+    "saving": "Guardando...",
     "saved": "Guardado",
     "autoTranslate": {
       "title": "Traducción Automática",

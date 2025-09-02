@@ -523,6 +523,7 @@
     },
     "noResults": "No words found",
     "checking": "Checking...",
+    "saving": "Saving...",
     "saved": "Saved",
     "autoTranslate": {
       "title": "Auto-Translation",
