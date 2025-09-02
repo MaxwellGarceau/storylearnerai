@@ -268,7 +268,7 @@ export function VocabularySaveModal({
 
             <div className='space-y-2'>
               <Label htmlFor='translated_language'>
-                {t('vocabulary.form.translatedLanguage')} *
+                {t('vocabulary.form.toLanguage')} *
               </Label>
               <Select
                 value={formData.translated_language_id.toString()}
