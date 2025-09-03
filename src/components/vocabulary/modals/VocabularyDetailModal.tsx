@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
+import { Button } from '../../ui/Button';
+import { Badge } from '../../ui/Badge';
 import { Edit, Trash2, Calendar, BookOpen, Languages, X } from 'lucide-react';
 
-import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
-import { useLocalization } from '../../hooks/useLocalization';
+import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
+import { useLocalization } from '../../../hooks/useLocalization';
 import { VocabularyEditModal } from './VocabularyEditModal';
 import { VocabularyDeleteDialog } from './VocabularyDeleteDialog';
 

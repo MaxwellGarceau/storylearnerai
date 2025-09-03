@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
 import { Languages, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
-import { VocabularySaveButton } from '../vocabulary/VocabularySaveButton';
+import { VocabularySaveButton } from '../vocabulary/buttons/VocabularySaveButton';
 import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';

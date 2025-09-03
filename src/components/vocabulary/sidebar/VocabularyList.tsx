@@ -1,7 +1,7 @@
-import { Card, CardContent } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
-import type { DatabaseLanguage } from '../../types/database';
+import { Card, CardContent } from '../../ui/Card';
+import { Badge } from '../../ui/Badge';
+import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
+import type { DatabaseLanguage } from '../../../types/database';
 
 interface VocabularyListItemProps {
   item: VocabularyWithLanguages;
@@ -9,16 +9,21 @@ interface VocabularyListItemProps {
   onClick: (item: VocabularyWithLanguages) => void;
 }
 
-export function VocabularyListItem({ item, getLanguageName, onClick }: VocabularyListItemProps) {
+export function VocabularyListItem({
+  item,
+  getLanguageName,
+  onClick,
+}: VocabularyListItemProps) {
   return (
-    <Card className='cursor-pointer hover:shadow-md transition-shadow' onClick={() => onClick(item)}>
+    <Card
+      className='cursor-pointer hover:shadow-md transition-shadow'
+      onClick={() => onClick(item)}
+    >
       <CardContent className='p-3'>
         <div className='space-y-1'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
-              <span className='font-medium text-sm'>
-                {item.original_word}
-              </span>
+              <span className='font-medium text-sm'>{item.original_word}</span>
               <span className='text-muted-foreground text-xs'>→</span>
               <span className='font-medium text-sm'>
                 {item.translated_word}
@@ -33,7 +38,8 @@ export function VocabularyListItem({ item, getLanguageName, onClick }: Vocabular
 
           <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <span>
-              {getLanguageName(item.from_language_id)} → {getLanguageName(item.translated_language_id)}
+              {getLanguageName(item.from_language_id)} →{' '}
+              {getLanguageName(item.translated_language_id)}
             </span>
             {item.frequency_level && (
               <Badge variant='secondary' className='text-xs'>
@@ -59,7 +65,11 @@ interface VocabularyListProps {
   onItemClick: (item: VocabularyWithLanguages) => void;
 }
 
-export function VocabularyList({ items, languages, onItemClick }: VocabularyListProps) {
+export function VocabularyList({
+  items,
+  languages,
+  onItemClick,
+}: VocabularyListProps) {
   const getLanguageName = (languageId: number) => {
     const language = languages.find(lang => lang.id === languageId);
     return language?.name ?? 'Unknown';
@@ -80,5 +90,3 @@ export function VocabularyList({ items, languages, onItemClick }: VocabularyList
 }
 
 export default VocabularyList;
-
-

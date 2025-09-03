@@ -1,5 +1,5 @@
 import VocabularyUpsertModal from './VocabularyUpsertModal';
-import type { VoidFunction } from '../../types/common';
+import type { VoidFunction } from '../../../types/common';
 
 interface VocabularySaveModalProps {
   onClose: VoidFunction;

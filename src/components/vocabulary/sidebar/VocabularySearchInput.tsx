@@ -1,13 +1,15 @@
-import React from 'react';
 import { Search } from 'lucide-react';
-import { useLocalization } from '../../hooks/useLocalization';
+import { useLocalization } from '../../../hooks/useLocalization';
 
 interface VocabularySearchInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export function VocabularySearchInput({ value, onChange }: VocabularySearchInputProps) {
+export function VocabularySearchInput({
+  value,
+  onChange,
+}: VocabularySearchInputProps) {
   const { t } = useLocalization();
 
   return (
@@ -25,5 +27,3 @@ export function VocabularySearchInput({ value, onChange }: VocabularySearchInput
 }
 
 export default VocabularySearchInput;
-
-

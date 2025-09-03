@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { X, BookOpen, Settings, BookMarked } from 'lucide-react';
-import { VocabularySidebar } from '../vocabulary/VocabularySidebar';
+import { VocabularySidebar } from '../vocabulary/sidebar/VocabularySidebar';
 import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStories.json';
 import { useNavigate } from 'react-router-dom';

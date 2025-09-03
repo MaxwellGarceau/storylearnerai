@@ -1,7 +1,7 @@
 import VocabularyUpsertModal from './VocabularyUpsertModal';
 
-import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
-import type { VoidFunction } from '../../types/common';
+import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
+import type { VoidFunction } from '../../../types/common';
 
 interface VocabularyEditModalProps {
   vocabulary: VocabularyWithLanguages;

@@ -1,8 +1,7 @@
-import React from 'react';
 import { BookOpen, Plus } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
-import { useLocalization } from '../../hooks/useLocalization';
+import { Button } from '../../ui/Button';
+import { Badge } from '../../ui/Badge';
+import { useLocalization } from '../../../hooks/useLocalization';
 
 interface VocabularySidebarHeaderProps {
   count: number;
@@ -10,7 +9,11 @@ interface VocabularySidebarHeaderProps {
   className?: string;
 }
 
-export function VocabularySidebarHeader({ count, onAdd, className }: VocabularySidebarHeaderProps) {
+export function VocabularySidebarHeader({
+  count,
+  onAdd,
+  className,
+}: VocabularySidebarHeaderProps) {
   const { t } = useLocalization();
 
   return (
@@ -30,5 +33,3 @@ export function VocabularySidebarHeader({ count, onAdd, className }: VocabularyS
 }
 
 export default VocabularySidebarHeader;
-
-

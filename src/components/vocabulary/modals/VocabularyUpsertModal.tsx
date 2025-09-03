@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button } from '../ui/Button';
-import Label from '../ui/Label';
+import { Button } from '../../ui/Button';
+import Label from '../../ui/Label';
 import { X } from 'lucide-react';
-import { useVocabulary } from '../../hooks/useVocabulary';
-import { useLanguages } from '../../hooks/useLanguages';
-import { useLocalization } from '../../hooks/useLocalization';
+import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useLanguages } from '../../../hooks/useLanguages';
+import { useLocalization } from '../../../hooks/useLocalization';
 import type {
   VocabularyInsert,
   VocabularyUpdate,
   VocabularyWithLanguages,
-} from '../../types/database/vocabulary';
+} from '../../../types/database/vocabulary';
 
 // Common type aliases
 type VoidFunction = () => void;

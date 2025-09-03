@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button } from '../ui/Button';
+import { Button } from '../../ui/Button';
 import { BookOpen, Check } from 'lucide-react';
-import { useVocabulary } from '../../hooks/useVocabulary';
-import { useLocalization } from '../../hooks/useLocalization';
-import type { VocabularyInsert } from '../../types/database/vocabulary';
+import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useLocalization } from '../../../hooks/useLocalization';
+import type { VocabularyInsert } from '../../../types/database/vocabulary';
 
 interface VocabularySaveButtonProps {
   originalWord: string;

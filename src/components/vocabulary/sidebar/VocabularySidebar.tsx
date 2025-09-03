@@ -1,11 +1,10 @@
 import { useState } from 'react';
-// Removed unused Card imports after refactor
-import { useVocabulary } from '../../hooks/useVocabulary';
-import { useLanguages } from '../../hooks/useLanguages';
-import { useLocalization } from '../../hooks/useLocalization';
-import { VocabularySaveModal } from './VocabularySaveModal';
-import { VocabularyDetailModal } from './VocabularyDetailModal';
-import type { VocabularyWithLanguages } from '../../types/database/vocabulary';
+import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useLanguages } from '../../../hooks/useLanguages';
+import { useLocalization } from '../../../hooks/useLocalization';
+import { VocabularySaveModal } from '../modals/VocabularySaveModal';
+import { VocabularyDetailModal } from '../modals/VocabularyDetailModal';
+import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { VocabularySidebarHeader } from './VocabularySidebarHeader';
 import { VocabularySearchInput } from './VocabularySearchInput';
 import { VocabularyLanguageFilter } from './VocabularyLanguageFilter';
@@ -86,7 +85,9 @@ export function VocabularySidebar({
             <span className='ml-2 text-sm'>{t('loading')}</span>
           </div>
         ) : filteredVocabulary.length === 0 ? (
-          <VocabularyEmptyState showNoResults={Boolean(searchTerm || selectedLanguageFilter)} />
+          <VocabularyEmptyState
+            showNoResults={Boolean(searchTerm || selectedLanguageFilter)}
+          />
         ) : (
           <VocabularyList
             items={filteredVocabulary}

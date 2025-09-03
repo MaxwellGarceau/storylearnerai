@@ -1,8 +1,7 @@
-import React from 'react';
-import { Button } from '../ui/Button';
+import { Button } from '../../ui/Button';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
-import { useLocalization } from '../../hooks/useLocalization';
-import type { DatabaseLanguage } from '../../types/database';
+import { useLocalization } from '../../../hooks/useLocalization';
+import type { DatabaseLanguage } from '../../../types/database';
 
 interface VocabularyLanguageFilterProps {
   show: boolean;
@@ -12,7 +11,13 @@ interface VocabularyLanguageFilterProps {
   languages: DatabaseLanguage[];
 }
 
-export function VocabularyLanguageFilter({ show, onToggle, selectedLanguageId, onChange, languages }: VocabularyLanguageFilterProps) {
+export function VocabularyLanguageFilter({
+  show,
+  onToggle,
+  selectedLanguageId,
+  onChange,
+  languages,
+}: VocabularyLanguageFilterProps) {
   const { t } = useLocalization();
 
   return (
@@ -41,12 +46,12 @@ export function VocabularyLanguageFilter({ show, onToggle, selectedLanguageId, o
           </label>
           <select
             value={selectedLanguageId ?? ''}
-            onChange={e => onChange(e.target.value ? Number(e.target.value) : null)}
+            onChange={e =>
+              onChange(e.target.value ? Number(e.target.value) : null)
+            }
             className='w-full p-2 text-sm border rounded-md'
           >
-            <option value=''>
-              {t('vocabulary.filters.allLanguages')}
-            </option>
+            <option value=''>{t('vocabulary.filters.allLanguages')}</option>
             {languages.map(language => (
               <option key={language.id} value={language.id}>
                 {language.name}
@@ -60,5 +65,3 @@ export function VocabularyLanguageFilter({ show, onToggle, selectedLanguageId, o
 }
 
 export default VocabularyLanguageFilter;
-
-
