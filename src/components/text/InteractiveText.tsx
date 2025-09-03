@@ -162,10 +162,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     }
   };
 
-  const handleSave = (_word: string) => {
-    // Saving handled by VocabularySaveButton
-  };
-
   return (
     <span
       className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
@@ -255,7 +251,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
                 onTranslate={w => {
                   void handleTranslate(w, index);
                 }}
-                _onSave={handleSave}
                 fromLanguage={fromLanguage}
                 targetLanguage={targetLanguage}
                 translatedWord={displayTranslation}
