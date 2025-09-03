@@ -521,7 +521,6 @@ describe('LexicalaApiClient', () => {
           return mockResponse;
         },
         clone: function (
-          // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
           this: TestFetchResponse<{ results: { word: string }[] }>
         ) {
           return this;

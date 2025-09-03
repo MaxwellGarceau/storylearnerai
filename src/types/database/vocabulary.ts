@@ -71,14 +71,3 @@ export interface VocabularyWithLanguages extends Vocabulary {
   translated_language: LanguageRecord;
   from_language: LanguageRecord;
 }
-
-// Extended vocabulary type with joined language and saved translation information
-export interface VocabularyWithLanguagesAndStory
-  extends VocabularyWithLanguages {
-  saved_translation?: {
-    id: number;
-    title: string | null;
-    original_story: string;
-    translated_story: string;
-  } | null;
-}

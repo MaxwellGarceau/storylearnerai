@@ -4,17 +4,11 @@ import type {
   VocabularyInsert,
   VocabularyUpdate,
   VocabularyWithLanguages,
-  VocabularyWithLanguagesAndStory,
   VocabularyPromise,
   VocabularyArrayPromise,
 } from '../types/database/vocabulary';
+import type { SupabaseResponse } from '../types/database/common';
 import { logger } from './logger';
-
-// Type for Supabase response destructuring
-type SupabaseResponse<T> = {
-  data: T | null;
-  error: { message: string; code?: string } | null;
-};
 
 export class VocabularyService {
   /**
@@ -81,7 +75,7 @@ export class VocabularyService {
           .order('created_at', { ascending: false });
 
       if (error) {
-        logger.error('Error fetching user vocabulary:', error);
+        logger.error('database', 'Error fetching user vocabulary', { error });
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
@@ -90,98 +84,11 @@ export class VocabularyService {
 
       return data ?? [];
     } catch (error) {
-      logger.error('Error in getUserVocabulary:', error);
+      logger.error('database', 'Error in getUserVocabulary', { error });
       if (this.isPostgrestError(error)) {
         throw error;
       }
       throw new Error('Unknown error occurred while fetching user vocabulary');
-    }
-  }
-
-  /**
-   * Get vocabulary words for a specific language pair
-   */
-  static async getUserVocabularyByLanguages(
-    userId: string,
-    fromLanguageId: number,
-    translatedLanguageId: number
-  ): VocabularyArrayPromise {
-    try {
-      const { data, error }: SupabaseResponse<VocabularyWithLanguages[]> =
-        await supabase
-          .from('vocabulary')
-          .select(
-            `
-          *,
-          translated_language:languages!vocabulary_translated_language_id_fkey(*),
-          from_language:languages!vocabulary_from_language_id_fkey(*)
-        `
-          )
-          .eq('user_id', userId)
-          .eq('from_language_id', fromLanguageId)
-          .eq('translated_language_id', translatedLanguageId)
-          .order('created_at', { ascending: false });
-
-      if (error) {
-        logger.error('Error fetching vocabulary by languages:', error);
-        const errorMessage = this.isPostgrestError(error)
-          ? error.message
-          : 'Unknown error';
-        throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
-      }
-
-      return data ?? [];
-    } catch (error) {
-      logger.error('Error in getUserVocabularyByLanguages:', error);
-      if (this.isPostgrestError(error)) {
-        throw error;
-      }
-      throw new Error(
-        'Unknown error occurred while fetching vocabulary by languages'
-      );
-    }
-  }
-
-  /**
-   * Get vocabulary words with story context
-   */
-  static async getUserVocabularyWithStories(
-    userId: string
-  ): Promise<VocabularyWithLanguagesAndStory[]> {
-    try {
-      const {
-        data,
-        error,
-      }: SupabaseResponse<VocabularyWithLanguagesAndStory[]> = await supabase
-        .from('vocabulary')
-        .select(
-          `
-          *,
-          translated_language:languages!vocabulary_translated_language_id_fkey(*),
-          from_language:languages!vocabulary_from_language_id_fkey(*),
-          saved_translation:saved_translations(id, title, original_story, translated_story)
-        `
-        )
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        logger.error('Error fetching vocabulary with stories:', error);
-        const errorMessage = this.isPostgrestError(error)
-          ? error.message
-          : 'Unknown error';
-        throw new Error(`Failed to fetch vocabulary: ${errorMessage}`);
-      }
-
-      return data ?? [];
-    } catch (error) {
-      logger.error('Error in getUserVocabularyWithStories:', error);
-      if (this.isPostgrestError(error)) {
-        throw error;
-      }
-      throw new Error(
-        'Unknown error occurred while fetching vocabulary with stories'
-      );
     }
   }
 
@@ -201,7 +108,7 @@ export class VocabularyService {
         .single();
 
       if (error) {
-        logger.error('Error updating vocabulary word:', error);
+        logger.error('database', 'Error updating vocabulary word', { error });
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
@@ -214,7 +121,7 @@ export class VocabularyService {
 
       return data;
     } catch (error) {
-      logger.error('Error in updateVocabularyWord:', error);
+      logger.error('database', 'Error in updateVocabularyWord', { error });
       if (this.isPostgrestError(error)) {
         throw error;
       }
@@ -230,14 +137,14 @@ export class VocabularyService {
       const { error } = await supabase.from('vocabulary').delete().eq('id', id);
 
       if (error) {
-        logger.error('Error deleting vocabulary word:', error);
+        logger.error('database', 'Error deleting vocabulary word', { error });
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
         throw new Error(`Failed to delete vocabulary word: ${errorMessage}`);
       }
     } catch (error) {
-      logger.error('Error in deleteVocabularyWord:', error);
+      logger.error('database', 'Error in deleteVocabularyWord', { error });
       if (this.isPostgrestError(error)) {
         throw error;
       }
@@ -268,7 +175,9 @@ export class VocabularyService {
 
       if (error && (error as { code?: string }).code !== 'PGRST116') {
         // PGRST116 is "not found" error
-        logger.error('Error checking vocabulary existence:', error);
+        logger.error('database', 'Error checking vocabulary existence', {
+          error,
+        });
         const errorMessage = this.isPostgrestError(error)
           ? error.message
           : 'Unknown error';
@@ -279,67 +188,13 @@ export class VocabularyService {
 
       return !!data;
     } catch (error) {
-      logger.error('Error in checkVocabularyExists:', error);
+      logger.error('database', 'Error in checkVocabularyExists', { error });
       if (this.isPostgrestError(error)) {
         throw error;
       }
       throw new Error(
         'Unknown error occurred while checking vocabulary existence'
       );
-    }
-  }
-
-  /**
-   * Search vocabulary words by original or translated word
-   */
-  static async searchVocabulary(
-    userId: string,
-    searchTerm: string,
-    fromLanguageId?: number,
-    translatedLanguageId?: number
-  ): VocabularyArrayPromise {
-    try {
-      let query = supabase
-        .from('vocabulary')
-        .select(
-          `
-          *,
-          translated_language:languages!vocabulary_translated_language_id_fkey(*),
-          from_language:languages!vocabulary_from_language_id_fkey(*)
-        `
-        )
-        .eq('user_id', userId)
-        .or(
-          `original_word.ilike.%${searchTerm}%,translated_word.ilike.%${searchTerm}%`
-        )
-        .order('created_at', { ascending: false });
-
-      if (fromLanguageId) {
-        query = query.eq('from_language_id', fromLanguageId);
-      }
-
-      if (translatedLanguageId) {
-        query = query.eq('translated_language_id', translatedLanguageId);
-      }
-
-      const { data, error }: SupabaseResponse<VocabularyWithLanguages[]> =
-        await query;
-
-      if (error) {
-        logger.error('Error searching vocabulary:', error);
-        const errorMessage = this.isPostgrestError(error)
-          ? error.message
-          : 'Unknown error';
-        throw new Error(`Failed to search vocabulary: ${errorMessage}`);
-      }
-
-      return data ?? [];
-    } catch (error) {
-      logger.error('Error in searchVocabulary:', error);
-      if (this.isPostgrestError(error)) {
-        throw error;
-      }
-      throw new Error('Unknown error occurred while searching vocabulary');
     }
   }
 }

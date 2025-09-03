@@ -5,18 +5,14 @@ import type {
   VocabularyInsert,
   VocabularyUpdate,
   VocabularyWithLanguages,
-  VocabularyWithLanguagesAndStory,
   VocabularyPromise,
-  VocabularyArrayPromise,
   BooleanPromise,
-  VoidPromise,
 } from '../types/database/vocabulary';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
 
 interface UseVocabularyReturn {
   vocabulary: VocabularyWithLanguages[];
-  vocabularyWithStories: VocabularyWithLanguagesAndStory[];
   loading: boolean;
   error: string | null;
   saveVocabularyWord: (data: VocabularyInsert) => VocabularyPromise;
@@ -25,19 +21,13 @@ interface UseVocabularyReturn {
     updates: VocabularyUpdate
   ) => VocabularyPromise;
   deleteVocabularyWord: (id: number) => BooleanPromise;
-  searchVocabulary: (
-    searchTerm: string,
-    fromLanguageId?: number,
-    translatedLanguageId?: number
-  ) => VocabularyArrayPromise;
+
   checkVocabularyExists: (
     originalWord: string,
     translatedWord: string,
     fromLanguageId: number,
     translatedLanguageId: number
   ) => BooleanPromise;
-  refreshVocabulary: () => VoidPromise;
-  clearError: () => void;
 }
 
 export function useVocabulary(): UseVocabularyReturn {
@@ -45,15 +35,8 @@ export function useVocabulary(): UseVocabularyReturn {
   const { toast } = useToast();
 
   const [vocabulary, setVocabulary] = useState<VocabularyWithLanguages[]>([]);
-  const [vocabularyWithStories, setVocabularyWithStories] = useState<
-    VocabularyWithLanguagesAndStory[]
-  >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
 
   const loadVocabulary = useCallback(async () => {
     if (!user?.id) return;
@@ -62,13 +45,10 @@ export function useVocabulary(): UseVocabularyReturn {
     setError(null);
 
     try {
-      const [basicVocabulary, vocabularyWithStoriesData] = await Promise.all([
-        VocabularyService.getUserVocabulary(user.id),
-        VocabularyService.getUserVocabularyWithStories(user.id),
-      ]);
-
+      const basicVocabulary = await VocabularyService.getUserVocabulary(
+        user.id
+      );
       setVocabulary(basicVocabulary);
-      setVocabularyWithStories(vocabularyWithStoriesData);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load vocabulary';
@@ -227,36 +207,6 @@ export function useVocabulary(): UseVocabularyReturn {
     [loadVocabulary, toast]
   );
 
-  const searchVocabulary = useCallback(
-    async (
-      searchTerm: string,
-      fromLanguageId?: number,
-      translatedLanguageId?: number
-    ): Promise<VocabularyWithLanguages[]> => {
-      if (!user?.id) return [];
-
-      try {
-        return await VocabularyService.searchVocabulary(
-          user.id,
-          searchTerm,
-          fromLanguageId,
-          translatedLanguageId
-        );
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to search vocabulary';
-        setError(errorMessage);
-        toast({
-          title: 'Error',
-          description: errorMessage,
-          variant: 'destructive',
-        });
-        return [];
-      }
-    },
-    [user?.id, toast]
-  );
-
   const checkVocabularyExists = useCallback(
     async (
       originalWord: string,
@@ -286,17 +236,12 @@ export function useVocabulary(): UseVocabularyReturn {
     [user?.id]
   );
 
-  const refreshVocabulary = useCallback(async () => {
-    await loadVocabulary();
-  }, [loadVocabulary]);
-
   // Load vocabulary when user changes
   useEffect(() => {
     if (user?.id) {
       void loadVocabulary();
     } else {
       setVocabulary([]);
-      setVocabularyWithStories([]);
     }
   }, [user?.id, loadVocabulary]);
 
@@ -318,15 +263,11 @@ export function useVocabulary(): UseVocabularyReturn {
 
   return {
     vocabulary,
-    vocabularyWithStories,
     loading,
     error,
     saveVocabularyWord,
     updateVocabularyWord,
     deleteVocabularyWord,
-    searchVocabulary,
     checkVocabularyExists,
-    refreshVocabulary,
-    clearError,
   };
 }

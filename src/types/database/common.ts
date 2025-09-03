@@ -13,6 +13,12 @@ export type DatabaseDeleteResult = Promise<void>;
 
 // Supabase response types
 export type SupabaseResponse<T> = {
+  data: T | null;
+  error: { message: string; code?: string } | null;
+};
+
+// Legacy type for backward compatibility (deprecated)
+export type SupabaseResponseLegacy<T> = {
   data: T;
   error: PostgrestError;
 };
