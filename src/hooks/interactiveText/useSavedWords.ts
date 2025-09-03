@@ -3,6 +3,18 @@ import { useVocabulary } from '../useVocabulary';
 import { useLanguages } from '../useLanguages';
 import type { LanguageCode } from '../../types/llm/prompts';
 
+/**
+ * useSavedWords
+ * - Purpose: fast, memoized selectors for a specific language pair.
+ * - Returns: a Set of saved original words (lowercased) and a finder by original word.
+ * - Built on: useVocabulary (which owns fetching, CRUD, loading/error, and existence checks).
+ *
+ * When to use which:
+ * - Use useVocabulary when you need to fetch or mutate vocabulary data, or run
+ *   cross-language checks like checkVocabularyExists.
+ * - Use useSavedWords in render paths (e.g., InteractiveText) to efficiently
+ *   highlight/check words for a single from→target pair without duplicating fetch logic.
+ */
 export function useSavedWords(fromLanguage: LanguageCode, targetLanguage: LanguageCode) {
   const { vocabulary } = useVocabulary();
   const { getLanguageIdByCode } = useLanguages();
