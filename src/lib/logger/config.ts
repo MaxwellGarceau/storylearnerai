@@ -36,12 +36,7 @@ const developmentConfig: LoggerConfig = {
     security: true,
     general: true,
   },
-  environment: 'development',
   enableConsole: true,
-  enableFile: false,
-  enableRemote: false,
-  maxFileSize: 1024 * 1024 * 5, // 5MB
-  maxFiles: 5,
 };
 
 const productionConfig: LoggerConfig = {
@@ -59,13 +54,7 @@ const productionConfig: LoggerConfig = {
     security: true,
     general: false,
   },
-  environment: 'production',
   enableConsole: false,
-  enableFile: true,
-  enableRemote: true,
-  remoteEndpoint: 'https://logs.storylearnerai.com', // Default endpoint
-  maxFileSize: 1024 * 1024 * 10, // 10MB
-  maxFiles: 10,
 };
 
 const testConfig: LoggerConfig = {
@@ -83,10 +72,7 @@ const testConfig: LoggerConfig = {
     security: false,
     general: false,
   },
-  environment: 'test',
   enableConsole: false,
-  enableFile: false,
-  enableRemote: false,
 };
 
 // Browser-safe environment variable access
@@ -125,12 +111,5 @@ export function getLoggerConfigWithOverrides(): LoggerConfig {
     enableConsole: getEnvVar('LOG_CONSOLE')
       ? getEnvVar('LOG_CONSOLE') === 'true'
       : baseConfig.enableConsole,
-    enableFile: getEnvVar('LOG_FILE')
-      ? getEnvVar('LOG_FILE') === 'true'
-      : baseConfig.enableFile,
-    enableRemote: getEnvVar('LOG_REMOTE')
-      ? getEnvVar('LOG_REMOTE') === 'true'
-      : baseConfig.enableRemote,
-    remoteEndpoint: getEnvVar('LOG_ENDPOINT') ?? baseConfig.remoteEndpoint,
   };
 }

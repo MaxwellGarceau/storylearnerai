@@ -35,13 +35,7 @@ export interface LoggerConfig {
   enabled: boolean;
   level: LogLevel;
   channels: Partial<Record<LogChannel, boolean>>;
-  environment: 'development' | 'production' | 'test';
   enableConsole: boolean;
-  enableFile: boolean;
-  enableRemote: boolean;
-  remoteEndpoint?: string;
-  maxFileSize?: number;
-  maxFiles?: number;
   userId?: string;
   sessionId?: string;
 }
