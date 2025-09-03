@@ -2,14 +2,14 @@ import React from 'react';
 import { Button } from '../ui/Button';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocalization } from '../../hooks/useLocalization';
-import type { Language } from '../../types/database/languages';
+import type { DatabaseLanguage } from '../../types/database';
 
 interface VocabularyLanguageFilterProps {
   show: boolean;
   onToggle: () => void;
   selectedLanguageId: number | null;
   onChange: (languageId: number | null) => void;
-  languages: Language[];
+  languages: DatabaseLanguage[];
 }
 
 export function VocabularyLanguageFilter({ show, onToggle, selectedLanguageId, onChange, languages }: VocabularyLanguageFilterProps) {
