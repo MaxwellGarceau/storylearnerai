@@ -24,8 +24,8 @@ interface BaseProps {
 
 interface CreateProps extends BaseProps {
   mode: 'create';
-  currentLanguageId?: number;
-  currentFromLanguageId?: number;
+  currentLanguageId: number;
+  currentFromLanguageId: number;
   initialData?: {
     originalWord?: string;
     translatedWord?: string;
@@ -60,9 +60,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     translated_word: isCreateMode
       ? (props.initialData?.translatedWord ?? '')
       : editVocabulary.translated_word,
-    // Language IDs are only needed in create mode (selection). Defaults mirror existing Save modal.
-    from_language_id: isCreateMode ? (props.currentFromLanguageId ?? 1) : 0,
-    translated_language_id: isCreateMode ? (props.currentLanguageId ?? 2) : 0,
+    // Language IDs are required in create mode
+    from_language_id: isCreateMode ? props.currentFromLanguageId : 0,
+    translated_language_id: isCreateMode ? props.currentLanguageId : 0,
     original_word_context: isCreateMode
       ? (props.initialData?.originalContext ?? '')
       : (editVocabulary.original_word_context ?? ''),
@@ -128,18 +128,6 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     }
 
     if (isCreateMode) {
-      if (!formData.from_language_id) {
-        newErrors.from_language_id = t(
-          'vocabulary.validation.fromLanguageRequired'
-        );
-      }
-
-      if (!formData.translated_language_id) {
-        newErrors.translated_language_id = t(
-          'vocabulary.validation.translatedLanguageRequired'
-        );
-      }
-
       // Prevent same language pair
       if (
         formData.from_language_id &&
@@ -241,8 +229,8 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     const fromId = formData.from_language_id;
     const toId = formData.translated_language_id;
 
-    // Require original word and valid languages before checking
-    if (!trimmedOriginal || !fromId || !toId || fromId === toId) {
+    // Require original word and different languages before checking
+    if (!trimmedOriginal || fromId === toId) {
       setIsCheckingDuplicate(false);
       return;
     }

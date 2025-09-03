@@ -29,7 +29,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   translationData,
 }) => {
   const { isMobile } = useViewport();
-  const { getLanguageName } = useLanguages();
+  const { getLanguageName, getLanguageIdByCode } = useLanguages();
   const { savedTranslations, loading: isLoadingSavedTranslations } =
     useSavedTranslations();
   const { t } = useTranslation();
@@ -128,6 +128,33 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
     return t(`difficultyLevels.${difficulty}.label`);
   };
+
+  // Get language IDs with error handling
+  const currentLanguageId = (() => {
+    if (!translationData?.toLanguage) return undefined;
+    try {
+      return getLanguageIdByCode(translationData.toLanguage);
+    } catch (error) {
+      logger.error('general', 'Failed to get language ID', {
+        code: translationData.toLanguage,
+        error,
+      });
+      return undefined;
+    }
+  })();
+
+  const currentFromLanguageId = (() => {
+    if (!translationData?.fromLanguage) return undefined;
+    try {
+      return getLanguageIdByCode(translationData.fromLanguage);
+    } catch (error) {
+      logger.error('general', 'Failed to get language ID', {
+        code: translationData.fromLanguage,
+        error,
+      });
+      return undefined;
+    }
+  })();
 
   return (
     <>
@@ -348,22 +375,8 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
             {activeSection === 'vocabulary' && (
               <div className='p-4'>
                 <VocabularySidebar
-                  currentLanguageId={
-                    translationData?.toLanguage
-                      ? // Find language ID by code - this is a simplified approach
-                        // In a real app, you'd want to use a proper language service
-                        translationData.toLanguage === 'es'
-                        ? 2
-                        : 1
-                      : undefined
-                  }
-                  currentFromLanguageId={
-                    translationData?.fromLanguage
-                      ? translationData.fromLanguage === 'es'
-                        ? 2
-                        : 1
-                      : undefined
-                  }
+                  currentLanguageId={currentLanguageId}
+                  currentFromLanguageId={currentFromLanguageId}
                 />
               </div>
             )}
