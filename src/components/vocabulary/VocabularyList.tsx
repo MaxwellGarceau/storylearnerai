@@ -16,16 +16,12 @@ interface VocabularyListProps {
 export function VocabularyList({ className }: VocabularyListProps) {
   const { t } = useLocalization();
   const { vocabulary, loading } = useVocabulary();
-  const { languages } = useLanguages();
+  const { getLanguageNameById } = useLanguages();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredVocabulary, setFilteredVocabulary] = useState<
     VocabularyWithLanguages[]
   >([]);
-  const [_editingVocabulary, _setEditingVocabulary] =
-    useState<VocabularyWithLanguages | null>(null);
-  const [_deletingVocabulary, _setDeletingVocabulary] =
-    useState<VocabularyWithLanguages | null>(null);
 
   // Filter vocabulary based on search term
   React.useEffect(() => {
@@ -40,11 +36,6 @@ export function VocabularyList({ className }: VocabularyListProps) {
       setFilteredVocabulary(filtered);
     }
   }, [vocabulary, searchTerm]);
-
-  const getLanguageName = (languageId: number) => {
-    const language = languages.find(lang => lang.id === languageId);
-    return language?.name ?? 'Unknown';
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -118,8 +109,8 @@ export function VocabularyList({ className }: VocabularyListProps) {
 
                   <div className='flex items-center gap-2 text-sm text-muted-foreground'>
                     <Badge variant='outline'>
-                      {getLanguageName(item.from_language_id)} →{' '}
-                      {getLanguageName(item.translated_language_id)}
+                      {getLanguageNameById(item.from_language_id)} →{' '}
+                      {getLanguageNameById(item.translated_language_id)}
                     </Badge>
                     <div className='flex items-center gap-1'>
                       <Calendar className='h-3 w-3' />
@@ -147,19 +138,13 @@ export function VocabularyList({ className }: VocabularyListProps) {
                 </div>
 
                 <div className='relative'>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-8 w-8 p-0'
-                    onClick={() => _setEditingVocabulary(item)}
-                  >
+                  <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
                     <Edit className='h-4 w-4' />
                   </Button>
                   <Button
                     variant='ghost'
                     size='sm'
                     className='h-8 w-8 p-0 ml-1'
-                    onClick={() => _setDeletingVocabulary(item)}
                   >
                     <Trash2 className='h-4 w-4' />
                   </Button>

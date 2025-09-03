@@ -56,6 +56,15 @@ export const useLanguages = () => {
     return languageIdMap.get(code) ?? null;
   };
 
+  // Get language name by ID - throws error if language not found
+  const getLanguageNameById = (id: number): string => {
+    const language = languages.find(lang => lang.id === id);
+    if (!language) {
+      throw new Error(`Language with ID ${id} not found. Available language IDs: ${languages.map(l => l.id).join(', ')}`);
+    }
+    return language.name;
+  };
+
   // Map language names to ISO codes
   const getLanguageCode = (languageName: string): LanguageCode | undefined => {
     const normalizedName = languageName.toLowerCase();
@@ -110,6 +119,7 @@ export const useLanguages = () => {
     getNativeLanguageName,
     getLanguageCode,
     getLanguageIdByCode,
+    getLanguageNameById,
     languageMap,
   };
 };
