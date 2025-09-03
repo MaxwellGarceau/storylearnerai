@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../ui/Button';
 import Label from '../ui/Label';
+import { X } from 'lucide-react';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useLocalization } from '../../hooks/useLocalization';
@@ -291,7 +292,15 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-      <div className='bg-background rounded-lg shadow-lg sm:max-w-[600px] max-h-[90vh] overflow-y-auto m-4 p-4'>
+      <div className='bg-background rounded-lg shadow-lg sm:max-w-[600px] max-h-[90vh] overflow-y-auto m-4 p-4 relative'>
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={props.onClose}
+          className='absolute top-[6px] right-[6px] h-8 w-8 p-0'
+        >
+          <X className='h-4 w-4' />
+        </Button>
         <div className='p-6 border-b'>
           <h2 className='text-lg font-semibold'>
             {isCreateMode
