@@ -60,7 +60,9 @@ export const useLanguages = () => {
   const getLanguageNameById = (id: number): string => {
     const language = languages.find(lang => lang.id === id);
     if (!language) {
-      throw new Error(`Language with ID ${id} not found. Available language IDs: ${languages.map(l => l.id).join(', ')}`);
+      throw new Error(
+        `Language with ID ${id} not found. Available language IDs: ${languages.map(l => l.id).join(', ')}`
+      );
     }
     return language.name;
   };
