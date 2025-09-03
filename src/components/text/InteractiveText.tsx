@@ -6,6 +6,7 @@ import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
 import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
 import { useTranslationCache } from '../../hooks/interactiveText/useTranslationCache';
 import { useTokenizedText } from '../../hooks/interactiveText/useTokenizedText';
+import { InteractiveTextProvider } from './InteractiveTextContext';
 
 interface InteractiveTextProps {
   text: string;
@@ -51,128 +52,140 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     useTranslationCache({ extractSentenceContext, fromLanguage, targetLanguage });
 
   return (
-    <span
-      className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
+    <InteractiveTextProvider
+      value={{
+        fromLanguage,
+        targetLanguage,
+        savedOriginalWords,
+        findSavedWordData,
+        translatedWords,
+        translatedSentences,
+        translatingWords,
+      }}
     >
-      {tokens.map((t, idx) => {
-        if (t.kind !== 'word') {
-          const textNode = t.kind === 'punct' ? t.text : t.text;
-          return <span key={idx}>{textNode}</span>;
-        }
+      <span
+        className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
+      >
+        {tokens.map((t, idx) => {
+          if (t.kind !== 'word') {
+            const textNode = t.kind === 'punct' ? t.text : t.text;
+            return <span key={idx}>{textNode}</span>;
+          }
 
-        const normalizedWord = t.normalizedWord;
-        const cleanWord = t.cleanWord;
-        const punctuation = t.punctuation;
-        const translatedWord = translatedWords.get(normalizedWord);
-        const isSaved = savedOriginalWords.has(normalizedWord);
-        const savedHighlightClass = isSaved
-          ? 'bg-yellow-200 dark:bg-yellow-900/30'
-          : '';
+          const normalizedWord = t.normalizedWord;
+          const cleanWord = t.cleanWord;
+          const punctuation = t.punctuation;
+          const translatedWord = translatedWords.get(normalizedWord);
+          const isSaved = savedOriginalWords.has(normalizedWord);
+          const savedHighlightClass = isSaved
+            ? 'bg-yellow-200 dark:bg-yellow-900/30'
+            : '';
 
-        // If tooltips are disabled or the component is disabled, just render the word inline
-        if (!enableTooltips || disabled) {
-          return (
-            <span key={idx}>
-              {translatedWord ? (
-                <span className='relative inline-block align-baseline'>
-                  <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-                    {translatedWord}
+          // If tooltips are disabled or the component is disabled, just render the word inline
+          if (!enableTooltips || disabled) {
+            return (
+              <span key={idx}>
+                {translatedWord ? (
+                  <span className='relative inline-block align-baseline'>
+                    <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+                      {translatedWord}
+                    </span>
+                    <WordHighlight
+                      word={normalizedWord}
+                      disabled={disabled}
+                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+                    >
+                      {cleanWord}
+                    </WordHighlight>
                   </span>
+                ) : (
                   <WordHighlight
                     word={normalizedWord}
                     disabled={disabled}
-                    className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+                    className={savedHighlightClass}
                   >
                     {cleanWord}
                   </WordHighlight>
-                </span>
-              ) : (
-                <WordHighlight
-                  word={normalizedWord}
-                  disabled={disabled}
-                  className={savedHighlightClass}
-                >
-                  {cleanWord}
-                </WordHighlight>
-              )}
-              {punctuation}
-            </span>
-          );
-        }
+                )}
+                {punctuation}
+              </span>
+            );
+          }
 
-        const originalSentence = extractSentenceContext(t.segmentIndex);
-        const translatedSentenceForMenu = translatedSentences.get(originalSentence);
+          const originalSentence = extractSentenceContext(t.segmentIndex);
+          const translatedSentenceForMenu = translatedSentences.get(originalSentence);
 
-        // Get saved word data for saved words
-        const savedWordData = findSavedWordData(normalizedWord);
-        const savedTranslation = savedWordData?.translated_word ?? null;
+          // Get saved word data for saved words
+          const savedWordData = findSavedWordData(normalizedWord);
+          const savedTranslation = savedWordData?.translated_word ?? null;
 
-        // Use saved translation if available, otherwise use current translation
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        const displayTranslation = savedTranslation || translatedWord;
+          // Use saved translation if available, otherwise use current translation
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          const displayTranslation = savedTranslation || translatedWord;
 
-        // Always render WordMenu so Radix trigger exists before click
-        return (
-          <span key={idx}>
-            <WordMenu
-              word={normalizedWord}
-              open={openMenuIndex === idx}
-              onOpenChange={open => {
-                if (open) {
-                  // Accept open events from Radix trigger as well (covers clicks on trigger padding)
-                  setOpenMenuIndex(idx);
-                } else if (openMenuIndex === idx) {
-                  setOpenMenuIndex(null);
-                }
-              }}
-              onTranslate={w => {
-                void handleTranslate(w, t.segmentIndex);
-              }}
-              fromLanguage={fromLanguage}
-              targetLanguage={targetLanguage}
-              translatedWord={displayTranslation}
-              originalSentence={originalSentence}
-              translatedSentence={translatedSentenceForMenu}
-              isSaved={isSaved}
-              isTranslating={translatingWords.has(normalizedWord)}
-              savedTranslation={savedTranslation}
-            >
-              {translatedWord ? (
-                <span className='relative inline-block align-baseline'>
-                  <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-                    {translatedWord}
+          // Always render WordMenu so Radix trigger exists before click
+          return (
+            <span key={idx}>
+              <WordMenu
+                word={normalizedWord}
+                open={openMenuIndex === idx}
+                onOpenChange={open => {
+                  if (open) {
+                    // Accept open events from Radix trigger as well (covers clicks on trigger padding)
+                    setOpenMenuIndex(idx);
+                  } else if (openMenuIndex === idx) {
+                    setOpenMenuIndex(null);
+                  }
+                }}
+                onTranslate={w => {
+                  void handleTranslate(w, t.segmentIndex);
+                }}
+                fromLanguage={fromLanguage}
+                targetLanguage={targetLanguage}
+                translatedWord={displayTranslation}
+                originalSentence={originalSentence}
+                translatedSentence={translatedSentenceForMenu}
+                isSaved={isSaved}
+                isTranslating={translatingWords.has(normalizedWord)}
+                savedTranslation={savedTranslation}
+              >
+                {translatedWord ? (
+                  <span className='relative inline-block align-baseline'>
+                    <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+                      {translatedWord}
+                    </span>
+                    <WordHighlight
+                      word={normalizedWord}
+                      disabled={disabled}
+                      active={openMenuIndex === idx}
+                      className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+                      onClick={() => {
+                        setOpenMenuIndex(prev => (prev === idx ? null : idx));
+                      }}
+                    >
+                      {cleanWord}
+                    </WordHighlight>
                   </span>
+                ) : (
                   <WordHighlight
                     word={normalizedWord}
                     disabled={disabled}
                     active={openMenuIndex === idx}
-                    className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+                    className={savedHighlightClass}
                     onClick={() => {
                       setOpenMenuIndex(prev => (prev === idx ? null : idx));
                     }}
                   >
                     {cleanWord}
                   </WordHighlight>
-                </span>
-              ) : (
-                <WordHighlight
-                  word={normalizedWord}
-                  disabled={disabled}
-                  active={openMenuIndex === idx}
-                  className={savedHighlightClass}
-                  onClick={() => {
-                    setOpenMenuIndex(prev => (prev === idx ? null : idx));
-                  }}
-                >
-                  {cleanWord}
-                </WordHighlight>
-              )}
-            </WordMenu>
-            {punctuation}
-          </span>
-        );
-      })}
-    </span>
+                )}
+              </WordMenu>
+              {punctuation}
+            </span>
+          );
+        })}
+      </span>
+    </InteractiveTextProvider>
   );
 };
 
