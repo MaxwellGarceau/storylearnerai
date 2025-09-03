@@ -130,6 +130,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   };
 
   // Get language IDs with error handling
+  // TODO: Should I remove the try/catch here? We should always have a language id.
   const currentLanguageId = (() => {
     if (!translationData?.toLanguage) return undefined;
     try {
@@ -143,6 +144,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   })();
 
+  // TODO: Should I remove the try/catch here? We should always have a language id.
   const currentFromLanguageId = (() => {
     if (!translationData?.fromLanguage) return undefined;
     try {
