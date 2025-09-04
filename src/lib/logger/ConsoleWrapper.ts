@@ -11,15 +11,7 @@ class ConsoleWrapper {
   }
 
   log(level: string, message: string, meta: Record<string, unknown> = {}) {
-    const {
-      channel,
-      data,
-      userId,
-      sessionId,
-      requestId,
-      performance,
-      ...rest
-    } = meta;
+    const { channel, data, ...rest } = meta;
 
     // Console logging
     if (this.config.enableConsole) {

@@ -16,6 +16,7 @@ import { BadgeSection } from '../../ui/BadgeSection';
 import { ContextSection } from '../../ui/ContextSection';
 import { supabase } from '../../../api/supabase/client';
 import { logger } from '../../../lib/logger';
+import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -36,12 +37,15 @@ export function VocabularyDetailModal({
         // Fetch the saved translation data
         const { data: savedTranslation, error } = await supabase
           .from('saved_translations')
-          .select(`
+          .select(
+            `
             *,
             original_language:original_language_id(*),
             translated_language:translated_language_id(*),
             difficulty_level:difficulty_level_id(*)
-          `)
+          `
+          )
+          .returns<DatabaseSavedTranslationWithDetails>()
           .eq('id', vocabulary.saved_translation_id)
           .single();
 
@@ -52,7 +56,7 @@ export function VocabularyDetailModal({
 
         if (savedTranslation) {
           // Prefer URL param navigation for deep linking and refresh safety
-          navigate(`/story?id=${savedTranslation.id}`, {
+          void navigate(`/story?id=${savedTranslation.id}`, {
             state: {
               // Keep fast-path state for instant render when available
               translationData: {

@@ -35,8 +35,9 @@ const StoryReaderPage: React.FC = () => {
 
   const [loadingById, setLoadingById] = useState(false);
   const [errorById, setErrorById] = useState<string | null>(null);
-  const [fetchedTranslationData, setFetchedTranslationData] =
-    useState<TranslationResponse | undefined>(undefined);
+  const [fetchedTranslationData, setFetchedTranslationData] = useState<
+    TranslationResponse | undefined
+  >(undefined);
 
   useEffect(() => {
     // If we don't already have translation data via state, but we have an id in the URL, fetch it

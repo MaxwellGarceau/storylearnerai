@@ -36,7 +36,7 @@ describe('VocabularySaveButton', () => {
         translatedLanguageId={1}
         savedTranslationId={42}
         isSaved={false}
-        t={(k: string) => k as unknown as any}
+        t={(k: string) => k}
         saveVocabularyOverride={mockSaveVocabularyWord}
         checkExistsOverride={mockCheckVocabularyExists}
       />
@@ -87,7 +87,7 @@ describe('VocabularySaveButton', () => {
               await new Promise(r => setTimeout(r, 10));
               setTranslated('hello');
             }}
-            t={(k: string) => k as unknown as any}
+            t={(k: string) => k}
             saveVocabularyOverride={mockSaveVocabularyWord}
             checkExistsOverride={mockCheckVocabularyExists}
           />

@@ -6,6 +6,7 @@ import { supabase } from '../../api/supabase/client';
 type MockSupabaseResponse = Promise<{ data: unknown; error: null }>;
 type MockSupabaseInsertFn = (data: unknown) => MockSupabaseQueryBuilder;
 type MockSupabaseQueryBuilder = {
+  upsert: (data: unknown, options?: unknown) => MockSupabaseQueryBuilder;
   insert: MockSupabaseInsertFn;
   select: (columns?: string) => MockSupabaseQueryBuilder;
   eq: (column: string, value: unknown) => MockSupabaseQueryBuilder;
@@ -22,6 +23,13 @@ type MockSupabaseQueryBuilder = {
 vi.mock('../../api/supabase/client', () => ({
   supabase: {
     from: vi.fn(() => ({
+      upsert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() =>
+            Promise.resolve({ data: { id: 1 }, error: null })
+          ),
+        })),
+      })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn(() =>
@@ -88,7 +96,7 @@ describe('VocabularyService', () => {
       };
 
       const mockSupabaseChain: MockSupabaseQueryBuilder = {
-        insert: vi.fn().mockReturnValue({
+        upsert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue(mockResponse),
           }),
@@ -98,6 +106,7 @@ describe('VocabularyService', () => {
           update: vi.fn(),
           delete: vi.fn(),
         }),
+        insert: vi.fn(),
         select: vi.fn(),
         eq: vi.fn(),
         order: vi.fn(),
@@ -112,7 +121,11 @@ describe('VocabularyService', () => {
         await VocabularyService.saveVocabularyWord(mockVocabularyData);
 
       expect(supabase.from).toHaveBeenCalledWith('vocabulary');
-      expect(mockSupabaseChain.insert).toHaveBeenCalledWith(mockVocabularyData);
+      expect(mockSupabaseChain.upsert).toHaveBeenCalled();
+      expect(mockSupabaseChain.upsert).toHaveBeenCalledWith(
+        mockVocabularyData,
+        expect.anything()
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -131,7 +144,7 @@ describe('VocabularyService', () => {
       };
 
       const mockSupabaseChain: MockSupabaseQueryBuilder = {
-        insert: vi.fn().mockReturnValue({
+        upsert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue(mockResponse),
           }),
@@ -141,6 +154,7 @@ describe('VocabularyService', () => {
           update: vi.fn(),
           delete: vi.fn(),
         }),
+        insert: vi.fn(),
         select: vi.fn(),
         eq: vi.fn(),
         order: vi.fn(),

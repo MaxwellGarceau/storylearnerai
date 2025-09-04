@@ -1,4 +1,5 @@
 import { render, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import StoryContent from '../StoryContent';
@@ -39,8 +40,11 @@ describe('StoryContent Component', () => {
     document.body.innerHTML = '';
   });
 
+  const renderWithRouter = (ui: React.ReactElement) =>
+    render(<MemoryRouter>{ui}</MemoryRouter>);
+
   it('displays translated text when showOriginal is false', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent
         translationData={mockTranslationData}
         showOriginal={false}
@@ -53,7 +57,7 @@ describe('StoryContent Component', () => {
   });
 
   it('displays original text when showOriginal is true', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent translationData={mockTranslationData} showOriginal={true} />
     );
 
@@ -63,7 +67,7 @@ describe('StoryContent Component', () => {
   });
 
   it('has correct styling classes', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent
         translationData={mockTranslationData}
         showOriginal={false}
@@ -84,7 +88,7 @@ describe('StoryContent Component', () => {
       translatedText: 'First line.\n\nSecond line.',
     };
 
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent
         translationData={multilineTranslationData}
         showOriginal={false}
@@ -103,14 +107,14 @@ describe('StoryContent Component', () => {
       translatedText: '',
     };
 
-    const { container: translatedContainer } = render(
+    const { container: translatedContainer } = renderWithRouter(
       <StoryContent
         translationData={emptyTranslationData}
         showOriginal={false}
       />
     );
 
-    const { container: originalContainer } = render(
+    const { container: originalContainer } = renderWithRouter(
       <StoryContent
         translationData={emptyTranslationData}
         showOriginal={true}
@@ -133,7 +137,7 @@ describe('StoryContent Component', () => {
       translatedText: longText,
     };
 
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent
         translationData={longTranslationData}
         showOriginal={false}
@@ -153,14 +157,14 @@ describe('StoryContent Component', () => {
         'Once upon a time there was a boy who lived in Spain... What an exciting story!',
     };
 
-    const { container: originalContainer } = render(
+    const { container: originalContainer } = renderWithRouter(
       <StoryContent
         translationData={unicodeTranslationData}
         showOriginal={true}
       />
     );
 
-    const { container: translatedContainer } = render(
+    const { container: translatedContainer } = renderWithRouter(
       <StoryContent
         translationData={unicodeTranslationData}
         showOriginal={false}
@@ -179,7 +183,7 @@ describe('StoryContent Component', () => {
   });
 
   it('switches content correctly when showOriginal prop changes', () => {
-    const { container, rerender } = render(
+    const { container, rerender } = renderWithRouter(
       <StoryContent
         translationData={mockTranslationData}
         showOriginal={false}
@@ -194,7 +198,12 @@ describe('StoryContent Component', () => {
 
     // After rerender with showOriginal=true, shows original text
     rerender(
-      <StoryContent translationData={mockTranslationData} showOriginal={true} />
+      <MemoryRouter>
+        <StoryContent
+          translationData={mockTranslationData}
+          showOriginal={true}
+        />
+      </MemoryRouter>
     );
 
     expect(within(container).getByText('Hola')).toBeInTheDocument();
@@ -204,7 +213,7 @@ describe('StoryContent Component', () => {
   });
 
   it('has transition classes for smooth content switching', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <StoryContent
         translationData={mockTranslationData}
         showOriginal={false}
@@ -231,14 +240,14 @@ describe('StoryContent Component', () => {
         'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
     };
 
-    const { container: shortContainer } = render(
+    const { container: shortContainer } = renderWithRouter(
       <StoryContent
         translationData={shortTranslationData}
         showOriginal={false}
       />
     );
 
-    const { container: longContainer } = render(
+    const { container: longContainer } = renderWithRouter(
       <StoryContent
         translationData={longTranslationData}
         showOriginal={false}
