@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../../ui/Button';
 import { useVocabulary } from '../../../hooks/useVocabulary';
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { useLocalization } from '../../../hooks/useLocalization';
 import type { VoidFunction } from '../../../types/common';
+import { VocabularyModalContainer } from './VocabularyModalContainer';
 
 interface VocabularyDeleteDialogProps {
   vocabulary: VocabularyWithLanguages;
@@ -37,32 +38,30 @@ export function VocabularyDeleteDialog({
   };
 
   return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-      <div className='bg-background rounded-lg shadow-lg max-w-md max-h-[90vh] overflow-y-auto m-4 p-4'>
-        <div className='p-2'>
-          <h2 className='text-lg font-semibold mb-2'>
-            {t('vocabulary.delete.title')}
-          </h2>
-          <p className='text-muted-foreground mb-6'>
-            {t('vocabulary.delete.description', {
-              originalWord: vocabulary.original_word,
-              translatedWord: vocabulary.translated_word,
-            })}
-          </p>
-          <div className='flex justify-end space-x-2'>
-            <Button variant='outline' onClick={onClose} disabled={isDeleting}>
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={() => void handleDelete()}
-              disabled={isDeleting}
-              variant='destructive'
-            >
-              {isDeleting ? t('common.deleting') : t('common.delete')}
-            </Button>
-          </div>
+    <VocabularyModalContainer>
+      <div className='p-2'>
+        <h2 className='text-lg font-semibold mb-2'>
+          {t('vocabulary.delete.title')}
+        </h2>
+        <p className='text-muted-foreground mb-6'>
+          {t('vocabulary.delete.description', {
+            originalWord: vocabulary.original_word,
+            translatedWord: vocabulary.translated_word,
+          })}
+        </p>
+        <div className='flex justify-end space-x-2'>
+          <Button variant='outline' onClick={onClose} disabled={isDeleting}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={() => void handleDelete()}
+            disabled={isDeleting}
+            variant='destructive'
+          >
+            {isDeleting ? t('common.deleting') : t('common.delete')}
+          </Button>
         </div>
       </div>
-    </div>
+    </VocabularyModalContainer>
   );
 }
