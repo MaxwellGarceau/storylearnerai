@@ -14,9 +14,9 @@ import { WordDisplay } from '../../ui/WordDisplay';
 import { LanguageMetadata } from '../../ui/LanguageMetadata';
 import { BadgeSection } from '../../ui/BadgeSection';
 import { ContextSection } from '../../ui/ContextSection';
-import { supabase } from '../../../api/supabase/client';
 import { logger } from '../../../lib/logger';
-import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
+import { useAuth } from '../../../hooks/useAuth';
+import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -28,31 +28,18 @@ export function VocabularyDetailModal({
 }: VocabularyDetailModalProps) {
   const { t } = useLocalization();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleNavigateToSavedTranslation = async () => {
     if (vocabulary.saved_translation_id) {
       try {
-        // Fetch the saved translation data
-        const { data: savedTranslation, error } = await supabase
-          .from('saved_translations')
-          .select(
-            `
-            *,
-            original_language:original_language_id(*),
-            translated_language:translated_language_id(*),
-            difficulty_level:difficulty_level_id(*)
-          `
-          )
-          .returns<DatabaseSavedTranslationWithDetails>()
-          .eq('id', vocabulary.saved_translation_id)
-          .single();
-
-        if (error) {
-          logger.error('ui', 'Failed to fetch saved translation', { error });
-          return;
-        }
+        const service = new SavedTranslationService();
+        const savedTranslation = await service.getSavedTranslation(
+          String(vocabulary.saved_translation_id),
+          user!.id
+        );
 
         if (savedTranslation) {
           // Prefer URL param navigation for deep linking and refresh safety
