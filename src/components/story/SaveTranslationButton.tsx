@@ -12,10 +12,9 @@ import TextArea from '../ui/TextArea';
 import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useAuth } from '../../hooks/useAuth';
 import { TranslationResponse } from '../../lib/translationService';
-import { useToast } from '../../hooks/useToast';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
-import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
+import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { validateTextInput, sanitizeText } from '../../lib/utils/sanitization';
 import type { DifficultyLevel } from '../../types/llm/prompts';
@@ -49,8 +48,7 @@ export default function SaveTranslationButton({
   }>({});
 
   const { user } = useAuth();
-  const savedTranslationService = new SavedTranslationService();
-  const { toast } = useToast();
+  const { createSavedTranslation } = useSavedTranslations();
   const { getLanguageCode } = useLanguages();
   const { getDifficultyLevelName } = useDifficultyLevels();
 
@@ -101,11 +99,6 @@ export default function SaveTranslationButton({
   };
 
   const handleSave = async () => {
-    if (!user) {
-      setError('Please sign in to save translations');
-      return;
-    }
-
     if (!translationData.translatedText) {
       setError('No translated text available to save');
       return;
@@ -133,30 +126,22 @@ export default function SaveTranslationButton({
         return;
       }
 
-      await savedTranslationService.createSavedTranslation(
-        {
-          original_story: originalStory,
-          translated_story: translationData.translatedText,
-          original_language_code: originalLanguageCode,
-          translated_language_code: translatedLanguageCode,
-          difficulty_level_code: difficultyLevel,
-          title: sanitizedTitle ?? undefined,
-          notes: sanitizedNotes ?? undefined,
-        },
-        user.id
-      );
-
-      // Show success toast
-      toast({
-        variant: 'success',
-        title: 'Translation Saved!',
-        description: 'Your translation has been saved to your library.',
+      const result = await createSavedTranslation({
+        original_story: originalStory,
+        translated_story: translationData.translatedText,
+        original_language_code: originalLanguageCode,
+        translated_language_code: translatedLanguageCode,
+        difficulty_level_code: difficultyLevel,
+        title: sanitizedTitle ?? undefined,
+        notes: sanitizedNotes ?? undefined,
       });
 
-      // Close the modal and reset form
-      setIsOpen(false);
-      setTitle('');
-      setNotes('');
+      if (result) {
+        // Close the modal and reset form
+        setIsOpen(false);
+        setTitle('');
+        setNotes('');
+      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to save translation';

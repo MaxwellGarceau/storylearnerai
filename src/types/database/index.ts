@@ -156,7 +156,7 @@ export interface Database {
         };
         Insert: {
           id?: number;
-          user_id: string; // Foreign key reference to users.id (UUID)
+          user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
           original_story: string;
           translated_story: string;
           original_language_id: number; // Foreign key reference to languages.id
