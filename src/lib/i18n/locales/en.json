@@ -508,7 +508,10 @@
     "detail": {
       "title": "Vocabulary Details",
       "definition": "Definition",
-      "context": "Context"
+      "context": "Context",
+      "savedTranslation": "Saved Translation",
+      "savedTranslationDescription": "This word was saved from a story translation",
+      "viewSavedTranslation": "View Story"
     },
     "empty": {
       "title": "No vocabulary words saved yet",

@@ -499,7 +499,10 @@
     "detail": {
       "title": "Detalles del Vocabulario",
       "definition": "Definición",
-      "context": "Contexto"
+      "context": "Contexto",
+      "savedTranslation": "Traducción Guardada",
+      "savedTranslationDescription": "Esta palabra fue guardada de una traducción de historia",
+      "viewSavedTranslation": "Ver Historia"
     },
     "empty": {
       "title": "Aún no hay palabras de vocabulario guardadas",

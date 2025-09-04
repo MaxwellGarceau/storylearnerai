@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../ui/Button';
-import { Edit, Trash2, BookOpen } from 'lucide-react';
+import { Edit, Trash2, BookOpen, ExternalLink } from 'lucide-react';
 
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { useLocalization } from '../../../hooks/useLocalization';
@@ -13,6 +14,8 @@ import { WordDisplay } from '../../ui/WordDisplay';
 import { LanguageMetadata } from '../../ui/LanguageMetadata';
 import { BadgeSection } from '../../ui/BadgeSection';
 import { ContextSection } from '../../ui/ContextSection';
+import { supabase } from '../../../api/supabase/client';
+import { logger } from '../../../lib/logger';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -23,8 +26,51 @@ export function VocabularyDetailModal({
   _onClose,
 }: VocabularyDetailModalProps) {
   const { t } = useLocalization();
+  const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleNavigateToSavedTranslation = async () => {
+    if (vocabulary.saved_translation_id) {
+      try {
+        // Fetch the saved translation data
+        const { data: savedTranslation, error } = await supabase
+          .from('saved_translations')
+          .select(`
+            *,
+            original_language:original_language_id(*),
+            translated_language:translated_language_id(*),
+            difficulty_level:difficulty_level_id(*)
+          `)
+          .eq('id', vocabulary.saved_translation_id)
+          .single();
+
+        if (error) {
+          logger.error('ui', 'Failed to fetch saved translation', { error });
+          return;
+        }
+
+        if (savedTranslation) {
+          // Navigate to story page with translation data (same as clicking saved story in sidebar)
+          navigate('/story', {
+            state: {
+              translationData: {
+                originalText: savedTranslation.original_story,
+                translatedText: savedTranslation.translated_story,
+                difficulty: savedTranslation.difficulty_level.code,
+                fromLanguage: savedTranslation.original_language.code,
+                toLanguage: savedTranslation.translated_language.code,
+              },
+              isSavedStory: true,
+              savedTranslationId: savedTranslation.id,
+            },
+          });
+        }
+      } catch (error) {
+        logger.error('ui', 'Error navigating to saved translation', { error });
+      }
+    }
+  };
   return (
     <>
       <VocabularyModalContainer>
@@ -94,6 +140,31 @@ export function VocabularyDetailModal({
             originalContext={vocabulary.original_word_context}
             translatedContext={vocabulary.translated_word_context}
           />
+
+          {/* Saved Translation Navigation */}
+          {vocabulary.saved_translation_id && (
+            <div className='space-y-3'>
+              <h4 className='font-medium'>
+                {t('vocabulary.detail.savedTranslation')}
+              </h4>
+              <div className='p-4 bg-muted/50 rounded-lg border'>
+                <div className='flex items-center justify-between'>
+                  <div className='text-sm text-muted-foreground'>
+                    {t('vocabulary.detail.savedTranslationDescription')}
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={handleNavigateToSavedTranslation}
+                    className='flex items-center gap-2'
+                  >
+                    <ExternalLink className='h-4 w-4' />
+                    {t('vocabulary.detail.viewSavedTranslation')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </VocabularyModalContainer>
 
