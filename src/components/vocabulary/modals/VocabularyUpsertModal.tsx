@@ -5,7 +5,9 @@ import { useLanguages } from '../../../hooks/useLanguages';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { VocabularyModalContainer } from './VocabularyModalContainer';
 import { ModalHeader } from '../../ui/ModalHeader';
-import { FormField } from '../../ui/form/FormField';
+import { TextField } from '../../ui/form/TextField';
+import { TextareaField } from '../../ui/form/TextareaField';
+import { SelectField } from '../../ui/form/SelectField';
 import { FormActions } from '../../ui/form/FormActions';
 import type {
   VocabularyInsert,
@@ -297,8 +299,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
       >
         {/* Word Fields */}
         <div className='grid grid-cols-2 gap-4 pt-4'>
-          <FormField
-            type='input'
+          <TextField
             id='original_word'
             label={t('vocabulary.form.originalWord')}
             value={formData.original_word}
@@ -308,8 +309,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             required={isCreateMode}
           />
 
-          <FormField
-            type='input'
+          <TextField
             id='translated_word'
             label={t('vocabulary.form.translatedWord')}
             value={formData.translated_word}
@@ -323,8 +323,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         {/* Language Fields (Create only) */}
         {isCreateMode ? (
           <div className='grid grid-cols-2 gap-4'>
-            <FormField
-              type='select'
+            <SelectField
               id='from_language'
               label={t('vocabulary.form.fromLanguage')}
               value={formData.from_language_id}
@@ -340,10 +339,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                   {language.name}
                 </option>
               ))}
-            </FormField>
+            </SelectField>
 
-            <FormField
-              type='select'
+            <SelectField
               id='translated_language'
               label={t('vocabulary.form.toLanguage')}
               value={formData.translated_language_id}
@@ -361,7 +359,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                   {language.name}
                 </option>
               ))}
-            </FormField>
+            </SelectField>
           </div>
         ) : (
           <div className='text-sm text-muted-foreground'>
@@ -374,8 +372,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         )}
 
         {/* Definition */}
-        <FormField
-          type='textarea'
+        <TextareaField
           id='definition'
           label={t('vocabulary.form.definition')}
           value={formData.definition}
@@ -386,8 +383,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
         {/* Part of Speech and Frequency */}
         <div className='grid grid-cols-2 gap-4'>
-          <FormField
-            type='select'
+          <SelectField
             id='part_of_speech'
             label={t('vocabulary.form.partOfSpeech')}
             value={formData.part_of_speech}
@@ -399,10 +395,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                 {option.label}
               </option>
             ))}
-          </FormField>
+          </SelectField>
 
-          <FormField
-            type='select'
+          <SelectField
             id='frequency_level'
             label={t('vocabulary.form.frequencyLevel')}
             value={formData.frequency_level}
@@ -414,12 +409,11 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                 {option.label}
               </option>
             ))}
-          </FormField>
+          </SelectField>
         </div>
 
         {/* Context Fields */}
-        <FormField
-          type='textarea'
+        <TextareaField
           id='original_word_context'
           label={t('vocabulary.form.originalContext')}
           value={formData.original_word_context}
@@ -428,8 +422,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           rows={2}
         />
 
-        <FormField
-          type='textarea'
+        <TextareaField
           id='translated_word_context'
           label={t('vocabulary.form.translatedContext')}
           value={formData.translated_word_context}
