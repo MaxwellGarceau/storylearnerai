@@ -42,14 +42,14 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
     return (
       <Button
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled ?? loading}
         className={cn('flex items-center gap-1', className)}
         {...props}
       >
         {loading ? (
           <>
             <div className={spinnerClasses} />
-            {loadingText || 'Loading...'}
+            {loadingText ?? 'Loading...'}
           </>
         ) : (
           children

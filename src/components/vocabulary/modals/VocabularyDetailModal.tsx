@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../ui/Button';
-import { Badge } from '../../ui/Badge';
-import { Edit, Trash2, Calendar, BookOpen, Languages, X } from 'lucide-react';
+import { Edit, Trash2, BookOpen } from 'lucide-react';
 
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { useLocalization } from '../../../hooks/useLocalization';
@@ -9,6 +8,11 @@ import { VocabularyEditModal } from './VocabularyEditModal';
 import { VocabularyDeleteDialog } from './VocabularyDeleteDialog';
 import { VocabularyModalContainer } from './VocabularyModalContainer';
 import { DateUtils } from '../../../lib/utils/dateUtils';
+import { ModalHeader } from '../../ui/ModalHeader';
+import { WordDisplay } from '../../ui/WordDisplay';
+import { LanguageMetadata } from '../../ui/LanguageMetadata';
+import { BadgeSection } from '../../ui/BadgeSection';
+import { ContextSection } from '../../ui/ContextSection';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -24,34 +28,20 @@ export function VocabularyDetailModal({
   return (
     <>
       <VocabularyModalContainer>
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={_onClose}
-          className='absolute top-[6px] right-[6px] h-8 w-8 p-0'
-        >
-          <X className='h-4 w-4' />
-        </Button>
-        <div className='py-6 pt-4 border-b'>
-          <h2 className='text-lg font-semibold flex items-center gap-2'>
-            <BookOpen className='h-5 w-5' />
-            {t('vocabulary.detail.title')}
-          </h2>
-        </div>
+        <ModalHeader
+          title={t('vocabulary.detail.title')}
+          onClose={_onClose}
+          icon={BookOpen}
+        />
 
         <div className='space-y-4'>
           {/* Word Information */}
           <div className='space-y-3'>
             <div className='flex items-center justify-between py-3'>
-              <div className='flex items-center gap-2 mr-2'>
-                <span className='font-semibold text-lg'>
-                  {vocabulary.original_word}
-                </span>
-                <span className='text-muted-foreground'>→</span>
-                <span className='font-semibold text-lg'>
-                  {vocabulary.translated_word}
-                </span>
-              </div>
+              <WordDisplay
+                originalWord={vocabulary.original_word}
+                translatedWord={vocabulary.translated_word}
+              />
               <div className='flex gap-1'>
                 <Button
                   size='sm'
@@ -72,16 +62,11 @@ export function VocabularyDetailModal({
             </div>
 
             {/* Language and Metadata */}
-            <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-              <Languages className='h-4 w-4' />
-              <span>
-                {vocabulary.from_language.name} →{' '}
-                {vocabulary.translated_language.name}
-              </span>
-              <span>•</span>
-              <Calendar className='h-4 w-4' />
-              <span>{DateUtils.formatDate(vocabulary.created_at)}</span>
-            </div>
+            <LanguageMetadata
+              fromLanguage={vocabulary.from_language.name}
+              toLanguage={vocabulary.translated_language.name}
+              createdAt={DateUtils.formatDate(vocabulary.created_at)}
+            />
           </div>
 
           {/* Definition */}
@@ -97,51 +82,18 @@ export function VocabularyDetailModal({
           )}
 
           {/* Part of Speech and Frequency */}
-          {(vocabulary.part_of_speech ?? vocabulary.frequency_level) && (
-            <div className='flex gap-2'>
-              {vocabulary.part_of_speech && (
-                <Badge variant='outline'>
-                  {t(`vocabulary.pos.${vocabulary.part_of_speech}`)}
-                </Badge>
-              )}
-              {vocabulary.frequency_level && (
-                <Badge variant='secondary'>
-                  {t(`vocabulary.frequency.${vocabulary.frequency_level}`)}
-                </Badge>
-              )}
-            </div>
-          )}
+          <BadgeSection
+            partOfSpeech={vocabulary.part_of_speech}
+            frequencyLevel={vocabulary.frequency_level}
+            partOfSpeechKey={pos => t(`vocabulary.pos.${pos}`)}
+            frequencyKey={freq => t(`vocabulary.frequency.${freq}`)}
+          />
 
           {/* Context */}
-          {(vocabulary.original_word_context ??
-            vocabulary.translated_word_context) && (
-            <div className='space-y-3'>
-              <hr className='border-t border-border' />
-              <h4 className='font-medium'>{t('vocabulary.detail.context')}</h4>
-
-              {vocabulary.original_word_context && (
-                <div className='space-y-1'>
-                  <p className='text-sm font-medium text-muted-foreground'>
-                    Original:
-                  </p>
-                  <p className='text-sm bg-muted p-2 rounded'>
-                    {vocabulary.original_word_context}
-                  </p>
-                </div>
-              )}
-
-              {vocabulary.translated_word_context && (
-                <div className='space-y-1'>
-                  <p className='text-sm font-medium text-muted-foreground'>
-                    Translated:
-                  </p>
-                  <p className='text-sm bg-muted p-2 rounded'>
-                    {vocabulary.translated_word_context}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+          <ContextSection
+            originalContext={vocabulary.original_word_context}
+            translatedContext={vocabulary.translated_word_context}
+          />
         </div>
       </VocabularyModalContainer>
 

@@ -23,7 +23,7 @@ import {
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { DateUtils } from '../../lib/utils/dateUtils';
- 
+
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -123,8 +123,6 @@ export default function SavedTranslationsList() {
       },
     });
   };
-
-  
 
   if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
     return (
