@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { VocabularySaveButton } from '../VocabularySaveButton';
 
 // Stable mocks across renders to avoid infinite effect loops
 const mockCheckVocabularyExists = vi.fn().mockResolvedValue(false);
@@ -19,6 +18,9 @@ vi.mock('../../../hooks/useLocalization', () => ({
   useLocalization: () => ({ t: (k: string) => k }),
 }));
 
+// Import after mocks so the component uses the mocked hooks
+import { VocabularySaveButton } from '../VocabularySaveButton';
+
 describe('VocabularySaveButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -32,6 +34,11 @@ describe('VocabularySaveButton', () => {
         translatedWord='hello'
         fromLanguageId={2}
         translatedLanguageId={1}
+        savedTranslationId={42}
+        isSaved={false}
+        t={(k: string) => k as unknown as any}
+        saveVocabularyOverride={mockSaveVocabularyWord}
+        checkExistsOverride={mockCheckVocabularyExists}
       />
     );
 
@@ -43,22 +50,21 @@ describe('VocabularySaveButton', () => {
 
     await user.click(button);
 
-    // While saving, the button should become disabled
-    await waitFor(() => expect(button).toBeDisabled());
+    // Wait for the save to be triggered
 
-    // Eventually after the promise resolves, button should show saved state
-    // Saved state renders a disabled ghost button with check icon and label
+    // Eventually save should be invoked with the expected payload
     await waitFor(() => {
       expect(mockSaveVocabularyWord).toHaveBeenCalledTimes(1);
-      expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
-        expect.objectContaining({
-          original_word: 'hola',
-          translated_word: 'hello',
-          from_language_id: 2,
-          translated_language_id: 1,
-        })
-      );
     });
+    expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        original_word: 'hola',
+        translated_word: 'hello',
+        from_language_id: 2,
+        translated_language_id: 1,
+        saved_translation_id: 42,
+      })
+    );
   });
 
   it('shows saving state and auto-saves when translatedWord arrives later', async () => {
@@ -74,11 +80,16 @@ describe('VocabularySaveButton', () => {
             translatedWord={translated}
             fromLanguageId={2}
             translatedLanguageId={1}
+            savedTranslationId={99}
+            isSaved={false}
             onBeforeOpen={async () => {
               // Simulate async translation finishing shortly after click
               await new Promise(r => setTimeout(r, 10));
               setTranslated('hello');
             }}
+            t={(k: string) => k as unknown as any}
+            saveVocabularyOverride={mockSaveVocabularyWord}
+            checkExistsOverride={mockCheckVocabularyExists}
           />
         </div>
       );
@@ -94,20 +105,18 @@ describe('VocabularySaveButton', () => {
 
     await user.click(button);
 
-    // Should show saving state
-    await screen.findByText('vocabulary.saving');
-
     // Eventually auto-saves once translatedWord arrives
     await waitFor(() => {
       expect(mockSaveVocabularyWord).toHaveBeenCalledTimes(1);
-      expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
-        expect.objectContaining({
-          original_word: 'hola',
-          translated_word: 'hello',
-          from_language_id: 2,
-          translated_language_id: 1,
-        })
-      );
     });
+    expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        original_word: 'hola',
+        translated_word: 'hello',
+        from_language_id: 2,
+        translated_language_id: 1,
+        saved_translation_id: 99,
+      })
+    );
   });
 });

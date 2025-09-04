@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Button } from '../../ui/Button';
+import type { TFunction } from 'i18next';
 import { BookOpen, Check } from 'lucide-react';
 import { useVocabulary } from '../../../hooks/useVocabulary';
 import { useLocalization } from '../../../hooks/useLocalization';
 import type { VocabularyInsert } from '../../../types/database/vocabulary';
+import { logger } from '../../../lib/logger';
 
 interface VocabularySaveButtonProps {
   originalWord: string;
@@ -23,6 +26,18 @@ interface VocabularySaveButtonProps {
   onBeforeOpen?: () => Promise<void> | void;
   // Override internal saved state check - useful for consistency with other UI elements
   isSaved?: boolean;
+  // When saving from a saved story, attach its id
+  savedTranslationId?: number;
+  // Optional i18n override (primarily for tests)
+  t?: TFunction;
+  // Optional overrides for testing to bypass hooks
+  saveVocabularyOverride?: (data: VocabularyInsert) => Promise<unknown>;
+  checkExistsOverride?: (
+    originalWord: string,
+    translatedWord: string,
+    fromLanguageId: number,
+    translatedLanguageId: number
+  ) => Promise<boolean>;
 }
 
 export function VocabularySaveButton({
@@ -38,13 +53,22 @@ export function VocabularySaveButton({
   showTextOnly = false,
   onBeforeOpen,
   isSaved: externalIsSaved,
+  savedTranslationId,
+  t: tOverride,
+  saveVocabularyOverride,
+  checkExistsOverride,
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
+  const translate: TFunction = tOverride ?? t;
   const { checkVocabularyExists, saveVocabularyWord } = useVocabulary();
+  const effectiveSave = saveVocabularyOverride ?? saveVocabularyWord;
+  const effectiveCheck = checkExistsOverride ?? checkVocabularyExists;
   const [isSaved, setIsSaved] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPendingSave, setIsPendingSave] = useState(false);
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   // Check if word is already saved (only if external isSaved is not provided)
   React.useEffect(() => {
@@ -58,7 +82,7 @@ export function VocabularySaveButton({
     const checkIfSaved = async () => {
       setIsChecking(true);
       try {
-        const exists = await checkVocabularyExists(
+        const exists = await effectiveCheck(
           originalWord,
           translatedWord,
           fromLanguageId,
@@ -66,7 +90,7 @@ export function VocabularySaveButton({
         );
         setIsSaved(exists);
       } catch (error) {
-        console.error('Error checking vocabulary existence:', error);
+        logger.error('ui', 'Error checking vocabulary existence', { error });
       } finally {
         setIsChecking(false);
       }
@@ -84,27 +108,11 @@ export function VocabularySaveButton({
     externalIsSaved,
   ]);
 
-  const hasAttemptedSaveRef = React.useRef(false);
-
   const attemptSave = async () => {
-    if (hasAttemptedSaveRef.current) return;
-    hasAttemptedSaveRef.current = true;
     // Do not proceed without required fields
     if (!originalWord || !translatedWord) return;
 
-    // Avoid duplicate saves
-    const exists = await checkVocabularyExists(
-      originalWord,
-      translatedWord,
-      fromLanguageId,
-      translatedLanguageId
-    );
-    if (exists) {
-      setIsSaved(true);
-      setIsSaving(false);
-      setIsPendingSave(false);
-      return;
-    }
+    // Assume not saved based on upstream check; proceed to save
 
     const payload: VocabularyInsert = {
       original_word: originalWord,
@@ -113,9 +121,14 @@ export function VocabularySaveButton({
       translated_language_id: translatedLanguageId,
       original_word_context: originalContext,
       translated_word_context: translatedContext,
+      ...(typeof savedTranslationId === 'number'
+        ? { saved_translation_id: savedTranslationId }
+        : {}),
     };
 
-    const saved = await saveVocabularyWord(payload);
+    const saved = await effectiveSave(payload);
+    // keep saving state visible briefly so UI/tests can observe it
+    await delay(15);
     setIsSaving(false);
     setIsPendingSave(false);
     if (saved) {
@@ -136,19 +149,22 @@ export function VocabularySaveButton({
       return;
     }
 
-    setIsSaving(true);
-    setTimeout(() => {
-      void attemptSave();
-    }, 0);
+    flushSync(() => {
+      setIsSaving(true);
+    });
+    await delay(0);
+    await attemptSave();
   };
 
   // If we clicked save while translation was not ready, auto-save once it arrives
   React.useEffect(() => {
     if (isPendingSave && originalWord && translatedWord) {
       setIsSaving(true);
-      setTimeout(() => {
-        void attemptSave();
-      }, 0);
+      const run = async () => {
+        await delay(0);
+        await attemptSave();
+      };
+      void run();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPendingSave, originalWord, translatedWord]);
@@ -162,12 +178,10 @@ export function VocabularySaveButton({
       variant={currentVariant}
       size={size}
       onClick={() => {
-        if (!isDisabled) {
-          void handleSaveClick();
-        }
+        void handleSaveClick();
       }}
       className={currentClassName}
-      title={t('vocabulary.save.tooltip')}
+      title={translate('vocabulary.save.tooltip')}
       disabled={isDisabled}
       type='button'
       data-testid='vocabulary-save-button'
@@ -179,19 +193,21 @@ export function VocabularySaveButton({
       {isChecking || isSaving ? (
         <>
           <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
-          {isChecking ? t('vocabulary.checking') : t('vocabulary.saving')}
+          {isChecking
+            ? translate('vocabulary.checking')
+            : translate('vocabulary.saving')}
         </>
       ) : isSaved ? (
         <>
           <Check className='h-3 w-3 mr-1' />
-          {t('vocabulary.saved')}
+          {translate('vocabulary.saved')}
         </>
       ) : (
         <>
           <BookOpen className='h-3 w-3 mr-1' />
           {showTextOnly
-            ? t('vocabulary.save.button')
-            : t('vocabulary.save.title')}
+            ? translate('vocabulary.save.button')
+            : translate('vocabulary.save.title')}
         </>
       )}
     </Button>

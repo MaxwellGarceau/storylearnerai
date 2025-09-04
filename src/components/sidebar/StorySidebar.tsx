@@ -90,7 +90,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       });
 
       void navigate('/story', {
-        state: { translationData: response, isSavedStory: true },
+        state: {
+          translationData: response,
+          isSavedStory: true,
+          savedTranslationId: story.id,
+        },
       });
     } catch (error) {
       logger.error('ui', 'Failed to load story', { error });
@@ -110,6 +114,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
           toLanguage: saved.translated_language.code,
         },
         isSavedStory: true,
+        savedTranslationId: saved.id,
       },
     });
   };

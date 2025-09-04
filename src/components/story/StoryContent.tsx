@@ -5,11 +5,13 @@ import InteractiveText from '../text/InteractiveText';
 interface StoryContentProps {
   translationData: TranslationResponse;
   showOriginal: boolean;
+  savedTranslationId?: number;
 }
 
 const StoryContent: React.FC<StoryContentProps> = ({
   translationData,
   showOriginal,
+  savedTranslationId,
 }) => {
   const displayText = showOriginal
     ? translationData.originalText
@@ -32,6 +34,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
           text={displayText}
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
+          savedTranslationId={savedTranslationId}
         />
       </div>
     </div>

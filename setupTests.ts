@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
 import { server } from './src/__tests__/mocks/supabaseMock';
 import 'vitest';
 
@@ -39,6 +40,9 @@ beforeAll(() => server.listen());
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => server.resetHandlers());
+
+// Ensure React Testing Library cleans up between tests to avoid DOM leakage
+afterEach(() => cleanup());
 
 // Clean up after the tests are finished.
 afterAll(() => server.close());

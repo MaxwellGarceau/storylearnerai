@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
 import { LoadingButton } from '../ui/LoadingButton';
@@ -43,6 +44,12 @@ const WordMenu: React.FC<WordMenuProps> = ({
   isTranslating,
 }) => {
   const ctx = useInteractiveTextContext();
+  const location = useLocation();
+  const routeSavedTranslationId = (
+    location.state as { savedTranslationId?: number } | null
+  )?.savedTranslationId;
+  const effectiveSavedTranslationId =
+    ctx?.savedTranslationId ?? routeSavedTranslationId;
   const { user } = useAuth();
   const { t } = useLocalization();
   const [showDictionary, setShowDictionary] = useState(false);
@@ -184,6 +191,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         translatedContext={translatedSentence}
                         fromLanguageId={fromLanguageId}
                         translatedLanguageId={targetLanguageId}
+                        savedTranslationId={effectiveSavedTranslationId}
                         size='sm'
                         variant='outline'
                         isSaved={effectiveIsSaved}
@@ -213,6 +221,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       translatedContext={translatedSentence}
                       fromLanguageId={fromLanguageId}
                       translatedLanguageId={targetLanguageId}
+                      savedTranslationId={effectiveSavedTranslationId}
                       size='sm'
                       variant='outline'
                       className='mr-2'

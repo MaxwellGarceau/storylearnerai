@@ -5,9 +5,13 @@ import StoryContent from './StoryContent';
 
 interface StoryRenderProps {
   translationData: TranslationResponse;
+  savedTranslationId?: number;
 }
 
-const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
+const StoryRender: React.FC<StoryRenderProps> = ({
+  translationData,
+  savedTranslationId,
+}) => {
   const [showOriginal, setShowOriginal] = useState(false);
 
   if (!translationData) {
@@ -31,6 +35,7 @@ const StoryRender: React.FC<StoryRenderProps> = ({ translationData }) => {
         <StoryContent
           translationData={translationData}
           showOriginal={showOriginal}
+          savedTranslationId={savedTranslationId}
         />
       </div>
     </div>

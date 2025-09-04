@@ -53,6 +53,13 @@
 
 - Implementation is in `src/components/vocabulary/VocabularySaveButton.tsx`.
 - The save flow uses `useVocabulary().saveVocabularyWord` which handles user checks, toasts, and refresh.
+
+### Saved Translation Linking
+
+- When a user saves a word while reading a saved story, the `saved_translation_id` of that story is persisted with the vocabulary record.
+- The ID is threaded via navigation state from the sidebar, through `StoryReaderPage` → `StoryRender` → `StoryContent` → `InteractiveText`, and exposed on the `InteractiveTextContext` as `savedTranslationId`.
+- `WordMenu` reads `savedTranslationId` from context and passes it to `VocabularySaveButton`, which includes it in the `VocabularyInsert` payload as `saved_translation_id`.
+- This enables querying vocabulary by the story it came from and keeping provenance.
 - Saved vocabulary words are highlighted in story text (`InteractiveText`) with a yellow background when the language pair matches.
 
 ### Localization

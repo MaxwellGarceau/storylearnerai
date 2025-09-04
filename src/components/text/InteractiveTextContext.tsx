@@ -11,6 +11,7 @@ export interface InteractiveTextContextValue {
   translatedWords: Map<string, string>;
   translatedSentences: Map<string, string>;
   translatingWords: Set<string>;
+  savedTranslationId?: number;
   // Selector helpers
   getTranslatedWord: (word: string) => string | undefined;
   isTranslatingWord: (word: string) => boolean;

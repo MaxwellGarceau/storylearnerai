@@ -28,7 +28,11 @@ export class VocabularyService {
     try {
       const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
-        .insert(vocabularyData)
+        .upsert(vocabularyData, {
+          onConflict:
+            'user_id,original_word,translated_word,translated_language_id,from_language_id',
+          ignoreDuplicates: false,
+        })
         .select()
         .single();
 
@@ -44,6 +48,37 @@ export class VocabularyService {
 
       if (!data) {
         throw new Error('No data returned when saving vocabulary word');
+      }
+
+      // If a saved_translation_id was provided but not persisted (e.g., existing row without link), update it
+      if (
+        typeof (vocabularyData as { saved_translation_id?: number })
+          .saved_translation_id === 'number' &&
+        data.saved_translation_id == null
+      ) {
+        const desiredId = (vocabularyData as { saved_translation_id: number })
+          .saved_translation_id;
+        const {
+          data: updated,
+          error: updateError,
+        }: SupabaseResponse<Vocabulary> = await supabase
+          .from('vocabulary')
+          .update({ saved_translation_id: desiredId })
+          .eq('id', data.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          logger.error(
+            'database',
+            'Failed to set saved_translation_id on update',
+            {
+              error: updateError,
+            }
+          );
+        } else if (updated) {
+          return updated;
+        }
       }
 
       return data;

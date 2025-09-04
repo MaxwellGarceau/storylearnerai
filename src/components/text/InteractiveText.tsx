@@ -14,6 +14,7 @@ interface InteractiveTextProps {
   targetLanguage: LanguageCode;
   enableTooltips?: boolean;
   disabled?: boolean;
+  savedTranslationId?: number;
 }
 
 const InteractiveText: React.FC<InteractiveTextProps> = ({
@@ -23,6 +24,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   targetLanguage,
   enableTooltips = true,
   disabled = false,
+  savedTranslationId,
 }) => {
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
@@ -72,6 +74,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         translatedWords,
         translatedSentences,
         translatingWords,
+        savedTranslationId,
         getTranslatedWord: useCallback(
           (word: string) => translatedWords.get(word),
           [translatedWords]

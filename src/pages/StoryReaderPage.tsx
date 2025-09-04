@@ -16,10 +16,11 @@ const StoryReaderPage: React.FC = () => {
   const state = location.state as {
     translationData?: TranslationResponse;
     isSavedStory?: boolean;
+    savedTranslationId?: number;
   } | null;
   const translationData = state?.translationData;
   const isSavedStory = state?.isSavedStory;
-  // const savedTranslationId = location.state?.savedTranslationId as string | undefined;
+  const savedTranslationId = state?.savedTranslationId;
 
   // Use test data if in debug mode and no translation data
   const isDebugMode = window.location.search.includes('debug=walkthrough');
@@ -94,7 +95,10 @@ const StoryReaderPage: React.FC = () => {
 
       {/* Story Container with transparent background */}
       <div className='bg-transparent border border-border rounded-lg p-6 mb-8'>
-        <StoryRender translationData={finalTranslationData} />
+        <StoryRender
+          translationData={finalTranslationData}
+          savedTranslationId={savedTranslationId}
+        />
       </div>
 
       {/* Action Buttons */}
