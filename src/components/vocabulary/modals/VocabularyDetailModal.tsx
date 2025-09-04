@@ -51,15 +51,18 @@ export function VocabularyDetailModal({
         }
 
         if (savedTranslation) {
-          // Navigate to story page with translation data (same as clicking saved story in sidebar)
-          navigate('/story', {
+          // Prefer URL param navigation for deep linking and refresh safety
+          navigate(`/story?id=${savedTranslation.id}`, {
             state: {
+              // Keep fast-path state for instant render when available
               translationData: {
                 originalText: savedTranslation.original_story,
                 translatedText: savedTranslation.translated_story,
                 difficulty: savedTranslation.difficulty_level.code,
                 fromLanguage: savedTranslation.original_language.code,
                 toLanguage: savedTranslation.translated_language.code,
+                provider: 'saved',
+                model: 'saved-translation',
               },
               isSavedStory: true,
               savedTranslationId: savedTranslation.id,
@@ -148,14 +151,16 @@ export function VocabularyDetailModal({
                 {t('vocabulary.detail.savedTranslation')}
               </h4>
               <div className='p-4 bg-muted/50 rounded-lg border'>
-                <div className='flex items-center justify-between'>
-                  <div className='text-sm text-muted-foreground'>
+                <div>
+                  <div className='text-sm text-muted-foreground mb-2'>
                     {t('vocabulary.detail.savedTranslationDescription')}
                   </div>
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={handleNavigateToSavedTranslation}
+                    onClick={() => {
+                      void handleNavigateToSavedTranslation();
+                    }}
                     className='flex items-center gap-2'
                   >
                     <ExternalLink className='h-4 w-4' />
