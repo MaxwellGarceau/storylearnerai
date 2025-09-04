@@ -526,5 +526,11 @@
       "sentenceContext": "Contexto de la oración",
       "wordTranslation": "Traducción de la palabra"
     }
+  },
+  "wordMenu": {
+    "guest": {
+      "message": "Crea una cuenta gratis para traducir palabras, abrir el diccionario y guardar vocabulario en tu biblioteca.",
+      "cta": "Regístrate para comenzar"
+    }
   }
 }

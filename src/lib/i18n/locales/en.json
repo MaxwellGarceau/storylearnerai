@@ -20,7 +20,7 @@
     "dashboard": "Dashboard",
     "saved": "Saved",
     "profile": "Profile",
-    "signIn": "Sign In",
+    "signIn": "Log In",
     "signUp": "Sign Up",
     "signOut": "Sign Out"
   },
@@ -34,13 +34,13 @@
     "confirmPassword": "Confirm Password",
     "firstName": "First Name",
     "lastName": "Last Name",
-    "signInTitle": "Sign In",
+    "signInTitle": "Log In",
     "signUpTitle": "Sign Up",
     "profileTitle": "Profile",
     "forgotPassword": "Forgot Password?",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
-    "signInWithGoogle": "Sign in with Google",
+    "signInWithGoogle": "Log in with Google",
     "signUpWithGoogle": "Sign up with Google",
     "userProfile": {
       "title": "User Profile",
@@ -534,6 +534,12 @@
       "translationError": "Translation failed",
       "sentenceContext": "Sentence context",
       "wordTranslation": "Word translation"
+    }
+  },
+  "wordMenu": {
+    "guest": {
+      "message": "Create a free account to translate words, open the dictionary, and save vocabulary to your library.",
+      "cta": "Sign up to get started"
     }
   }
 }

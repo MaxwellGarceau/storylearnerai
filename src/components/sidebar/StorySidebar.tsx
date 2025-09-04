@@ -8,6 +8,7 @@ import type { DatabaseSavedTranslationWithDetails } from '../../types/database/t
 import { useViewport } from '../../hooks/useViewport';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
+import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +34,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
   const { savedTranslations, loading: isLoadingSavedTranslations } =
     useSavedTranslations();
+  const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -185,6 +187,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
                 getDifficultyColor={getDifficultyColor}
                 getDifficultyLabel={getDifficultyLabel}
                 t={t}
+                user={user}
               />
             )}
 

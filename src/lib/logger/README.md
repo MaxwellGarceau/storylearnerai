@@ -218,8 +218,6 @@ console.log('Current level:', logger.config.level);
 - Separate error and combined logs
 - Only available in Node.js environment
 
-
-
 ## 🎛️ Advanced Features
 
 ### Performance Monitoring

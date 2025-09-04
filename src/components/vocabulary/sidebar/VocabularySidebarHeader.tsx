@@ -7,12 +7,14 @@ interface VocabularySidebarHeaderProps {
   count: number;
   onAdd: () => void;
   className?: string;
+  showAddButton?: boolean;
 }
 
 export function VocabularySidebarHeader({
   count,
   onAdd,
   className,
+  showAddButton = true,
 }: VocabularySidebarHeaderProps) {
   const { t } = useLocalization();
 
@@ -21,13 +23,17 @@ export function VocabularySidebarHeader({
       <div className='flex items-center gap-2'>
         <BookOpen className='h-5 w-5' />
         <h3 className='font-semibold'>{t('vocabulary.title')}</h3>
-        <Badge variant='secondary' className='ml-2'>
-          {count}
-        </Badge>
+        {showAddButton && (
+          <Badge variant='secondary' className='ml-2'>
+            {count}
+          </Badge>
+        )}
       </div>
-      <Button size='sm' onClick={onAdd} className='h-8 w-8 p-0'>
-        <Plus className='h-4 w-4' />
-      </Button>
+      {showAddButton && (
+        <Button size='sm' onClick={onAdd} className='h-8 w-8 p-0'>
+          <Plus className='h-4 w-4' />
+        </Button>
+      )}
     </div>
   );
 }

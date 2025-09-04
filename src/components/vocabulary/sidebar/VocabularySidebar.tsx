@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useVocabulary } from '../../../hooks/useVocabulary';
 import { useLanguages } from '../../../hooks/useLanguages';
 import { useLocalization } from '../../../hooks/useLocalization';
+import { useAuth } from '../../../hooks/useAuth';
+import { AuthPrompt } from '../../ui/AuthPrompt';
 import { VocabularySaveModal } from '../modals/VocabularySaveModal';
 import { VocabularyDetailModal } from '../modals/VocabularyDetailModal';
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
@@ -25,6 +27,7 @@ export function VocabularySidebar({
   const { t } = useLocalization();
   const { vocabulary, loading } = useVocabulary();
   const { languages } = useLanguages();
+  const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -63,23 +66,28 @@ export function VocabularySidebar({
       <VocabularySidebarHeader
         count={filteredVocabulary.length}
         onAdd={handleSaveVocabulary}
+        showAddButton={Boolean(user)}
       />
 
-      {/* Search and Filters */}
-      <div className='space-y-2'>
-        <VocabularySearchInput value={searchTerm} onChange={setSearchTerm} />
-        <VocabularyLanguageFilter
-          show={showFilters}
-          onToggle={() => setShowFilters(!showFilters)}
-          selectedLanguageId={selectedLanguageFilter}
-          onChange={setSelectedLanguageFilter}
-          languages={languages}
-        />
-      </div>
+      {/* Search and Filters - Only show when user is logged in */}
+      {user && (
+        <div className='space-y-2'>
+          <VocabularySearchInput value={searchTerm} onChange={setSearchTerm} />
+          <VocabularyLanguageFilter
+            show={showFilters}
+            onToggle={() => setShowFilters(!showFilters)}
+            selectedLanguageId={selectedLanguageFilter}
+            onChange={setSelectedLanguageFilter}
+            languages={languages}
+          />
+        </div>
+      )}
 
       {/* Vocabulary List */}
       <div className='h-[400px] overflow-y-auto'>
-        {loading ? (
+        {!user ? (
+          <AuthPrompt t={t} variant='button' />
+        ) : loading ? (
           <div className='flex items-center justify-center p-4'>
             <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
             <span className='ml-2 text-sm'>{t('loading')}</span>

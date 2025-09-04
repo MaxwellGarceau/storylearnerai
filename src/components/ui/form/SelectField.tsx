@@ -47,4 +47,3 @@ export function SelectField<TValue extends string | number>({
     </FieldWrapper>
   );
 }
-

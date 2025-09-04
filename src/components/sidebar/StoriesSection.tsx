@@ -1,10 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Badge } from '../ui/Badge';
+import { AuthPrompt } from '../ui/AuthPrompt';
 import { cn } from '../../lib/utils';
 import type { TFunction } from 'i18next';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
+import type { User } from '@supabase/supabase-js';
 
 interface StoriesSectionProps {
   savedTranslations: DatabaseSavedTranslationWithDetails[];
@@ -16,6 +18,7 @@ interface StoriesSectionProps {
   getDifficultyColor: (difficulty: DifficultyLevel) => string;
   getDifficultyLabel: (difficulty: DifficultyLevel) => string;
   t: TFunction;
+  user: User | null;
 }
 
 const StoriesSection: React.FC<StoriesSectionProps> = ({
@@ -28,6 +31,7 @@ const StoriesSection: React.FC<StoriesSectionProps> = ({
   getDifficultyColor,
   getDifficultyLabel,
   t,
+  user,
 }) => {
   return (
     <div className='p-4 space-y-6'>
@@ -43,6 +47,8 @@ const StoriesSection: React.FC<StoriesSectionProps> = ({
           <div className='text-sm text-muted-foreground text-center py-4'>
             {t('storySidebar.loadingSavedStories')}
           </div>
+        ) : !user ? (
+          <AuthPrompt t={t} variant='button' />
         ) : savedTranslations.length > 0 ? (
           savedTranslations.map(savedTranslation => (
             <Card

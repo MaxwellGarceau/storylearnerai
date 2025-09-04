@@ -580,3 +580,16 @@ The security system is designed to be:
 - **Extensible**: Easy to add new security features as needed
 
 For questions or concerns about security features, please refer to the test files or contact the development team.
+
+## Auth-Gated Word Menu
+
+Interactive word actions (Translate, Dictionary, Save Vocabulary) are available only to authenticated users:
+
+- Word action buttons are hidden for guests.
+- Guests see a short message prompting account creation and a link to the sign-up page (`/auth?mode=signup`).
+- This prevents unauthenticated users from invoking translation or vocabulary operations.
+
+Implementation:
+
+- UI gating is in `src/components/text/WordMenu.tsx` using `useAuth()`.
+- Guest fallback copy is localized under `wordMenu.guest.*` in `src/lib/i18n/locales/en.json` and `es.json`.

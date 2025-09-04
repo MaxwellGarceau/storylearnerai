@@ -2,6 +2,8 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordMenu from '../WordMenu';
 import type { VoidFunction } from '../../../types/common';
+import * as useAuthModule from '../../../hooks/useAuth';
+import { MemoryRouter } from 'react-router-dom';
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -135,7 +137,40 @@ describe('WordMenu Component', () => {
     cleanup();
   });
 
+  // Default: user is logged in for tests unless overridden
+  const mockLoggedIn = () =>
+    vi
+      .spyOn(useAuthModule, 'useAuth')
+      .mockReturnValue({ user: { id: 'test-user' } } as unknown as ReturnType<
+        typeof useAuthModule.useAuth
+      >);
+
+  it('hides menu actions when user is logged out', () => {
+    vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
+      user: null,
+    } as unknown as ReturnType<typeof useAuthModule.useAuth>);
+
+    render(
+      <MemoryRouter>
+        <WordMenu
+          word='hello'
+          open={true}
+          fromLanguage='en'
+          targetLanguage='es'
+        >
+          <span>hello</span>
+        </WordMenu>
+      </MemoryRouter>
+    );
+
+    expect(screen.queryAllByTestId('button')).toHaveLength(0);
+    expect(
+      screen.queryByTestId('vocabulary-save-button')
+    ).not.toBeInTheDocument();
+  });
+
   it('renders with word text', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='hello' open={true} fromLanguage='en' targetLanguage='es'>
         <span>hello</span>
@@ -146,6 +181,7 @@ describe('WordMenu Component', () => {
   });
 
   it('displays the word in the menu header', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='world' open={true} fromLanguage='en' targetLanguage='es'>
         <span>world</span>
@@ -160,6 +196,7 @@ describe('WordMenu Component', () => {
   });
 
   it('renders translate, dictionary, and vocabulary save buttons', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
@@ -174,6 +211,7 @@ describe('WordMenu Component', () => {
   });
 
   it('calls onTranslate when translate button is clicked and keeps menu open', () => {
+    mockLoggedIn();
     const handleTranslate = vi.fn();
     const handleOpenChange = vi.fn();
 
@@ -198,6 +236,7 @@ describe('WordMenu Component', () => {
   });
 
   it('renders VocabularySaveButton with correct props', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='world'
@@ -224,6 +263,7 @@ describe('WordMenu Component', () => {
   });
 
   it('shows dictionary content when dictionary button is clicked', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
@@ -238,6 +278,7 @@ describe('WordMenu Component', () => {
   });
 
   it('renders with correct open state', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
@@ -248,6 +289,7 @@ describe('WordMenu Component', () => {
   });
 
   it('renders with closed state', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='test' open={false} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
@@ -258,6 +300,7 @@ describe('WordMenu Component', () => {
   });
 
   it('renders trigger with asChild prop', () => {
+    mockLoggedIn();
     render(
       <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
@@ -271,12 +314,13 @@ describe('WordMenu Component', () => {
   });
 
   it('does not render VocabularySaveButton when language IDs are not available', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='test'
         open={true}
-        fromLanguage='unsupported'
-        targetLanguage='unsupported'
+        fromLanguage={'unsupported' as unknown as any}
+        targetLanguage={'unsupported' as unknown as any}
       >
         <span>test</span>
       </WordMenu>
@@ -287,6 +331,7 @@ describe('WordMenu Component', () => {
   });
 
   it('shows translating spinner and text when isTranslating is true', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='hello'
@@ -314,6 +359,7 @@ describe('WordMenu Component', () => {
   });
 
   it('shows normal translate button when isTranslating is false', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='hello'
@@ -341,6 +387,7 @@ describe('WordMenu Component', () => {
   });
 
   it('does not call onTranslate when clicking translate button while translating', () => {
+    mockLoggedIn();
     const handleTranslate = vi.fn();
 
     render(
@@ -364,6 +411,7 @@ describe('WordMenu Component', () => {
   });
 
   it('shows "Translated" button when word has been translated but not saved', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='hello'
@@ -387,13 +435,13 @@ describe('WordMenu Component', () => {
   });
 
   it('shows "Already Saved" button when word has saved translation', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='hello'
         open={true}
         isSaved={true}
         translatedWord='hola'
-        savedTranslation='hola'
         fromLanguage='en'
         targetLanguage='es'
       >
@@ -412,6 +460,7 @@ describe('WordMenu Component', () => {
   });
 
   it('enables translate button for saved words without translation', () => {
+    mockLoggedIn();
     render(
       <WordMenu
         word='hello'
