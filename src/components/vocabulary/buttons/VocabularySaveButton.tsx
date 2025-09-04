@@ -137,81 +137,63 @@ export function VocabularySaveButton({
     }
 
     setIsSaving(true);
-    await attemptSave();
+    setTimeout(() => {
+      void attemptSave();
+    }, 0);
   };
 
   // If we clicked save while translation was not ready, auto-save once it arrives
   React.useEffect(() => {
     if (isPendingSave && originalWord && translatedWord) {
       setIsSaving(true);
-      void attemptSave();
+      setTimeout(() => {
+        void attemptSave();
+      }, 0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPendingSave, originalWord, translatedWord]);
 
-  if (isChecking) {
-    return (
-      <Button
-        variant={variant}
-        size={size}
-        disabled
-        className={className}
-        type='button'
-      >
-        <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
-        {t('vocabulary.checking')}
-      </Button>
-    );
-  }
-
-  if (isSaving) {
-    return (
-      <Button
-        variant={variant}
-        size={size}
-        disabled
-        className={className}
-        type='button'
-      >
-        <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
-        {t('vocabulary.saving')}
-      </Button>
-    );
-  }
-
-  if (isSaved) {
-    return (
-      <Button
-        variant='ghost'
-        size={size}
-        disabled
-        className={`text-green-600 ${className}`}
-        type='button'
-      >
-        <Check className='h-3 w-3 mr-1' />
-        {t('vocabulary.saved')}
-      </Button>
-    );
-  }
+  const isDisabled = isChecking || isSaving || isSaved;
+  const currentVariant = isSaved ? 'ghost' : variant;
+  const currentClassName = isSaved ? `text-green-600 ${className}` : className;
 
   return (
-    <>
-      <Button
-        variant={variant}
-        size={size}
-        onClick={() => {
+    <Button
+      variant={currentVariant}
+      size={size}
+      onClick={() => {
+        if (!isDisabled) {
           void handleSaveClick();
-        }}
-        className={className}
-        title={t('vocabulary.save.tooltip')}
-        disabled={isSaving}
-        type='button'
-      >
-        <BookOpen className='h-3 w-3 mr-1' />
-        {showTextOnly
-          ? t('vocabulary.save.button')
-          : t('vocabulary.save.title')}
-      </Button>
-    </>
+        }
+      }}
+      className={currentClassName}
+      title={t('vocabulary.save.tooltip')}
+      disabled={isDisabled}
+      type='button'
+      data-testid='vocabulary-save-button'
+      data-original-word={originalWord}
+      data-translated-word={translatedWord}
+      data-from-language-id={fromLanguageId}
+      data-translated-language-id={translatedLanguageId}
+    >
+      {isChecking || isSaving ? (
+        <>
+          <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
+          {isChecking ? t('vocabulary.checking') : t('vocabulary.saving')}
+        </>
+      ) : isSaved ? (
+        <>
+          <Check className='h-3 w-3 mr-1' />
+          {t('vocabulary.saved')}
+        </>
+      ) : (
+        <>
+          <BookOpen className='h-3 w-3 mr-1' />
+          {showTextOnly
+            ? t('vocabulary.save.button')
+            : t('vocabulary.save.title')}
+        </>
+      )}
+    </Button>
   );
 }

@@ -4,10 +4,11 @@ import { Button } from '../ui/Button';
 import { LoadingButton } from '../ui/LoadingButton';
 import { Languages, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
-import { VocabularySaveButton } from '../vocabulary/buttons/VocabularySaveButton';
+import { VocabularySaveButton } from '../vocabulary/VocabularySaveButton';
 import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
+import { useInteractiveTextContext } from './InteractiveTextContext';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -35,23 +36,39 @@ const WordMenu: React.FC<WordMenuProps> = ({
   translatedWord,
   originalSentence,
   translatedSentence,
-  isSaved = false,
-  isTranslating = false,
+  isSaved,
+  isTranslating,
 }) => {
+  const ctx = useInteractiveTextContext();
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
 
+  const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
+  const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
+  const effectiveTranslatedWord =
+    translatedWord ?? ctx?.getTranslatedWord?.(word);
+  const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(word) ?? false;
+  const effectiveIsTranslating =
+    isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
+
   // Search for word info when dictionary is shown
   useEffect(() => {
     if (showDictionary && open) {
-      void searchWord(word, fromLanguage, targetLanguage);
+      void searchWord(word, effectiveFromLanguage, effectiveTargetLanguage);
     }
-  }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
+  }, [
+    showDictionary,
+    open,
+    word,
+    effectiveFromLanguage,
+    effectiveTargetLanguage,
+    searchWord,
+  ]);
 
   const handleTranslate = () => {
     // Allow translate if there is no runtime translation yet
-    if (!translatedWord && !isTranslating) {
+    if (!effectiveTranslatedWord && !effectiveIsTranslating) {
       onTranslate?.(word);
     }
   };
@@ -65,14 +82,23 @@ const WordMenu: React.FC<WordMenuProps> = ({
   };
 
   // Get language IDs for the VocabularySaveButton
-  const fromLanguageId = fromLanguage
-    ? getLanguageIdByCode(fromLanguage)
+  const fromLanguageId = effectiveFromLanguage
+    ? getLanguageIdByCode(effectiveFromLanguage)
     : null;
-  const targetLanguageId = targetLanguage
-    ? getLanguageIdByCode(targetLanguage)
+  const targetLanguageId = effectiveTargetLanguage
+    ? getLanguageIdByCode(effectiveTargetLanguage)
     : null;
 
-  const translateButtonDisabled = Boolean(translatedWord) || isTranslating;
+  const translateButtonDisabled =
+    effectiveIsTranslating || Boolean(effectiveTranslatedWord);
+
+  const translateButtonLabel = effectiveIsTranslating
+    ? 'Translating...'
+    : effectiveTranslatedWord
+      ? effectiveIsSaved
+        ? 'Already Saved'
+        : 'Translated'
+      : 'Translate';
 
   return (
     <Popover
@@ -115,9 +141,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
             <>
               <div className='text-center mb-3'>
                 <div className='text-sm font-medium mb-1'>{word}</div>
-                {translatedWord && (
+                {effectiveTranslatedWord && (
                   <div className='text-sm text-muted-foreground'>
-                    {translatedWord}
+                    {effectiveTranslatedWord}
                   </div>
                 )}
               </div>
@@ -127,12 +153,12 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   size='sm'
                   onClick={handleTranslate}
                   disabled={translateButtonDisabled}
-                  loading={isTranslating}
+                  loading={effectiveIsTranslating}
                   loadingText='Translating...'
                   spinnerSize='sm'
                 >
                   <Languages className='h-3 w-3' />
-                  {translatedWord ? 'Translated' : 'Translate'}
+                  {translateButtonLabel}
                 </LoadingButton>
                 <Button
                   variant='outline'
@@ -146,16 +172,16 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 {fromLanguageId && targetLanguageId && (
                   <VocabularySaveButton
                     originalWord={word}
-                    translatedWord={translatedWord ?? ''}
+                    translatedWord={effectiveTranslatedWord ?? ''}
                     originalContext={originalSentence}
                     translatedContext={translatedSentence}
                     fromLanguageId={fromLanguageId}
                     translatedLanguageId={targetLanguageId}
                     size='sm'
                     variant='outline'
-                    isSaved={isSaved}
+                    isSaved={effectiveIsSaved}
                     onBeforeOpen={() => {
-                      if (!translatedWord) {
+                      if (!effectiveTranslatedWord) {
                         onTranslate?.(word);
                       }
                     }}
@@ -171,7 +197,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   {fromLanguageId && targetLanguageId && (
                     <VocabularySaveButton
                       originalWord={word}
-                      translatedWord={translatedWord ?? ''}
+                      translatedWord={effectiveTranslatedWord ?? ''}
                       originalContext={originalSentence}
                       translatedContext={translatedSentence}
                       fromLanguageId={fromLanguageId}
@@ -180,9 +206,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       variant='outline'
                       className='mr-2'
                       showTextOnly={true}
-                      isSaved={isSaved}
+                      isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
-                        if (!translatedWord) {
+                        if (!effectiveTranslatedWord) {
                           onTranslate?.(word);
                         }
                       }}

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { LanguageCode } from '../../types/llm/prompts';
 import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
 import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
@@ -24,11 +24,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   enableTooltips = true,
   disabled = false,
 }) => {
-  // Handle empty text
-  if (!text.trim()) {
-    return <span className={className} />;
-  }
-
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
 
@@ -77,6 +72,18 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         translatedWords,
         translatedSentences,
         translatingWords,
+        getTranslatedWord: useCallback(
+          (word: string) => translatedWords.get(word),
+          [translatedWords]
+        ),
+        isTranslatingWord: useCallback(
+          (word: string) => translatingWords.has(word),
+          [translatingWords]
+        ),
+        isSavedWord: useCallback(
+          (word: string) => savedOriginalWords.has(word),
+          [savedOriginalWords]
+        ),
       }}
     >
       <InteractiveTextView
