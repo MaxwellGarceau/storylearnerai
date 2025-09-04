@@ -53,6 +53,11 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         // For menu we always prefer saved translation if available, else overlay
         const menuTranslatedWord = savedTranslation ?? overlayTranslatedWord;
 
+        const handleTranslateClick = () => {
+          // Always delegate to parent: it will inject saved or call API
+          onTranslate(normalizedWord, t.segmentIndex);
+        };
+
         return (
           <span key={idx}>
             <WordToken
@@ -72,7 +77,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
                 else if (open) setOpenMenuIndex(null);
               }}
               onWordClick={() => setOpenMenuIndex(prev => (prev === idx ? null : idx))}
-              onTranslate={() => onTranslate(normalizedWord, t.segmentIndex)}
+              onTranslate={handleTranslateClick}
               enableTooltips={enableTooltips}
               disabled={disabled}
             />

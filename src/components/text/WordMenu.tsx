@@ -21,7 +21,6 @@ interface WordMenuProps {
   translatedSentence?: string;
   isSaved?: boolean;
   isTranslating?: boolean;
-  savedTranslation?: string | null;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -37,7 +36,6 @@ const WordMenu: React.FC<WordMenuProps> = ({
   translatedSentence,
   isSaved = false,
   isTranslating = false,
-  savedTranslation,
 }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
@@ -51,7 +49,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
 
   const handleTranslate = () => {
-    if (!savedTranslation && !translatedWord && !isTranslating) {
+    // Allow translate if there is no runtime translation yet
+    if (!translatedWord && !isTranslating) {
       onTranslate?.(word);
     }
   };
@@ -71,6 +70,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const targetLanguageId = targetLanguage
     ? getLanguageIdByCode(targetLanguage)
     : null;
+
+  const translateButtonDisabled = Boolean(translatedWord) || isTranslating;
 
   return (
     <Popover
@@ -124,9 +125,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   variant='outline'
                   size='sm'
                   onClick={handleTranslate}
-                  disabled={
-                    !!savedTranslation || !!translatedWord || isTranslating
-                  }
+                  disabled={translateButtonDisabled}
                   className='flex items-center gap-1'
                 >
                   {isTranslating ? (
@@ -137,11 +136,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   ) : (
                     <>
                       <Languages className='h-3 w-3' />
-                      {savedTranslation
-                        ? 'Already Saved'
-                        : translatedWord
-                          ? 'Translated'
-                          : 'Translate'}
+                      {translatedWord
+                        ? 'Translated'
+                        : 'Translate'}
                     </>
                   )}
                 </Button>

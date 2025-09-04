@@ -84,7 +84,7 @@ const WordToken: React.FC<WordTokenProps> = ({
         }}
         fromLanguage={ctx?.fromLanguage}
         targetLanguage={ctx?.targetLanguage}
-        translatedWord={menuTranslatedWord}
+        translatedWord={translatedWord}
         originalSentence={originalSentence}
         translatedSentence={translatedSentence}
         isSaved={isSaved}

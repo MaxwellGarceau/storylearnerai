@@ -20,6 +20,10 @@ export function useTranslationCache(args: {
     new Set()
   );
 
+  const setWordTranslation = useCallback((normalizedWord: string, translatedText: string) => {
+    setTranslatedWords(prev => new Map(prev).set(normalizedWord, translatedText));
+  }, []);
+
   const handleTranslate = useCallback(
     async (normalizedWord: string, wordIndex: number) => {
       if (translatedWords.has(normalizedWord)) return;
@@ -67,6 +71,7 @@ export function useTranslationCache(args: {
     translatedWords,
     translatedSentences,
     translatingWords,
+    setWordTranslation,
     handleTranslate,
   };
 }

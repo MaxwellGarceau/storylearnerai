@@ -45,8 +45,18 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   );
 
   // Translation cache and handler
-  const { translatedWords, translatedSentences, translatingWords, handleTranslate } =
+  const { translatedWords, translatedSentences, translatingWords, setWordTranslation, handleTranslate } =
     useTranslationCache({ extractSentenceContext, fromLanguage, targetLanguage });
+
+  const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
+    const saved = findSavedWordData(w);
+    const alreadyRuntime = translatedWords.get(w);
+    if (saved?.translated_word && !alreadyRuntime) {
+      setWordTranslation(w, saved.translated_word);
+      return;
+    }
+    void handleTranslate(w, segmentIndex);
+  };
 
   return (
     <InteractiveTextProvider
@@ -71,9 +81,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         getSavedTranslation={(w: string) => findSavedWordData(w)?.translated_word ?? null}
         getDisplayTranslation={(w: string) => translatedWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
-        onTranslate={(w: string, segmentIndex: number) => {
-          void handleTranslate(w, segmentIndex);
-        }}
+        onTranslate={handleTranslateWithSavedCheck}
       />
     </InteractiveTextProvider>
   );
