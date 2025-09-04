@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
+import { LoadingButton } from '../ui/LoadingButton';
 import { Languages, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
 import { VocabularySaveButton } from '../vocabulary/buttons/VocabularySaveButton';
@@ -121,27 +122,20 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 )}
               </div>
               <div className='flex flex-wrap gap-2 justify-center'>
-                <Button
+                <LoadingButton
                   variant='outline'
                   size='sm'
                   onClick={handleTranslate}
                   disabled={translateButtonDisabled}
-                  className='flex items-center gap-1'
+                  loading={isTranslating}
+                  loadingText='Translating...'
+                  spinnerSize='sm'
                 >
-                  {isTranslating ? (
-                    <>
-                      <div className='animate-spin rounded-full h-3 w-3 border-b border-current mr-1'></div>
-                      Translating...
-                    </>
-                  ) : (
-                    <>
-                      <Languages className='h-3 w-3' />
-                      {translatedWord
-                        ? 'Translated'
-                        : 'Translate'}
-                    </>
-                  )}
-                </Button>
+                  <Languages className='h-3 w-3' />
+                  {translatedWord
+                    ? 'Translated'
+                    : 'Translate'}
+                </LoadingButton>
                 <Button
                   variant='outline'
                   size='sm'

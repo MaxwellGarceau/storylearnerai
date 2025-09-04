@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
+import { LoadingButton } from '../ui/LoadingButton';
 import {
   Card,
   CardContent,
@@ -286,13 +287,14 @@ export default function SaveTranslationButton({
               )}
 
               <div className='flex gap-2 pt-2'>
-                <Button
+                <LoadingButton
                   onClick={() => void handleSave()}
-                  disabled={isSaving}
+                  loading={isSaving}
+                  loadingText='Saving...'
                   className='flex-1'
                 >
-                  {isSaving ? 'Saving...' : 'Save Translation'}
-                </Button>
+                  Save Translation
+                </LoadingButton>
                 <Button
                   onClick={handleCancel}
                   variant='outline'
