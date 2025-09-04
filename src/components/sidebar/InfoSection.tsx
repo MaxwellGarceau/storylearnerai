@@ -6,10 +6,11 @@ import type { TFunction } from 'i18next';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { TranslationResponse } from '../../lib/translationService';
 import { cn } from '../../lib/utils';
+import type { LanguageCode } from '../../types/llm/prompts';
 
 interface InfoSectionProps {
   translationData: TranslationResponse;
-  getLanguageName: (code: string) => string;
+  getLanguageName: (code: LanguageCode) => string;
   getDifficultyColor: (difficulty: DifficultyLevel) => string;
   getDifficultyLabel: (difficulty: DifficultyLevel) => string;
   t: TFunction;
