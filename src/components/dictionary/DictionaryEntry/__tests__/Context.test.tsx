@@ -4,57 +4,33 @@ import { useDictionaryEntryContext } from '../Context';
 
 // Test added by assistant: verifies hook usage contract without unhandled errors
 
-// Component that immediately uses the context hook
-const NakedConsumer: React.FC = () => {
-  useDictionaryEntryContext();
-  return null;
-};
-
-interface ErrorBoundaryProps {
-  onError: (error: Error) => void;
-  children: React.ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  public state: ErrorBoundaryState = { hasError: false };
-
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error) {
-    this.props.onError(error);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <span data-testid='caught-error' />;
-    }
-    return this.props.children as React.ReactElement;
-  }
-}
-
 describe('DictionaryEntry Context', () => {
+  let consoleErrorSpy: vi.SpyInstance;
+  let consoleWarnSpy: vi.SpyInstance;
+
+  beforeEach(() => {
+    // Mock console methods to suppress React error boundary warnings
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
+  });
+
   it('throws when used outside of DictionaryEntry.Root', () => {
-    let captured: unknown = null;
-    render(
-      <ErrorBoundary onError={(e) => (captured = e)}>
-        <NakedConsumer />
-      </ErrorBoundary>
-    );
-    expect(captured).toBeTruthy();
-    if (captured instanceof Error) {
-      expect(captured.message).toBe(
-        'DictionaryEntry components must be used within DictionaryEntry.Root'
-      );
-    }
+    // Create a test component that uses the hook
+    const TestComponent = () => {
+      useDictionaryEntryContext();
+      return null;
+    };
+
+    // Expect the render to throw
+    expect(() => {
+      render(<TestComponent />);
+    }).toThrow('DictionaryEntry components must be used within DictionaryEntry.Root');
   });
 });
 
