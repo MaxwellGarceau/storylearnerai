@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import Label from './Label';
+import Label from '../Label';
 
 interface BaseFormFieldProps {
   id: string;

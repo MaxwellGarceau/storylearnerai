@@ -5,8 +5,8 @@ import { useLanguages } from '../../../hooks/useLanguages';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { VocabularyModalContainer } from './VocabularyModalContainer';
 import { ModalHeader } from '../../ui/ModalHeader';
-import { FormField } from '../../ui/FormField';
-import { FormActions } from '../../ui/FormActions';
+import { FormField } from '../../ui/form/FormField';
+import { FormActions } from '../../ui/form/FormActions';
 import type {
   VocabularyInsert,
   VocabularyUpdate,
