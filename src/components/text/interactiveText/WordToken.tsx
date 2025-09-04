@@ -10,9 +10,7 @@ interface WordTokenProps {
   isOpen: boolean;
   isSaved: boolean;
   isTranslating: boolean;
-  savedTranslation: string | null;
   translatedWord?: string; // used for overlay only (runtime translation)
-  menuTranslatedWord?: string; // used for menu display (saved or runtime)
   originalSentence: string;
   translatedSentence?: string;
   onOpenChange: (open: boolean) => void;
@@ -29,9 +27,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   isOpen,
   isSaved,
   isTranslating,
-  savedTranslation,
   translatedWord,
-  menuTranslatedWord,
   originalSentence,
   translatedSentence,
   onOpenChange,
@@ -89,7 +85,6 @@ const WordToken: React.FC<WordTokenProps> = ({
         translatedSentence={translatedSentence}
         isSaved={isSaved}
         isTranslating={isTranslating}
-        savedTranslation={savedTranslation}
       >
         {translatedWord ? (
           <span className='relative inline-block align-baseline'>

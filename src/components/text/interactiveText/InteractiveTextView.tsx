@@ -67,9 +67,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               isOpen={open}
               isSaved={saved}
               isTranslating={isTranslating(normalizedWord)}
-              savedTranslation={savedTranslation}
               translatedWord={overlayTranslatedWord}
-              menuTranslatedWord={menuTranslatedWord}
               originalSentence={originalSentence}
               translatedSentence={translatedSentence}
               onOpenChange={isOpen => {
