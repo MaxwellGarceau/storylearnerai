@@ -2,8 +2,15 @@ import * as React from 'react';
 import { Button } from './Button';
 import { cn } from '@/lib/utils';
 
-interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+interface LoadingButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
   loading?: boolean;
@@ -12,15 +19,18 @@ interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
-  ({
-    loading = false,
-    loadingText,
-    spinnerSize = 'default',
-    children,
-    disabled,
-    className,
-    ...props
-  }, ref) => {
+  (
+    {
+      loading = false,
+      loadingText,
+      spinnerSize = 'default',
+      children,
+      disabled,
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const spinnerClasses = cn(
       'animate-spin rounded-full border-b border-current',
       {

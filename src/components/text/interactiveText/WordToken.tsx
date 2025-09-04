@@ -37,7 +37,9 @@ const WordToken: React.FC<WordTokenProps> = ({
   disabled,
 }) => {
   const ctx = useInteractiveTextContext();
-  const savedHighlightClass = isSaved ? 'bg-yellow-200 dark:bg-yellow-900/30' : '';
+  const savedHighlightClass = isSaved
+    ? 'bg-yellow-200 dark:bg-yellow-900/30'
+    : '';
 
   if (!enableTooltips || disabled) {
     return (

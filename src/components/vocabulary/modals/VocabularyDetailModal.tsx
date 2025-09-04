@@ -8,7 +8,7 @@ import { useLocalization } from '../../../hooks/useLocalization';
 import { VocabularyEditModal } from './VocabularyEditModal';
 import { VocabularyDeleteDialog } from './VocabularyDeleteDialog';
 import { VocabularyModalContainer } from './VocabularyModalContainer';
-
+import { DateUtils } from '../../../lib/utils/dateUtils';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -21,11 +21,6 @@ export function VocabularyDetailModal({
   const { t } = useLocalization();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   return (
     <>
       <VocabularyModalContainer>
@@ -85,7 +80,7 @@ export function VocabularyDetailModal({
               </span>
               <span>•</span>
               <Calendar className='h-4 w-4' />
-              <span>{formatDate(vocabulary.created_at)}</span>
+              <span>{DateUtils.formatDate(vocabulary.created_at)}</span>
             </div>
           </div>
 

@@ -5,17 +5,21 @@ export interface InteractiveTextContextValue {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   savedOriginalWords: Set<string>;
-  findSavedWordData: (word: string) => { translated_word?: string | null } | null;
+  findSavedWordData: (
+    word: string
+  ) => { translated_word?: string | null } | null;
   translatedWords: Map<string, string>;
   translatedSentences: Map<string, string>;
   translatingWords: Set<string>;
 }
 
-const InteractiveTextContext = createContext<InteractiveTextContextValue | null>(null);
+const InteractiveTextContext =
+  createContext<InteractiveTextContextValue | null>(null);
 
-export const useInteractiveTextContext = (): InteractiveTextContextValue | null => {
-  return useContext(InteractiveTextContext);
-};
+export const useInteractiveTextContext =
+  (): InteractiveTextContextValue | null => {
+    return useContext(InteractiveTextContext);
+  };
 
 export const InteractiveTextProvider: React.FC<{
   value: InteractiveTextContextValue;

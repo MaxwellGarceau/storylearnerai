@@ -20,9 +20,14 @@ export function useTranslationCache(args: {
     new Set()
   );
 
-  const setWordTranslation = useCallback((normalizedWord: string, translatedText: string) => {
-    setTranslatedWords(prev => new Map(prev).set(normalizedWord, translatedText));
-  }, []);
+  const setWordTranslation = useCallback(
+    (normalizedWord: string, translatedText: string) => {
+      setTranslatedWords(prev =>
+        new Map(prev).set(normalizedWord, translatedText)
+      );
+    },
+    []
+  );
 
   const handleTranslate = useCallback(
     async (normalizedWord: string, wordIndex: number) => {
@@ -64,7 +69,15 @@ export function useTranslationCache(args: {
         });
       }
     },
-    [translatedWords, extractSentenceContext, translatedSentences, translateSentence, translateWordInSentence, targetLanguage, fromLanguage]
+    [
+      translatedWords,
+      extractSentenceContext,
+      translatedSentences,
+      translateSentence,
+      translateWordInSentence,
+      targetLanguage,
+      fromLanguage,
+    ]
   );
 
   return {

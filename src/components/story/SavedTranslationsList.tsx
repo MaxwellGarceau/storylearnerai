@@ -22,7 +22,8 @@ import {
 } from '../../types/llm/prompts';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
-
+import { DateUtils } from '../../lib/utils/dateUtils';
+ 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -123,13 +124,7 @@ export default function SavedTranslationsList() {
     });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  
 
   if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
     return (
@@ -257,7 +252,12 @@ export default function SavedTranslationsList() {
                       t('savedTranslations.results.untitled')}
                   </CardTitle>
                   <CardDescription>
-                    {formatDate(translation.created_at)} •{' '}
+                    {DateUtils.formatDate(translation.created_at, 'en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                    {' • '}
                     {translation.original_language.name} →{' '}
                     {translation.translated_language.name}
                   </CardDescription>

@@ -15,7 +15,10 @@ import type { LanguageCode } from '../../types/llm/prompts';
  * - Use useSavedWords in render paths (e.g., InteractiveText) to efficiently
  *   highlight/check words for a single from→target pair without duplicating fetch logic.
  */
-export function useSavedWords(fromLanguage: LanguageCode, targetLanguage: LanguageCode) {
+export function useSavedWords(
+  fromLanguage: LanguageCode,
+  targetLanguage: LanguageCode
+) {
   const { vocabulary } = useVocabulary();
   const { getLanguageIdByCode } = useLanguages();
 

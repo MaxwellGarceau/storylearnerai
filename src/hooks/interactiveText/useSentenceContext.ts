@@ -29,7 +29,10 @@ export function useSentenceContext(words: string[]) {
     return (wordIndex: number): string => {
       const sentenceStart = findSentenceStart(wordIndex);
       const sentenceEnd = findSentenceEnd(wordIndex);
-      return words.slice(sentenceStart, sentenceEnd + 1).join('').trim();
+      return words
+        .slice(sentenceStart, sentenceEnd + 1)
+        .join('')
+        .trim();
     };
   }, [words, findSentenceStart, findSentenceEnd]);
 

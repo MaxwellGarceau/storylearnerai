@@ -33,6 +33,7 @@ The Story Learner AI application now uses React Router for client-side routing, 
   - Handles cases where no translation data is available
   - Navigation buttons to translate another story or go home
   - Receives translation data through React Router location state
+  - Uses modular sidebar components from `@sidebar/*`
 
 ## Navigation
 
@@ -54,6 +55,25 @@ Each page includes appropriate navigation buttons:
   - "Translate Another Story" → `/translate`
   - "Go Home" → `/`
   - "Translate a Story" (when no data) → `/translate`
+
+## Components Overview
+
+- Story-related components live under `src/components/story/`.
+- Sidebar components are modularized under `src/components/sidebar/` and importable via the `@sidebar/*` alias.
+
+### Sidebar Modules
+
+- `@sidebar/StorySidebar`: Main composed sidebar used on story pages
+- `@sidebar/StoriesSection`: Saved and sample stories list
+- `@sidebar/VocabularySection`: Vocabulary management view
+- `@sidebar/InfoSection`: Translation info and settings summary
+- `@sidebar/SidebarHeader`: Title, section tabs, close button
+- `@sidebar/SidebarToggle`: Floating button to open sidebar on mobile
+
+Consumer pages updated:
+
+- `src/pages/TranslatePage.tsx`: imports `StorySidebar` from `@sidebar/StorySidebar`
+- `src/pages/StoryReaderPage.tsx`: imports `StorySidebar` from `@sidebar/StorySidebar`
 
 ## Data Flow
 

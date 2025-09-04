@@ -314,16 +314,12 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
               type='text'
               id='original_word'
               value={formData.original_word}
-              onChange={e =>
-                handleInputChange('original_word', e.target.value)
-              }
+              onChange={e => handleInputChange('original_word', e.target.value)}
               placeholder={t('vocabulary.form.originalWordPlaceholder')}
               className={`w-full p-2 border rounded-md ${errors.original_word ? 'border-destructive' : ''}`}
             />
             {errors.original_word && (
-              <p className='text-sm text-destructive'>
-                {errors.original_word}
-              </p>
+              <p className='text-sm text-destructive'>{errors.original_word}</p>
             )}
           </div>
 
@@ -360,10 +356,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
                 id='from_language'
                 value={formData.from_language_id}
                 onChange={e =>
-                  handleInputChange(
-                    'from_language_id',
-                    Number(e.target.value)
-                  )
+                  handleInputChange('from_language_id', Number(e.target.value))
                 }
                 className={`w-full p-2 text-sm border rounded-md ${errors.from_language_id ? 'border-destructive' : ''}`}
               >
@@ -426,9 +419,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
         {/* Definition */}
         <div className='space-y-2'>
-          <Label htmlFor='definition'>
-            {t('vocabulary.form.definition')}
-          </Label>
+          <Label htmlFor='definition'>{t('vocabulary.form.definition')}</Label>
           <textarea
             id='definition'
             value={formData.definition}

@@ -132,9 +132,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                   spinnerSize='sm'
                 >
                   <Languages className='h-3 w-3' />
-                  {translatedWord
-                    ? 'Translated'
-                    : 'Translate'}
+                  {translatedWord ? 'Translated' : 'Translate'}
                 </LoadingButton>
                 <Button
                   variant='outline'

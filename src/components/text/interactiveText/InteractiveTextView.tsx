@@ -32,7 +32,9 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   if (tokens.length === 0) return <span className={className} />;
 
   return (
-    <span className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}>
+    <span
+      className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
+    >
       {tokens.map((t, idx) => {
         if (t.kind !== 'word') {
           return <span key={idx}>{t.text}</span>;
@@ -68,7 +70,9 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
                 if (isOpen) setOpenMenuIndex(idx);
                 else if (open) setOpenMenuIndex(null);
               }}
-              onWordClick={() => setOpenMenuIndex(prev => (prev === idx ? null : idx))}
+              onWordClick={() =>
+                setOpenMenuIndex(prev => (prev === idx ? null : idx))
+              }
               onTranslate={handleTranslateClick}
               enableTooltips={enableTooltips}
               disabled={disabled}

@@ -45,8 +45,17 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   );
 
   // Translation cache and handler
-  const { translatedWords, translatedSentences, translatingWords, setWordTranslation, handleTranslate } =
-    useTranslationCache({ extractSentenceContext, fromLanguage, targetLanguage });
+  const {
+    translatedWords,
+    translatedSentences,
+    translatingWords,
+    setWordTranslation,
+    handleTranslate,
+  } = useTranslationCache({
+    extractSentenceContext,
+    fromLanguage,
+    targetLanguage,
+  });
 
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
@@ -75,8 +84,12 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         tokens={tokens}
         enableTooltips={enableTooltips}
         disabled={disabled}
-        getOriginalSentence={(segmentIndex: number) => extractSentenceContext(segmentIndex)}
-        getTranslatedSentence={(originalSentence: string) => translatedSentences.get(originalSentence)}
+        getOriginalSentence={(segmentIndex: number) =>
+          extractSentenceContext(segmentIndex)
+        }
+        getTranslatedSentence={(originalSentence: string) =>
+          translatedSentences.get(originalSentence)
+        }
         isSaved={(w: string) => savedOriginalWords.has(w)}
         getDisplayTranslation={(w: string) => translatedWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
