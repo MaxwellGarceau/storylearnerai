@@ -1,32 +1,17 @@
-import { LoggerConfig, LogEntry } from '@app/logger';
+import { LoggerConfig } from '@app/logger';
 import { getLoggerConfigWithOverrides } from './config';
-import { LogLevel, LogChannel } from '@app/logger';
 
 // Simple browser-compatible logger
 class ConsoleWrapper {
   private config: LoggerConfig;
-  private queue: LogEntry[] = [];
-  private batchSize = 10;
-  private flushInterval = 5000;
-  private flushTimer?: NodeJS.Timeout;
 
   constructor(config: LoggerConfig) {
     this.config = config;
-    if (config.enableRemote) {
-      this.startFlushTimer();
-    }
+    // Remote logging is disabled
   }
 
   log(level: string, message: string, meta: Record<string, unknown> = {}) {
-    const {
-      channel,
-      data,
-      userId,
-      sessionId,
-      requestId,
-      performance,
-      ...rest
-    } = meta;
+    const { channel, data, ...rest } = meta;
 
     // Console logging
     if (this.config.enableConsole) {
@@ -57,69 +42,11 @@ class ConsoleWrapper {
       }
     }
 
-    // Remote logging
-    if (this.config.enableRemote && channel) {
-      const logEntry: LogEntry = {
-        timestamp: new Date().toISOString(),
-        level: level as LogLevel,
-        channel: channel as LogChannel,
-        message,
-        data,
-        userId: userId as string,
-        sessionId: sessionId as string,
-        requestId: requestId as string,
-        performance: performance as
-          | { duration?: number; memory?: number }
-          | undefined,
-      };
-
-      this.queue.push(logEntry);
-
-      if (this.queue.length >= this.batchSize) {
-        void this.flush();
-      }
-    }
-  }
-
-  private startFlushTimer() {
-    this.flushTimer = setInterval(() => {
-      if (this.queue.length > 0) {
-        void this.flush();
-      }
-    }, this.flushInterval);
-  }
-
-  private async flush() {
-    if (this.queue.length === 0 || !this.config.remoteEndpoint) return;
-
-    const logs = [...this.queue];
-    this.queue = [];
-
-    try {
-      await fetch(this.config.remoteEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ logs }),
-      });
-    } catch (error) {
-      console.error('Remote logging failed:', error);
-      logs.forEach(log => {
-        console.log(
-          `[REMOTE FAILED] [${log.level.toUpperCase()}] [${log.channel}]`,
-          log.message,
-          log.data
-        );
-      });
-    }
+    // Remote logging is disabled
   }
 
   close() {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-    }
-    void this.flush();
+    // No cleanup needed since remote logging is disabled
   }
 }
 

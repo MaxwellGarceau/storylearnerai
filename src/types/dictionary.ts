@@ -188,7 +188,13 @@ export interface DictionaryApiManager {
   ): DictionaryWordPromise;
   isAvailable(): boolean;
   getAvailableApis(): string[];
+  getAvailableTransformers(): string[];
   updateConfig(config: Partial<ApiManagerConfig>): void;
+  getConfig(): ApiManagerConfig;
+  addApiClient(apiType: string, client: DictionaryApiClient): void;
+  removeApiClient(apiType: string): void;
+  addTransformer(apiType: string, transformer: DictionaryDataTransformer): void;
+  removeTransformer(apiType: string): void;
 }
 
 export interface ApiManagerConfig {

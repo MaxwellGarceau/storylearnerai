@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@app': path.resolve(__dirname, './src/types/app'),
+      '@sidebar': path.resolve(__dirname, './src/components/sidebar'),
     },
   },
   test: {

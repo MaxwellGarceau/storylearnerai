@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
-import { Languages, Bookmark, BookOpen } from 'lucide-react';
+import { LoadingButton } from '../ui/LoadingButton';
+import { Languages, BookOpen } from 'lucide-react';
 import { useDictionary } from '../../hooks/useDictionary';
+import { VocabularySaveButton } from '../vocabulary/VocabularySaveButton';
+import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
+import { useInteractiveTextContext } from './InteractiveTextContext';
+import { useAuth } from '../../hooks/useAuth';
+import { AuthPrompt } from '../ui/AuthPrompt';
+import { useLocalization } from '../../hooks/useLocalization';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -12,9 +20,13 @@ interface WordMenuProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onTranslate?: (word: string) => void;
-  onSave?: (word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
+  translatedWord?: string;
+  originalSentence?: string;
+  translatedSentence?: string;
+  isSaved?: boolean;
+  isTranslating?: boolean;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -23,27 +35,54 @@ const WordMenu: React.FC<WordMenuProps> = ({
   open,
   onOpenChange,
   onTranslate,
-  onSave,
   fromLanguage,
-  targetLanguage = 'en',
+  targetLanguage,
+  translatedWord,
+  originalSentence,
+  translatedSentence,
+  isSaved,
+  isTranslating,
 }) => {
+  const ctx = useInteractiveTextContext();
+  const location = useLocation();
+  const routeSavedTranslationId = (
+    location.state as { savedTranslationId?: number } | null
+  )?.savedTranslationId;
+  const effectiveSavedTranslationId =
+    ctx?.savedTranslationId ?? routeSavedTranslationId;
+  const { user } = useAuth();
+  const { t } = useLocalization();
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
+  const { getLanguageIdByCode } = useLanguages();
+
+  const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
+  const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
+  const effectiveTranslatedWord =
+    translatedWord ?? ctx?.getTranslatedWord?.(word);
+  const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(word) ?? false;
+  const effectiveIsTranslating =
+    isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
 
   // Search for word info when dictionary is shown
   useEffect(() => {
     if (showDictionary && open) {
-      void searchWord(word, fromLanguage, targetLanguage);
+      void searchWord(word, effectiveFromLanguage, effectiveTargetLanguage);
     }
-  }, [showDictionary, open, word, fromLanguage, targetLanguage, searchWord]);
-  const handleTranslate = () => {
-    onTranslate?.(word);
-    onOpenChange?.(false);
-  };
+  }, [
+    showDictionary,
+    open,
+    word,
+    effectiveFromLanguage,
+    effectiveTargetLanguage,
+    searchWord,
+  ]);
 
-  const handleSave = () => {
-    onSave?.(word);
-    onOpenChange?.(false);
+  const handleTranslate = () => {
+    // Allow translate if there is no runtime translation yet
+    if (!effectiveTranslatedWord && !effectiveIsTranslating) {
+      onTranslate?.(word);
+    }
   };
 
   const handleDictionary = () => {
@@ -54,6 +93,25 @@ const WordMenu: React.FC<WordMenuProps> = ({
     setShowDictionary(false);
   };
 
+  // Get language IDs for the VocabularySaveButton
+  const fromLanguageId = effectiveFromLanguage
+    ? getLanguageIdByCode(effectiveFromLanguage)
+    : null;
+  const targetLanguageId = effectiveTargetLanguage
+    ? getLanguageIdByCode(effectiveTargetLanguage)
+    : null;
+
+  const translateButtonDisabled =
+    effectiveIsTranslating || Boolean(effectiveTranslatedWord);
+
+  const translateButtonLabel = effectiveIsTranslating
+    ? 'Translating...'
+    : effectiveTranslatedWord
+      ? effectiveIsSaved
+        ? 'Already Saved'
+        : 'Translated'
+      : 'Translate';
+
   return (
     <Popover
       open={open}
@@ -63,7 +121,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
     >
       <PopoverTrigger asChild>
         <span
-          className={`cursor-pointer transition-colors duration-200 ${open ? 'bg-primary/30 ring-2 ring-primary/50' : 'hover:bg-muted/50'}`}
+          className={`inline-block align-baseline rounded-sm px-0.5 py-0 transition-colors duration-200 cursor-pointer ${open ? 'bg-primary/30 ring-1 ring-primary/40' : 'hover:bg-primary/20 hover:ring-1 hover:ring-primary/30'}`}
+          style={{ lineHeight: '1.35em' }}
           data-word-trigger
           onClick={() => {}}
         >
@@ -92,49 +151,98 @@ const WordMenu: React.FC<WordMenuProps> = ({
         <div className='flex flex-col gap-2'>
           {!showDictionary ? (
             <>
-              <div className='text-sm font-medium text-center mb-2'>{word}</div>
+              <div className='text-center mb-3'>
+                <div className='text-sm font-medium mb-1'>{word}</div>
+                {effectiveTranslatedWord && (
+                  <div className='text-sm text-muted-foreground'>
+                    {effectiveTranslatedWord}
+                  </div>
+                )}
+              </div>
               <div className='flex flex-wrap gap-2 justify-center'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={handleTranslate}
-                  className='flex items-center gap-1'
-                >
-                  <Languages className='h-3 w-3' />
-                  Translate
-                </Button>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={handleDictionary}
-                  className='flex items-center gap-1'
-                >
-                  <BookOpen className='h-3 w-3' />
-                  Dictionary
-                </Button>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={handleSave}
-                  className='flex items-center gap-1'
-                >
-                  <Bookmark className='h-3 w-3' />
-                  Save
-                </Button>
+                {user ? (
+                  <>
+                    <LoadingButton
+                      variant='outline'
+                      size='sm'
+                      onClick={handleTranslate}
+                      disabled={translateButtonDisabled}
+                      loading={effectiveIsTranslating}
+                      loadingText='Translating...'
+                      spinnerSize='sm'
+                    >
+                      <Languages className='h-3 w-3' />
+                      {translateButtonLabel}
+                    </LoadingButton>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={handleDictionary}
+                      className='flex items-center gap-1'
+                    >
+                      <BookOpen className='h-3 w-3' />
+                      Dictionary
+                    </Button>
+                    {fromLanguageId && targetLanguageId && (
+                      <VocabularySaveButton
+                        originalWord={word}
+                        translatedWord={effectiveTranslatedWord ?? ''}
+                        originalContext={originalSentence}
+                        translatedContext={translatedSentence}
+                        fromLanguageId={fromLanguageId}
+                        translatedLanguageId={targetLanguageId}
+                        savedTranslationId={effectiveSavedTranslationId}
+                        size='sm'
+                        variant='outline'
+                        isSaved={effectiveIsSaved}
+                        onBeforeOpen={() => {
+                          if (!effectiveTranslatedWord) {
+                            onTranslate?.(word);
+                          }
+                        }}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <AuthPrompt t={t} variant='link' />
+                )}
               </div>
             </>
           ) : (
             <div className='min-w-[300px] max-w-[400px]'>
               <div className='flex items-center justify-between mb-2'>
                 <h3 className='text-sm font-medium'>Dictionary</h3>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={handleBackToMenu}
-                  className='h-6 w-6 p-0'
-                >
-                  ×
-                </Button>
+                <div className='flex items-center gap-2'>
+                  {user && fromLanguageId && targetLanguageId && (
+                    <VocabularySaveButton
+                      originalWord={word}
+                      translatedWord={effectiveTranslatedWord ?? ''}
+                      originalContext={originalSentence}
+                      translatedContext={translatedSentence}
+                      fromLanguageId={fromLanguageId}
+                      translatedLanguageId={targetLanguageId}
+                      savedTranslationId={effectiveSavedTranslationId}
+                      size='sm'
+                      variant='outline'
+                      className='mr-2'
+                      showTextOnly={true}
+                      isSaved={effectiveIsSaved}
+                      onBeforeOpen={() => {
+                        if (!effectiveTranslatedWord) {
+                          onTranslate?.(word);
+                        }
+                      }}
+                    />
+                  )}
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={handleBackToMenu}
+                    className='h-6 w-6 p-0'
+                  >
+                    ×
+                  </Button>
+                </div>
               </div>
               <DictionaryEntry.Root
                 word={word}

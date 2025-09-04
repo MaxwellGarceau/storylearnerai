@@ -20,7 +20,7 @@
     "dashboard": "Dashboard",
     "saved": "Saved",
     "profile": "Profile",
-    "signIn": "Sign In",
+    "signIn": "Log In",
     "signUp": "Sign Up",
     "signOut": "Sign Out"
   },
@@ -34,13 +34,13 @@
     "confirmPassword": "Confirm Password",
     "firstName": "First Name",
     "lastName": "Last Name",
-    "signInTitle": "Sign In",
+    "signInTitle": "Log In",
     "signUpTitle": "Sign Up",
     "profileTitle": "Profile",
     "forgotPassword": "Forgot Password?",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
-    "signInWithGoogle": "Sign in with Google",
+    "signInWithGoogle": "Log in with Google",
     "signUpWithGoogle": "Sign up with Google",
     "userProfile": {
       "title": "User Profile",
@@ -239,6 +239,7 @@
     "closeLibrary": "Close story library",
     "stories": "Stories",
     "info": "Info",
+    "vocabulary": "Vocabulary",
     "clickOnStoryToRead": "Click on a story to read it",
     "savedStories": "Saved Stories",
     "loadingSavedStories": "Loading saved stories...",
@@ -255,6 +256,7 @@
     "storyAdaptedToLevel": "The story was adapted to this English proficiency level.",
     "noTranslationData": "No translation data available to display.",
     "demoStories": "Demo stories • Spanish to English",
+    "vocabularySettings": "Vocabulary settings",
     "translationSettings": "Translation settings",
     "untitledStory": "Untitled Story",
     "untitled": "Untitled",
@@ -389,6 +391,158 @@
     "cleanupNotice": {
       "title": "Important: Text Cleanup May Be Required",
       "description": "Our system tries to identify story content, but PDFs can contain various text elements. You may need to review and clean up the extracted text to remove any unrelated content, headers, footnotes, or other non-story elements."
+    }
+  },
+  "vocabulary": {
+    "title": "Vocabulary",
+    "subtitle": "Your saved vocabulary words",
+    "saveWord": "Save Word",
+    "editWord": "Edit Word",
+    "deleteWord": "Delete Word",
+    "viewDetails": "View Details",
+    "searchPlaceholder": "Search vocabulary...",
+    "noVocabulary": "No vocabulary words saved yet",
+    "noVocabularyDescription": "Save words from your stories to build your vocabulary",
+    "saveSuccess": "Vocabulary word saved successfully",
+    "updateSuccess": "Vocabulary word updated successfully",
+    "deleteSuccess": "Vocabulary word deleted successfully",
+    "saveError": "Failed to save vocabulary word",
+    "updateError": "Failed to update vocabulary word",
+    "deleteError": "Failed to delete vocabulary word",
+    "alreadyExists": "This word is already saved in your vocabulary",
+    "form": {
+      "originalWord": "Original Word",
+      "translatedWord": "Translated Word",
+      "originalContext": "Original Context",
+      "translatedContext": "Translated Context",
+      "definition": "Definition",
+      "partOfSpeech": "Part of Speech",
+      "frequencyLevel": "Frequency Level",
+      "fromLanguage": "From Language",
+      "toLanguage": "To Language",
+      "originalWordPlaceholder": "Enter the original word...",
+      "translatedWordPlaceholder": "Enter the translated word...",
+      "originalContextPlaceholder": "Enter the context sentence...",
+      "translatedContextPlaceholder": "Enter the translated context...",
+      "definitionPlaceholder": "Enter the definition...",
+      "partOfSpeechPlaceholder": "Select part of speech...",
+      "frequencyLevelPlaceholder": "Select frequency level...",
+      "selectLanguage": "Select language...",
+      "selectPartOfSpeech": "Select part of speech...",
+      "selectFrequency": "Select frequency level...",
+      "languages": "Languages"
+    },
+    "partsOfSpeech": {
+      "noun": "Noun",
+      "verb": "Verb",
+      "adjective": "Adjective",
+      "adverb": "Adverb",
+      "pronoun": "Pronoun",
+      "preposition": "Preposition",
+      "conjunction": "Conjunction",
+      "interjection": "Interjection",
+      "article": "Article",
+      "numeral": "Numeral"
+    },
+    "frequencyLevels": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "veryRare": "Very Rare"
+    },
+    "details": {
+      "title": "Vocabulary Details",
+      "originalWord": "Original Word",
+      "translatedWord": "Translated Word",
+      "definition": "Definition",
+      "partOfSpeech": "Part of Speech",
+      "frequencyLevel": "Frequency Level",
+      "originalContext": "Original Context",
+      "translatedContext": "Translated Context",
+      "fromLanguage": "From Language",
+      "toLanguage": "To Language",
+      "savedFrom": "Saved from story",
+      "noContext": "No context provided",
+      "noDefinition": "No definition provided"
+    },
+    "deleteConfirm": {
+      "title": "Delete Vocabulary Word",
+      "message": "Are you sure you want to delete this vocabulary word? This action cannot be undone.",
+      "confirm": "Delete Word",
+      "cancel": "Cancel"
+    },
+    "sidebar": {
+      "title": "Vocabulary",
+      "description": "Your saved vocabulary words from stories",
+      "saveNewWord": "Save New Word",
+      "searchWords": "Search words...",
+      "noWordsFound": "No words found",
+      "filterByLanguage": "Filter by language pair",
+      "allLanguages": "All Languages"
+    },
+    "filters": {
+      "title": "Filters",
+      "language": "Language",
+      "allLanguages": "All Languages"
+    },
+    "validation": {
+      "originalWordRequired": "Original word is required",
+      "translatedWordRequired": "Translated word is required",
+      "fromLanguageRequired": "From language is required",
+      "translatedLanguageRequired": "To language is required",
+      "languagesMustDiffer": "From and To languages must be different",
+      "alreadyExists": "This word is already saved in your vocabulary"
+    },
+    "save": {
+      "title": "Save Vocabulary Word",
+      "button": "Save",
+      "tooltip": "Save this word to your vocabulary"
+    },
+    "edit": {
+      "title": "Edit Vocabulary Word"
+    },
+    "delete": {
+      "title": "Delete Vocabulary Word",
+      "description": "Are you sure you want to delete this vocabulary word? This action cannot be undone."
+    },
+    "detail": {
+      "title": "Vocabulary Details",
+      "definition": "Definition",
+      "context": "Context",
+      "savedTranslation": "Saved Translation",
+      "savedTranslationDescription": "This word was saved from a story translation",
+      "viewSavedTranslation": "View Story"
+    },
+    "empty": {
+      "title": "No vocabulary words saved yet",
+      "description": "Save words from your stories to build your vocabulary",
+      "sidebar": "No vocabulary words found"
+    },
+    "search": {
+      "placeholder": "Search vocabulary..."
+    },
+    "context": {
+      "original": "Original Context",
+      "translated": "Translated Context"
+    },
+    "noResults": "No words found",
+    "checking": "Checking...",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "autoTranslate": {
+      "title": "Auto-Translation",
+      "description": "Click on any word to automatically translate it with context",
+      "translating": "Translating...",
+      "translationComplete": "Translation complete",
+      "translationError": "Translation failed",
+      "sentenceContext": "Sentence context",
+      "wordTranslation": "Word translation"
+    }
+  },
+  "wordMenu": {
+    "guest": {
+      "message": "Create a free account to translate words, open the dictionary, and save vocabulary to your library.",
+      "cta": "Sign up to get started"
     }
   }
 }

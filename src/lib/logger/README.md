@@ -7,7 +7,7 @@ A comprehensive Winston-based logging system for React TypeScript applications w
 - ✅ **Log Levels**: error, warn, info, debug
 - ✅ **Channels**: api, auth, ui, prompts, database, llm, translation, performance, security, general
 - ✅ **Environment Control**: Development, Production, Test configurations
-- ✅ **Multiple Outputs**: Console, File, Remote API
+- ✅ **Multiple Outputs**: Console, File
 - ✅ **Performance Monitoring**: Timing, memory usage
 - ✅ **React Integration**: Easy integration with React components
 - ✅ **TypeScript Support**: Full type safety
@@ -30,7 +30,6 @@ LOG_LEVEL=info
 LOG_CONSOLE=true
 LOG_FILE=false
 LOG_REMOTE=false
-LOG_ENDPOINT=https://logs.storylearnerai.com
 ```
 
 ### Environment-Specific Configurations
@@ -48,7 +47,7 @@ LOG_ENDPOINT=https://logs.storylearnerai.com
 - **Level**: warn
 - **Console**: disabled
 - **File**: enabled
-- **Remote**: enabled
+- **Remote**: disabled
 - **Channels**: api, auth, database, llm, translation, performance, security
 
 #### Test
@@ -219,13 +218,6 @@ console.log('Current level:', logger.config.level);
 - Separate error and combined logs
 - Only available in Node.js environment
 
-### Remote Output (Production)
-
-- Batched HTTP requests
-- Automatic retry on failure
-- Fallback to console on error
-- Configurable endpoint
-
 ## 🎛️ Advanced Features
 
 ### Performance Monitoring
@@ -371,8 +363,7 @@ const customFormat = winston.format.printf(
 
 1. **Logs not appearing**: Check `LOG_ENABLED` and channel settings
 2. **Performance impact**: Disable debug logging in production
-3. **Remote logging failures**: Check network connectivity and endpoint
-4. **File logging not working**: Only available in Node.js environment
+3. **File logging not working**: Only available in Node.js environment
 
 ### Debug Mode
 

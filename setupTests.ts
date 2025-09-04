@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
 import { server } from './src/__tests__/mocks/supabaseMock';
 import 'vitest';
 
@@ -6,17 +7,22 @@ import 'vitest';
 vi.mock('./src/lib/config/env', () => ({
   EnvironmentConfig: {
     getLLMConfig: () => ({
-      provider: 'openai',
+      provider: 'gemini',
       apiKey: 'test-api-key',
       endpoint: 'https://test-endpoint.com',
       model: 'test-model',
       maxTokens: 2000,
       temperature: 0.7,
-      organization: 'test-org',
+      projectId: 'test-project',
+    }),
+    getDictionaryConfig: () => ({
+      endpoint: 'https://test-dictionary-endpoint.com',
+      apiKey: 'test-dictionary-api-key',
     }),
     isDevelopment: () => false,
     isProduction: () => false,
     isMockTranslationEnabled: () => true,
+    isDictionaryDisabled: () => false,
   },
 }));
 
@@ -34,6 +40,9 @@ beforeAll(() => server.listen());
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => server.resetHandlers());
+
+// Ensure React Testing Library cleans up between tests to avoid DOM leakage
+afterEach(() => cleanup());
 
 // Clean up after the tests are finished.
 afterAll(() => server.close());

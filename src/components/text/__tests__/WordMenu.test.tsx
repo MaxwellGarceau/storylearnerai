@@ -1,6 +1,10 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordMenu from '../WordMenu';
+import type { VoidFunction } from '../../../types/common';
+import * as useAuthModule from '../../../hooks/useAuth';
+import type { LanguageCode } from '../../../types/llm/prompts';
+import { MemoryRouter } from 'react-router-dom';
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -11,6 +15,49 @@ vi.mock('../../../hooks/useDictionary', () => ({
     searchWord: vi.fn(),
     clearError: vi.fn(),
   }),
+}));
+
+// Mock the useLanguages hook
+vi.mock('../../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    getLanguageIdByCode: vi.fn((code: string) => {
+      const languageMap: Record<string, number> = {
+        en: 1,
+        es: 2,
+      };
+      return languageMap[code] || null;
+    }),
+  }),
+}));
+
+// Mock the VocabularySaveButton component
+vi.mock('../../vocabulary/VocabularySaveButton', () => ({
+  VocabularySaveButton: ({
+    originalWord,
+    translatedWord,
+    fromLanguageId,
+    translatedLanguageId,
+    onClick,
+    children,
+  }: {
+    originalWord: string;
+    translatedWord: string;
+    fromLanguageId: number;
+    translatedLanguageId: number;
+    onClick?: () => void;
+    children?: React.ReactNode;
+  }) => (
+    <button
+      data-testid='vocabulary-save-button'
+      data-original-word={originalWord}
+      data-translated-word={translatedWord}
+      data-from-language-id={fromLanguageId}
+      data-translated-language-id={translatedLanguageId}
+      onClick={onClick}
+    >
+      {children ?? 'Save'}
+    </button>
+  ),
 }));
 
 // Mock the Popover components
@@ -58,12 +105,14 @@ vi.mock('../../ui/Button', () => ({
     variant,
     size,
     className,
+    disabled,
   }: {
     children: React.ReactNode;
-    onClick?: () => void;
+    onClick?: VoidFunction;
     variant?: string;
     size?: string;
     className?: string;
+    disabled?: boolean;
   }) => (
     <button
       data-testid='button'
@@ -71,6 +120,7 @@ vi.mock('../../ui/Button', () => ({
       data-size={size}
       className={className}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
@@ -80,7 +130,6 @@ vi.mock('../../ui/Button', () => ({
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Languages: () => <span data-testid='translate-icon'>Translate</span>,
-  Bookmark: () => <span data-testid='bookmark-icon'>Bookmark</span>,
   BookOpen: () => <span data-testid='dictionary-icon'>Dictionary</span>,
 }));
 
@@ -89,9 +138,45 @@ describe('WordMenu Component', () => {
     cleanup();
   });
 
-  it('renders with word text', () => {
+  const renderWithRouter = (ui: React.ReactElement) =>
+    render(<MemoryRouter>{ui}</MemoryRouter>);
+
+  // Default: user is logged in for tests unless overridden
+  const mockLoggedIn = () =>
+    vi
+      .spyOn(useAuthModule, 'useAuth')
+      .mockReturnValue({ user: { id: 'test-user' } } as unknown as ReturnType<
+        typeof useAuthModule.useAuth
+      >);
+
+  it('hides menu actions when user is logged out', () => {
+    vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
+      user: null,
+    } as unknown as ReturnType<typeof useAuthModule.useAuth>);
+
     render(
-      <WordMenu word='hello' open={true}>
+      <MemoryRouter>
+        <WordMenu
+          word='hello'
+          open={true}
+          fromLanguage='en'
+          targetLanguage='es'
+        >
+          <span>hello</span>
+        </WordMenu>
+      </MemoryRouter>
+    );
+
+    expect(screen.queryAllByTestId('button')).toHaveLength(0);
+    expect(
+      screen.queryByTestId('vocabulary-save-button')
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders with word text', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='hello' open={true} fromLanguage='en' targetLanguage='es'>
         <span>hello</span>
       </WordMenu>
     );
@@ -100,8 +185,9 @@ describe('WordMenu Component', () => {
   });
 
   it('displays the word in the menu header', () => {
-    render(
-      <WordMenu word='world' open={true}>
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='world' open={true} fromLanguage='en' targetLanguage='es'>
         <span>world</span>
       </WordMenu>
     );
@@ -113,27 +199,34 @@ describe('WordMenu Component', () => {
     expect(menuHeader).toBeInTheDocument();
   });
 
-  it('renders translate, dictionary, and save buttons', () => {
-    render(
-      <WordMenu word='test' open={true}>
+  it('renders translate, dictionary, and vocabulary save buttons', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
 
     const buttons = screen.getAllByTestId('button');
-    expect(buttons).toHaveLength(3);
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+
+    expect(buttons).toHaveLength(2); // Translate and Dictionary buttons
+    expect(vocabularySaveButton).toBeInTheDocument(); // VocabularySaveButton
   });
 
-  it('calls onTranslate when translate button is clicked', () => {
+  it('calls onTranslate when translate button is clicked and keeps menu open', () => {
+    mockLoggedIn();
     const handleTranslate = vi.fn();
     const handleOpenChange = vi.fn();
 
-    render(
+    renderWithRouter(
       <WordMenu
         word='hello'
         open={true}
         onTranslate={handleTranslate}
         onOpenChange={handleOpenChange}
+        fromLanguage='en'
+        targetLanguage='es'
       >
         <span>hello</span>
       </WordMenu>
@@ -143,34 +236,40 @@ describe('WordMenu Component', () => {
     fireEvent.click(buttons[0]); // First button should be translate
 
     expect(handleTranslate).toHaveBeenCalledWith('hello');
-    expect(handleOpenChange).toHaveBeenCalledWith(false);
+    expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
-  it('calls onSave when save button is clicked', () => {
-    const handleSave = vi.fn();
-    const handleOpenChange = vi.fn();
-
-    render(
+  it('renders VocabularySaveButton with correct props', () => {
+    mockLoggedIn();
+    renderWithRouter(
       <WordMenu
         word='world'
         open={true}
-        onSave={handleSave}
-        onOpenChange={handleOpenChange}
+        fromLanguage='en'
+        targetLanguage='es'
+        translatedWord='mundo'
       >
         <span>world</span>
       </WordMenu>
     );
 
-    const buttons = screen.getAllByTestId('button');
-    fireEvent.click(buttons[2]); // Third button should be save
-
-    expect(handleSave).toHaveBeenCalledWith('world');
-    expect(handleOpenChange).toHaveBeenCalledWith(false);
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'world');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-translated-word',
+      'mundo'
+    );
+    expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-translated-language-id',
+      '2'
+    );
   });
 
   it('shows dictionary content when dictionary button is clicked', () => {
-    render(
-      <WordMenu word='test' open={true}>
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -183,8 +282,9 @@ describe('WordMenu Component', () => {
   });
 
   it('renders with correct open state', () => {
-    render(
-      <WordMenu word='test' open={true}>
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -193,8 +293,9 @@ describe('WordMenu Component', () => {
   });
 
   it('renders with closed state', () => {
-    render(
-      <WordMenu word='test' open={false}>
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' open={false} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -203,8 +304,9 @@ describe('WordMenu Component', () => {
   });
 
   it('renders trigger with asChild prop', () => {
-    render(
-      <WordMenu word='test' open={true}>
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
         <span>test</span>
       </WordMenu>
     );
@@ -213,5 +315,175 @@ describe('WordMenu Component', () => {
       'data-as-child',
       'true'
     );
+  });
+
+  it('does not render VocabularySaveButton when language IDs are not available', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage={'unsupported' as unknown as LanguageCode}
+        targetLanguage={'unsupported' as unknown as LanguageCode}
+      >
+        <span>test</span>
+      </WordMenu>
+    );
+
+    const vocabularySaveButton = screen.queryByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).not.toBeInTheDocument();
+  });
+
+  it('shows translating spinner and text when isTranslating is true', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        isTranslating={true}
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    const translateButton = buttons[0];
+
+    // Should show "Translating..." text
+    expect(translateButton).toHaveTextContent('Translating...');
+
+    // Should be disabled
+    expect(translateButton).toBeDisabled();
+
+    // Should have the spinner element
+    const spinner = translateButton.querySelector('.animate-spin');
+    expect(spinner).toBeInTheDocument();
+  });
+
+  it('shows normal translate button when isTranslating is false', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        isTranslating={false}
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    const translateButton = buttons[0];
+
+    // Should show "Translate" text
+    expect(translateButton).toHaveTextContent('Translate');
+
+    // Should not be disabled
+    expect(translateButton).not.toBeDisabled();
+
+    // Should not have spinner
+    const spinner = translateButton.querySelector('.animate-spin');
+    expect(spinner).not.toBeInTheDocument();
+  });
+
+  it('does not call onTranslate when clicking translate button while translating', () => {
+    mockLoggedIn();
+    const handleTranslate = vi.fn();
+
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        isTranslating={true}
+        onTranslate={handleTranslate}
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    fireEvent.click(buttons[0]); // Translate button
+
+    // Should not call onTranslate when translating
+    expect(handleTranslate).not.toHaveBeenCalled();
+  });
+
+  it('shows "Translated" button when word has been translated but not saved', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        translatedWord='hola'
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    const translateButton = buttons[0];
+
+    // Should show "Translated" text
+    expect(translateButton).toHaveTextContent('Translated');
+
+    // Should be disabled
+    expect(translateButton).toBeDisabled();
+  });
+
+  it('shows "Already Saved" button when word has saved translation', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        isSaved={true}
+        translatedWord='hola'
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    const translateButton = buttons[0];
+
+    // Should show "Already Saved" text
+    expect(translateButton).toHaveTextContent('Already Saved');
+
+    // Should be disabled
+    expect(translateButton).toBeDisabled();
+  });
+
+  it('enables translate button for saved words without translation', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu
+        word='hello'
+        open={true}
+        isSaved={true}
+        fromLanguage='en'
+        targetLanguage='es'
+      >
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    const buttons = screen.getAllByTestId('button');
+    const translateButton = buttons[0];
+
+    // Should show "Translate" text (to translate the saved word)
+    expect(translateButton).toHaveTextContent('Translate');
+
+    // Should not be disabled
+    expect(translateButton).not.toBeDisabled();
   });
 });

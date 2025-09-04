@@ -102,7 +102,7 @@ describe('LexicalaDataTransformerImpl', () => {
       expect(result.definitions[0].partOfSpeech).toBe('noun');
       expect(result.examples).toEqual(['She gave me a warm hello.']);
       expect(result.partsOfSpeech).toHaveLength(1);
-      expect(result.partsOfSpeech![0].type).toBe('noun');
+      expect(result.partsOfSpeech?.[0]?.type).toBe('noun');
     });
 
     it('should handle response with synonyms and antonyms', () => {

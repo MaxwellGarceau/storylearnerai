@@ -5,24 +5,37 @@ import InteractiveText from '../text/InteractiveText';
 interface StoryContentProps {
   translationData: TranslationResponse;
   showOriginal: boolean;
+  savedTranslationId?: number;
 }
 
 const StoryContent: React.FC<StoryContentProps> = ({
   translationData,
   showOriginal,
+  savedTranslationId,
 }) => {
   const displayText = showOriginal
     ? translationData.originalText
     : translationData.translatedText;
 
-  const targetLanguage = showOriginal
-    ? translationData.fromLanguage
-    : translationData.toLanguage;
+  // Default from and target language
+  let fromLanguage = translationData.fromLanguage;
+  let targetLanguage = translationData.toLanguage;
+
+  // If showOriginal is toggled then swap from and target language
+  if (showOriginal) {
+    fromLanguage = translationData.toLanguage;
+    targetLanguage = translationData.fromLanguage;
+  }
 
   return (
     <div className='relative overflow-hidden'>
       <div className='text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed'>
-        <InteractiveText text={displayText} targetLanguage={targetLanguage} />
+        <InteractiveText
+          text={displayText}
+          fromLanguage={fromLanguage}
+          targetLanguage={targetLanguage}
+          savedTranslationId={savedTranslationId}
+        />
       </div>
     </div>
   );

@@ -1,116 +1,111 @@
-import React, { useState } from 'react';
-import WordHighlight from './WordHighlight';
-import WordMenu from './WordMenu';
+import React, { useMemo, useCallback } from 'react';
 import { LanguageCode } from '../../types/llm/prompts';
+import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
+import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
+import { useTranslationCache } from '../../hooks/interactiveText/useTranslationCache';
+import { useTokenizedText } from '../../hooks/interactiveText/useTokenizedText';
+import { InteractiveTextProvider } from './InteractiveTextContext';
+import InteractiveTextView from './interactiveText/InteractiveTextView';
 
 interface InteractiveTextProps {
   text: string;
   className?: string;
-  fromLanguage?: LanguageCode;
-  targetLanguage?: LanguageCode;
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   enableTooltips?: boolean;
   disabled?: boolean;
+  savedTranslationId?: number;
 }
 
 const InteractiveText: React.FC<InteractiveTextProps> = ({
   text,
   className,
-  fromLanguage: _fromLanguage,
-  targetLanguage: _targetLanguage = 'en',
+  fromLanguage,
+  targetLanguage,
   enableTooltips = true,
   disabled = false,
+  savedTranslationId,
 }) => {
-  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  // Tokenize for rendering
+  const tokens = useTokenizedText(text);
 
-  // Handle empty text
-  if (!text.trim()) {
-    return <span className={className} />;
-  }
+  // Split text into segments for sentence extraction (keeps indices aligned with token.segmentIndex)
+  const words = useMemo(() => text.split(/(\s+)/), [text]);
 
-  // Split text into words while preserving whitespace and punctuation
-  const words = text.split(/(\s+)/);
+  // Sentence context helpers
+  const { extractSentenceContext } = useSentenceContext(words);
 
-  const handleTranslate = (_word: string) => {
-    // TODO: Implement translation functionality
-  };
+  // Saved words and lookup
+  const { savedOriginalWords, findSavedWordData } = useSavedWords(
+    fromLanguage,
+    targetLanguage
+  );
 
-  const handleSave = (_word: string) => {
-    // TODO: Implement save functionality
+  // Translation cache and handler
+  const {
+    translatedWords,
+    translatedSentences,
+    translatingWords,
+    setWordTranslation,
+    handleTranslate,
+  } = useTranslationCache({
+    extractSentenceContext,
+    fromLanguage,
+    targetLanguage,
+  });
+
+  const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
+    const saved = findSavedWordData(w);
+    const alreadyRuntime = translatedWords.get(w);
+    if (saved?.translated_word && !alreadyRuntime) {
+      setWordTranslation(w, saved.translated_word);
+      return;
+    }
+    void handleTranslate(w, segmentIndex);
   };
 
   return (
-    <span className={className}>
-      {words.map((word, index) => {
-        // Skip pure whitespace
-        if (/^\s+$/.test(word)) {
-          return <React.Fragment key={index}>{word}</React.Fragment>;
+    <InteractiveTextProvider
+      value={{
+        fromLanguage,
+        targetLanguage,
+        savedOriginalWords,
+        findSavedWordData,
+        translatedWords,
+        translatedSentences,
+        translatingWords,
+        savedTranslationId,
+        getTranslatedWord: useCallback(
+          (word: string) => translatedWords.get(word),
+          [translatedWords]
+        ),
+        isTranslatingWord: useCallback(
+          (word: string) => translatingWords.has(word),
+          [translatingWords]
+        ),
+        isSavedWord: useCallback(
+          (word: string) => savedOriginalWords.has(word),
+          [savedOriginalWords]
+        ),
+      }}
+    >
+      <InteractiveTextView
+        className={className}
+        tokens={tokens}
+        enableTooltips={enableTooltips}
+        disabled={disabled}
+        getOriginalSentence={(segmentIndex: number) =>
+          extractSentenceContext(segmentIndex)
         }
-
-        // For words with punctuation, handle Unicode letters/numbers correctly
-        const wordMatch = word.match(/^[\p{L}\p{N}’']+(.*)$/u)
-          ? [
-              '',
-              // Extract the leading word (letters/numbers/apostrophes)
-              (word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0],
-              // The remaining punctuation/symbols/spaces after the word
-              word.slice((word.match(/^[\p{L}\p{N}’']+/u) ?? [''])[0].length),
-            ]
-          : null;
-        if (wordMatch) {
-          const [, cleanWord, punctuation] = wordMatch;
-          const normalizedWord = cleanWord.toLowerCase();
-
-          // If tooltips are disabled or the component is disabled, just use WordHighlight
-          if (!enableTooltips || disabled) {
-            return (
-              <span key={index}>
-                <WordHighlight word={normalizedWord} disabled={disabled}>
-                  {cleanWord}
-                </WordHighlight>
-                {punctuation}
-              </span>
-            );
-          }
-
-          // Always render WordMenu so Radix trigger exists before click
-          return (
-            <span key={index}>
-              <WordMenu
-                word={normalizedWord}
-                open={openMenuIndex === index}
-                onOpenChange={open => {
-                  if (open) {
-                    // Accept open events from Radix trigger as well (covers clicks on trigger padding)
-                    setOpenMenuIndex(index);
-                  } else if (openMenuIndex === index) {
-                    setOpenMenuIndex(null);
-                  }
-                }}
-                onTranslate={handleTranslate}
-                onSave={handleSave}
-                fromLanguage={_fromLanguage}
-                targetLanguage={_targetLanguage}
-              >
-                <WordHighlight
-                  word={normalizedWord}
-                  disabled={disabled}
-                  active={openMenuIndex === index}
-                  onClick={() => {
-                    setOpenMenuIndex(prev => (prev === index ? null : index));
-                  }}
-                >
-                  {cleanWord}
-                </WordHighlight>
-              </WordMenu>
-              {punctuation}
-            </span>
-          );
+        getTranslatedSentence={(originalSentence: string) =>
+          translatedSentences.get(originalSentence)
         }
-
-        // For words without letters (pure punctuation), just return as is
-        return <span key={index}>{word}</span>;
-      })}
-    </span>
+        isSaved={(w: string) => savedOriginalWords.has(w)}
+        getDisplayTranslation={(w: string) => translatedWords.get(w)}
+        isTranslating={(w: string) => translatingWords.has(w)}
+        onTranslate={handleTranslateWithSavedCheck}
+      />
+    </InteractiveTextProvider>
   );
 };
 

@@ -4,6 +4,33 @@ import {
   DictionaryApiClient,
 } from '../../../../types/dictionary';
 
+// Reusable type for mock responses
+type MockLexicalaResponse = {
+  n_results: number;
+  page_number: number;
+  results_per_page: number;
+  n_pages: number;
+  available_n_pages: number;
+  results: Array<{
+    id: string;
+    language: string;
+    headword: { text: string };
+    senses: Array<{
+      id: string;
+      see?: string;
+      definition?: string;
+      partOfSpeech?: string;
+      synonyms?: string[];
+      antonyms?: string[];
+      compositional_phrases?: Array<{
+        text: string;
+        definition: string;
+        examples: Array<{ text: string }>;
+      }>;
+    }>;
+  }>;
+};
+
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -117,7 +144,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         status: 200,
 
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<typeof mockResponse> => mockResponse,
         clone: function () {
           return this;
         },
@@ -172,7 +199,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         status: 200,
 
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => ({ results: [] }),
+        json: async (): Promise<{ results: never[] }> => ({ results: [] }),
         clone: function () {
           return this;
         },
@@ -189,7 +216,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         status: 200,
 
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => ({}),
+        json: async (): Promise<Record<string, never>> => ({}),
         clone: function () {
           return this;
         },
@@ -274,7 +301,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         status: 200,
 
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<MockLexicalaResponse> => mockResponse,
         clone: function () {
           return this;
         },
@@ -318,7 +345,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<typeof mockResponse> => mockResponse,
         clone: function () {
           return this;
         },
@@ -364,7 +391,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<MockLexicalaResponse> => mockResponse,
         clone: function () {
           return this;
         },
@@ -408,7 +435,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<MockLexicalaResponse> => mockResponse,
         clone: function () {
           return this;
         },
@@ -453,7 +480,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = offlineCall![1] as () => void;
 
       offlineHandler();
       expect(client.isAvailable()).toBe(false);
@@ -465,7 +492,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1];
+      const offlineHandler = offlineCall![1] as () => void;
       offlineHandler();
 
       // Then go online
@@ -473,7 +500,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'online'
       );
       expect(onlineCall).toBeDefined();
-      const onlineHandler = onlineCall![1];
+      const onlineHandler = onlineCall![1] as () => void;
       onlineHandler();
 
       expect(client.isAvailable()).toBe(true);
@@ -520,7 +547,7 @@ describe('LexicalaApiClient (Isolated)', () => {
         ok: true,
         status: 200,
         // eslint-disable-next-line @typescript-eslint/require-await
-        json: async () => mockResponse,
+        json: async (): Promise<MockLexicalaResponse> => mockResponse,
         clone: function () {
           return this;
         },

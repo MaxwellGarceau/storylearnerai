@@ -3,8 +3,6 @@
  * These types help prevent duplication in database operations
  */
 
-import type { PostgrestError } from '@supabase/supabase-js';
-
 // Database operation result types
 export type DatabaseInsertResult<T> = Promise<T>;
 export type DatabaseSelectResult<T> = Promise<T | null>;
@@ -13,8 +11,8 @@ export type DatabaseDeleteResult = Promise<void>;
 
 // Supabase response types
 export type SupabaseResponse<T> = {
-  data: T;
-  error: PostgrestError;
+  data: T | null;
+  error: { message: string; code?: string } | null;
 };
 
 // Common database field types

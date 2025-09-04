@@ -3,6 +3,10 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveText from '../InteractiveText';
+// VoidFunction imported but not used in this test file
+
+// Test helper types
+type WordCallback = (word: string) => void;
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -15,7 +19,17 @@ vi.mock('../../../hooks/useDictionary', () => ({
   }),
 }));
 
-// Removed unused ClickHandler type
+// Mock the useWordTranslation hook
+vi.mock('../../../hooks/useWordTranslation', () => ({
+  useWordTranslation: () => ({
+    translateWord: vi.fn().mockResolvedValue('translated'),
+    translateWordInSentence: vi.fn().mockResolvedValue('translated word'),
+    translateSentence: vi.fn().mockResolvedValue('translated sentence'),
+    isTranslating: false,
+    error: null,
+    clearError: vi.fn(),
+  }),
+}));
 
 // Mock the WordHighlight component
 vi.mock('../WordHighlight', () => ({
@@ -52,19 +66,22 @@ vi.mock('../WordMenu', () => ({
     onSave,
     fromLanguage,
     targetLanguage,
+    translatedWord,
   }: {
     word: string;
     children: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
-    onTranslate?: (word: string) => void;
-    onSave?: (word: string) => void;
+    onTranslate?: WordCallback;
+    onSave?: WordCallback;
     fromLanguage?: string;
     targetLanguage?: string;
+    translatedWord?: string;
   }) => {
     // Use the parameters to avoid unused variable warnings
     void fromLanguage;
     void targetLanguage;
+    void translatedWord;
     return (
       <span data-word={word}>
         {children}
@@ -115,7 +132,13 @@ describe('InteractiveText Component', () => {
   });
 
   it('renders simple text correctly', () => {
-    render(<InteractiveText text='hello world' />);
+    render(
+      <InteractiveText
+        text='hello world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
@@ -129,7 +152,13 @@ describe('InteractiveText Component', () => {
   });
 
   it('preserves whitespace between words', () => {
-    render(<InteractiveText text='hello  world' />);
+    render(
+      <InteractiveText
+        text='hello  world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     // Check that both words are rendered in highlights
     expect(screen.getByTestId('word-highlight-hello')).toHaveTextContent(
@@ -141,7 +170,13 @@ describe('InteractiveText Component', () => {
   });
 
   it('handles punctuation correctly', () => {
-    render(<InteractiveText text='hello, world!' />);
+    render(
+      <InteractiveText
+        text='hello, world!'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
@@ -156,13 +191,15 @@ describe('InteractiveText Component', () => {
   });
 
   it('handles empty text', () => {
-    render(<InteractiveText text='' />);
+    render(<InteractiveText text='' fromLanguage='en' targetLanguage='es' />);
     // For empty text, we should not have any word highlights
     expect(screen.queryByTestId(/word-highlight-/)).not.toBeInTheDocument();
   });
 
   it('handles text with only punctuation', () => {
-    render(<InteractiveText text='!@#$%' />);
+    render(
+      <InteractiveText text='!@#$%' fromLanguage='en' targetLanguage='es' />
+    );
 
     // Should not create any word highlights for pure punctuation
     expect(screen.queryByTestId(/word-highlight-/)).not.toBeInTheDocument();
@@ -170,14 +207,27 @@ describe('InteractiveText Component', () => {
   });
 
   it('handles mixed content with numbers', () => {
-    render(<InteractiveText text='hello123 world' />);
+    render(
+      <InteractiveText
+        text='hello123 world'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.getByTestId('word-highlight-hello123')).toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-world')).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
-    render(<InteractiveText text='hello world' className='custom-class' />);
+    render(
+      <InteractiveText
+        text='hello world'
+        className='custom-class'
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     // The className should be applied to the root span
     const container = screen
@@ -202,7 +252,14 @@ describe('InteractiveText Component', () => {
   });
 
   it('renders without menus when enableTooltips is false', () => {
-    render(<InteractiveText text='hello world' enableTooltips={false} />);
+    render(
+      <InteractiveText
+        text='hello world'
+        enableTooltips={false}
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
     expect(screen.getByTestId('word-highlight-hello')).toBeInTheDocument();
@@ -210,7 +267,14 @@ describe('InteractiveText Component', () => {
   });
 
   it('renders disabled highlights when disabled is true', () => {
-    render(<InteractiveText text='hello world' disabled={true} />);
+    render(
+      <InteractiveText
+        text='hello world'
+        disabled={true}
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.getByTestId('word-highlight-hello')).toHaveAttribute(
       'data-disabled',
@@ -223,7 +287,14 @@ describe('InteractiveText Component', () => {
   });
 
   it('renders without menus when disabled is true', () => {
-    render(<InteractiveText text='hello world' disabled={true} />);
+    render(
+      <InteractiveText
+        text='hello world'
+        disabled={true}
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
 
     expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
   });

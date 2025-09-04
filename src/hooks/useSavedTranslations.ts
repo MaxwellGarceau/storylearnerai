@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation';
+import type {
+  DatabaseSavedTranslationWithDetails,
+  CreateSavedTranslationRequest,
+} from '../types/database/translation';
 import type { VoidPromise } from '../types/common';
 import { useAuth } from './useAuth';
+import { useToast } from './useToast';
 
 // Type alias to avoid duplicate type definition
 type LoadTranslationsFunction = () => VoidPromise;
@@ -13,6 +17,9 @@ interface UseSavedTranslationsReturn {
   error: string | null;
   loadTranslations: LoadTranslationsFunction;
   refreshTranslations: LoadTranslationsFunction;
+  createSavedTranslation: (
+    data: CreateSavedTranslationRequest
+  ) => Promise<DatabaseSavedTranslationWithDetails | null>;
 }
 
 // Create a singleton instance of the service
@@ -20,6 +27,7 @@ const savedTranslationService = new SavedTranslationService();
 
 export function useSavedTranslations(): UseSavedTranslationsReturn {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [savedTranslations, setSavedTranslations] = useState<
     DatabaseSavedTranslationWithDetails[]
   >([]);
@@ -55,6 +63,59 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     await loadTranslations();
   }, [loadTranslations]);
 
+  const createSavedTranslation = useCallback(
+    async (
+      data: CreateSavedTranslationRequest
+    ): Promise<DatabaseSavedTranslationWithDetails | null> => {
+      if (!user?.id) {
+        toast({
+          title: 'Error',
+          description: 'You must be logged in to save translations',
+          variant: 'destructive',
+        });
+        return null;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const savedTranslation =
+          await savedTranslationService.createSavedTranslation(data, user.id);
+
+        // Refresh the translations list
+        await loadTranslations();
+
+        // Notify other listeners (e.g., sidebars) to refresh immediately
+        try {
+          window.dispatchEvent(new CustomEvent('saved-translations:updated'));
+        } catch {
+          // no-op in non-browser/test environments
+        }
+
+        toast({
+          title: 'Success',
+          description: 'Translation saved successfully',
+        });
+
+        return savedTranslation;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to save translation';
+        setError(errorMessage);
+        toast({
+          title: 'Error',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, toast, loadTranslations]
+  );
+
   useEffect(() => {
     void loadTranslations();
   }, [loadTranslations]);
@@ -65,5 +126,6 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     error,
     loadTranslations,
     refreshTranslations,
+    createSavedTranslation,
   };
 }
