@@ -10,7 +10,6 @@ interface InteractiveTextViewProps {
   getOriginalSentence: (segmentIndex: number) => string;
   getTranslatedSentence: (originalSentence: string) => string | undefined;
   isSaved: (normalizedWord: string) => boolean;
-  getSavedTranslation: (normalizedWord: string) => string | null;
   getDisplayTranslation: (normalizedWord: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
   onTranslate: (normalizedWord: string, segmentIndex: number) => void;
@@ -24,7 +23,6 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   getOriginalSentence,
   getTranslatedSentence,
   isSaved,
-  getSavedTranslation,
   getDisplayTranslation,
   isTranslating,
   onTranslate,
@@ -44,14 +42,10 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const cleanWord = t.cleanWord;
         const punctuation = t.punctuation;
         const saved = isSaved(normalizedWord);
-        const savedTranslation = getSavedTranslation(normalizedWord);
         const overlayTranslatedWord = getDisplayTranslation(normalizedWord);
         const originalSentence = getOriginalSentence(t.segmentIndex);
         const translatedSentence = getTranslatedSentence(originalSentence);
         const open = openMenuIndex === idx;
-
-        // For menu we always prefer saved translation if available, else overlay
-        const menuTranslatedWord = savedTranslation ?? overlayTranslatedWord;
 
         const handleTranslateClick = () => {
           // Always delegate to parent: it will inject saved or call API

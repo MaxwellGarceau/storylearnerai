@@ -78,7 +78,6 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         getOriginalSentence={(segmentIndex: number) => extractSentenceContext(segmentIndex)}
         getTranslatedSentence={(originalSentence: string) => translatedSentences.get(originalSentence)}
         isSaved={(w: string) => savedOriginalWords.has(w)}
-        getSavedTranslation={(w: string) => findSavedWordData(w)?.translated_word ?? null}
         getDisplayTranslation={(w: string) => translatedWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
