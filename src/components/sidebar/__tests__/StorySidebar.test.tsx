@@ -27,19 +27,14 @@ describe('StorySidebar Component', () => {
   };
 
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+    return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
-  const rerenderWithRouter = (rerender: (component: React.ReactElement) => void, component: React.ReactElement) => {
-    return rerender(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+  const rerenderWithRouter = (
+    rerender: (component: React.ReactElement) => void,
+    component: React.ReactElement
+  ) => {
+    return rerender(<BrowserRouter>{component}</BrowserRouter>);
   };
 
   beforeEach(() => {
@@ -51,8 +46,8 @@ describe('StorySidebar Component', () => {
     });
 
     mockUseLanguages.mockReturnValue({
-      getLanguageName: vi.fn((code) => code === 'en' ? 'English' : 'Spanish'),
-      getLanguageIdByCode: vi.fn((code) => code === 'en' ? 1 : 2),
+      getLanguageName: vi.fn(code => (code === 'en' ? 'English' : 'Spanish')),
+      getLanguageIdByCode: vi.fn(code => (code === 'en' ? 1 : 2)),
     });
 
     mockUseSavedTranslations.mockReturnValue({
@@ -88,27 +83,29 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const sidebar = screen.getByText('storySidebar.storyLibrary').closest('.fixed');
+    const sidebar = screen
+      .getByText('storySidebar.storyLibrary')
+      .closest('.fixed');
     expect(sidebar).toHaveClass('fixed', 'top-16', 'left-0', 'z-40');
     expect(sidebar).toHaveClass('w-80', 'max-w-[calc(100vw-16px)]');
     expect(sidebar).toHaveClass('bg-background', 'border-r', 'shadow-lg');
   });
-
-
 
   it('closes sidebar when close button is clicked', () => {
     localStorage.setItem('sidebarOpen', 'true');
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const closeButton = screen.getByRole('button', { name: 'storySidebar.closeLibrary' });
+    const closeButton = screen.getByRole('button', {
+      name: 'storySidebar.closeLibrary',
+    });
     fireEvent.click(closeButton);
 
     // The sidebar should be hidden (toggle button should appear)
-    expect(screen.getByRole('button', { name: 'storySidebar.openLibrary' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.openLibrary' })
+    ).toBeInTheDocument();
   });
-
-
 
   it('loads sidebar state from localStorage on mount', () => {
     localStorage.setItem('sidebarOpen', 'true');
@@ -132,7 +129,9 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const vocabularyButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
+    const vocabularyButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
     fireEvent.click(vocabularyButton);
 
     // Vocabulary section should be active
@@ -144,7 +143,9 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
     fireEvent.click(infoButton);
 
     // Info section should be active
@@ -156,7 +157,9 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
     fireEvent.click(infoButton);
 
     expect(screen.getByText('storySidebar.storyOptions')).toBeInTheDocument();
@@ -172,13 +175,14 @@ describe('StorySidebar Component', () => {
     expect(screen.getByText('Little Red Riding Hood')).toBeInTheDocument();
   });
 
-
   it('shows vocabulary section when vocabulary button is clicked', () => {
     localStorage.setItem('sidebarOpen', 'true');
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const vocabButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
+    const vocabButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
     fireEvent.click(vocabButton);
 
     // Vocabulary section should be active (button should have primary styling)
@@ -198,10 +202,14 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const closeButton = screen.getByRole('button', { name: 'storySidebar.closeLibrary' });
+    const closeButton = screen.getByRole('button', {
+      name: 'storySidebar.closeLibrary',
+    });
     fireEvent.click(closeButton);
 
     // The sidebar should be hidden (toggle button should appear)
-    expect(screen.getByRole('button', { name: 'storySidebar.openLibrary' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.openLibrary' })
+    ).toBeInTheDocument();
   });
 });

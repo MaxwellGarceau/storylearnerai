@@ -44,5 +44,3 @@ describe('DictionaryEntry.ErrorMessage', () => {
     expect(getByText('shownWord')).toBeInTheDocument();
   });
 });
-
-

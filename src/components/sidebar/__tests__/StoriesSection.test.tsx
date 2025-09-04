@@ -78,7 +78,9 @@ describe('StoriesSection Component', () => {
   it('displays click instruction text', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    expect(screen.getByText('storySidebar.clickOnStoryToRead')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.clickOnStoryToRead')
+    ).toBeInTheDocument();
   });
 
   it('renders saved translations when user is authenticated', () => {
@@ -97,7 +99,9 @@ describe('StoriesSection Component', () => {
       />
     );
 
-    expect(screen.getByText('storySidebar.loadingSavedStories')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.loadingSavedStories')
+    ).toBeInTheDocument();
   });
 
   it('displays auth prompt when user is not authenticated', () => {
@@ -115,7 +119,9 @@ describe('StoriesSection Component', () => {
       />
     );
 
-    expect(screen.getByText('storySidebar.noSavedStoriesYet')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.noSavedStoriesYet')
+    ).toBeInTheDocument();
   });
 
   it('renders saved translation card with correct content', () => {
@@ -125,14 +131,20 @@ describe('StoriesSection Component', () => {
     expect(storyCard).toBeInTheDocument();
 
     // Check that the original story text is truncated
-    expect(screen.getByText('This is the original story text...')).toBeInTheDocument();
+    expect(
+      screen.getByText('This is the original story text...')
+    ).toBeInTheDocument();
   });
 
   it('renders sample story cards', () => {
     render(<StoriesSection {...defaultProps} />);
 
     expect(screen.getByText('The Three Little Pigs')).toBeInTheDocument();
-    expect(screen.getByText('A classic tale about three pigs who build different houses and learn the value of hard work.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'A classic tale about three pigs who build different houses and learn the value of hard work.'
+      )
+    ).toBeInTheDocument();
   });
 
   it('displays difficulty badges for saved translations', () => {
@@ -161,7 +173,9 @@ describe('StoriesSection Component', () => {
   it('applies correct styling to story cards', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const cards = screen.getAllByText('Test Story')[0].closest('.cursor-pointer');
+    const cards = screen
+      .getAllByText('Test Story')[0]
+      .closest('.cursor-pointer');
     expect(cards).toHaveClass('cursor-pointer');
     expect(cards).toHaveClass('transition-all');
     expect(cards).toHaveClass('duration-200');
@@ -171,17 +185,23 @@ describe('StoriesSection Component', () => {
   it('calls onOpenSavedTranslation when saved story card is clicked', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const savedStoryCard = screen.getByText('Test Story').closest('.cursor-pointer');
+    const savedStoryCard = screen
+      .getByText('Test Story')
+      .closest('.cursor-pointer');
     fireEvent.click(savedStoryCard!);
 
-    expect(mockOnOpenSavedTranslation).toHaveBeenCalledWith(mockSavedTranslation);
+    expect(mockOnOpenSavedTranslation).toHaveBeenCalledWith(
+      mockSavedTranslation
+    );
     expect(mockOnOpenSavedTranslation).toHaveBeenCalledTimes(1);
   });
 
   it('calls onOpenSampleStory when sample story card is clicked', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const sampleStoryCard = screen.getByText('The Three Little Pigs').closest('.cursor-pointer');
+    const sampleStoryCard = screen
+      .getByText('The Three Little Pigs')
+      .closest('.cursor-pointer');
     fireEvent.click(sampleStoryCard!);
 
     expect(mockOnOpenSampleStory).toHaveBeenCalledWith(mockSampleStories[0]);
@@ -229,7 +249,9 @@ describe('StoriesSection Component', () => {
       />
     );
 
-    const sampleStoryCard = screen.getByText('The Three Little Pigs').closest('.cursor-pointer');
+    const sampleStoryCard = screen
+      .getByText('The Three Little Pigs')
+      .closest('.cursor-pointer');
     expect(sampleStoryCard).toHaveClass('opacity-50');
     expect(sampleStoryCard).toHaveClass('pointer-events-none');
   });
@@ -280,19 +302,20 @@ describe('StoriesSection Component', () => {
     };
 
     render(
-      <StoriesSection
-        {...defaultProps}
-        sampleStories={[storyWithoutNotes]}
-      />
+      <StoriesSection {...defaultProps} sampleStories={[storyWithoutNotes]} />
     );
 
-    expect(screen.getByText('storySidebar.noDescriptionAvailable')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.noDescriptionAvailable')
+    ).toBeInTheDocument();
   });
 
   it('applies correct spacing and layout classes', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const mainContainer = screen.getByText('storySidebar.clickOnStoryToRead').closest('.p-4');
+    const mainContainer = screen
+      .getByText('storySidebar.clickOnStoryToRead')
+      .closest('.p-4');
     expect(mainContainer).toHaveClass('p-4', 'space-y-6');
 
     const sections = mainContainer?.querySelectorAll('.space-y-3');
@@ -302,7 +325,9 @@ describe('StoriesSection Component', () => {
   it('applies border styling to section headers', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const headers = screen.getAllByText(/storySidebar\.(savedStories|sampleStories)/);
+    const headers = screen.getAllByText(
+      /storySidebar\.(savedStories|sampleStories)/
+    );
     headers.forEach(header => {
       const headerElement = header.closest('.border-b');
       expect(headerElement).toHaveClass('border-b', 'pb-2');
@@ -312,9 +337,9 @@ describe('StoriesSection Component', () => {
   it('renders cards with correct structure', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const cards = screen.getAllByText(/Test Story|Sample Story 1/).map(text =>
-      text.closest('[class*="cursor-pointer"]')
-    );
+    const cards = screen
+      .getAllByText(/Test Story|Sample Story 1/)
+      .map(text => text.closest('[class*="cursor-pointer"]'));
 
     cards.forEach(card => {
       expect(card).toBeInTheDocument();
@@ -332,7 +357,9 @@ describe('StoriesSection Component', () => {
     expect(screen.getByText('storySidebar.savedStories')).toBeInTheDocument();
     expect(screen.getByText('storySidebar.sampleStories')).toBeInTheDocument();
     // Should not have any story cards
-    const storyCards = screen.queryAllByText(/Test Story|The Three Little Pigs/);
+    const storyCards = screen.queryAllByText(
+      /Test Story|The Three Little Pigs/
+    );
     expect(storyCards).toHaveLength(1); // Only the saved story
   });
 
@@ -347,9 +374,9 @@ describe('StoriesSection Component', () => {
   it('maintains accessibility with proper card interactions', () => {
     render(<StoriesSection {...defaultProps} />);
 
-    const cards = screen.getAllByText(/Test Story|The Three Little Pigs/).map(text =>
-      text.closest('.cursor-pointer')
-    );
+    const cards = screen
+      .getAllByText(/Test Story|The Three Little Pigs/)
+      .map(text => text.closest('.cursor-pointer'));
 
     cards.forEach(card => {
       // Cards should have cursor pointer to indicate they're clickable

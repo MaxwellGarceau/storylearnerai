@@ -67,7 +67,9 @@ describe('InfoSection Component', () => {
     render(<InfoSection {...defaultProps} />);
 
     expect(screen.getByText('storySidebar.storyOptions')).toBeInTheDocument();
-    expect(screen.getByText('storySidebar.currentSettings')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.currentSettings')
+    ).toBeInTheDocument();
   });
 
   it('displays translation information correctly', () => {
@@ -77,7 +79,9 @@ describe('InfoSection Component', () => {
     expect(mockGetLanguageName).toHaveBeenCalledWith('es');
 
     // Check for the translation text within the strong element
-    const translationText = screen.getByText((content) => content.includes('storySidebar.translation'));
+    const translationText = screen.getByText(content =>
+      content.includes('storySidebar.translation')
+    );
     expect(translationText).toBeInTheDocument();
     expect(screen.getByText('English → Spanish')).toBeInTheDocument();
     expect(screen.getByText('storySidebar.optionsEditing')).toBeInTheDocument();
@@ -86,7 +90,9 @@ describe('InfoSection Component', () => {
   it('renders translation card with correct styling', () => {
     render(<InfoSection {...defaultProps} />);
 
-    const translationText = screen.getByText((content) => content.includes('storySidebar.translation'));
+    const translationText = screen.getByText(content =>
+      content.includes('storySidebar.translation')
+    );
     const card = translationText.closest('.bg-accent\\/50');
     expect(card).toBeInTheDocument();
     expect(card).toHaveClass('bg-accent/50');
@@ -97,7 +103,9 @@ describe('InfoSection Component', () => {
 
     expect(screen.getByText('storySidebar.targetLanguage')).toBeInTheDocument();
     expect(screen.getByText('Spanish')).toBeInTheDocument();
-    expect(screen.getByText('storySidebar.currentlySupported')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.currentlySupported')
+    ).toBeInTheDocument();
   });
 
   it('displays target language badge', () => {
@@ -112,13 +120,17 @@ describe('InfoSection Component', () => {
     render(<InfoSection {...defaultProps} />);
 
     // Check for difficulty level text that may be split across elements
-    const difficultyText = screen.getByText((content) => content.includes('storySidebar.difficultyLevel'));
+    const difficultyText = screen.getByText(content =>
+      content.includes('storySidebar.difficultyLevel')
+    );
     expect(difficultyText).toBeInTheDocument();
 
     // Check for CEFR text that may be part of the label
-    const cefrText = screen.getByText((content) => content.includes('(CEFR)'));
+    const cefrText = screen.getByText(content => content.includes('(CEFR)'));
     expect(cefrText).toBeInTheDocument();
-    expect(screen.getByText('storySidebar.storyAdaptedToLevel')).toBeInTheDocument();
+    expect(
+      screen.getByText('storySidebar.storyAdaptedToLevel')
+    ).toBeInTheDocument();
   });
 
   it('displays difficulty badge with correct styling', () => {
@@ -138,11 +150,31 @@ describe('InfoSection Component', () => {
   });
 
   it('handles different difficulty levels correctly', () => {
-    const testCases: Array<{ difficulty: DifficultyLevel; expectedColor: string; expectedLabel: string }> = [
-      { difficulty: 'a1', expectedColor: 'bg-green-100 text-green-800', expectedLabel: 'A1' },
-      { difficulty: 'a2', expectedColor: 'bg-blue-100 text-blue-800', expectedLabel: 'A2' },
-      { difficulty: 'b1', expectedColor: 'bg-yellow-100 text-yellow-800', expectedLabel: 'B1' },
-      { difficulty: 'b2', expectedColor: 'bg-purple-100 text-purple-800', expectedLabel: 'B2' },
+    const testCases: Array<{
+      difficulty: DifficultyLevel;
+      expectedColor: string;
+      expectedLabel: string;
+    }> = [
+      {
+        difficulty: 'a1',
+        expectedColor: 'bg-green-100 text-green-800',
+        expectedLabel: 'A1',
+      },
+      {
+        difficulty: 'a2',
+        expectedColor: 'bg-blue-100 text-blue-800',
+        expectedLabel: 'A2',
+      },
+      {
+        difficulty: 'b1',
+        expectedColor: 'bg-yellow-100 text-yellow-800',
+        expectedLabel: 'B1',
+      },
+      {
+        difficulty: 'b2',
+        expectedColor: 'bg-purple-100 text-purple-800',
+        expectedLabel: 'B2',
+      },
     ];
 
     testCases.forEach(({ difficulty, expectedColor, expectedLabel }) => {
@@ -165,9 +197,21 @@ describe('InfoSection Component', () => {
 
   it('handles different language combinations', () => {
     const languageTestCases = [
-      { from: 'en' as LanguageCode, to: 'fr' as LanguageCode, expected: 'English → French' },
-      { from: 'de' as LanguageCode, to: 'it' as LanguageCode, expected: 'German → Italian' },
-      { from: 'ja' as LanguageCode, to: 'ko' as LanguageCode, expected: 'Japanese → Korean' },
+      {
+        from: 'en' as LanguageCode,
+        to: 'fr' as LanguageCode,
+        expected: 'English → French',
+      },
+      {
+        from: 'de' as LanguageCode,
+        to: 'it' as LanguageCode,
+        expected: 'German → Italian',
+      },
+      {
+        from: 'ja' as LanguageCode,
+        to: 'ko' as LanguageCode,
+        expected: 'Japanese → Korean',
+      },
     ];
 
     languageTestCases.forEach(({ from, to, expected }) => {
@@ -192,11 +236,15 @@ describe('InfoSection Component', () => {
     render(<InfoSection {...defaultProps} />);
 
     // Check main container
-    const mainContainer = screen.getByText('storySidebar.storyOptions').closest('.p-4');
+    const mainContainer = screen
+      .getByText('storySidebar.storyOptions')
+      .closest('.p-4');
     expect(mainContainer).toHaveClass('p-4', 'space-y-6');
 
     // Check border styling
-    const headerSection = screen.getByText('storySidebar.storyOptions').closest('.border-b');
+    const headerSection = screen
+      .getByText('storySidebar.storyOptions')
+      .closest('.border-b');
     expect(headerSection).toHaveClass('border-b', 'pb-4');
   });
 
@@ -217,7 +265,9 @@ describe('InfoSection Component', () => {
   it('renders all sections in correct order', () => {
     render(<InfoSection {...defaultProps} />);
 
-    const container = screen.getByText('storySidebar.storyOptions').closest('.p-4');
+    const container = screen
+      .getByText('storySidebar.storyOptions')
+      .closest('.p-4');
     expect(container).toBeInTheDocument();
 
     // Check that sections are rendered in the expected order

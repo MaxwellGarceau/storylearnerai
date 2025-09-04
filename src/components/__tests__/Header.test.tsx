@@ -60,7 +60,9 @@ describe('Header', () => {
     expect(screen.getAllByTestId('sign-up-link')[0]).toBeInTheDocument();
 
     // Language selector present (desktop and/or mobile)
-    expect(screen.getAllByTestId(/language-selector-/).length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId(/language-selector-/).length).toBeGreaterThan(
+      0
+    );
   });
 
   it('highlights active route in desktop navigation', () => {
@@ -101,9 +103,13 @@ describe('Header', () => {
     expect(screen.getAllByText('navigation.saved')[0]).toBeInTheDocument();
 
     // Open user menu
-    const userMenuButton = screen.getAllByRole('button').find(btn =>
-      btn.className.includes('rounded-md') && btn.textContent?.includes('test')
-    );
+    const userMenuButton = screen
+      .getAllByRole('button')
+      .find(
+        btn =>
+          btn.className.includes('rounded-md') &&
+          btn.textContent?.includes('test')
+      );
     if (!userMenuButton) throw new Error('User menu button not found');
     fireEvent.click(userMenuButton);
 
@@ -113,7 +119,9 @@ describe('Header', () => {
     expect(screen.getAllByText('navigation.dashboard')[0]).toBeInTheDocument();
 
     // Sign out via menu
-    const signOutBtn = screen.getAllByText('navigation.signOut').at(-1) as HTMLElement;
+    const signOutBtn = screen
+      .getAllByText('navigation.signOut')
+      .at(-1) as HTMLElement;
     fireEvent.click(signOutBtn);
     expect(mockSignOut).toHaveBeenCalled();
   });
@@ -137,5 +145,3 @@ describe('Header', () => {
     expect(screen.getAllByTestId('sign-up-link')[0]).toBeInTheDocument();
   });
 });
-
-

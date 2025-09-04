@@ -4,10 +4,7 @@ import Definition from '../Definition';
 import Root from '../Root';
 import type { DictionaryWord } from '../../../../types/dictionary';
 
-const wrap = (
-  ui: React.ReactNode,
-  wordInfo: DictionaryWord | null
-) => {
+const wrap = (ui: React.ReactNode, wordInfo: DictionaryWord | null) => {
   return render(
     <Root word='echo' wordInfo={wordInfo} isLoading={false} error={null}>
       {ui}
@@ -38,7 +35,7 @@ describe('DictionaryEntry.Definition', () => {
 
   it('renders up to maxDefinitions', () => {
     const { getByText, queryByText } = wrap(
-      <Definition maxDefinitions={1} />, 
+      <Definition maxDefinitions={1} />,
       info
     );
     expect(getByText('1.')).toBeInTheDocument();
@@ -47,7 +44,9 @@ describe('DictionaryEntry.Definition', () => {
 
   it('shows example when enabled', () => {
     const { getByText } = wrap(<Definition showExamples />, info);
-    expect(getByText('"The canyon produced a clear echo."')).toBeInTheDocument();
+    expect(
+      getByText('"The canyon produced a clear echo."')
+    ).toBeInTheDocument();
   });
 
   it('hides example when disabled', () => {
@@ -55,5 +54,3 @@ describe('DictionaryEntry.Definition', () => {
     expect(queryByText('"The canyon produced a clear echo."')).toBeNull();
   });
 });
-
-

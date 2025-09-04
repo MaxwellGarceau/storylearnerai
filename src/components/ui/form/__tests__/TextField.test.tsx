@@ -8,7 +8,7 @@ describe('TextField', () => {
   it('renders label and input with default type text', () => {
     const onChange = vi.fn();
     render(
-      <TextField id="name" label="form.name" value="John" onChange={onChange} />
+      <TextField id='name' label='form.name' value='John' onChange={onChange} />
     );
 
     const input = screen.getByLabelText('form.name') as HTMLInputElement;
@@ -20,7 +20,13 @@ describe('TextField', () => {
   it('passes through inputType prop', () => {
     const onChange = vi.fn();
     render(
-      <TextField id="pwd" label="form.password" value="secret" onChange={onChange} inputType="password" />
+      <TextField
+        id='pwd'
+        label='form.password'
+        value='secret'
+        onChange={onChange}
+        inputType='password'
+      />
     );
     const input = screen.getByLabelText('form.password') as HTMLInputElement;
     expect(input.type).toBe('password');
@@ -29,7 +35,7 @@ describe('TextField', () => {
   it('calls onChange with new value', () => {
     const onChange = vi.fn();
     render(
-      <TextField id="email" label="form.email" value="" onChange={onChange} />
+      <TextField id='email' label='form.email' value='' onChange={onChange} />
     );
 
     const input = screen.getByLabelText('form.email');
@@ -40,7 +46,14 @@ describe('TextField', () => {
   it('shows placeholder and error styling', () => {
     const onChange = vi.fn();
     render(
-      <TextField id="x" label="form.x" value="" onChange={onChange} placeholder="form.placeholder" error="form.error" />
+      <TextField
+        id='x'
+        label='form.x'
+        value=''
+        onChange={onChange}
+        placeholder='form.placeholder'
+        error='form.error'
+      />
     );
 
     const input = screen.getByPlaceholderText('form.placeholder');
@@ -50,7 +63,13 @@ describe('TextField', () => {
   it('applies custom className via FieldWrapper', () => {
     const onChange = vi.fn();
     render(
-      <TextField id="y" label="form.y" value="v" onChange={onChange} className="extra" />
+      <TextField
+        id='y'
+        label='form.y'
+        value='v'
+        onChange={onChange}
+        className='extra'
+      />
     );
 
     const container = screen.getByLabelText('form.y').closest('div');
@@ -58,5 +77,3 @@ describe('TextField', () => {
     expect(container).toHaveClass('extra');
   });
 });
-
-

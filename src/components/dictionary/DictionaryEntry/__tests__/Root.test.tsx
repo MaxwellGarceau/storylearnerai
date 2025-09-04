@@ -36,7 +36,12 @@ describe('DictionaryEntry.Root', () => {
 
   it('provides context values to children', () => {
     const { getByTestId } = render(
-      <Root word='check' wordInfo={sampleWordInfo} isLoading={false} error={null}>
+      <Root
+        word='check'
+        wordInfo={sampleWordInfo}
+        isLoading={false}
+        error={null}
+      >
         <Probe />
       </Root>
     );
@@ -75,5 +80,3 @@ describe('DictionaryEntry.Root', () => {
     expect(wrapper).toHaveClass('custom-class');
   });
 });
-
-

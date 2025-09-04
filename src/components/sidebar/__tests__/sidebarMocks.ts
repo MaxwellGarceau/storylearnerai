@@ -108,7 +108,8 @@ export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
     id: 1,
     code: 'a1' as DifficultyLevel,
     name: 'A1 (Beginner)' as const,
-    description: 'Basic level - Can understand and use familiar everyday expressions and very basic phrases',
+    description:
+      'Basic level - Can understand and use familiar everyday expressions and very basic phrases',
     created_at: '2024-01-01T00:00:00Z',
   },
 };
@@ -123,7 +124,8 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
     translated_language_id: 2,
     difficulty_level_id: 1,
     title: 'The Three Little Pigs',
-    notes: 'A classic tale about three pigs who build different houses and learn the value of hard work.',
+    notes:
+      'A classic tale about three pigs who build different houses and learn the value of hard work.',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     original_language: {
@@ -157,7 +159,8 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
     translated_language_id: 2,
     difficulty_level_id: 2,
     title: 'Little Red Riding Hood',
-    notes: 'The story of a little girl who visits her grandmother and encounters a cunning wolf.',
+    notes:
+      'The story of a little girl who visits her grandmother and encounters a cunning wolf.',
     created_at: '2024-01-02T00:00:00Z',
     updated_at: '2024-01-02T00:00:00Z',
     original_language: {
@@ -196,13 +199,15 @@ export const setupSidebarMocks = () => {
   });
 
   // Mock react-router-dom
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate,
-  Link: mockLink,
-  BrowserRouter: ({ children }: { children: React.ReactNode }) => React.createElement('div', null, children),
-  Routes: ({ children }: { children: React.ReactNode }) => React.createElement('div', null, children),
-  Route: ({ element }: { element: React.ReactNode }) => element,
-}));
+  vi.mock('react-router-dom', () => ({
+    useNavigate: () => mockNavigate,
+    Link: mockLink,
+    BrowserRouter: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+    Routes: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', null, children),
+    Route: ({ element }: { element: React.ReactNode }) => element,
+  }));
 
   // Mock hooks
   vi.mock('../../../hooks/useViewport', () => ({

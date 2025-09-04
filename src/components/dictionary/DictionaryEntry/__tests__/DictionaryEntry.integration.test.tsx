@@ -53,5 +53,3 @@ describe('DictionaryEntry compound components (integration)', () => {
     expect(queryByText('1.')).toBeNull();
   });
 });
-
-

@@ -45,13 +45,17 @@ describe('FormActions', () => {
     render(
       <FormActions
         onCancel={onCancel}
-        submitLabel="form.save"
-        cancelLabel="form.cancel"
+        submitLabel='form.save'
+        cancelLabel='form.cancel'
       />
     );
 
-    expect(screen.getByRole('button', { name: 'form.cancel' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'form.save' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'form.cancel' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'form.save' })
+    ).toBeInTheDocument();
   });
 
   it('disables buttons while submitting and shows Saving...', () => {
@@ -74,12 +78,18 @@ describe('FormActions', () => {
 
   it('applies layout classes to container', () => {
     const onCancel = vi.fn();
-    render(<FormActions onCancel={onCancel} className="extra" />);
+    render(<FormActions onCancel={onCancel} className='extra' />);
 
-    const container = screen.getByRole('button', { name: 'Cancel' }).closest('div');
-    expect(container).toHaveClass('flex', 'justify-end', 'space-x-2', 'pt-4', 'p-6');
+    const container = screen
+      .getByRole('button', { name: 'Cancel' })
+      .closest('div');
+    expect(container).toHaveClass(
+      'flex',
+      'justify-end',
+      'space-x-2',
+      'pt-4',
+      'p-6'
+    );
     expect(container).toHaveClass('extra');
   });
 });
-
-

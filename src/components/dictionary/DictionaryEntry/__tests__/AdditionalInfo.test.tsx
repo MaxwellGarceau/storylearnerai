@@ -4,10 +4,7 @@ import AdditionalInfo from '../AdditionalInfo';
 import Root from '../Root';
 import type { DictionaryWord } from '../../../../types/dictionary';
 
-const wrap = (
-  ui: React.ReactNode,
-  wordInfo: DictionaryWord | null
-) => {
+const wrap = (ui: React.ReactNode, wordInfo: DictionaryWord | null) => {
   return render(
     <Root word='foxtrot' wordInfo={wordInfo} isLoading={false} error={null}>
       {ui}
@@ -41,28 +38,20 @@ describe('DictionaryEntry.AdditionalInfo', () => {
   });
 
   it('hides synonyms when disabled', () => {
-    const { queryByText } = wrap(
-      <AdditionalInfo showSynonyms={false} />, 
-      info
-    );
+    const { queryByText } = wrap(<AdditionalInfo showSynonyms={false} />, info);
     expect(queryByText('Synonyms:')).toBeNull();
   });
 
   it('hides antonyms when disabled', () => {
-    const { queryByText } = wrap(
-      <AdditionalInfo showAntonyms={false} />, 
-      info
-    );
+    const { queryByText } = wrap(<AdditionalInfo showAntonyms={false} />, info);
     expect(queryByText('Antonyms:')).toBeNull();
   });
 
   it('renders nothing when both sections hidden', () => {
     const { container } = wrap(
-      <AdditionalInfo showSynonyms={false} showAntonyms={false} />, 
+      <AdditionalInfo showSynonyms={false} showAntonyms={false} />,
       info
     );
     expect(container.textContent).toBe('');
   });
 });
-
-

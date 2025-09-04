@@ -44,5 +44,3 @@ describe('DictionaryEntry.Source', () => {
     expect(container.textContent).toBe('');
   });
 });
-
-

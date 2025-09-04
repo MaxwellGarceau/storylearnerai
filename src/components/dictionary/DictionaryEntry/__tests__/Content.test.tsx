@@ -19,7 +19,12 @@ const renderWithRoot = (
   } = {}
 ) => {
   return render(
-    <Root word={word} wordInfo={wordInfo ?? null} isLoading={isLoading} error={error}>
+    <Root
+      word={word}
+      wordInfo={wordInfo ?? null}
+      isLoading={isLoading}
+      error={error}
+    >
       {ui}
     </Root>
   );
@@ -76,5 +81,3 @@ describe('DictionaryEntry.Content', () => {
     expect(getByText('Hover to see dictionary info')).toBeInTheDocument();
   });
 });
-
-

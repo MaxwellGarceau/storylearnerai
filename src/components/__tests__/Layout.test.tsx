@@ -23,12 +23,15 @@ describe('Layout', () => {
     expect(screen.getByText('Child content')).toBeInTheDocument();
 
     const root = container.firstChild as HTMLElement;
-    expect(root).toHaveClass('min-h-screen', 'flex', 'flex-col', 'bg-background');
+    expect(root).toHaveClass(
+      'min-h-screen',
+      'flex',
+      'flex-col',
+      'bg-background'
+    );
 
     const main = container.querySelector('main') as HTMLElement;
     expect(main).toBeInTheDocument();
     expect(main).toHaveClass('flex-1');
   });
 });
-
-

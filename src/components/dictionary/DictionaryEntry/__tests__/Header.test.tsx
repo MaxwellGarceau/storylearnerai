@@ -55,5 +55,3 @@ describe('DictionaryEntry.Header', () => {
     expect(queryByText('common')).toBeNull();
   });
 });
-
-

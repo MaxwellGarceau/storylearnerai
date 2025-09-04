@@ -30,8 +30,8 @@ describe('DictionaryEntry Context', () => {
     // Expect the render to throw
     expect(() => {
       render(<TestComponent />);
-    }).toThrow('DictionaryEntry components must be used within DictionaryEntry.Root');
+    }).toThrow(
+      'DictionaryEntry components must be used within DictionaryEntry.Root'
+    );
   });
 });
-
-

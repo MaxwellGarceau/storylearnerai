@@ -131,5 +131,3 @@ describe('WordToken', () => {
     expect(onTranslate).toHaveBeenCalledTimes(1);
   });
 });
-
-

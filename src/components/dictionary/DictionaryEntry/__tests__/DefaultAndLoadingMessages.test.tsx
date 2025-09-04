@@ -56,5 +56,3 @@ describe('DictionaryEntry.LoadingMessage', () => {
     expect(queryByText('Loading dictionary info...')).toBeNull();
   });
 });
-
-

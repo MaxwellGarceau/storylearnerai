@@ -213,6 +213,35 @@ describe('TextArea Component', () => {
     );
   });
 
+  it('shows character count and near/at limit styles', () => {
+    const { container, rerender } = render(
+      <TextArea
+        {...defaultProps}
+        value={'123456789'}
+        maxLength={10}
+        showCharacterCount
+      />
+    );
+
+    // Near limit (> 80% of 10 is > 8, so 9)
+    let counter = container.querySelector('p.text-xs');
+    expect(counter).toHaveTextContent('9/10');
+    expect(counter).toHaveClass('text-yellow-500');
+
+    // At limit
+    rerender(
+      <TextArea
+        {...defaultProps}
+        value={'1234567890'}
+        maxLength={10}
+        showCharacterCount
+      />
+    );
+    counter = container.querySelector('p.text-xs');
+    expect(counter).toHaveTextContent('10/10');
+    expect(counter).toHaveClass('text-red-500');
+  });
+
   it('handles empty value correctly', () => {
     const { container } = render(<TextArea {...defaultProps} value='' />);
 

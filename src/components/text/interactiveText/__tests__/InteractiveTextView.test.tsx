@@ -39,11 +39,19 @@ vi.mock('../WordToken', () => ({
       </button>
       <span data-testid={`punctuation-${normalizedWord}`}>{punctuation}</span>
       <span data-testid={`saved-${normalizedWord}`}>{String(isSaved)}</span>
-      <span data-testid={`translating-${normalizedWord}`}>{String(isTranslating)}</span>
-      <span data-testid={`overlay-${normalizedWord}`}>{translatedWord ?? ''}</span>
+      <span data-testid={`translating-${normalizedWord}`}>
+        {String(isTranslating)}
+      </span>
+      <span data-testid={`overlay-${normalizedWord}`}>
+        {translatedWord ?? ''}
+      </span>
       <span data-testid={`orig-${normalizedWord}`}>{originalSentence}</span>
-      <span data-testid={`trans-${normalizedWord}`}>{translatedSentence ?? ''}</span>
-      <span data-testid={`tooltips-${normalizedWord}`}>{String(enableTooltips)}</span>
+      <span data-testid={`trans-${normalizedWord}`}>
+        {translatedSentence ?? ''}
+      </span>
+      <span data-testid={`tooltips-${normalizedWord}`}>
+        {String(enableTooltips)}
+      </span>
       <button
         data-testid={`open-${normalizedWord}`}
         onClick={() => onOpenChange?.(!isOpen)}
@@ -151,7 +159,11 @@ describe('InteractiveTextView', () => {
   it('delegates translate click to onTranslate with normalized word and segment', () => {
     const onTranslate = vi.fn();
     render(
-      <InteractiveTextView {...baseProps} onTranslate={onTranslate} tokens={tokens} />
+      <InteractiveTextView
+        {...baseProps}
+        onTranslate={onTranslate}
+        tokens={tokens}
+      />
     );
 
     fireEvent.click(screen.getByTestId('translate-hello'));
@@ -165,5 +177,3 @@ describe('InteractiveTextView', () => {
     expect(container.querySelector('span')).toBeInTheDocument();
   });
 });
-
-

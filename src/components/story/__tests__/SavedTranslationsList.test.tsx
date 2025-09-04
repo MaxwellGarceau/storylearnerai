@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  within,
+  waitFor,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import SavedTranslationsList from '../SavedTranslationsList';
@@ -12,13 +18,15 @@ vi.mock('react-i18next', () => ({
       const map: Record<string, string> = {
         'story.loadingTranslation': 'Loading translation...',
         'savedTranslations.filters.title': 'Filters',
-        'savedTranslations.filters.description': 'Filter your saved translations',
+        'savedTranslations.filters.description':
+          'Filter your saved translations',
         'savedTranslations.filters.targetLanguage': 'Target Language',
         'savedTranslations.filters.allLanguages': 'All languages',
         'savedTranslations.filters.difficultyLevel': 'Difficulty Level',
         'savedTranslations.filters.allLevels': 'All levels',
         'savedTranslations.filters.search': 'Search',
-        'savedTranslations.filters.searchPlaceholder': 'Search by title or notes...',
+        'savedTranslations.filters.searchPlaceholder':
+          'Search by title or notes...',
         'savedTranslations.filters.applyFilters': 'Apply Filters',
         'savedTranslations.results.count': `${params?.count ?? 0} results`,
         'savedTranslations.results.untitled': 'Untitled',
@@ -28,8 +36,10 @@ vi.mock('react-i18next', () => ({
         'savedTranslations.content.originalStory': 'Original Story',
         'savedTranslations.content.translatedStory': 'Translated Story',
         'savedTranslations.emptyState.title': 'No saved translations yet',
-        'savedTranslations.emptyState.description': 'Your saved translations will appear here.',
-        'savedTranslations.deleteConfirm': 'Are you sure you want to delete this translation?',
+        'savedTranslations.emptyState.description':
+          'Your saved translations will appear here.',
+        'savedTranslations.deleteConfirm':
+          'Are you sure you want to delete this translation?',
         'difficultyLevels.a1.description': 'Beginner level',
         'difficultyLevels.a2.description': 'Elementary level',
         'difficultyLevels.b1.description': 'Intermediate level',
@@ -61,7 +71,9 @@ vi.mock('../../../lib/logger', () => ({
 }));
 
 // Utilities
-const makeSaved = (overrides: Partial<DatabaseSavedTranslationWithDetails> = {}): DatabaseSavedTranslationWithDetails => ({
+const makeSaved = (
+  overrides: Partial<DatabaseSavedTranslationWithDetails> = {}
+): DatabaseSavedTranslationWithDetails => ({
   id: overrides.id ?? 1,
   user_id: 'user-1',
   original_story: overrides.original_story ?? 'Hola mundo',
@@ -105,8 +117,20 @@ const useSavedTranslationsMock = {
 
 const useLanguagesMock = {
   languages: [
-    { id: 1, code: 'es', name: 'Spanish', native_name: 'Español', created_at: '2023-01-01T00:00:00.000Z' },
-    { id: 2, code: 'en', name: 'English', native_name: 'English', created_at: '2023-01-01T00:00:00.000Z' },
+    {
+      id: 1,
+      code: 'es',
+      name: 'Spanish',
+      native_name: 'Español',
+      created_at: '2023-01-01T00:00:00.000Z',
+    },
+    {
+      id: 2,
+      code: 'en',
+      name: 'English',
+      native_name: 'English',
+      created_at: '2023-01-01T00:00:00.000Z',
+    },
   ],
   loading: false,
 };
@@ -231,7 +255,9 @@ describe('SavedTranslationsList', () => {
     fireEvent.change(selects[1], { target: { value: 'a1' } });
 
     // Enter search term
-    const searchInput = screen.getByPlaceholderText('Search by title or notes...');
+    const searchInput = screen.getByPlaceholderText(
+      'Search by title or notes...'
+    );
     fireEvent.change(searchInput, { target: { value: 'sample' } });
 
     // Apply
@@ -255,5 +281,3 @@ describe('SavedTranslationsList', () => {
     confirmSpy.mockRestore();
   });
 });
-
-

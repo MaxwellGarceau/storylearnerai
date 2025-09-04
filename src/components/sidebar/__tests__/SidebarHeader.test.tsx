@@ -2,11 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import SidebarHeader from '../SidebarHeader';
-import {
-  setupSidebarMocks,
-  resetSidebarMocks,
-  mockT,
-} from './sidebarMocks';
+import { setupSidebarMocks, resetSidebarMocks, mockT } from './sidebarMocks';
 
 type ActiveSection = 'stories' | 'vocabulary' | 'info';
 
@@ -38,41 +34,63 @@ describe('SidebarHeader Component', () => {
     render(<SidebarHeader {...defaultProps} />);
 
     expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'storySidebar.closeLibrary' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.closeLibrary' })
+    ).toBeInTheDocument();
   });
 
   it('displays BookOpen icon in header', () => {
     render(<SidebarHeader {...defaultProps} />);
 
     // The icon should be present (we can check for its container or aria-label)
-    const headerSection = screen.getByText('storySidebar.storyLibrary').closest('.flex');
+    const headerSection = screen
+      .getByText('storySidebar.storyLibrary')
+      .closest('.flex');
     expect(headerSection).toBeInTheDocument();
   });
 
   it('renders all three section buttons', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    expect(screen.getByRole('button', { name: 'storySidebar.stories' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'storySidebar.vocabulary' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'storySidebar.info' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.stories' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.vocabulary' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'storySidebar.info' })
+    ).toBeInTheDocument();
   });
 
   it('applies default variant to active section button', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const storiesButton = screen.getByRole('button', { name: 'storySidebar.stories' });
+    const storiesButton = screen.getByRole('button', {
+      name: 'storySidebar.stories',
+    });
     expect(storiesButton).toHaveClass('bg-primary', 'text-primary-foreground');
   });
 
   it('applies ghost variant to inactive section buttons', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const vocabularyButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const vocabularyButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
 
     // Ghost variant should have hover effects but not be transparent background
-    expect(vocabularyButton).toHaveClass('hover:bg-accent', 'hover:text-accent-foreground');
-    expect(infoButton).toHaveClass('hover:bg-accent', 'hover:text-accent-foreground');
+    expect(vocabularyButton).toHaveClass(
+      'hover:bg-accent',
+      'hover:text-accent-foreground'
+    );
+    expect(infoButton).toHaveClass(
+      'hover:bg-accent',
+      'hover:text-accent-foreground'
+    );
 
     // Should not have the default variant classes
     expect(vocabularyButton).not.toHaveClass('bg-primary');
@@ -80,9 +98,11 @@ describe('SidebarHeader Component', () => {
   });
 
   it('calls setActiveSection when stories button is clicked', () => {
-    render(<SidebarHeader {...defaultProps} activeSection="vocabulary" />);
+    render(<SidebarHeader {...defaultProps} activeSection='vocabulary' />);
 
-    const storiesButton = screen.getByRole('button', { name: 'storySidebar.stories' });
+    const storiesButton = screen.getByRole('button', {
+      name: 'storySidebar.stories',
+    });
     fireEvent.click(storiesButton);
 
     expect(mockSetActiveSection).toHaveBeenCalledWith('stories');
@@ -92,7 +112,9 @@ describe('SidebarHeader Component', () => {
   it('calls setActiveSection when vocabulary button is clicked', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const vocabularyButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
+    const vocabularyButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
     fireEvent.click(vocabularyButton);
 
     expect(mockSetActiveSection).toHaveBeenCalledWith('vocabulary');
@@ -102,7 +124,9 @@ describe('SidebarHeader Component', () => {
   it('calls setActiveSection when info button is clicked', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
     fireEvent.click(infoButton);
 
     expect(mockSetActiveSection).toHaveBeenCalledWith('info');
@@ -112,7 +136,9 @@ describe('SidebarHeader Component', () => {
   it('calls onClose when close button is clicked', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const closeButton = screen.getByRole('button', { name: 'storySidebar.closeLibrary' });
+    const closeButton = screen.getByRole('button', {
+      name: 'storySidebar.closeLibrary',
+    });
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -122,9 +148,15 @@ describe('SidebarHeader Component', () => {
     render(<SidebarHeader {...defaultProps} />);
 
     // Check that buttons contain their respective icons
-    const storiesButton = screen.getByRole('button', { name: 'storySidebar.stories' });
-    const vocabularyButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const storiesButton = screen.getByRole('button', {
+      name: 'storySidebar.stories',
+    });
+    const vocabularyButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
 
     // The icons should be present as children of the buttons
     expect(storiesButton.querySelector('svg')).toBeInTheDocument();
@@ -135,30 +167,46 @@ describe('SidebarHeader Component', () => {
   it('applies correct styling classes to header container', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const headerContainer = screen.getByText('storySidebar.storyLibrary').closest('.p-4');
+    const headerContainer = screen
+      .getByText('storySidebar.storyLibrary')
+      .closest('.p-4');
     expect(headerContainer).toHaveClass('p-4', 'border-b', 'bg-muted/50');
   });
 
   it('applies flexbox layout to header content', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const headerContent = screen.getByText('storySidebar.storyLibrary').closest('.justify-between');
-    expect(headerContent).toHaveClass('flex', 'items-center', 'justify-between');
+    const headerContent = screen
+      .getByText('storySidebar.storyLibrary')
+      .closest('.justify-between');
+    expect(headerContent).toHaveClass(
+      'flex',
+      'items-center',
+      'justify-between'
+    );
   });
 
   it('applies correct button group styling', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const buttonGroup = screen.getByRole('button', { name: 'storySidebar.stories' }).closest('.flex');
+    const buttonGroup = screen
+      .getByRole('button', { name: 'storySidebar.stories' })
+      .closest('.flex');
     expect(buttonGroup).toHaveClass('flex', 'gap-1', 'mt-3', 'flex-wrap');
   });
 
   it('applies flex-1 class to all section buttons', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const storiesButton = screen.getByRole('button', { name: 'storySidebar.stories' });
-    const vocabularyButton = screen.getByRole('button', { name: 'storySidebar.vocabulary' });
-    const infoButton = screen.getByRole('button', { name: 'storySidebar.info' });
+    const storiesButton = screen.getByRole('button', {
+      name: 'storySidebar.stories',
+    });
+    const vocabularyButton = screen.getByRole('button', {
+      name: 'storySidebar.vocabulary',
+    });
+    const infoButton = screen.getByRole('button', {
+      name: 'storySidebar.info',
+    });
 
     expect(storiesButton).toHaveClass('flex-1');
     expect(vocabularyButton).toHaveClass('flex-1');
@@ -168,14 +216,28 @@ describe('SidebarHeader Component', () => {
   it('handles close button accessibility attributes', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const closeButton = screen.getByRole('button', { name: 'storySidebar.closeLibrary' });
-    expect(closeButton).toHaveAttribute('aria-label', 'storySidebar.closeLibrary');
+    const closeButton = screen.getByRole('button', {
+      name: 'storySidebar.closeLibrary',
+    });
+    expect(closeButton).toHaveAttribute(
+      'aria-label',
+      'storySidebar.closeLibrary'
+    );
   });
 
   it('handles different active sections correctly', () => {
-    const testCases: Array<{ activeSection: ActiveSection; expectedActiveButton: string }> = [
-      { activeSection: 'stories', expectedActiveButton: 'storySidebar.stories' },
-      { activeSection: 'vocabulary', expectedActiveButton: 'storySidebar.vocabulary' },
+    const testCases: Array<{
+      activeSection: ActiveSection;
+      expectedActiveButton: string;
+    }> = [
+      {
+        activeSection: 'stories',
+        expectedActiveButton: 'storySidebar.stories',
+      },
+      {
+        activeSection: 'vocabulary',
+        expectedActiveButton: 'storySidebar.vocabulary',
+      },
       { activeSection: 'info', expectedActiveButton: 'storySidebar.info' },
     ];
 
@@ -184,7 +246,9 @@ describe('SidebarHeader Component', () => {
         <SidebarHeader {...defaultProps} activeSection={activeSection} />
       );
 
-      const activeButton = screen.getByRole('button', { name: expectedActiveButton });
+      const activeButton = screen.getByRole('button', {
+        name: expectedActiveButton,
+      });
       expect(activeButton).toHaveClass('bg-primary');
 
       // Clean up for next test
@@ -225,7 +289,9 @@ describe('SidebarHeader Component', () => {
   it('maintains button order and layout', () => {
     render(<SidebarHeader {...defaultProps} />);
 
-    const buttonContainer = screen.getByRole('button', { name: 'storySidebar.stories' }).closest('.flex');
+    const buttonContainer = screen
+      .getByRole('button', { name: 'storySidebar.stories' })
+      .closest('.flex');
     const buttons = buttonContainer?.querySelectorAll('button');
 
     expect(buttons).toHaveLength(3);

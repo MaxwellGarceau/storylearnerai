@@ -7,8 +7,8 @@ import { FieldWrapper } from '../FieldWrapper';
 describe('FieldWrapper', () => {
   it('renders label, children, and no error by default', () => {
     render(
-      <FieldWrapper id="username" label="form.username">
-        <input id="username" />
+      <FieldWrapper id='username' label='form.username'>
+        <input id='username' />
       </FieldWrapper>
     );
 
@@ -20,8 +20,8 @@ describe('FieldWrapper', () => {
 
   it('shows required indicator when required is true', () => {
     render(
-      <FieldWrapper id="email" label="form.email" required>
-        <input id="email" />
+      <FieldWrapper id='email' label='form.email' required>
+        <input id='email' />
       </FieldWrapper>
     );
 
@@ -40,8 +40,8 @@ describe('FieldWrapper', () => {
 
   it('renders error message and styling when error provided', () => {
     render(
-      <FieldWrapper id="pwd" label="form.password" error="form.error.required">
-        <input id="pwd" />
+      <FieldWrapper id='pwd' label='form.password' error='form.error.required'>
+        <input id='pwd' />
       </FieldWrapper>
     );
 
@@ -52,8 +52,8 @@ describe('FieldWrapper', () => {
 
   it('applies custom className to container', () => {
     render(
-      <FieldWrapper id="x" label="form.x" className="my-extra">
-        <input id="x" />
+      <FieldWrapper id='x' label='form.x' className='my-extra'>
+        <input id='x' />
       </FieldWrapper>
     );
 
@@ -62,5 +62,3 @@ describe('FieldWrapper', () => {
     expect(container).toHaveClass('my-extra');
   });
 });
-
-

@@ -9,9 +9,11 @@ vi.mock('../Header', () => ({
   default: () => <div data-testid='mock-header' />,
 }));
 
-const mockPageContainer = vi.fn(({ children }: { children: React.ReactNode }) => (
-  <div data-testid='mock-page-container'>{children}</div>
-));
+const mockPageContainer = vi.fn(
+  ({ children }: { children: React.ReactNode }) => (
+    <div data-testid='mock-page-container'>{children}</div>
+  )
+);
 
 vi.mock('../PageContainer', () => ({
   __esModule: true,
@@ -62,12 +64,15 @@ describe('PageLayout', () => {
     );
 
     const root = container.firstChild as HTMLElement;
-    expect(root).toHaveClass('min-h-screen', 'flex', 'flex-col', 'bg-background');
+    expect(root).toHaveClass(
+      'min-h-screen',
+      'flex',
+      'flex-col',
+      'bg-background'
+    );
 
     const main = container.querySelector('main') as HTMLElement;
     expect(main).toBeInTheDocument();
     expect(main).toHaveClass('flex-1');
   });
 });
-
-
