@@ -87,7 +87,9 @@ The service provides comprehensive error handling:
 
 ```typescript
 try {
-  const response = await llmServiceManager.generateCompletion({ prompt: 'Generate content' });
+  const response = await llmServiceManager.generateCompletion({
+    prompt: 'Generate content',
+  });
 } catch (error) {
   const err = error as { code?: string; message?: string };
   if (err.code === 'GEMINI_ERROR') {

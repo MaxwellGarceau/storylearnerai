@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+import type { User } from '@supabase/supabase-js';
 import SavedTranslationsPage from '../SavedTranslationsPage';
 
 // Indicate authorship of these tests
@@ -137,12 +138,19 @@ describe('SavedTranslationsPage', () => {
   });
 
   it('renders title and subtitle when user is authenticated', () => {
+    const mockUser = {
+      id: 'user-1',
+      email: 'user@example.com',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+      aud: 'authenticated',
+      role: 'authenticated',
+      app_metadata: {},
+      user_metadata: {},
+    };
+
     mockedUseAuth.mockReturnValue({
-      user: {
-        id: 'user-1',
-        email: 'user@example.com',
-        created_at: '2024-01-01',
-      } as unknown as any,
+      user: mockUser as User,
       loading: false,
       error: null,
       signIn: vi.fn(),

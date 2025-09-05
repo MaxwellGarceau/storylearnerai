@@ -9,5 +9,3 @@ This application uses Supabase for user authentication.
 - Protected pages are gated with `ProtectedRoute`
 
 For Supabase setup details, see `supabase-setup.md`.
-
-

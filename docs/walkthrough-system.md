@@ -67,7 +67,9 @@ import { useWalkthrough } from '@/hooks/useWalkthrough';
 
 function AppContent() {
   useWalkthrough();
-  const showDebug = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=walkthrough');
+  const showDebug =
+    process.env.NODE_ENV === 'development' &&
+    window.location.search.includes('debug=walkthrough');
   return (
     <>
       {/* Routes here */}

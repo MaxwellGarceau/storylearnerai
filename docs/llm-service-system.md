@@ -87,9 +87,7 @@ export interface NewProviderConfig extends LLMConfig {
 }
 
 // Update union type
-export type ProviderConfig =
-  | GeminiConfig
-  | NewProviderConfig;
+export type ProviderConfig = GeminiConfig | NewProviderConfig;
 ```
 
 ### Step 2: Create Provider Service

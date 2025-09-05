@@ -251,7 +251,11 @@ interface UseDictionaryReturn {
   wordInfo: DictionaryWord | null;
   isLoading: boolean;
   error: DictionaryError | null;
-  searchWord: (word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode) => Promise<void>;
+  searchWord: (
+    word: string,
+    fromLanguage?: LanguageCode,
+    targetLanguage?: LanguageCode
+  ) => Promise<void>;
   clearError: () => void;
 }
 ```
@@ -260,9 +264,17 @@ interface UseDictionaryReturn {
 
 ```typescript
 interface DictionaryService {
-  getWordInfo(word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode): Promise<DictionaryWord>;
+  getWordInfo(
+    word: string,
+    fromLanguage?: LanguageCode,
+    targetLanguage?: LanguageCode
+  ): Promise<DictionaryWord>;
   searchWord(params: DictionarySearchParams): Promise<DictionaryWord>;
-  getCachedWord(word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode): DictionaryWord | null;
+  getCachedWord(
+    word: string,
+    fromLanguage?: LanguageCode,
+    targetLanguage?: LanguageCode
+  ): DictionaryWord | null;
   clearCache(): void;
 }
 ```
