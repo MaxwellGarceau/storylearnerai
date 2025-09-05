@@ -75,8 +75,11 @@ describe('useAuth', () => {
     });
 
     it.skip('updates state when onAuthStateChange emits new state', async () => {
-      let capturedCallback: (state: { user: any; loading: boolean; error: string | null }) => void =
-        () => {};
+      let capturedCallback: (state: {
+        user: any;
+        loading: boolean;
+        error: string | null;
+      }) => void = () => {};
       vi.mocked(authService.getInitialSession).mockResolvedValue({
         user: null,
         loading: false,
