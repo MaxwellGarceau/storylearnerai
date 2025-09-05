@@ -30,12 +30,10 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' };
       const mockSession = { user: mockUser };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: mockSession },
         error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.getSession>>);
 
       const result = await authService.getInitialSession();
 
@@ -47,12 +45,10 @@ describe('AuthService', () => {
     });
 
     it('should return null user when no session exists', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: null },
         error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.getSession>>);
 
       const result = await authService.getInitialSession();
 
@@ -70,12 +66,10 @@ describe('AuthService', () => {
         status: 401,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.getSession).mockResolvedValue({
         data: { session: null },
         error: mockError,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.getSession>>);
 
       const result = await authService.getInitialSession();
 
@@ -107,12 +101,10 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' };
       const mockSession = { user: mockUser };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
         error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>);
 
       const result = await authService.signIn('test@example.com', 'password');
 
@@ -134,12 +126,10 @@ describe('AuthService', () => {
         status: 400,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: null, session: null },
         error: mockError,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>);
 
       const result = await authService.signIn(
         'test@example.com',
@@ -160,12 +150,10 @@ describe('AuthService', () => {
       const mockUser = { id: '123', email: 'test@example.com' };
       const mockSession = { user: mockUser };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signUp).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
         error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
 
       const result = await authService.signUp('test@example.com', 'password');
 
@@ -187,12 +175,10 @@ describe('AuthService', () => {
         status: 400,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signUp).mockResolvedValue({
         data: { user: null, session: null },
         error: mockError,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signUp>>);
 
       const result = await authService.signUp(
         'existing@example.com',
@@ -210,11 +196,9 @@ describe('AuthService', () => {
 
   describe('signOut', () => {
     it('should return null user on successful sign out', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signOut).mockResolvedValue({
         error: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signOut>>);
 
       const result = await authService.signOut();
 
@@ -232,11 +216,9 @@ describe('AuthService', () => {
         status: 500,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.signOut).mockResolvedValue({
         error: mockError,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.signOut>>);
 
       const result = await authService.signOut();
 
@@ -253,7 +235,7 @@ describe('AuthService', () => {
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
         data: {},
         error: null,
-      });
+      } as Awaited<ReturnType<typeof supabase.auth.resetPasswordForEmail>>);
 
       const result = await authService.resetPassword('test@example.com');
 
@@ -274,12 +256,10 @@ describe('AuthService', () => {
         status: 404,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValue({
         data: null,
         error: mockError,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Awaited<ReturnType<typeof supabase.auth.resetPasswordForEmail>>);
 
       const result = await authService.resetPassword('nonexistent@example.com');
 
@@ -298,11 +278,9 @@ describe('AuthService', () => {
       const mockUnsubscribe = vi.fn();
       const mockSubscription = { unsubscribe: mockUnsubscribe };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       vi.mocked(supabase.auth.onAuthStateChange).mockReturnValue({
         data: { subscription: mockSubscription },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as ReturnType<typeof supabase.auth.onAuthStateChange>);
 
       const unsubscribe = authService.onAuthStateChange(mockCallback);
 
@@ -327,11 +305,9 @@ describe('AuthService', () => {
             event: string,
             session: unknown
           ) => void;
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return {
             data: { subscription: mockSubscription },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any;
+          } as ReturnType<typeof supabase.auth.onAuthStateChange>;
         }
       );
 

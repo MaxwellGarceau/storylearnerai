@@ -22,11 +22,11 @@ vi.mock('react-i18next', async () => {
 
 vi.mock('../../api/supabase/database/difficultyLevelService', () => ({
   DifficultyLevelService: class {
-    async getDifficultyLevels() {
-      return [
+    getDifficultyLevels() {
+      return Promise.resolve([
         { id: 1, code: 'a1', name: 'Beginner', created_at: 'now' },
         { id: 2, code: 'a2', name: 'Elementary', created_at: 'now' },
-      ];
+      ]);
     }
   },
 }));

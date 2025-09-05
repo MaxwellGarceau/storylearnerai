@@ -31,7 +31,7 @@ describe('DifficultyLevelService', () => {
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: mockRows, error: null })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const result = await service.getDifficultyLevels()
       expect(mockSupabase.from).toHaveBeenCalledWith('difficulty_levels')
@@ -47,7 +47,7 @@ describe('DifficultyLevelService', () => {
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: null, error: { message: 'oops' } })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       await expect(service.getDifficultyLevels()).rejects.toThrow('Failed to fetch difficulty levels: oops')
     })
@@ -63,7 +63,7 @@ describe('DifficultyLevelService', () => {
             single: vi.fn().mockResolvedValue({ data: row, error: null })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const result = await service.getDifficultyLevelByCode('a1')
       expect(result).toEqual(row)
@@ -77,9 +77,9 @@ describe('DifficultyLevelService', () => {
             single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
-      const result = await service.getDifficultyLevelByCode('zz' as any)
+      const result = await service.getDifficultyLevelByCode('zz')
       expect(result).toBeNull()
     })
 
@@ -91,7 +91,7 @@ describe('DifficultyLevelService', () => {
             single: vi.fn().mockResolvedValue({ data: null, error: { message: 'nope' } })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       await expect(service.getDifficultyLevelByCode('a1')).rejects.toThrow('Failed to fetch difficulty level: nope')
     })
@@ -103,14 +103,14 @@ describe('DifficultyLevelService', () => {
         id: 1, code: 'b2', name: 'B2 (Upper Intermediate)', description: 'd', created_at: 't'
       })
 
-      const name = await service.getDifficultyLevelName('b2' as any)
+      const name = await service.getDifficultyLevelName('b2')
       expect(spy).toHaveBeenCalledWith('b2')
       expect(name).toBe('B2 (Upper Intermediate)')
     })
 
     it('falls back to code on error', async () => {
       vi.spyOn(service, 'getDifficultyLevelByCode').mockRejectedValue(new Error('down'))
-      const name = await service.getDifficultyLevelName('a1' as any)
+      const name = await service.getDifficultyLevelName('a1')
       expect(name).toBe('a1')
     })
   })

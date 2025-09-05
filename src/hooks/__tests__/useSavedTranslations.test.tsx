@@ -12,8 +12,8 @@ vi.mock('../useToast', () => ({
 
 vi.mock('../../api/supabase/database/savedTranslationService', () => ({
   SavedTranslationService: class {
-    async getSavedTranslations(_userId: string) {
-      return [
+    getSavedTranslations(_userId: string) {
+      return Promise.resolve([
         {
           id: 1,
           user_id: 'u1',
@@ -37,10 +37,10 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           },
           difficulty_level: { id: 1, code: 'a1', name: 'Beginner' },
         },
-      ];
+      ]);
     }
-    async createSavedTranslation() {
-      return {
+    createSavedTranslation() {
+      return Promise.resolve({
         id: 2,
         user_id: 'u1',
         created_at: 'now',
@@ -62,7 +62,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           native_name: 'Español',
         },
         difficulty_level: { id: 1, code: 'a1', name: 'Beginner' },
-      };
+      });
     }
   },
 }));
@@ -86,7 +86,7 @@ describe.skip('useSavedTranslations', () => {
         from_language_id: 1,
         translated_language_id: 2,
         difficulty_level_id: 1,
-      } as any);
+      });
       expect(created).not.toBeNull();
     });
   });

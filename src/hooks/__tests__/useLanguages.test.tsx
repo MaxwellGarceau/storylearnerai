@@ -4,8 +4,8 @@ import { useLanguages } from '../useLanguages';
 
 vi.mock('../../api/supabase/database/languageService', () => ({
   LanguageService: class {
-    async getLanguages() {
-      return [
+    getLanguages() {
+      return Promise.resolve([
         {
           id: 1,
           code: 'en',
@@ -20,7 +20,7 @@ vi.mock('../../api/supabase/database/languageService', () => ({
           native_name: 'Español',
           created_at: 'now',
         },
-      ];
+      ]);
     }
   },
 }));

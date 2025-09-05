@@ -31,7 +31,7 @@ describe('LanguageService', () => {
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: mockRows, error: null })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const result = await service.getLanguages()
 
@@ -48,7 +48,7 @@ describe('LanguageService', () => {
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({ data: null, error: { message: 'boom' } })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       await expect(service.getLanguages()).rejects.toThrow('Failed to fetch languages: boom')
     })
@@ -64,7 +64,7 @@ describe('LanguageService', () => {
             single: vi.fn().mockResolvedValue({ data: row, error: null })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const result = await service.getLanguageByCode('en')
       expect(result).toEqual(row)
@@ -78,9 +78,9 @@ describe('LanguageService', () => {
             single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
-      const result = await service.getLanguageByCode('xx' as any)
+      const result = await service.getLanguageByCode('xx')
       expect(result).toBeNull()
     })
 
@@ -92,7 +92,7 @@ describe('LanguageService', () => {
             single: vi.fn().mockResolvedValue({ data: null, error: { message: 'fail' } })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       await expect(service.getLanguageByCode('en')).rejects.toThrow('Failed to fetch language: fail')
     })

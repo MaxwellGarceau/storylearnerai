@@ -137,5 +137,3 @@ describe('FrontEndLogger', () => {
     expect(String(errMsg)).toContain('API Response: POST /users - 500');
   });
 });
-
-

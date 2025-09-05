@@ -76,7 +76,7 @@ describe('UserService', () => {
         mockSupabase.from.mockReturnValue({
           select: mockSelectNotFound,
           insert: mockInsert
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const userData: CreateUserData = {
           id: 'user123',
@@ -175,7 +175,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const userData: CreateUserData = {
           id: 'user123',
@@ -222,7 +222,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const updateData: UpdateUserData = {
           username: 'updateduser',
@@ -283,7 +283,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const updateData: UpdateUserData = {
           avatar_url: null
@@ -331,7 +331,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const result = await UserService.isUsernameAvailable('availableuser')
         expect(result).toBe(true)
@@ -348,7 +348,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const result = await UserService.isUsernameAvailable('takenuser')
         expect(result).toBe(false)
@@ -381,7 +381,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const result = await UserService.getUserByUsername('testuser')
         expect(result).toEqual(mockUser)
@@ -402,7 +402,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const userData: CreateUserData = {
           id: 'user123',
@@ -423,7 +423,7 @@ describe('UserService', () => {
               })
             })
           })
-        } as unknown as any)
+        } as ReturnType<typeof supabase.from>)
 
         const updateData: UpdateUserData = {
           username: 'takenuser'
@@ -454,7 +454,7 @@ describe('UserService', () => {
             })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const userData: CreateUserData = {
         id: 'user123',
@@ -475,7 +475,7 @@ describe('UserService', () => {
             })
           })
         })
-      } as unknown as any)
+      } as ReturnType<typeof supabase.from>)
 
       const result = await UserService.getUser('nonexistent')
       expect(result).toBeNull()

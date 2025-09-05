@@ -5,9 +5,10 @@ import { useTranslationCache } from '../useTranslationCache';
 vi.mock('../../useWordTranslation', () => ({
   useWordTranslation: () => ({
     translateWordInSentence: vi.fn(
-      async ({}, _s, _t, _f) => 'hola' as unknown as string
-    ) as any,
-    translateSentence: vi.fn(async (_s: string) => 'hola mundo'),
+      (_word: string, _sentence: string, _from: string, _to: string) =>
+        Promise.resolve('hola')
+    ),
+    translateSentence: vi.fn((_s: string) => Promise.resolve('hola mundo')),
   }),
 }));
 

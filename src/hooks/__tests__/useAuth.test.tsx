@@ -24,7 +24,7 @@ const mockUser = {
   user_metadata: {},
   aud: 'authenticated',
   created_at: '2023-01-01T00:00:00Z',
-} as unknown as any;
+};
 
 describe('useAuth', () => {
   beforeEach(() => {
@@ -76,7 +76,7 @@ describe('useAuth', () => {
 
     it.skip('updates state when onAuthStateChange emits new state', async () => {
       let capturedCallback: (state: {
-        user: any;
+        user: typeof mockUser | null;
         loading: boolean;
         error: string | null;
       }) => void = () => {};
@@ -92,7 +92,7 @@ describe('useAuth', () => {
 
       const { result } = renderHook(() => useAuth());
 
-      await act(async () => {
+      act(() => {
         capturedCallback({ user: mockUser, loading: false, error: null });
       });
 

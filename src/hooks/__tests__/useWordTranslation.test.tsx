@@ -6,8 +6,10 @@ vi.mock('../useToast', () => ({ useToast: () => ({ toast: vi.fn() }) }));
 
 vi.mock('../../lib/translationService', () => ({
   translationService: {
-    translate: vi.fn(async () => ({ translatedText: 'hola' })),
-    translateWordWithContext: vi.fn(async () => ({ translatedWord: 'hola' })),
+    translate: vi.fn(() => Promise.resolve({ translatedText: 'hola' })),
+    translateWordWithContext: vi.fn(() =>
+      Promise.resolve({ translatedWord: 'hola' })
+    ),
   },
 }));
 
