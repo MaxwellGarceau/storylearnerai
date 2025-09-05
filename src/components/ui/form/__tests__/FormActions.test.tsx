@@ -83,13 +83,7 @@ describe('FormActions', () => {
     const container = screen
       .getByRole('button', { name: 'Cancel' })
       .closest('div');
-    expect(container).toHaveClass(
-      'flex',
-      'justify-end',
-      'space-x-2',
-      'pt-4',
-      'p-6'
-    );
+    expect(container).toHaveClass('flex', 'justify-end', 'space-x-2', 'p-6');
     expect(container).toHaveClass('extra');
   });
 });
