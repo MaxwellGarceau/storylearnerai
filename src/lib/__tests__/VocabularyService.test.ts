@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { VocabularyService } from '../../lib/vocabularyService';
+import { VocabularyService } from '../vocabularyService';
 import { supabase } from '../../api/supabase/client';
 
 // Mock types for Supabase query builder
