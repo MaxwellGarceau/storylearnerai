@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { walkthroughService } from '../../../lib/walkthroughService';
-import { homeWalkthrough } from '../../../lib/walkthroughConfigs';
+import { walkthroughService } from '../../../lib/walkthrough/walkthroughService';
+import { homeWalkthrough } from '../../../lib/walkthrough/walkthroughConfigs';
 import type { WalkthroughId } from '../../../types/app/walkthrough';
 
 // Mock localStorage

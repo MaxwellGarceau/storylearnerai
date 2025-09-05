@@ -9,7 +9,7 @@ import {
   cleanup,
 } from '@testing-library/react';
 import { Walkthrough } from '../Walkthrough';
-import { walkthroughService } from '../../../lib/walkthroughService';
+import { walkthroughService } from '../../../lib/walkthrough/walkthroughService';
 import type { WalkthroughState } from '../../../types/app/walkthrough';
 import { logger } from '../../../lib/logger';
 

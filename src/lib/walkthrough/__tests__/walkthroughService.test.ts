@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Tests added by the assistant.
 
-type WalkthroughModule = typeof import('../walkthroughService');
+type WalkthroughModule = typeof import('../walkthrough/walkthroughService');
 
 const createConfig =
   (): import('../../types/app/walkthrough').WalkthroughConfig => ({
@@ -41,7 +41,7 @@ beforeEach(() => {
 
 describe('walkthroughService', () => {
   it('starts at first non-skipped step and notifies subscribers', async () => {
-    const module: WalkthroughModule = await import('../walkthroughService');
+    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
     const { walkthroughService } = module;
 
     const states: Array<ReturnType<typeof walkthroughService.getState>> = [];
@@ -62,7 +62,7 @@ describe('walkthroughService', () => {
   });
 
   it('skips subsequent steps and completes when reaching end', async () => {
-    const module: WalkthroughModule = await import('../walkthroughService');
+    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());
@@ -78,7 +78,7 @@ describe('walkthroughService', () => {
   });
 
   it('supports skipping a walkthrough and records it', async () => {
-    const module: WalkthroughModule = await import('../walkthroughService');
+    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());
@@ -90,7 +90,7 @@ describe('walkthroughService', () => {
   });
 
   it('can reset a walkthrough in storage', async () => {
-    const module: WalkthroughModule = await import('../walkthroughService');
+    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());

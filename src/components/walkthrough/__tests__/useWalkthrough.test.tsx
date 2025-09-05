@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useWalkthrough } from '../../../hooks/useWalkthrough';
-import { walkthroughService } from '../../../lib/walkthroughService';
-import { homeWalkthrough } from '../../../lib/walkthroughConfigs';
+import { walkthroughService } from '../../../lib/walkthrough/walkthroughService';
+import { homeWalkthrough } from '../../../lib/walkthrough/walkthroughConfigs';
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({

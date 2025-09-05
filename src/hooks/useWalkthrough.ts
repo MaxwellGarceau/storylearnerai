@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { walkthroughService } from '../lib/walkthroughService';
-import { walkthroughConfigs } from '../lib/walkthroughConfigs';
+import { walkthroughService } from '../lib/walkthrough/walkthroughService';
+import { walkthroughConfigs } from '../lib/walkthrough/walkthroughConfigs';
 import type {
   WalkthroughConfig,
   WalkthroughId,

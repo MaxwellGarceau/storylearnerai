@@ -4,8 +4,8 @@ import type {
   WalkthroughId,
   WalkthroughStorage,
   WalkthroughStep,
-} from '../types/app/walkthrough';
-import { logger } from './logger';
+} from '../../types/app/walkthrough';
+import { logger } from '../logger';
 
 class WalkthroughService {
   private static instance: WalkthroughService;
