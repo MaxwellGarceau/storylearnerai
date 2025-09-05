@@ -22,6 +22,7 @@ interface FieldWrapperProps extends VariantProps<typeof fieldWrapperVariants> {
   required?: boolean;
   error?: string;
   className?: string;
+  description?: ReactNode;
   children: ReactNode;
 }
 
@@ -32,15 +33,27 @@ export function FieldWrapper({
   error,
   className = '',
   size,
+  description,
   children,
 }: FieldWrapperProps) {
+  const descriptionId = description ? `${id}-description` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
   return (
     <div className={cn(fieldWrapperVariants({ size }), className)}>
       <Label htmlFor={id}>
         {label} {required && '*'}
       </Label>
+      {description && (
+        <p id={descriptionId} className='text-sm text-muted-foreground'>
+          {description}
+        </p>
+      )}
       {children}
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && (
+        <p id={errorId} className='text-sm text-destructive'>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
