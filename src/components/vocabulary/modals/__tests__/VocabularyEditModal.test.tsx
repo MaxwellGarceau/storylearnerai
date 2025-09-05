@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock UpsertModal to capture props
 vi.mock('../VocabularyUpsertModal', () => ({
@@ -36,7 +37,10 @@ describe('VocabularyEditModal', () => {
     render(<VocabularyEditModal vocabulary={vocab} onClose={() => {}} />);
 
     const el = screen.getByTestId('upsert-modal');
-    const props = JSON.parse(el.getAttribute('data-props') || '{}');
+    const props = JSON.parse(el.getAttribute('data-props') ?? '{}') as {
+      mode: string;
+      vocabulary: VocabularyWithLanguages;
+    };
     expect(props.mode).toBe('edit');
     expect(props.vocabulary.original_word).toBe('hola');
   });

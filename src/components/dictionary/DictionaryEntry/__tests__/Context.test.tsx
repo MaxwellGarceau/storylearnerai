@@ -4,9 +4,11 @@ import { useDictionaryEntryContext } from '../Context';
 
 // Test added by assistant: verifies hook usage contract without unhandled errors
 
+type ViSpyInstance = ReturnType<typeof vi.spyOn>;
+
 describe('DictionaryEntry Context', () => {
-  let consoleErrorSpy: vi.SpyInstance;
-  let consoleWarnSpy: vi.SpyInstance;
+  let consoleErrorSpy: ViSpyInstance;
+  let consoleWarnSpy: ViSpyInstance;
 
   beforeEach(() => {
     // Mock console methods to suppress React error boundary warnings

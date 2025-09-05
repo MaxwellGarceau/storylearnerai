@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 vi.mock('../../../../hooks/useLocalization', () => ({
   useLocalization: () => ({ t: (k: string) => k }),
@@ -29,7 +30,12 @@ describe('VocabularySaveModal', () => {
     );
 
     const el = screen.getByTestId('upsert-modal');
-    const props = JSON.parse(el.getAttribute('data-props') || '{}');
+    const props = JSON.parse(el.getAttribute('data-props') ?? '{}') as {
+      mode: string;
+      currentLanguageId: number;
+      currentFromLanguageId: number;
+      initialData: { originalWord: string; translatedWord: string };
+    };
     expect(props.mode).toBe('create');
     expect(props.currentLanguageId).toBe(1);
     expect(props.currentFromLanguageId).toBe(2);

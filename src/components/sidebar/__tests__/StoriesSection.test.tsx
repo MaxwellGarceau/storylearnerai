@@ -187,7 +187,10 @@ describe('StoriesSection Component', () => {
     const savedStoryCard = screen
       .getByText('Test Story')
       .closest('.cursor-pointer');
-    fireEvent.click(savedStoryCard!);
+
+    if (savedStoryCard) {
+      fireEvent.click(savedStoryCard);
+    }
 
     expect(mockOnOpenSavedTranslation).toHaveBeenCalledWith(
       mockSavedTranslation
@@ -201,7 +204,10 @@ describe('StoriesSection Component', () => {
     const sampleStoryCard = screen
       .getByText('The Three Little Pigs')
       .closest('.cursor-pointer');
-    fireEvent.click(sampleStoryCard!);
+
+    if (sampleStoryCard) {
+      fireEvent.click(sampleStoryCard);
+    }
 
     expect(mockOnOpenSampleStory).toHaveBeenCalledWith(mockSampleStories[0]);
     expect(mockOnOpenSampleStory).toHaveBeenCalledTimes(1);

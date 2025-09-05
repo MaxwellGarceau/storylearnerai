@@ -255,9 +255,7 @@ export default function SavedTranslationsList() {
                       month: 'short',
                       day: 'numeric',
                     })}
-                    {' • '}
-                    {translation.original_language.name} →{' '}
-                    {translation.translated_language.name}
+                    {` • ${translation.original_language.name} → ${translation.translated_language.name}`}
                   </CardDescription>
                 </div>
                 <div className='flex gap-2' onClick={e => e.stopPropagation()}>

@@ -4,6 +4,11 @@ import { vi } from 'vitest';
 import VocabularySection from '../VocabularySection';
 import { setupSidebarMocks, resetSidebarMocks } from './sidebarMocks';
 
+type VocabularySidebarProps = {
+  currentLanguageId?: number;
+  currentFromLanguageId?: number;
+};
+
 // Mock without referencing outer variables to avoid hoisting/TDZ issues
 vi.mock('../../vocabulary/sidebar/VocabularySidebar', () => ({
   VocabularySidebar: (props: unknown) => (
@@ -46,7 +51,9 @@ describe('VocabularySection Component', () => {
     );
 
     const el = screen.getByTestId('vocabulary-sidebar');
-    const props = JSON.parse(el.getAttribute('data-props') || '{}');
+    const props = JSON.parse(
+      el.getAttribute('data-props') ?? '{}'
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(currentLanguageId);
     expect(props.currentFromLanguageId).toBe(currentFromLanguageId);
   });
@@ -60,9 +67,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBeUndefined();
     expect(props.currentFromLanguageId).toBe(2);
   });
@@ -76,9 +83,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(1);
     expect(props.currentFromLanguageId).toBeUndefined();
   });
@@ -92,9 +99,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBeUndefined();
     expect(props.currentFromLanguageId).toBeUndefined();
   });
@@ -133,9 +140,9 @@ describe('VocabularySection Component', () => {
         />
       );
       const props = JSON.parse(
-        screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
           '{}'
-      );
+      ) as VocabularySidebarProps;
       expect(props.currentLanguageId).toBe(currentLanguageId);
       expect(props.currentFromLanguageId).toBe(currentFromLanguageId);
       unmount();
@@ -153,9 +160,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(1);
     expect(props.currentFromLanguageId).toBe(2);
   });
@@ -166,9 +173,9 @@ describe('VocabularySection Component', () => {
     );
 
     let props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(1);
     expect(props.currentFromLanguageId).toBe(2);
 
@@ -178,9 +185,9 @@ describe('VocabularySection Component', () => {
     );
 
     props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(3);
     expect(props.currentFromLanguageId).toBe(4);
   });
@@ -191,9 +198,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(Object.keys(props)).toHaveLength(2);
     expect(props).toHaveProperty('currentLanguageId');
     expect(props).toHaveProperty('currentFromLanguageId');
@@ -226,9 +233,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(largeId);
     expect(props.currentFromLanguageId).toBe(largeId);
   });
@@ -239,9 +246,9 @@ describe('VocabularySection Component', () => {
     );
 
     const props = JSON.parse(
-      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ??
         '{}'
-    );
+    ) as VocabularySidebarProps;
     expect(props.currentLanguageId).toBe(0);
     expect(props.currentFromLanguageId).toBe(0);
   });

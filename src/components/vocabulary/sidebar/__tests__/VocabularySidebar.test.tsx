@@ -62,10 +62,12 @@ describe('VocabularySidebar', () => {
     expect(screen.getByText('hello')).toBeInTheDocument();
 
     // Open Save Modal via plus button in the header area
-    const headerContainer = screen.getByText('vocabulary.title').closest('div')!
-      .parentElement as HTMLElement; // The outer flex container has the add button
-    const addBtn = within(headerContainer).getAllByRole('button')[0];
-    fireEvent.click(addBtn);
+    const headerElement = screen.getByText('vocabulary.title').closest('div');
+    if (headerElement?.parentElement) {
+      const headerContainer = headerElement.parentElement; // The outer flex container has the add button
+      const addBtn = within(headerContainer).getAllByRole('button')[0];
+      fireEvent.click(addBtn);
+    }
 
     // Modal container should appear
     expect(screen.getByText('vocabulary.save.title')).toBeInTheDocument();

@@ -6,61 +6,71 @@ import SavedTranslationsList from '../SavedTranslationsList';
 import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
 
 // Mock i18n
+const mockT = (key: string, params?: Record<string, string | number>) => {
+  const map: Record<string, string> = {
+    'story.loadingTranslation': 'Loading translation...',
+    'savedTranslations.filters.title': 'Filters',
+    'savedTranslations.filters.description': 'Filter your saved translations',
+    'savedTranslations.filters.targetLanguage': 'Target Language',
+    'savedTranslations.filters.allLanguages': 'All languages',
+    'savedTranslations.filters.difficultyLevel': 'Difficulty Level',
+    'savedTranslations.filters.allLevels': 'All levels',
+    'savedTranslations.filters.search': 'Search',
+    'savedTranslations.filters.searchPlaceholder':
+      'Search by title or notes...',
+    'savedTranslations.filters.applyFilters': 'Apply Filters',
+    'savedTranslations.results.count': `${params?.count ?? 0} results`,
+    'savedTranslations.results.untitled': 'Untitled',
+    'savedTranslations.results.viewStory': 'View Story',
+    'savedTranslations.results.delete': 'Delete',
+    'savedTranslations.content.notes': 'Notes',
+    'savedTranslations.content.originalStory': 'Original Story',
+    'savedTranslations.content.translatedStory': 'Translated Story',
+    'savedTranslations.emptyState.title': 'No saved translations yet',
+    'savedTranslations.emptyState.description':
+      'Your saved translations will appear here.',
+    'savedTranslations.deleteConfirm':
+      'Are you sure you want to delete this translation?',
+    'difficultyLevels.a1.description': 'Beginner level',
+    'difficultyLevels.a2.description': 'Elementary level',
+    'difficultyLevels.b1.description': 'Intermediate level',
+    'difficultyLevels.b2.description': 'Upper intermediate level',
+  };
+  return map[key] ?? key;
+};
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, params?: Record<string, string | number>) => {
-      const map: Record<string, string> = {
-        'story.loadingTranslation': 'Loading translation...',
-        'savedTranslations.filters.title': 'Filters',
-        'savedTranslations.filters.description':
-          'Filter your saved translations',
-        'savedTranslations.filters.targetLanguage': 'Target Language',
-        'savedTranslations.filters.allLanguages': 'All languages',
-        'savedTranslations.filters.difficultyLevel': 'Difficulty Level',
-        'savedTranslations.filters.allLevels': 'All levels',
-        'savedTranslations.filters.search': 'Search',
-        'savedTranslations.filters.searchPlaceholder':
-          'Search by title or notes...',
-        'savedTranslations.filters.applyFilters': 'Apply Filters',
-        'savedTranslations.results.count': `${params?.count ?? 0} results`,
-        'savedTranslations.results.untitled': 'Untitled',
-        'savedTranslations.results.viewStory': 'View Story',
-        'savedTranslations.results.delete': 'Delete',
-        'savedTranslations.content.notes': 'Notes',
-        'savedTranslations.content.originalStory': 'Original Story',
-        'savedTranslations.content.translatedStory': 'Translated Story',
-        'savedTranslations.emptyState.title': 'No saved translations yet',
-        'savedTranslations.emptyState.description':
-          'Your saved translations will appear here.',
-        'savedTranslations.deleteConfirm':
-          'Are you sure you want to delete this translation?',
-        'difficultyLevels.a1.description': 'Beginner level',
-        'difficultyLevels.a2.description': 'Elementary level',
-        'difficultyLevels.b1.description': 'Intermediate level',
-        'difficultyLevels.b2.description': 'Upper intermediate level',
-      };
-      return map[key] ?? key;
-    },
+    t: mockT,
   }),
 }));
 
 // Mock router navigation
 const navigateMock = vi.fn();
-vi.mock('react-router-dom', async actual => {
-  const mod = await actual();
-  return {
-    ...mod,
-    useNavigate: () => navigateMock,
-  };
-});
+vi.mock(
+  'react-router-dom',
+  async (actual: () => Promise<Record<string, unknown>>) => {
+    const mod = await actual();
+    return {
+      ...mod,
+      useNavigate: () => navigateMock,
+    };
+  }
+);
 
 // Mock logger
 const infoMock = vi.fn();
 const errorMock = vi.fn();
 vi.mock('../../../lib/logger', () => ({
   logger: {
-    info: (...args: unknown[]) => infoMock(...args),
-    error: (...args: unknown[]) => errorMock(...args),
+    info: (...args: unknown[]) => {
+      infoMock(...args);
+      return undefined;
+    },
+    error: (...args: unknown[]) => {
+      errorMock(...args);
+      return undefined;
+    },
   },
 }));
 
@@ -209,11 +219,11 @@ describe('SavedTranslationsList', () => {
             fromLanguage: 'es',
             toLanguage: 'en',
             difficulty: 'a1',
-          }),
+          } as Record<string, unknown>),
           isSavedStory: true,
           savedTranslationId: 1,
-        }),
-      });
+        } as Record<string, unknown>),
+      } as Record<string, unknown>);
     });
   });
 

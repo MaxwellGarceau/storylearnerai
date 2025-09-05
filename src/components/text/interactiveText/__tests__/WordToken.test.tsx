@@ -5,7 +5,7 @@ import { LanguageCode } from '../../../../types/llm/prompts';
 import React from 'react';
 
 // Mock InteractiveText context to provide languages
-vi.mock('../../InteractiveTextContext', () => ({
+vi.mock('../../useInteractiveTextContext', () => ({
   __esModule: true,
   useInteractiveTextContext: () => ({
     fromLanguage: 'en',

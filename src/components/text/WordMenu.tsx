@@ -9,7 +9,7 @@ import { VocabularySaveButton } from '../vocabulary/buttons/VocabularySaveButton
 import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
 import { LanguageCode } from '../../types/llm/prompts';
-import { useInteractiveTextContext } from './InteractiveTextContext';
+import { useInteractiveTextContext } from './useInteractiveTextContext';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
