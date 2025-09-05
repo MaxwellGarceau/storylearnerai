@@ -86,7 +86,7 @@ describe('Header', () => {
     expect(homeLink.className).toMatch(/hover:bg-accent\/50/);
   });
 
-  it('shows authenticated links and user menu; allows sign out', async () => {
+  it('shows authenticated links and user menu; allows sign out', () => {
     mockUseAuth.mockReturnValue({
       user: { id: 'u1', email: 'test@example.com' } as AuthLikeUser,
       signOut: mockSignOut,

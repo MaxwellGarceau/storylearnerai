@@ -3,6 +3,23 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveTextView from '../InteractiveTextView';
 import type { Token } from '../../../../hooks/interactiveText/useTokenizedText';
 
+interface WordTokenProps {
+  normalizedWord: string;
+  cleanWord: string;
+  punctuation: string;
+  isOpen: boolean;
+  isSaved: boolean;
+  isTranslating: boolean;
+  translatedWord?: string;
+  originalSentence: string;
+  translatedSentence?: string;
+  onOpenChange: (open: boolean) => void;
+  onWordClick: () => void;
+  onTranslate: () => void;
+  enableTooltips: boolean;
+  disabled: boolean;
+}
+
 // Mock WordToken to observe props and interactions
 vi.mock('../WordToken', () => ({
   __esModule: true,
@@ -21,7 +38,7 @@ vi.mock('../WordToken', () => ({
     onTranslate,
     enableTooltips,
     disabled,
-  }: any) => (
+  }: WordTokenProps) => (
     <span data-testid={`word-token-${normalizedWord}`} data-open={isOpen}>
       <button
         data-testid={`click-${normalizedWord}`}

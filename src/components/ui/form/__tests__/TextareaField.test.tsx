@@ -16,7 +16,7 @@ describe('TextareaField', () => {
       />
     );
 
-    const textarea = screen.getByLabelText('form.bio') as HTMLTextAreaElement;
+    const textarea = screen.getByLabelText('form.bio');
     expect(textarea).toBeInTheDocument();
     expect(textarea.rows).toBe(3);
     expect(textarea.value).toBe('hello');
@@ -34,7 +34,7 @@ describe('TextareaField', () => {
       />
     );
 
-    const textarea = screen.getByLabelText('form.desc') as HTMLTextAreaElement;
+    const textarea = screen.getByLabelText('form.desc');
     expect(textarea.rows).toBe(5);
   });
 

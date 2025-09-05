@@ -11,7 +11,7 @@ describe('TextField', () => {
       <TextField id='name' label='form.name' value='John' onChange={onChange} />
     );
 
-    const input = screen.getByLabelText('form.name') as HTMLInputElement;
+    const input = screen.getByLabelText('form.name');
     expect(input).toBeInTheDocument();
     expect(input.type).toBe('text');
     expect(input.value).toBe('John');
@@ -28,7 +28,7 @@ describe('TextField', () => {
         inputType='password'
       />
     );
-    const input = screen.getByLabelText('form.password') as HTMLInputElement;
+    const input = screen.getByLabelText('form.password');
     expect(input.type).toBe('password');
   });
 

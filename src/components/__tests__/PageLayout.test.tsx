@@ -9,15 +9,37 @@ vi.mock('../Header', () => ({
   default: () => <div data-testid='mock-header' />,
 }));
 
+interface PageContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  maxWidth?:
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | '6xl'
+    | '7xl';
+}
+
 const mockPageContainer = vi.fn(
-  ({ children }: { children: React.ReactNode }) => (
-    <div data-testid='mock-page-container'>{children}</div>
+  ({ children, className, maxWidth }: PageContainerProps) => (
+    <div
+      data-testid='mock-page-container'
+      className={className}
+      data-max-width={maxWidth}
+    >
+      {children}
+    </div>
   )
 );
 
 vi.mock('../PageContainer', () => ({
   __esModule: true,
-  default: (props: any) => mockPageContainer(props),
+  default: (props: PageContainerProps) => mockPageContainer(props),
 }));
 
 describe('PageLayout', () => {

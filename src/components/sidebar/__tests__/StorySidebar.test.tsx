@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StorySidebar from '../StorySidebar';
@@ -7,10 +7,8 @@ import {
   setupSidebarMocks,
   resetSidebarMocks,
   mockSavedTranslation,
-  mockSampleStories,
   mockUser,
   mockTranslationData,
-  mockNavigate,
   mockUseViewport,
   mockUseLanguages,
   mockUseSavedTranslations,
@@ -28,13 +26,6 @@ describe('StorySidebar Component', () => {
 
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
-  };
-
-  const rerenderWithRouter = (
-    rerender: (component: React.ReactElement) => void,
-    component: React.ReactElement
-  ) => {
-    return rerender(<BrowserRouter>{component}</BrowserRouter>);
   };
 
   beforeEach(() => {

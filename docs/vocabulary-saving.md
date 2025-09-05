@@ -51,7 +51,7 @@
 
 ### Implementation Notes
 
-- Implementation is in `src/components/vocabulary/VocabularySaveButton.tsx`.
+- Implementation is in `src/components/vocabulary/buttons/VocabularySaveButton.tsx`.
 - The save flow uses `useVocabulary().saveVocabularyWord` which handles user checks, toasts, and refresh.
 
 ### Saved Translation Linking

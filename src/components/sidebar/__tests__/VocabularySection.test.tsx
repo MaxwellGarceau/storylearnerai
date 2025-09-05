@@ -4,27 +4,21 @@ import { vi } from 'vitest';
 import VocabularySection from '../VocabularySection';
 import { setupSidebarMocks, resetSidebarMocks } from './sidebarMocks';
 
-// Mock the VocabularySidebar component
+// Mock without referencing outer variables to avoid hoisting/TDZ issues
 vi.mock('../../vocabulary/sidebar/VocabularySidebar', () => ({
-  VocabularySidebar: vi.fn(() => (
-    <div data-testid='vocabulary-sidebar'>Vocabulary Sidebar Content</div>
-  )),
+  VocabularySidebar: (props: unknown) => (
+    <div data-testid='vocabulary-sidebar' data-props={JSON.stringify(props)}>
+      Vocabulary Sidebar Content
+    </div>
+  ),
 }));
-
-// Import the mocked component
-import { VocabularySidebar } from '../../vocabulary/sidebar/VocabularySidebar';
 
 // Setup mocks before tests
 setupSidebarMocks();
 
 describe('VocabularySection Component', () => {
-  const mockVocabularySidebar = VocabularySidebar as jest.MockedFunction<
-    typeof VocabularySidebar
-  >;
-
   beforeEach(() => {
     resetSidebarMocks();
-    mockVocabularySidebar.mockClear();
   });
 
   afterEach(() => {
@@ -51,13 +45,10 @@ describe('VocabularySection Component', () => {
       />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId,
-        currentFromLanguageId,
-      },
-      {}
-    );
+    const el = screen.getByTestId('vocabulary-sidebar');
+    const props = JSON.parse(el.getAttribute('data-props') || '{}');
+    expect(props.currentLanguageId).toBe(currentLanguageId);
+    expect(props.currentFromLanguageId).toBe(currentFromLanguageId);
   });
 
   it('handles undefined currentLanguageId', () => {
@@ -68,13 +59,12 @@ describe('VocabularySection Component', () => {
       />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId: undefined,
-        currentFromLanguageId: 2,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBeUndefined();
+    expect(props.currentFromLanguageId).toBe(2);
   });
 
   it('handles undefined currentFromLanguageId', () => {
@@ -85,13 +75,12 @@ describe('VocabularySection Component', () => {
       />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId: 1,
-        currentFromLanguageId: undefined,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(1);
+    expect(props.currentFromLanguageId).toBeUndefined();
   });
 
   it('handles both props undefined', () => {
@@ -102,13 +91,12 @@ describe('VocabularySection Component', () => {
       />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId: undefined,
-        currentFromLanguageId: undefined,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBeUndefined();
+    expect(props.currentFromLanguageId).toBeUndefined();
   });
 
   it('applies correct container styling', () => {
@@ -138,22 +126,19 @@ describe('VocabularySection Component', () => {
     ];
 
     testCases.forEach(({ currentLanguageId, currentFromLanguageId }) => {
-      mockVocabularySidebar.mockClear();
-
-      render(
+      const { unmount } = render(
         <VocabularySection
           currentLanguageId={currentLanguageId}
           currentFromLanguageId={currentFromLanguageId}
         />
       );
-
-      expect(mockVocabularySidebar).toHaveBeenCalledWith(
-        {
-          currentLanguageId,
-          currentFromLanguageId,
-        },
-        {}
+      const props = JSON.parse(
+        screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+          '{}'
       );
+      expect(props.currentLanguageId).toBe(currentLanguageId);
+      expect(props.currentFromLanguageId).toBe(currentFromLanguageId);
+      unmount();
     });
   });
 
@@ -162,22 +147,17 @@ describe('VocabularySection Component', () => {
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledTimes(1);
-
     // Re-render with same props
     rerender(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledTimes(2);
-    expect(mockVocabularySidebar).toHaveBeenNthCalledWith(
-      2,
-      {
-        currentLanguageId: 1,
-        currentFromLanguageId: 2,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(1);
+    expect(props.currentFromLanguageId).toBe(2);
   });
 
   it('handles prop changes correctly', () => {
@@ -185,28 +165,24 @@ describe('VocabularySection Component', () => {
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenNthCalledWith(
-      1,
-      {
-        currentLanguageId: 1,
-        currentFromLanguageId: 2,
-      },
-      {}
+    let props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(1);
+    expect(props.currentFromLanguageId).toBe(2);
 
     // Change props
     rerender(
       <VocabularySection currentLanguageId={3} currentFromLanguageId={4} />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenNthCalledWith(
-      2,
-      {
-        currentLanguageId: 3,
-        currentFromLanguageId: 4,
-      },
-      {}
+    props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(3);
+    expect(props.currentFromLanguageId).toBe(4);
   });
 
   it('does not pass extra props to VocabularySidebar', () => {
@@ -214,10 +190,13 @@ describe('VocabularySection Component', () => {
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
-    const callArgs = mockVocabularySidebar.mock.calls[0][0];
-    expect(Object.keys(callArgs)).toHaveLength(2);
-    expect(callArgs).toHaveProperty('currentLanguageId');
-    expect(callArgs).toHaveProperty('currentFromLanguageId');
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
+    );
+    expect(Object.keys(props)).toHaveLength(2);
+    expect(props).toHaveProperty('currentLanguageId');
+    expect(props).toHaveProperty('currentFromLanguageId');
   });
 
   it('renders consistently with same props', () => {
@@ -246,13 +225,12 @@ describe('VocabularySection Component', () => {
       />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId: largeId,
-        currentFromLanguageId: largeId,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(largeId);
+    expect(props.currentFromLanguageId).toBe(largeId);
   });
 
   it('handles zero as valid language ID', () => {
@@ -260,13 +238,12 @@ describe('VocabularySection Component', () => {
       <VocabularySection currentLanguageId={0} currentFromLanguageId={0} />
     );
 
-    expect(mockVocabularySidebar).toHaveBeenCalledWith(
-      {
-        currentLanguageId: 0,
-        currentFromLanguageId: 0,
-      },
-      {}
+    const props = JSON.parse(
+      screen.getByTestId('vocabulary-sidebar').getAttribute('data-props') ||
+        '{}'
     );
+    expect(props.currentLanguageId).toBe(0);
+    expect(props.currentFromLanguageId).toBe(0);
   });
 
   it('maintains proper component hierarchy', () => {

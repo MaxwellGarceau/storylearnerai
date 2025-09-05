@@ -15,7 +15,7 @@ describe('SelectField', () => {
     );
 
     expect(screen.getByLabelText('form.level')).toBeInTheDocument();
-    const select = screen.getByLabelText('form.level') as HTMLSelectElement;
+    const select = screen.getByLabelText('form.level');
     expect(select.value).toBe('a1');
     expect(screen.getByText('A1')).toBeInTheDocument();
     expect(screen.getByText('A2')).toBeInTheDocument();

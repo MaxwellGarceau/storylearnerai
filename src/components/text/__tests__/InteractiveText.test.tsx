@@ -61,7 +61,7 @@ vi.mock('../WordMenu', () => ({
     word,
     children,
     open,
-    onOpenChange,
+    onOpenChange: _onOpenChange,
     onTranslate,
     onSave,
     fromLanguage,

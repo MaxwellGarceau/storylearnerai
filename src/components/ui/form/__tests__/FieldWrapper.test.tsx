@@ -31,7 +31,7 @@ describe('FieldWrapper', () => {
     const labelNode = screen.getByText((content, node) => {
       return (
         node?.tagName.toLowerCase() === 'label' &&
-        (node.textContent || '').includes('form.email')
+        (node.textContent ?? '').includes('form.email')
       );
     });
     expect(labelNode).toBeInTheDocument();

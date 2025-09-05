@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordToken from '../WordToken';
+import { LanguageCode } from '../../../../types/llm/prompts';
+import React from 'react';
 
 // Mock InteractiveText context to provide languages
 vi.mock('../../InteractiveTextContext', () => ({
@@ -10,6 +12,21 @@ vi.mock('../../InteractiveTextContext', () => ({
     targetLanguage: 'es',
   }),
 }));
+
+interface WordMenuProps {
+  children: React.ReactNode;
+  word: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onTranslate?: (word: string) => void;
+  fromLanguage?: LanguageCode;
+  targetLanguage?: LanguageCode;
+  translatedWord?: string;
+  originalSentence?: string;
+  translatedSentence?: string;
+  isSaved?: boolean;
+  isTranslating?: boolean;
+}
 
 // Mock WordMenu to be a lightweight wrapper we can interact with
 vi.mock('../../WordMenu', () => ({
@@ -27,7 +44,7 @@ vi.mock('../../WordMenu', () => ({
     isSaved,
     isTranslating,
     children,
-  }: any) => (
+  }: WordMenuProps) => (
     <div data-testid='word-menu' data-open={String(open)}>
       <div data-testid='menu-props'>
         <span data-testid='menu-word'>{word}</span>
