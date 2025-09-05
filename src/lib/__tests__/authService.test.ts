@@ -280,7 +280,7 @@ describe('AuthService', () => {
 
       vi.mocked(supabase.auth.onAuthStateChange).mockReturnValue({
         data: { subscription: mockSubscription },
-      } as ReturnType<typeof supabase.auth.onAuthStateChange>);
+      } as unknown as ReturnType<typeof supabase.auth.onAuthStateChange>);
 
       const unsubscribe = authService.onAuthStateChange(mockCallback);
 
@@ -307,7 +307,7 @@ describe('AuthService', () => {
           ) => void;
           return {
             data: { subscription: mockSubscription },
-          } as ReturnType<typeof supabase.auth.onAuthStateChange>;
+          } as unknown as ReturnType<typeof supabase.auth.onAuthStateChange>;
         }
       );
 
