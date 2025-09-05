@@ -6,7 +6,7 @@ type WalkthroughModule = typeof import('../walkthroughService');
 
 const createConfig =
   (): import('../../../types/app/walkthrough').WalkthroughConfig => ({
-    id: 'onboarding' as import('../../../types/app/walkthrough').WalkthroughId,
+    id: 'onboarding',
     title: 'Onboarding',
     description: 'Walkthrough description',
     steps: [
@@ -77,7 +77,7 @@ describe('walkthroughService', () => {
     expect(state.isActive).toBe(false);
 
     // Service should report completion via helper
-    expect(walkthroughService.isCompleted('onboarding' as never)).toBe(true);
+    expect(walkthroughService.isCompleted('onboarding')).toBe(true);
   });
 
   it('supports skipping a walkthrough and records it', async () => {
@@ -98,7 +98,7 @@ describe('walkthroughService', () => {
 
     walkthroughService.startWalkthrough(createConfig());
     walkthroughService.skipWalkthrough();
-    walkthroughService.resetWalkthrough('onboarding' as never);
-    expect(walkthroughService.isSkipped('onboarding' as never)).toBe(false);
+    walkthroughService.resetWalkthrough('onboarding');
+    expect(walkthroughService.isSkipped('onboarding')).toBe(false);
   });
 });

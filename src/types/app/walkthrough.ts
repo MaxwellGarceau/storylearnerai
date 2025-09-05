@@ -34,7 +34,8 @@ export interface WalkthroughState {
 export type WalkthroughId =
   | 'home-walkthrough'
   | 'translate-walkthrough'
-  | 'story-walkthrough';
+  | 'story-walkthrough'
+  | 'onboarding';
 
 export interface WalkthroughStorage {
   completed: WalkthroughId[];
