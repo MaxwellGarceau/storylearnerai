@@ -37,9 +37,14 @@ const createConfig =
     ],
   });
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.resetModules();
   localStorage.clear();
+
+  // Also reset the walkthrough service state
+  const module: WalkthroughModule = await import('../walkthroughService');
+  const { walkthroughService } = module;
+  walkthroughService.resetAllWalkthroughs();
 });
 
 describe('walkthroughService', () => {
@@ -77,6 +82,8 @@ describe('walkthroughService', () => {
     expect(state.isActive).toBe(false);
 
     // Service should report completion via helper
+    // Wait a bit for storage operations to complete
+    await new Promise(resolve => setTimeout(resolve, 10));
     expect(walkthroughService.isCompleted('onboarding')).toBe(true);
   });
 
