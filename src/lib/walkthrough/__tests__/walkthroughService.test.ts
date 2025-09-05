@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Tests added by the assistant.
 
-type WalkthroughModule = typeof import('../walkthrough/walkthroughService');
+type WalkthroughModule = typeof import('../walkthroughService');
 
 const createConfig =
-  (): import('../../types/app/walkthrough').WalkthroughConfig => ({
-    id: 'onboarding' as import('../../types/app/walkthrough').WalkthroughId,
+  (): import('../../../types/app/walkthrough').WalkthroughConfig => ({
+    id: 'onboarding' as import('../../../types/app/walkthrough').WalkthroughId,
     title: 'Onboarding',
     description: 'Walkthrough description',
     steps: [
@@ -14,7 +14,8 @@ const createConfig =
         id: 'step-1',
         title: 'Hidden Step',
         description: '',
-        content: '',
+        targetSelector: '#hidden',
+        position: 'bottom',
         // Skip the first step to verify start index resolution
         skipIf: () => true,
       },
@@ -22,13 +23,15 @@ const createConfig =
         id: 'step-2',
         title: 'Visible Step',
         description: '',
-        content: '',
+        targetSelector: '#visible',
+        position: 'top',
       },
       {
         id: 'step-3',
         title: 'Also Skipped',
         description: '',
-        content: '',
+        targetSelector: '#skipped',
+        position: 'left',
         skipIf: () => true,
       },
     ],
@@ -41,7 +44,7 @@ beforeEach(() => {
 
 describe('walkthroughService', () => {
   it('starts at first non-skipped step and notifies subscribers', async () => {
-    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
+    const module: WalkthroughModule = await import('../walkthroughService');
     const { walkthroughService } = module;
 
     const states: Array<ReturnType<typeof walkthroughService.getState>> = [];
@@ -62,7 +65,7 @@ describe('walkthroughService', () => {
   });
 
   it('skips subsequent steps and completes when reaching end', async () => {
-    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
+    const module: WalkthroughModule = await import('../walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());
@@ -78,7 +81,7 @@ describe('walkthroughService', () => {
   });
 
   it('supports skipping a walkthrough and records it', async () => {
-    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
+    const module: WalkthroughModule = await import('../walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());
@@ -90,7 +93,7 @@ describe('walkthroughService', () => {
   });
 
   it('can reset a walkthrough in storage', async () => {
-    const module: WalkthroughModule = await import('../walkthrough/walkthroughService');
+    const module: WalkthroughModule = await import('../walkthroughService');
     const { walkthroughService } = module;
 
     walkthroughService.startWalkthrough(createConfig());
