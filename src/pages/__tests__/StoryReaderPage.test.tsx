@@ -6,6 +6,22 @@ import StoryReaderPage from '../StoryReaderPage';
 import { TranslationResponse } from '../../lib/translationService';
 import { TooltipProvider } from '../../components/ui/Tooltip';
 
+// Mock auth hook to match component behavior
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'user-123',
+      email: 'test@example.com',
+      created_at: '2024-01-01T00:00:00Z',
+    },
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    loading: false,
+    error: null,
+  }),
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({

@@ -14,7 +14,7 @@ import type { WalkthroughState } from '../../../types/app/walkthrough';
 import { logger } from '../../../lib/logger';
 
 // Mock the walkthrough service
-vi.mock('../../../lib/walkthroughService', () => ({
+vi.mock('../../../lib/walkthrough/walkthroughService', () => ({
   walkthroughService: {
     getState: vi.fn(),
     subscribe: vi.fn(),

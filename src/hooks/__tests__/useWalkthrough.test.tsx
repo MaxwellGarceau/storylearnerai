@@ -6,7 +6,7 @@ vi.mock('react-router-dom', () => ({
   useLocation: () => ({ pathname: '/' }),
 }));
 
-vi.mock('../../lib/walkthroughService', () => ({
+vi.mock('../../lib/walkthrough/walkthroughService', () => ({
   walkthroughService: {
     startWalkthrough: vi.fn(),
     stopWalkthrough: vi.fn(),
