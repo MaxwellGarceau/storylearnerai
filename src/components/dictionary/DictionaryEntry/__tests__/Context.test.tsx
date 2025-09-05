@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { vi } from 'vitest';
 import { useDictionaryEntryContext } from '../Context';
 
 // Test added by assistant: verifies hook usage contract without unhandled errors
@@ -23,17 +23,18 @@ describe('DictionaryEntry Context', () => {
   });
 
   it('throws when used outside of DictionaryEntry.Root', () => {
-    // Create a test component that uses the hook
-    const TestComponent = () => {
-      useDictionaryEntryContext();
-      return null;
-    };
+    // Test that the hook throws when context is null
+    // Mock React.useContext to return null
+    const originalUseContext = React.useContext;
+    React.useContext = vi.fn().mockReturnValue(null);
 
-    // Expect the render to throw
     expect(() => {
-      render(<TestComponent />);
+      useDictionaryEntryContext();
     }).toThrow(
       'DictionaryEntry components must be used within DictionaryEntry.Root'
     );
+
+    // Restore original useContext
+    React.useContext = originalUseContext;
   });
 });
