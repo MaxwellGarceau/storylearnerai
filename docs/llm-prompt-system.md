@@ -2,25 +2,24 @@
 
 ## Overview
 
-The LLM Prompt Configuration System provides a flexible, scalable way to customize translation prompts based on target language and difficulty level. This system replaces the hardcoded prompts with a configurable approach that supports CEFR language levels and language-specific instructions.
+The LLM Prompt Configuration System builds translation prompts based on target language and CEFR difficulty using JSON configs. It supports native‑to‑target guidance (e.g., Spanish→English) and falls back gracefully when a combination is unsupported.
 
 ## Architecture
 
 ### Core Components
 
-1. **PromptConfigService** (`src/lib/config/PromptConfigService.ts`)
-   - Manages prompt configuration loading and building
-   - Provides methods to retrieve language-specific instructions
-   - Builds complete prompts using templates and context
+1. **GeneralPromptConfigService** (`src/lib/prompts/GeneralPromptConfigService.ts`)
+   - Loads general, template, language, and native‑to‑target configs
+   - Builds complete prompts from a template and context
+   - Exposes language/difficulty support helpers
 
-2. **Configuration File** (`src/lib/config/prompts.json`)
-   - JSON-based configuration for all prompt customizations
-   - Organized by language code and difficulty level
-   - Contains general instructions and language-specific guidelines
+2. **Configuration Files** (`src/lib/prompts/config/*`)
+   - `general.json` and `template.json`
+   - `to-language.json` (language‑specific instructions)
+   - `native-to-target/<from>/<to>.json` (pair‑specific guidance)
 
-3. **Type Definitions** (`src/lib/types/prompt.ts`)
-   - TypeScript interfaces for type safety
-   - Defines structure for configuration and context
+3. **Type Definitions** (`src/types/llm/prompts.ts`)
+   - Types for `LanguageCode`, `DifficultyLevel`, configuration shapes, and request context
 
 ### Configuration Structure
 
@@ -31,16 +30,8 @@ The LLM Prompt Configuration System provides a flexible, scalable way to customi
     "template": "Template string with placeholders"
   },
   "languages": {
-    "en": {
-      "a1": { "vocabulary": "...", "grammar": "...", "cultural": "...", "style": "...", "examples": "..." },
-      "a2": { ... },
-      "b1": { ... },
-      "b2": { ... }
-    },
-    "es": {
-      "a1": { ... },
-      ...
-    }
+    "en": { "a1": { ... }, "a2": { ... }, "b1": { ... }, "b2": { ... } },
+    "es": { "a1": { ... }, "a2": { ... }, "b1": { ... }, "b2": { ... } }
   }
 }
 ```
@@ -50,10 +41,10 @@ The LLM Prompt Configuration System provides a flexible, scalable way to customi
 ### Basic Usage
 
 ```typescript
-import { promptConfigService } from '../config/PromptConfigService';
+import { generalPromptConfigService } from '@/lib/prompts';
 
 // Check if a language/difficulty combination is supported
-const isSupported = promptConfigService.isSupported('en', 'a1');
+const isSupported = generalPromptConfigService.isSupported('en', 'a1');
 
 // Build a complete prompt
 const context = {
@@ -62,25 +53,28 @@ const context = {
   difficulty: 'a1',
   text: 'Hola, ¿cómo estás?',
 };
-const prompt = promptConfigService.buildPrompt(context);
+const prompt = await generalPromptConfigService.buildPrompt(context);
 ```
 
 ### Integration with Translation Service
 
-The translation service automatically uses the prompt configuration system:
+The translation service uses the prompt system and falls back when unsupported:
 
 ```typescript
 // In translationService.ts
-private buildTranslationPrompt(request: TranslationRequest): string {
+private async buildTranslationPrompt(request: TranslationRequest): Promise<string> {
   const context = {
     fromLanguage: request.fromLanguage,
     toLanguage: request.toLanguage,
     difficulty: request.difficulty,
-    text: request.text
+    text: request.text,
+    nativeLanguage: request.nativeLanguage,
   };
 
-  // Use configuration service to build customized prompt
-  return promptConfigService.buildPrompt(context);
+  if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
+    return this.buildFallbackPrompt(request);
+  }
+  return generalPromptConfigService.buildPrompt(context);
 }
 ```
 
@@ -88,8 +82,8 @@ private buildTranslationPrompt(request: TranslationRequest): string {
 
 ### Languages
 
-- **English (en)**: Full A1-B2 support
-- **Spanish (es)**: Full A1-B2 support
+- **English (en)**: A1–B2
+- **Spanish (es)**: A1–B2
 
 ### CEFR Levels
 
@@ -112,17 +106,16 @@ Each language/difficulty combination includes:
 
 ### Adding New Languages
 
-1. Add language configuration to `prompts.json`
-2. Update language name mapping in `PromptConfigService.ts`
-3. Add corresponding difficulty levels (A1-B2 minimum)
-4. Write comprehensive tests for the new language
+1. Add entries to `src/lib/prompts/config/to-language.json`
+2. Add native‑to‑target files under `src/lib/prompts/config/native-to-target/<from>/<to>.json`
+3. Add tests under `src/lib/prompts/__tests__/`
 
 ### Adding New Difficulty Levels
 
-1. Add the level to existing language configurations
-2. Update the `DifficultyLevel` type in `prompt.ts`
-3. Write appropriate instructions for each language
-4. Test the new level with various content types
+1. Add the level to the per‑language configs
+2. Update `DifficultyLevel` in `src/types/llm/prompts.ts`
+3. Provide examples and grammar/vocabulary guidance
+4. Add tests
 
 ## Examples
 
@@ -146,12 +139,7 @@ For B2 level Spanish translations, the system generates prompts that:
 
 ## Fallback Behavior
 
-When a language/difficulty combination is not supported:
-
-1. The system logs a warning
-2. Falls back to a basic prompt template
-3. Uses generic difficulty-level instructions
-4. Maintains functionality while alerting about missing configuration
+If a language/difficulty combination is not supported, the translation service logs a warning and uses a minimal template prompt.
 
 ## Testing
 
@@ -166,7 +154,7 @@ The system includes comprehensive tests for:
 Run tests with:
 
 ```bash
-npm run test:once -- src/lib/config/__tests__/PromptConfigService.test.ts
+npm run test:once -- src/lib/prompts/__tests__
 ```
 
 ## Future Enhancements

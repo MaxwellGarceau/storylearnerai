@@ -2,35 +2,17 @@
 
 ## Overview
 
-The LLM Service System provides a unified interface for interacting with multiple Large Language Model providers. It's designed to be extensible, type-safe, and easy to use while abstracting away the complexities of different API formats.
+The LLM Service System provides a unified interface for interacting with a configured Large Language Model provider. The current implementation supports Google Gemini via the official `@google/genai` SDK.
 
 ## Architecture
 
 ### Core Components
 
-1. **Abstract Base Class (`LLMService`)**
-   - Defines the contract for all LLM providers
-   - Provides common functionality like error handling and response processing
-   - Abstract methods: `generateCompletion()`, `healthCheck()`
-
-2. **Provider Implementations**
-   - `OpenAIService`: OpenAI GPT models
-   - `AnthropicService`: Anthropic Claude models
-   - `LlamaService`: Meta Llama models via various providers (Ollama, Groq, Together AI, Replicate)
-   - `CustomService`: Generic implementation for custom APIs
-
-3. **Service Factory (`LLMServiceFactory`)**
-   - Creates appropriate service instances based on provider configuration
-   - Provides metadata about available providers
-
-4. **Service Manager (`LLMServiceManager`)**
-   - Singleton that manages the active LLM service
-   - Handles environment configuration
-   - Provides easy access to LLM functionality
-
-5. **Environment Configuration (`EnvironmentConfig`)**
-   - Parses and validates environment variables
-   - Provides type-safe configuration objects
+1. **Abstract Base Class (`LLMService`)**: Defines `generateCompletion()` and `healthCheck()`
+2. **Provider Implementation (`GeminiService`)**: Uses `@google/genai` to call Gemini models
+3. **Service Factory (`LLMServiceFactory`)**: Returns a provider implementation (currently `gemini` only)
+4. **Service Manager (`LLMServiceManager`)**: Singleton that reads env config and delegates calls
+5. **Environment Configuration (`EnvironmentConfig`)**: Validates and exposes `VITE_LLM_*` variables
 
 ## Usage
 
@@ -66,93 +48,32 @@ if (!isHealthy) {
 ### Provider Information
 
 ```typescript
-const provider = llmServiceManager.getProvider(); // e.g., 'openai'
-const model = llmServiceManager.getModel(); // e.g., 'gpt-4o-mini'
+const provider = llmServiceManager.getProvider(); // 'gemini'
+const model = llmServiceManager.getModel(); // e.g., 'gemini-2.5-flash-lite'
 const config = llmServiceManager.getConfig(); // Full configuration
 ```
 
-### Dynamic Provider Switching
+### Provider Switching
 
-```typescript
-// Switch to a different provider at runtime
-const newConfig = {
-  provider: 'anthropic',
-  apiKey: 'your-claude-api-key',
-  endpoint: 'https://api.anthropic.com/v1',
-  model: 'claude-3-haiku-20240307',
-  maxTokens: 2000,
-  temperature: 0.7,
-  version: '2023-06-01',
-};
-
-llmServiceManager.reinitialize(newConfig);
-```
+The factory currently supports only `gemini`. `LLMServiceManager.reinitialize()` is available for future multi‑provider support.
 
 ## Environment Configuration
 
 ### Required Variables
 
 ```bash
-VITE_LLM_PROVIDER=openai|anthropic|google|llama|custom
-VITE_LLM_API_KEY=your-api-key
-VITE_LLM_ENDPOINT=https://api.provider.com/v1
-VITE_LLM_MODEL=model-name
+VITE_LLM_PROVIDER=gemini
+VITE_LLM_API_KEY=your-gemini-api-key
+VITE_LLM_ENDPOINT=https://generativelanguage.googleapis.com/v1beta
+VITE_LLM_MODEL=gemini-2.5-flash-lite
 VITE_LLM_MAX_TOKENS=2000
 VITE_LLM_TEMPERATURE=0.7
+VITE_GEMINI_PROJECT_ID=your-project-id # Optional
 ```
 
 ### Provider-Specific Configuration
 
-#### OpenAI
-
-```bash
-VITE_LLM_PROVIDER=openai
-VITE_LLM_API_KEY=sk-...
-VITE_LLM_ENDPOINT=https://api.openai.com/v1
-VITE_LLM_MODEL=gpt-4o-mini
-VITE_OPENAI_ORGANIZATION=org-... # Optional
-```
-
-#### Anthropic
-
-```bash
-VITE_LLM_PROVIDER=anthropic
-VITE_LLM_API_KEY=sk-ant-...
-VITE_LLM_ENDPOINT=https://api.anthropic.com/v1
-VITE_LLM_MODEL=claude-3-haiku-20240307
-VITE_ANTHROPIC_VERSION=2023-06-01 # Optional
-```
-
-#### Meta Llama
-
-```bash
-VITE_LLM_PROVIDER=llama
-VITE_LLM_API_KEY=your-llama-api-key # or "none" for Ollama
-VITE_LLM_ENDPOINT=http://localhost:11434
-VITE_LLM_MODEL=llama3.1:8b
-VITE_LLAMA_PROVIDER=ollama # ollama|groq|together|replicate|custom
-VITE_LLAMA_SYSTEM_PROMPT=You are a helpful assistant. # Optional
-VITE_LLAMA_STOP_SEQUENCES=["<|end|>", "<|stop|>"] # Optional JSON array
-VITE_LLAMA_HEADERS={"X-Custom-Header": "value"} # Optional JSON
-```
-
-##### Llama Provider Options:
-
-- **ollama**: Local deployment (http://localhost:11434)
-- **groq**: Groq cloud API (https://api.groq.com/openai/v1)
-- **together**: Together AI (https://api.together.xyz/v1)
-- **replicate**: Replicate (https://api.replicate.com/v1)
-- **custom**: Custom endpoint with OpenAI-compatible format
-
-#### Custom
-
-```bash
-VITE_LLM_PROVIDER=custom
-VITE_LLM_API_KEY=your-custom-key
-VITE_LLM_ENDPOINT=https://your-api.com/v1
-VITE_LLM_MODEL=your-model
-VITE_CUSTOM_HEADERS={"X-Custom-Header": "value"} # Optional JSON
-```
+Only Gemini is currently implemented.
 
 ## Adding New Providers
 
@@ -166,12 +87,7 @@ export interface NewProviderConfig extends LLMConfig {
 }
 
 // Update union type
-export type ProviderConfig =
-  | OpenAIConfig
-  | AnthropicConfig
-  | GeminiConfig
-  | CustomConfig
-  | NewProviderConfig;
+export type ProviderConfig = GeminiConfig | NewProviderConfig;
 ```
 
 ### Step 2: Create Provider Service
@@ -224,17 +140,15 @@ import { NewProviderService } from './providers/NewProviderService';
 export class LLMServiceFactory {
   static createService(config: ProviderConfig): LLMService {
     switch (config.provider) {
-      // ... existing cases
-      case 'llama':
-        return new LlamaService(config as any);
+      case 'gemini':
+        return new GeminiService(config as any);
       case 'newprovider':
         return new NewProviderService(config as any);
-      // ... rest of cases
     }
   }
 
   static getAvailableProviders(): string[] {
-    return ['openai', 'anthropic', 'gemini', 'llama', 'custom', 'newprovider'];
+    return ['gemini', 'newprovider'];
   }
 }
 ```
@@ -247,25 +161,10 @@ export class EnvironmentConfig {
   static getLLMConfig(): ProviderConfig {
     // ... existing code
     switch (provider) {
-      // ... existing cases
-      case 'llama':
-        return {
-          ...baseConfig,
-          provider: 'llama',
-          llamaProvider: import.meta.env.VITE_LLAMA_PROVIDER || 'ollama',
-          systemPrompt: import.meta.env.VITE_LLAMA_SYSTEM_PROMPT,
-          stopSequences: this.parseStopSequences(
-            import.meta.env.VITE_LLAMA_STOP_SEQUENCES
-          ),
-          headers: this.parseCustomHeaders(import.meta.env.VITE_LLAMA_HEADERS),
-        };
+      case 'gemini':
+        return { ...baseConfig, provider: 'gemini' };
       case 'newprovider':
-        return {
-          ...baseConfig,
-          provider: 'newprovider',
-          customParam: import.meta.env.VITE_NEWPROVIDER_CUSTOM_PARAM,
-        };
-      // ... rest of cases
+        return { ...baseConfig, provider: 'newprovider' };
     }
   }
 }

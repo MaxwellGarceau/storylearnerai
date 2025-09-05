@@ -31,7 +31,7 @@ vi.mock('../../../hooks/useLanguages', () => ({
 }));
 
 // Mock the VocabularySaveButton component
-vi.mock('../../vocabulary/VocabularySaveButton', () => ({
+vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   VocabularySaveButton: ({
     originalWord,
     translatedWord,

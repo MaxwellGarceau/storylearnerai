@@ -1,7 +1,7 @@
 import React from 'react';
 import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
-import { useInteractiveTextContext } from '../InteractiveTextContext';
+import { useInteractiveTextContext } from '../useInteractiveTextContext';
 
 interface WordTokenProps {
   normalizedWord: string;

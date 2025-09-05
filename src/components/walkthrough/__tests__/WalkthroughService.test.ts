@@ -1,25 +1,59 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { walkthroughService } from '../../../lib/walkthroughService';
-import { homeWalkthrough } from '../../../lib/walkthroughConfigs';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+import { walkthroughService } from '../../../lib/walkthrough/walkthroughService';
+import { homeWalkthrough } from '../../../lib/walkthrough/walkthroughConfigs';
 import type { WalkthroughId } from '../../../types/app/walkthrough';
 
-// Mock localStorage
+// Mock localStorage with in-memory persistence and restore after suite
+let memoryStore: Record<string, string> = {};
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: vi.fn((key: string) =>
+    key in memoryStore ? memoryStore[key] : null
+  ),
+  setItem: vi.fn((key: string, value: string) => {
+    memoryStore[key] = String(value);
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete memoryStore[key];
+  }),
+  clear: vi.fn(() => {
+    for (const key of Object.keys(memoryStore)) delete memoryStore[key];
+  }),
 };
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
+const originalLocalStorage = window.localStorage;
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 describe('WalkthroughService', () => {
   beforeEach(() => {
+    // Reset mocks and reapply default implementations
     vi.clearAllMocks();
-    localStorageMock.getItem.mockReturnValue(null);
+    memoryStore = {};
+    localStorageMock.getItem
+      .mockReset()
+      .mockImplementation((key: string) =>
+        key in memoryStore ? memoryStore[key] : null
+      );
+    localStorageMock.setItem
+      .mockReset()
+      .mockImplementation((key: string, value: string) => {
+        memoryStore[key] = String(value);
+      });
+    localStorageMock.removeItem
+      .mockReset()
+      .mockImplementation((key: string) => {
+        delete memoryStore[key];
+      });
+    localStorageMock.clear.mockReset().mockImplementation(() => {
+      for (const key of Object.keys(memoryStore)) delete memoryStore[key];
+    });
     // Reset the service state
     walkthroughService.stopWalkthrough();
+  });
+
+  afterAll(() => {
+    // Restore real localStorage for other test files
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+    });
   });
 
   describe('Singleton Pattern', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWalkthrough } from '../../hooks/useWalkthrough';
-import { walkthroughConfigs } from '../../lib/walkthroughConfigs';
+import { walkthroughConfigs } from '../../lib/walkthrough/walkthroughConfigs';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import type { WalkthroughId } from '../../types/app/walkthrough';

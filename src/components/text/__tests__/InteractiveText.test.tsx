@@ -61,7 +61,7 @@ vi.mock('../WordMenu', () => ({
     word,
     children,
     open,
-    onOpenChange,
+    onOpenChange: _onOpenChange,
     onTranslate,
     onSave,
     fromLanguage,
@@ -92,7 +92,6 @@ vi.mock('../WordMenu', () => ({
                 data-testid='translate-button'
                 onClick={() => {
                   onTranslate?.(word);
-                  onOpenChange?.(false);
                 }}
               >
                 Translate
@@ -101,7 +100,6 @@ vi.mock('../WordMenu', () => ({
                 data-testid='save-button'
                 onClick={() => {
                   onSave?.(word);
-                  onOpenChange?.(false);
                 }}
               >
                 Save
@@ -336,8 +334,8 @@ describe('InteractiveText Component', () => {
     const translateButton = screen.getByTestId('translate-button');
     fireEvent.click(translateButton);
 
-    // The menu should close after clicking the button
-    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
+    // The menu remains open after clicking translate
+    expect(screen.getByTestId('word-menu')).toBeInTheDocument();
   });
 
   it('calls save handler when save button is clicked', () => {
@@ -357,7 +355,7 @@ describe('InteractiveText Component', () => {
     const saveButton = screen.getByTestId('save-button');
     fireEvent.click(saveButton);
 
-    // The menu should close after clicking the button
-    expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();
+    // The menu remains open after clicking save
+    expect(screen.getByTestId('word-menu')).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext } from 'react';
 import type { LanguageCode } from '../../types/llm/prompts';
 
 export interface InteractiveTextContextValue {
@@ -18,13 +18,8 @@ export interface InteractiveTextContextValue {
   isSavedWord: (word: string) => boolean;
 }
 
-const InteractiveTextContext =
+export const InteractiveTextContext =
   createContext<InteractiveTextContextValue | null>(null);
-
-export const useInteractiveTextContext =
-  (): InteractiveTextContextValue | null => {
-    return useContext(InteractiveTextContext);
-  };
 
 export const InteractiveTextProvider: React.FC<{
   value: InteractiveTextContextValue;

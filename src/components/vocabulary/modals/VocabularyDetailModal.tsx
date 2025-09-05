@@ -33,12 +33,12 @@ export function VocabularyDetailModal({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleNavigateToSavedTranslation = async () => {
-    if (vocabulary.saved_translation_id) {
+    if (vocabulary.saved_translation_id && user) {
       try {
         const service = new SavedTranslationService();
         const savedTranslation = await service.getSavedTranslation(
           String(vocabulary.saved_translation_id),
-          user!.id
+          user.id
         );
 
         if (savedTranslation) {

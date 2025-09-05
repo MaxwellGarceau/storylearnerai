@@ -7,7 +7,7 @@ import { X, ChevronLeft, ChevronRight, SkipForward } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 import { useViewport } from '../../hooks/useViewport';
-import { walkthroughService } from '../../lib/walkthroughService';
+import { walkthroughService } from '../../lib/walkthrough/walkthroughService';
 import type { WalkthroughState } from '../../types/app/walkthrough';
 import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';

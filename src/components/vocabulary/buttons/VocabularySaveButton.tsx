@@ -106,6 +106,7 @@ export function VocabularySaveButton({
     translatedLanguageId,
     checkVocabularyExists,
     externalIsSaved,
+    effectiveCheck,
   ]);
 
   const attemptSave = async () => {

@@ -1,27 +1,27 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useWalkthrough } from '../../../hooks/useWalkthrough';
-import { walkthroughService } from '../../../lib/walkthroughService';
-import { homeWalkthrough } from '../../../lib/walkthroughConfigs';
+import { walkthroughService } from '../../../lib/walkthrough/walkthroughService';
+import { homeWalkthrough } from '../../../lib/walkthrough/walkthroughConfigs';
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({
   useLocation: () => ({ pathname: '/' }),
 }));
 
-// Mock localStorage
+// Mock localStorage (suite-local). Restored after this suite to avoid leakage.
+// Added by assistant: ensure no cross-test pollution.
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
+const originalLocalStorage = window.localStorage;
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Mock the walkthrough service
-vi.mock('../../../lib/walkthroughService', () => ({
+vi.mock('../../../lib/walkthrough/walkthroughService', () => ({
   walkthroughService: {
     startWalkthrough: vi.fn(),
     stopWalkthrough: vi.fn(),
@@ -49,6 +49,13 @@ describe('useWalkthrough', () => {
       currentStepIndex: 0,
       isCompleted: false,
       isSkipped: false,
+    });
+  });
+
+  afterAll(() => {
+    // Restore real localStorage for other test files
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
     });
   });
 

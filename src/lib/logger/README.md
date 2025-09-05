@@ -299,6 +299,24 @@ vi.mock('@/lib/logger', () => ({
 }));
 ```
 
+### FrontEndLogger behavior tests
+
+This project includes a focused suite validating the logger’s behavior:
+
+- Level filtering: lower levels suppressed when a higher threshold is set
+- Channel filtering: disabled channels suppress output
+- Context propagation: `userId`, `sessionId`, `requestId` included
+- Timers: `time`/`timeEnd` behavior with and without data payload
+- API helpers: request logging and status-based response level
+
+Notes:
+
+- Tests spy on `console.*` to assert outputs without printing
+- The logger is re-imported per test to avoid state leakage
+- When `timeEnd` is called with a data object, the console meta reflects the
+  provided data (per `ConsoleWrapper`), whereas calling without data includes
+  the `performance.duration` metadata
+
 ## 🔧 Customization
 
 ### Custom Transports

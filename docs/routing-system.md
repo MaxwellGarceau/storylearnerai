@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Story Learner AI application now uses React Router for client-side routing, providing a better user experience with proper URL navigation and browser history management.
+The app uses React Router for client‑side routing. Core pages are wrapped by a shared `PageLayout`. Auth‑gated pages use `ProtectedRoute`.
 
 ## Routes
 
@@ -34,6 +34,21 @@ The Story Learner AI application now uses React Router for client-side routing, 
   - Navigation buttons to translate another story or go home
   - Receives translation data through React Router location state
   - Uses modular sidebar components from `@sidebar/*`
+
+### `/auth` - Authentication Page
+
+- **Component**: `AuthPage`
+- **Purpose**: Sign in/up and manage account access
+
+### `/dashboard` - Dashboard Page (Protected)
+
+- **Component**: `DashboardPage` within `ProtectedRoute`
+- **Purpose**: User overview and quick actions
+
+### `/saved-translations` - Saved Translations (Protected)
+
+- **Component**: `SavedTranslationsPage` within `ProtectedRoute`
+- **Purpose**: View and manage saved story translations
 
 ## Navigation
 
@@ -96,14 +111,30 @@ Consumer pages updated:
 ### Router Setup
 
 ```typescript
-// App.tsx
-<Router>
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/translate" element={<TranslatePage />} />
-    <Route path="/story" element={<StoryReaderPage />} />
-  </Routes>
-</Router>
+// src/App.tsx
+<TooltipProvider>
+  <Router>
+    <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/translate' element={<PageLayout><TranslatePage /></PageLayout>} />
+      <Route path='/story' element={<PageLayout><StoryReaderPage /></PageLayout>} />
+      <Route path='/auth' element={<PageLayout><AuthPage /></PageLayout>} />
+      <Route path='/dashboard' element={
+        <ProtectedRoute>
+          <PageLayout><DashboardPage /></PageLayout>
+        </ProtectedRoute>
+      } />
+      <Route path='/saved-translations' element={
+        <ProtectedRoute>
+          <PageLayout><SavedTranslationsPage /></PageLayout>
+        </ProtectedRoute>
+      } />
+    </Routes>
+    <Toaster />
+    <Walkthrough />
+    <WalkthroughDebug show={showDebug} />
+  </Router>
+</TooltipProvider>
 ```
 
 ### Navigation Hooks
@@ -152,6 +183,11 @@ Potential future routes:
 - `renderWithRouter()` helper for testing components with router context
 - Mock implementations for React Router hooks
 - Comprehensive test coverage for all routing scenarios
+
+## Walkthrough Integration
+
+- The route-aware `useWalkthrough` hook auto‑starts tutorials for `/`, `/translate`, and `/story`.
+- The overlay (`Walkthrough`) and debug panel (`WalkthroughDebug`) are mounted at the app root.
 
 ## Best Practices
 
