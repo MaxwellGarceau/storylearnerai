@@ -45,14 +45,13 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### Tables Overview
 
-The application uses four main tables:
+The application uses these main tables:
 
 1. **`users`** - Stores user profiles and preferences
-2. **`stories`** - Stores story content and metadata
-3. **`translations`** - Stores translated versions of stories
-4. **`user_progress`** - Tracks user learning progress (optional)
-
-> **Note**: The `user_progress` table is available but not actively used in the current implementation. User progress tracking can be enabled as needed.
+2. **`languages`** - Language lookup (ISO 639‑1)
+3. **`difficulty_levels`** - CEFR levels (A1–B2)
+4. **`saved_translations`** - User‑saved story translations
+5. **`vocabulary`** - User vocabulary words
 
 ### Schema Details
 
@@ -61,8 +60,8 @@ The application uses four main tables:
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    username VARCHAR(50) UNIQUE,
-    display_name VARCHAR(100),
+    username VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
     avatar_url TEXT,
     preferred_language VARCHAR(10) DEFAULT 'en',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -80,54 +79,68 @@ CREATE TABLE users (
 - `created_at`: Creation timestamp
 - `updated_at`: Last modification timestamp
 
-#### Stories Table
+#### Languages Table
 
 ```sql
-CREATE TABLE stories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    language VARCHAR(10) NOT NULL,
-    difficulty_level VARCHAR(20) NOT NULL CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
-    user_id UUID,
+CREATE TABLE languages (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(2) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    native_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Difficulty Levels Table
+
+```sql
+CREATE TABLE difficulty_levels (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(2) UNIQUE NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Saved Translations Table
+
+```sql
+CREATE TABLE saved_translations (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    original_story TEXT NOT NULL,
+    translated_story TEXT NOT NULL,
+    original_language_id INTEGER NOT NULL REFERENCES languages(id),
+    translated_language_id INTEGER NOT NULL REFERENCES languages(id),
+    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id),
+    title VARCHAR(255),
+    notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-**Fields:**
-
-- `id`: Unique identifier (UUID)
-- `title`: Story title
-- `content`: Full story text
-- `language`: Source language code (e.g., 'en', 'es', 'fr')
-- `difficulty_level`: Learning difficulty ('beginner', 'intermediate', 'advanced')
-- `user_id`: Optional user who created the story
-- `created_at`: Creation timestamp
-- `updated_at`: Last modification timestamp
-
-#### Translations Table
+#### Vocabulary Table
 
 ```sql
-CREATE TABLE translations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
-    target_language VARCHAR(10) NOT NULL,
-    translated_content TEXT NOT NULL,
+CREATE TABLE vocabulary (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    original_word VARCHAR(255) NOT NULL,
+    translated_word VARCHAR(255) NOT NULL,
+    translated_language_id INTEGER NOT NULL REFERENCES languages(id),
+    from_language_id INTEGER NOT NULL REFERENCES languages(id),
+    original_word_context TEXT,
+    translated_word_context TEXT,
+    definition TEXT,
+    part_of_speech VARCHAR(50),
+    frequency_level VARCHAR(50),
+    saved_translation_id INTEGER REFERENCES saved_translations(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(story_id, target_language)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
-
-**Fields:**
-
-- `id`: Unique identifier (UUID)
-- `story_id`: Reference to the original story
-- `target_language`: Target language code
-- `translated_content`: Translated story text
-- `created_at`: Creation timestamp
-- `updated_at`: Last modification timestamp
 
 > **Note**: The `user_progress` table schema has been removed from the current implementation. The schema can be added back when user progress tracking is needed.
 
@@ -353,40 +366,30 @@ CREATE POLICY "Users can delete their own profile" ON users
   FOR DELETE USING (auth.uid() = id);
 ```
 
-#### Stories Table
+#### Saved Translations Table
 
 ```sql
--- Allow public read access to stories
-CREATE POLICY "Stories are viewable by everyone" ON stories
-  FOR SELECT USING (true);
+CREATE POLICY "Users can view their own saved translations" ON saved_translations
+  FOR SELECT USING (auth.uid() = user_id);
 
--- Allow authenticated users to create stories
-CREATE POLICY "Users can create stories" ON stories
-  FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+CREATE POLICY "Users can insert their own saved translations" ON saved_translations
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Allow users to update their own stories
-CREATE POLICY "Users can update own stories" ON stories
-  FOR UPDATE USING (auth.uid() = user_id OR user_id IS NULL);
-
--- Allow users to delete their own stories
-CREATE POLICY "Users can delete own stories" ON stories
-  FOR DELETE USING (auth.uid() = user_id OR user_id IS NULL);
+CREATE POLICY "Users can update their own saved translations" ON saved_translations
+  FOR UPDATE USING (auth.uid() = user_id);
 ```
 
-#### Translations Table
+#### Vocabulary Table
 
 ```sql
--- Allow public read access to translations
-CREATE POLICY "Translations are viewable by everyone" ON translations
-  FOR SELECT USING (true);
+CREATE POLICY "Users can view their own vocabulary words" ON vocabulary
+  FOR SELECT USING (auth.uid() = user_id);
 
--- Allow authenticated users to create translations
-CREATE POLICY "Users can create translations" ON translations
-  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can insert their own vocabulary words" ON vocabulary
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Allow users to update translations
-CREATE POLICY "Users can update translations" ON translations
-  FOR UPDATE USING (true);
+CREATE POLICY "Users can update their own vocabulary words" ON vocabulary
+  FOR UPDATE USING (auth.uid() = user_id);
 ```
 
 > **Note**: The `user_progress` table and its RLS policies are available but not actively used in the current implementation. These can be enabled when user progress tracking is needed.

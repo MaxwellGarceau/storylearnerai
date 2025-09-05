@@ -4,7 +4,7 @@
 
 - [LLM Service System](llm-service-system.md) - AI-powered translation and content generation
 - [LLM Prompt System](llm-prompt-system.md) - Dynamic prompt configuration and management
-- [Translation Service](translation-service.md) - Story translation functionality
+- [Gemini Service Example](gemini-service-example.md) - Gemini configuration and usage
 - [Dictionary System](dictionary-system.md) - Real-time word lookup and definition system
 - [Routing System](routing-system.md) - Application navigation and routing
 - [Authentication System](auth-system.md) - User authentication and authorization

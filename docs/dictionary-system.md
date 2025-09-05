@@ -2,45 +2,45 @@
 
 ## Overview
 
-The dictionary system provides real-time word lookup functionality when users hover over words in translated stories. It follows a clean, layered architecture that makes it easy to switch between different data sources and extend functionality.
+The dictionary system provides real-time word lookup with caching, error handling, and language-aware search. It uses the Lexicala API (via RapidAPI) by default and can be disabled at runtime via environment variables.
 
 ## Architecture
 
 The system follows this layered architecture:
 
 ```
-useDictionary React hook ↔︎ dictionaryService ↔︎ Data transformation layer ↔︎ API Client ↔︎ External API
+useDictionary React hook ↔︎ DictionaryServiceImpl ↔︎ DictionaryApiManager ↔︎ LexicalaApiClient ↔︎ RapidAPI (Lexicala)
 ```
 
 ### Components
 
-1. **React Hook (`useDictionary`)**: Provides a clean interface for components to interact with the dictionary service
-2. **Dictionary Service**: Orchestrates API calls, data transformation, and caching
-3. **Data Transformation Layer**: Converts raw API responses to standardized format
-4. **API Client**: Handles HTTP requests to external dictionary APIs
-5. **External API**: Currently uses Free Dictionary API (https://dictionaryapi.dev/)
+1. **React Hook (`useDictionary`)**: Provides loading, error, and result state and a `searchWord` function
+2. **Dictionary Service (`DictionaryServiceImpl`)**: Orchestrates API calls, transformation, and 30‑minute caching
+3. **DictionaryApiManager**: Chooses and mediates between API clients (primary: `lexicala`)
+4. **API Client (`LexicalaApiClient`)**: Calls Lexicala via RapidAPI with consistent response shape
+5. **External API**: Lexicala (`https://lexicala1.p.rapidapi.com` via RapidAPI)
 
 ## Key Features
 
-- **Real-time word lookup** on hover
-- **Intelligent caching** with 30-minute expiration
-- **Error handling** with user-friendly messages
-- **Multi-language support** (currently English, easily extensible)
-- **Rich word information** including definitions, parts of speech, synonyms, antonyms, and more
-- **Responsive UI** with loading states and error handling
+- **Real-time word lookup** via `useDictionary().searchWord`
+- **Language-aware search**: `fromLanguage` and `targetLanguage` parameters
+- **Caching**: 30 minutes with automatic cleanup
+- **Error handling**: Standardized `DictionaryError` and disabled-state signaling
+- **Rich word information**: definitions, parts of speech, examples (when available)
 
 ## Usage
 
-### Basic Usage in Components
+### Basic Hook Usage
 
 ```tsx
-import { useDictionary } from '../hooks/useDictionary';
+import { useDictionary } from '@/hooks/useDictionary';
 
 function MyComponent() {
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
 
-  const handleWordHover = async (word: string) => {
-    await searchWord(word, 'en');
+  const handleLookup = async (word: string) => {
+    // fromLanguage optional, targetLanguage defaults to 'en'
+    await searchWord(word, 'es', 'en');
   };
 
   return (
@@ -50,35 +50,20 @@ function MyComponent() {
       {wordInfo && (
         <div>
           <h3>{wordInfo.word}</h3>
-          {wordInfo.definitions.map((def, index) => (
-            <p key={index}>{def.definition}</p>
+          {wordInfo.definitions.map((def, i) => (
+            <p key={i}>{def.definition}</p>
           ))}
         </div>
       )}
+      <button onClick={() => handleLookup('casa')}>Lookup</button>
     </div>
   );
 }
 ```
 
-### Using WordHighlight Component
+### Integrated UI
 
-The `WordHighlight` component automatically handles dictionary lookups:
-
-```tsx
-import WordHighlight from '../components/text/WordHighlight';
-
-function StoryText({ text, language }) {
-  return (
-    <div>
-      {text.split(' ').map((word, index) => (
-        <WordHighlight key={index} word={word} language={language}>
-          {word}
-        </WordHighlight>
-      ))}
-    </div>
-  );
-}
-```
+Interactive word actions (Translate, Dictionary, Save) are provided by `WordMenu` and are auth‑gated. See `src/components/text/WordMenu.tsx` for integration with `useDictionary()` and vocabulary saving.
 
 ## Data Structure
 
@@ -119,30 +104,19 @@ interface WordDefinition {
 
 ### Environment Variables
 
-No environment variables are currently required as the Free Dictionary API is free and doesn't require authentication.
+Set in `.env` (see `env.example`):
 
-### Service Configuration
-
-You can configure the dictionary service with different options:
-
-```typescript
-import { createDictionaryService } from '../lib/dictionary/dictionaryService';
-
-// Create service with mock data for testing
-const mockService = createDictionaryService({
-  useMock: true,
-  mockData: {
-    hello: {
-      /* mock word data */
-    },
-  },
-});
-
-// Create service with custom cache timeout
-const customService = createDictionaryService({
-  cacheTimeout: 60 * 60 * 1000, // 1 hour
-});
+```env
+VITE_DICTIONARY_API_ENDPOINT=https://lexicala1.p.rapidapi.com
+VITE_DICTIONARY_API_KEY=your-rapidapi-key
+VITE_DISABLE_DICTIONARY=false
 ```
+
+### Service Notes
+
+- The default instance is exported as `dictionaryService`.
+- If `VITE_DISABLE_DICTIONARY=true`, calls will short‑circuit with a standardized error.
+- Cache duration is 30 minutes by default.
 
 ## Extending the System
 
@@ -211,25 +185,13 @@ The system is designed to easily integrate parts of speech detection:
 
 ## Error Handling
 
-The system handles various error scenarios:
-
-- **Network errors**: When the API is unavailable
-- **Word not found**: When a word doesn't exist in the dictionary
-- **Rate limiting**: When API limits are exceeded
-- **Invalid responses**: When the API returns unexpected data
-
-All errors are standardized and include:
-
-- Error code
-- User-friendly message
-- Additional details for debugging
+Errors are normalized to `DictionaryError` with fields: `code`, `message`, and optional `details`. When disabled via env, an `API_ERROR` is returned with a descriptive message.
 
 ## Caching Strategy
 
-- **Cache duration**: 30 minutes by default
-- **Cache key**: `word:language` format
-- **Automatic cleanup**: Expired entries are removed automatically
-- **Memory efficient**: Uses Map for O(1) lookups
+- **Cache duration**: 30 minutes
+- **Cache key**: `word:fromLanguage:targetLanguage`
+- **Automatic cleanup** of expired entries
 
 ## Performance Considerations
 
@@ -240,19 +202,12 @@ All errors are standardized and include:
 
 ## Testing
 
-The system includes comprehensive tests:
-
-- **Unit tests** for all service layers
-- **Hook tests** for React integration
-- **Component tests** for UI behavior
-- **Mock data** for reliable testing
-
 Run tests with:
 
 ```bash
 npm run test:once -- src/lib/dictionary/
-npm run test:once -- src/hooks/__tests__/useDictionary.test.tsx
-npm run test:once -- src/components/story/__tests__/WordHighlight.test.tsx
+npm run test:once -- src/hooks/useDictionary.ts
+npm run test:once -- src/components/text/WordMenu.tsx
 ```
 
 ## Future Enhancements
@@ -273,7 +228,7 @@ npm run test:once -- src/components/story/__tests__/WordHighlight.test.tsx
 
 1. **Words not found**: Check if the word exists in the dictionary API
 2. **Slow responses**: Verify network connectivity and API status
-3. **Caching issues**: Clear cache using `service.clearCache()`
+3. **Caching issues**: Clear cache using `dictionaryService.clearCache()`
 4. **UI not updating**: Ensure proper React state management
 
 ### Debug Mode
@@ -296,7 +251,7 @@ interface UseDictionaryReturn {
   wordInfo: DictionaryWord | null;
   isLoading: boolean;
   error: DictionaryError | null;
-  searchWord: (word: string, language?: string) => Promise<void>;
+  searchWord: (word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode) => Promise<void>;
   clearError: () => void;
 }
 ```
@@ -305,9 +260,9 @@ interface UseDictionaryReturn {
 
 ```typescript
 interface DictionaryService {
-  getWordInfo(word: string, language?: string): Promise<DictionaryWord>;
+  getWordInfo(word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode): Promise<DictionaryWord>;
   searchWord(params: DictionarySearchParams): Promise<DictionaryWord>;
-  getCachedWord(word: string): DictionaryWord | null;
+  getCachedWord(word: string, fromLanguage?: LanguageCode, targetLanguage?: LanguageCode): DictionaryWord | null;
   clearCache(): void;
 }
 ```

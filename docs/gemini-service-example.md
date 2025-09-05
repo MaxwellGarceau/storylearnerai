@@ -16,60 +16,35 @@ npm install @google/genai
 
 ## Configuration
 
-To use the GeminiService, you need to configure it with your Google AI API key and model preferences.
+To use Gemini, configure env vars (the app reads them via `EnvironmentConfig`).
 
 ### Environment Variables
 
-Add these environment variables to your `.env` file:
+Add these environment variables to your `.env` file (see `env.example`):
 
 ```bash
 # Gemini Configuration
-LLM_PROVIDER=gemini
-LLM_API_KEY=your-google-ai-api-key
-LLM_MODEL=gemini-1.5-flash
-LLM_MAX_TOKENS=2000
-LLM_TEMPERATURE=0.7
+VITE_LLM_PROVIDER=gemini
+VITE_LLM_API_KEY=your-google-ai-api-key
+VITE_LLM_ENDPOINT=https://generativelanguage.googleapis.com/v1beta
+VITE_LLM_MODEL=gemini-2.5-flash-lite
+VITE_LLM_MAX_TOKENS=2000
+VITE_LLM_TEMPERATURE=0.7
+VITE_GEMINI_PROJECT_ID=your-project-id # Optional
 ```
 
-### Configuration Object
-
-```typescript
-import { GeminiConfig } from './src/lib/types/llm';
-
-const config: GeminiConfig = {
-  provider: 'gemini',
-  apiKey: 'your-google-ai-api-key',
-  endpoint: 'https://generativelanguage.googleapis.com/v1beta', // Optional
-  model: 'gemini-1.5-flash',
-  maxTokens: 2000,
-  temperature: 0.7,
-  projectId: 'your-project-id', // Optional
-};
-```
+The manager builds the config at runtime; no manual wiring is required.
 
 ## Usage
 
 ### Basic Usage
 
 ```typescript
-import { GeminiService } from './src/lib/llm/providers/GeminiService';
-import { GeminiConfig } from './src/lib/types/llm';
-import { logger } from './src/lib/logger';
+import { llmServiceManager } from '@/lib/llm/LLMServiceManager';
+import { logger } from '@/lib/logger';
 
-const config: GeminiConfig = {
-  provider: 'gemini',
-  apiKey: 'your-google-ai-api-key',
-  model: 'gemini-1.5-flash',
-  maxTokens: 2000,
-  temperature: 0.7,
-};
-
-const service = new GeminiService(config);
-
-// Generate a completion
-const response = await service.generateCompletion({
+const response = await llmServiceManager.generateCompletion({
   prompt: 'Write a short story about a robot learning to paint.',
-  model: 'gemini-1.5-flash',
   temperature: 0.8,
   maxTokens: 500,
 });
@@ -77,39 +52,15 @@ const response = await service.generateCompletion({
 logger.info('llm', 'Generated completion', { content: response.content });
 ```
 
-### Using the LLMServiceManager
+### Health Check
 
 ```typescript
-import { LLMServiceManager } from './src/lib/llm/LLMServiceManager';
-import { GeminiConfig } from './src/lib/types/llm';
-import { logger } from './src/lib/logger';
-
-const config: GeminiConfig = {
-  provider: 'gemini',
-  apiKey: 'your-google-ai-api-key',
-  model: 'gemini-1.5-flash',
-  maxTokens: 2000,
-  temperature: 0.7,
-};
-
-const manager = new LLMServiceManager();
-const service = manager.getService(config);
-
-const response = await service.generateCompletion({
-  prompt: 'Explain quantum computing in simple terms.',
-});
-
-logger.info('llm', 'Generated completion', { content: response.content });
+const isHealthy = await llmServiceManager.healthCheck();
 ```
 
 ## Supported Models
 
-The GeminiService supports various Gemini models:
-
-- `gemini-1.5-flash` - Fast, efficient model for most use cases
-- `gemini-1.5-flash-8b` - Smaller, faster variant
-- `gemini-1.5-pro` - More capable model for complex tasks
-- `gemini-2.0-flash-exp` - Experimental latest model
+Any text generation model supported by `@google/genai` and your key (e.g., `gemini-2.5-flash-lite`, `gemini-1.5-pro`).
 
 ## Features
 
@@ -118,7 +69,7 @@ The GeminiService supports various Gemini models:
 The service automatically tracks token usage:
 
 ```typescript
-const response = await service.generateCompletion({
+const response = await llmServiceManager.generateCompletion({
   prompt: 'Write a haiku about technology.',
 });
 
@@ -126,12 +77,9 @@ logger.info('llm', 'Token usage', { tokenUsage: response.tokenUsage });
 // Output: { promptTokens: 10, completionTokens: 25, totalTokens: 35 }
 ```
 
-### Health Check
+### Provider and Model
 
-```typescript
-const isHealthy = await service.healthCheck();
-logger.info('llm', 'Service health check', { isHealthy });
-```
+Use `llmServiceManager.getProvider()` and `llmServiceManager.getModel()` for display.
 
 ### Error Handling
 
@@ -139,12 +87,11 @@ The service provides comprehensive error handling:
 
 ```typescript
 try {
-  const response = await service.generateCompletion({
-    prompt: 'Generate content',
-  });
+  const response = await llmServiceManager.generateCompletion({ prompt: 'Generate content' });
 } catch (error) {
-  if (error.code === 'GEMINI_ERROR') {
-    logger.error('llm', 'Gemini API error', { error: error.message });
+  const err = error as { code?: string; message?: string };
+  if (err.code === 'GEMINI_ERROR') {
+    logger.error('llm', 'Gemini API error', { error: err.message });
   } else {
     logger.error('llm', 'Unexpected error', { error });
   }
@@ -156,7 +103,7 @@ try {
 ### Custom Parameters
 
 ```typescript
-const response = await service.generateCompletion({
+const response = await llmServiceManager.generateCompletion({
   prompt: 'Create a detailed character description.',
   model: 'gemini-1.5-pro',
   temperature: 0.9, // Higher creativity
@@ -170,14 +117,14 @@ You can specify different models for different use cases:
 
 ```typescript
 // For creative writing
-const creativeResponse = await service.generateCompletion({
+const creativeResponse = await llmServiceManager.generateCompletion({
   prompt: 'Write a poem about the ocean.',
   model: 'gemini-1.5-pro',
   temperature: 0.8,
 });
 
 // For factual information
-const factualResponse = await service.generateCompletion({
+const factualResponse = await llmServiceManager.generateCompletion({
   prompt: 'Explain the water cycle.',
   model: 'gemini-1.5-flash',
   temperature: 0.2,
@@ -186,11 +133,11 @@ const factualResponse = await service.generateCompletion({
 
 ## API Reference
 
-### GeminiService Methods
+### API Reference
 
-#### `generateCompletion(request: LLMRequest): Promise<LLMResponse>`
+#### `llmServiceManager.generateCompletion(request: LLMRequest): Promise<LLMResponse>`
 
-Generates a text completion using the Gemini API.
+Generates a text completion using the configured Gemini model.
 
 **Parameters:**
 
@@ -206,7 +153,7 @@ Generates a text completion using the Gemini API.
 - `model` (string): Model used
 - `provider` (string): Always 'gemini'
 
-#### `healthCheck(): Promise<boolean>`
+#### `llmServiceManager.healthCheck(): Promise<boolean>`
 
 Checks if the service is healthy and can make API calls.
 
@@ -264,7 +211,7 @@ Write a short story about a time traveler who discovers that changing the past
 has unexpected consequences. The story should be engaging and thought-provoking.
 `;
 
-const response = await service.generateCompletion({
+const response = await llmServiceManager.generateCompletion({
   prompt: storyPrompt,
   model: 'gemini-1.5-pro',
   temperature: 0.8,
@@ -284,7 +231,7 @@ Explain the concept of photosynthesis in a way that a 10-year-old would understa
 Use simple language and relatable examples.
 `;
 
-const response = await service.generateCompletion({
+const response = await llmServiceManager.generateCompletion({
   prompt: educationPrompt,
   model: 'gemini-1.5-flash',
   temperature: 0.3,

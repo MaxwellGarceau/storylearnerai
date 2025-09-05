@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Walkthrough System provides an interactive user onboarding experience that guides new users through the key features of StoryLearner AI. It uses tooltips, highlights, and step-by-step instructions to help users understand how to use the application effectively.
+The Walkthrough System provides an interactive user onboarding experience that guides new users through the key features of StoryLearner AI. It uses popover tooltips, a spotlight highlight overlay, and step-by-step instructions. It auto-starts by route and persists completion/skips in localStorage.
 
 ## Features
 
@@ -18,22 +18,22 @@ The Walkthrough System provides an interactive user onboarding experience that g
 
 ### Core Components
 
-1. **WalkthroughService** (`src/lib/walkthroughService.ts`)
+1. **WalkthroughService** (`src/lib/walkthrough/walkthroughService.ts`)
    - Singleton service that manages walkthrough state
    - Handles storage, navigation, and event management
    - Provides subscription-based state updates
 
-2. **WalkthroughOverlay** (`src/components/walkthrough/WalkthroughOverlay.tsx`)
-   - Main UI component that displays tooltips
-   - Handles positioning and user interactions
-   - Manages element highlighting
+2. **Walkthrough** (`src/components/walkthrough/Walkthrough.tsx`)
+   - UI component that displays popovers and the spotlight overlay
+   - Debounced scroll/resize updates to reduce jumps
+   - Ensures the overlay stays within viewport bounds
 
 3. **useWalkthrough Hook** (`src/hooks/useWalkthrough.ts`)
    - React hook for easy walkthrough integration
    - Provides auto-start functionality based on routes
    - Exposes walkthrough control methods
 
-4. **WalkthroughConfigs** (`src/lib/walkthroughConfigs.ts`)
+4. **WalkthroughConfigs** (`src/lib/walkthrough/walkthroughConfigs.ts`)
    - Predefined walkthrough configurations
    - Step definitions with targeting and positioning
 
@@ -42,17 +42,15 @@ The Walkthrough System provides an interactive user onboarding experience that g
 ```
 src/
 ├── lib/
-│   ├── types/walkthrough.ts           # TypeScript type definitions
-│   ├── walkthroughService.ts          # Core service logic
-│   └── walkthroughConfigs.ts          # Walkthrough configurations
+│   ├── types/app/walkthrough.ts           # TypeScript type definitions
+│   └── walkthrough/
+│       ├── walkthroughService.ts          # Core service logic
+│       └── walkthroughConfigs.ts          # Walkthrough configurations
 ├── hooks/
-│   └── useWalkthrough.ts              # React hook
+│   └── useWalkthrough.ts                  # React hook (route auto-start)
 ├── components/walkthrough/
-│   ├── WalkthroughOverlay.tsx         # Main overlay component
-│   └── WalkthroughTrigger.tsx         # Manual trigger button
-└── __tests__/walkthrough/
-    ├── WalkthroughService.test.ts     # Service tests
-    └── useWalkthrough.test.tsx        # Hook tests
+│   ├── Walkthrough.tsx                    # Overlay + popover component
+│   └── WalkthroughDebug.tsx               # Debug/controls
 ```
 
 ## Usage
@@ -63,17 +61,19 @@ The walkthrough system is automatically integrated into the main App component:
 
 ```tsx
 // src/App.tsx
-import { WalkthroughOverlay } from './components/walkthrough/WalkthroughOverlay';
-import { useWalkthrough } from './hooks/useWalkthrough';
+import { Walkthrough } from '@/components/walkthrough/Walkthrough';
+import { WalkthroughDebug } from '@/components/walkthrough/WalkthroughDebug';
+import { useWalkthrough } from '@/hooks/useWalkthrough';
 
-function App() {
-  useWalkthrough(); // Initialize walkthrough hook
-
+function AppContent() {
+  useWalkthrough();
+  const showDebug = process.env.NODE_ENV === 'development' && window.location.search.includes('debug=walkthrough');
   return (
-    <Router>
-      {/* Your routes */}
-      <WalkthroughOverlay /> {/* Render overlay */}
-    </Router>
+    <>
+      {/* Routes here */}
+      <Walkthrough />
+      <WalkthroughDebug show={showDebug} />
+    </>
   );
 }
 ```
@@ -156,7 +156,7 @@ Then reference in walkthrough config:
 
 ## Positioning
 
-The overlay automatically positions itself relative to the target element:
+The popover positions relative to the target, and the overlay uses a `clip-path` spotlight rectangle with padding around the element. Scroll and resize are debounced for stability.
 
 - **top**: Above the element
 - **bottom**: Below the element
@@ -208,8 +208,7 @@ The walkthrough system includes CSS for highlighting elements:
 The walkthrough system includes comprehensive tests:
 
 ```bash
-# Run walkthrough tests
-npm run test:once -- src/__tests__/walkthrough/
+npm run test:once -- src/components/walkthrough/__tests__
 ```
 
 Tests cover:
@@ -234,7 +233,7 @@ Tests cover:
 
 ### Story Walkthrough
 
-- **Targets**: Save translation button, login/signup buttons
+- **Targets**: Sign up link (if guest), Save translation button, Dashboard link (if signed in)
 - **Purpose**: Show users how to save translations and create accounts
 
 ## Future Enhancements
