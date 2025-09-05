@@ -1,6 +1,27 @@
 import { Button } from '../Button';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-interface FormActionsProps {
+const formActionsVariants = cva('flex justify-end space-x-2 pt-4 p-6', {
+  variants: {
+    align: {
+      end: 'justify-end',
+      start: 'justify-start',
+      center: 'justify-center',
+      between: 'justify-between',
+    },
+    padded: {
+      true: 'pt-4 p-6',
+      false: 'pt-2 p-0',
+    },
+  },
+  defaultVariants: {
+    align: 'end',
+    padded: true,
+  },
+});
+
+interface FormActionsProps extends VariantProps<typeof formActionsVariants> {
   onCancel: () => void;
   onSubmit?: () => void;
   submitLabel?: string;
@@ -18,9 +39,11 @@ export function FormActions({
   isSubmitting = false,
   isDisabled = false,
   className = '',
+  align,
+  padded,
 }: FormActionsProps) {
   return (
-    <div className={`flex justify-end space-x-2 pt-4 p-6 ${className}`}>
+    <div className={cn(formActionsVariants({ align, padded }), className)}>
       <Button
         type='button'
         variant='outline'

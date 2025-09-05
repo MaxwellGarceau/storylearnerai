@@ -1,7 +1,28 @@
 import { FieldWrapper } from './FieldWrapper';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
-interface SelectFieldProps<TValue extends string | number> {
+const selectVariants = cva('w-full p-2 text-sm border rounded-md', {
+  variants: {
+    state: {
+      default: '',
+      error: 'border-destructive',
+    },
+    size: {
+      sm: 'h-8',
+      md: 'h-9',
+      lg: 'h-10',
+    },
+  },
+  defaultVariants: {
+    state: 'default',
+    size: 'md',
+  },
+});
+
+interface SelectFieldProps<TValue extends string | number>
+  extends VariantProps<typeof selectVariants> {
   id: string;
   label: string;
   value: TValue;
@@ -21,6 +42,8 @@ export function SelectField<TValue extends string | number>({
   required,
   error,
   className,
+  state,
+  size,
 }: SelectFieldProps<TValue>) {
   return (
     <FieldWrapper
@@ -40,7 +63,7 @@ export function SelectField<TValue extends string | number>({
               : e.target.value) as TValue
           )
         }
-        className={`w-full p-2 text-sm border rounded-md ${error ? 'border-destructive' : ''}`}
+        className={cn(selectVariants({ state: error ? 'error' : state, size }))}
       >
         {children}
       </select>

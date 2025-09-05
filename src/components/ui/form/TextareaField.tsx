@@ -1,6 +1,26 @@
 import { FieldWrapper } from './FieldWrapper';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-interface TextareaFieldProps {
+const textareaVariants = cva('w-full p-2 border rounded-md resize-none', {
+  variants: {
+    state: {
+      default: '',
+      error: 'border-destructive',
+    },
+    size: {
+      sm: 'text-sm',
+      md: 'text-sm',
+      lg: 'text-base',
+    },
+  },
+  defaultVariants: {
+    state: 'default',
+    size: 'md',
+  },
+});
+
+interface TextareaFieldProps extends VariantProps<typeof textareaVariants> {
   id: string;
   label: string;
   value: string;
@@ -22,6 +42,8 @@ export function TextareaField({
   required,
   error,
   className,
+  state,
+  size,
 }: TextareaFieldProps) {
   return (
     <FieldWrapper
@@ -37,7 +59,9 @@ export function TextareaField({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows ?? 3}
-        className='w-full p-2 border rounded-md resize-none'
+        className={cn(
+          textareaVariants({ state: error ? 'error' : state, size })
+        )}
       />
     </FieldWrapper>
   );
