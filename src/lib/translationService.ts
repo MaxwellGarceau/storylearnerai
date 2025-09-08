@@ -220,21 +220,13 @@ class TranslationService {
       return this.buildFallbackPrompt(request);
     }
 
-    // Use the prompt configuration service to build a customized prompt
-    const basePrompt = await generalPromptConfigService.buildPrompt(context);
-
-    // If user selected TARGET vocabulary, append instruction block to include them.
+    // Use the prompt configuration service to build the complete prompt with vocabulary
     if (request.selectedVocabulary && request.selectedVocabulary.length > 0) {
-      const vocabList = request.selectedVocabulary
-        .slice(0, 30)
-        .map(w => `- ${w}`)
-        .join('\n');
-      const vocabInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching ${request.difficulty} level:\n${vocabList}\n`;
-      return `${basePrompt}${vocabInstruction}`;
+      return await generalPromptConfigService.buildPromptWithVocabulary(context, request.selectedVocabulary);
     }
 
-
-    return basePrompt;
+    // Use the prompt configuration service to build a basic prompt without vocabulary
+    return await generalPromptConfigService.buildPrompt(context);
   }
 
   /**
