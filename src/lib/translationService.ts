@@ -427,6 +427,8 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
       return { includedVocabulary: [], missingVocabulary: [] };
     }
 
+    console.log('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
+
     // Validate that we have target language text to analyze
     if (
       !targetLanguageTranslatedText ||

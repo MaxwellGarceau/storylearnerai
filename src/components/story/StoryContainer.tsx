@@ -11,6 +11,7 @@ import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
 import { useToast } from '../../hooks/useToast';
 import { useTranslation } from 'react-i18next';
+import { useVocabulary } from '../../hooks/useVocabulary';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -32,6 +33,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
 
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { vocabulary } = useVocabulary();
 
   const handleFormDataChange = (
     field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
@@ -63,13 +65,49 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     setTranslationError(null);
 
     try {
+      // Ensure selected vocabulary are TARGET-language words for the current language pair
+      const availableVocabulary = vocabulary.filter(v => {
+        return (
+          v.from_language?.code === formData.fromLanguage &&
+          v.translated_language?.code === formData.language
+        );
+      });
+
+      const lowerToTranslated = new Map<string, string>();
+      const lowerToOriginalTranslated = new Map<string, string>();
+      for (const v of availableVocabulary) {
+        lowerToTranslated.set(v.translated_word.toLowerCase(), v.translated_word);
+        lowerToOriginalTranslated.set(
+          v.original_word.toLowerCase(),
+          v.translated_word
+        );
+      }
+
+      const mappedSelectedVocabulary = Array.from(
+        new Set(
+          (formData.selectedVocabulary ?? []).map(word => {
+            const lower = word.toLowerCase().trim();
+            // If already a target word, keep canonical target form
+            if (lowerToTranslated.has(lower)) {
+              return lowerToTranslated.get(lower) as string;
+            }
+            // If it matches a source (original) word, map to target word
+            if (lowerToOriginalTranslated.has(lower)) {
+              return lowerToOriginalTranslated.get(lower) as string;
+            }
+            // Otherwise, keep as-is (best effort)
+            return word;
+          })
+        )
+      );
+
       // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
       const response = await translationService.translate({
         text: formData.story,
         fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
-        selectedVocabulary: formData.selectedVocabulary,
+        selectedVocabulary: mappedSelectedVocabulary,
       });
 
       // Trigger the view switch to story reader page
