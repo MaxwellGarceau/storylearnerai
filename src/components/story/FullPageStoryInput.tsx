@@ -9,6 +9,7 @@ import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/Tooltip';
 import PDFUploadModal from './PDFUploadModal';
 
 interface FullPageStoryInputProps {
@@ -93,6 +94,19 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
   const handlePDFTextExtracted = (text: string) => {
     onChange(text);
+  };
+
+  const handleGoToOptionsSection = (sectionName: 'language' | 'difficulty' | 'vocabulary') => {
+    setShowConfirmation(false);
+    setShowOptions(true);
+    // Small delay to ensure modal is rendered before scrolling
+    setTimeout(() => {
+      const sectionSelector = `[data-${sectionName}-section]`;
+      const sectionElement = document.querySelector(sectionSelector);
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
@@ -255,7 +269,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
             <div className='space-y-4'>
               {/* Language Selection */}
-              <div className='space-y-2'>
+              <div className='space-y-2' data-language-section>
                 <label className='text-sm font-medium'>
                   {t('storyInput.optionsModal.languageLabel')}
                 </label>
@@ -276,7 +290,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
               </div>
 
               {/* Difficulty Selection */}
-              <div className='space-y-2'>
+              <div className='space-y-2' data-difficulty-section>
                 <label className='text-sm font-medium'>
                   {t('storyInput.optionsModal.difficultyLabel')}
                 </label>
@@ -374,25 +388,61 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 <span className='text-muted-foreground'>
                   {t('storyInput.confirmationModal.from')}
                 </span>
-                <span className='font-medium'>
-                  {getLanguageName(formData.fromLanguage)}
-                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type='button'
+                      onClick={() => handleGoToOptionsSection('language')}
+                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
+                      aria-label={t('storyInput.confirmationModal.editLanguage')}
+                    >
+                      {getLanguageName(formData.fromLanguage)}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
               <div className='flex justify-between'>
                 <span className='text-muted-foreground'>
                   {t('storyInput.confirmationModal.to')}
                 </span>
-                <span className='font-medium'>
-                  {getLanguageName(formData.language)}
-                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type='button'
+                      onClick={() => handleGoToOptionsSection('language')}
+                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
+                      aria-label={t('storyInput.confirmationModal.editLanguage')}
+                    >
+                      {getLanguageName(formData.language)}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
               <div className='flex justify-between'>
                 <span className='text-muted-foreground'>
                   {t('storyInput.confirmationModal.difficulty')}
                 </span>
-                <span className='font-medium'>
-                  {getDifficultyLabel(formData.difficulty)}
-                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type='button'
+                      onClick={() => handleGoToOptionsSection('difficulty')}
+                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
+                      aria-label={t('storyInput.confirmationModal.editDifficulty')}
+                    >
+                      {getDifficultyLabel(formData.difficulty)}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('storyInput.confirmationModal.clickToChangeDifficulty')}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
               <div className='flex justify-between items-start'>
                 <span className='text-muted-foreground'>
@@ -401,15 +451,39 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 <div className='text-right'>
                   {formData.selectedVocabulary?.length ? (
                     <>
-                      <div className='text-xs text-muted-foreground'>
-                        {t(
-                          'storyInput.confirmationModal.vocabularySelectedCount',
-                          { count: formData.selectedVocabulary.length }
-                        )}
-                      </div>
-                      <div className='mt-1 text-sm'>
-                        {formData.selectedVocabulary.join(', ')}
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type='button'
+                            onClick={() => handleGoToOptionsSection('vocabulary')}
+                            className='text-xs text-muted-foreground underline underline-offset-2 hover:opacity-90 text-right block'
+                            aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                          >
+                            {t(
+                              'storyInput.confirmationModal.vocabularySelectedCount',
+                              { count: formData.selectedVocabulary.length }
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type='button'
+                            onClick={() => handleGoToOptionsSection('vocabulary')}
+                            className='mt-1 text-sm underline underline-offset-2 hover:opacity-90 text-right block'
+                            aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                          >
+                            {formData.selectedVocabulary.join(', ')}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </>
                   ) : (
                     <div className='text-sm'>
@@ -419,26 +493,23 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                       {user && (
                         <>
                           <span className='mx-1'>·</span>
-                          <button
-                            type='button'
-                            onClick={() => {
-                              setShowConfirmation(false);
-                              setShowOptions(true);
-                              // Small delay to ensure modal is rendered before scrolling
-                              setTimeout(() => {
-                                const vocabularySection = document.querySelector('[data-vocabulary-section]');
-                                if (vocabularySection) {
-                                  vocabularySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }
-                              }, 100);
-                            }}
-                            className='text-primary underline underline-offset-2 hover:opacity-90'
-                            aria-label={t(
-                              'storyInput.confirmationModal.goToVocabulary'
-                            )}
-                          >
-                            {t('storyInput.confirmationModal.goToVocabulary')}
-                          </button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type='button'
+                                onClick={() => handleGoToOptionsSection('vocabulary')}
+                                className='text-primary underline underline-offset-2 hover:opacity-90'
+                                aria-label={t(
+                                  'storyInput.confirmationModal.goToVocabulary'
+                                )}
+                              >
+                                {t('storyInput.confirmationModal.goToVocabulary')}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                            </TooltipContent>
+                          </Tooltip>
                         </>
                       )}
                     </div>

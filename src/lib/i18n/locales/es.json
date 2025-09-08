@@ -299,7 +299,10 @@
       "noVocabularySelected": "Ninguno",
       "cancel": "Cancelar",
       "goToVocabulary": "Ir a Vocabulario",
-      "confirm": "Confirmar y Traducir"
+      "confirm": "Confirmar y Traducir",
+      "clickToChangeLanguage": "Haz clic para cambiar la configuración de idioma",
+      "clickToChangeDifficulty": "Haz clic para cambiar la configuración de dificultad",
+      "clickToChangeVocabulary": "Haz clic para cambiar la configuración de vocabulario"
     },
     "validation": {
       "invalidInput": "Entrada inválida detectada",

@@ -308,7 +308,10 @@
       "noVocabularySelected": "None",
       "cancel": "Cancel",
       "goToVocabulary": "Go to Vocabulary",
-      "confirm": "Confirm & Translate"
+      "confirm": "Confirm & Translate",
+      "clickToChangeLanguage": "Click to change language settings",
+      "clickToChangeDifficulty": "Click to change difficulty settings",
+      "clickToChangeVocabulary": "Click to change vocabulary settings"
     },
     "validation": {
       "invalidInput": "Invalid input detected",
