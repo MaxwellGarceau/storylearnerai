@@ -67,7 +67,7 @@ describe('PromptConfigService', () => {
     });
   });
 
-  describe('buildDifficultyLevelAndLanguagePrompt - Comprehensive Validation', () => {
+  describe('buildTranslationPrompt - Comprehensive Validation', () => {
     const mockContext: PromptBuildContext = {
       fromLanguage: 'es',
       toLanguage: 'en',
@@ -85,8 +85,8 @@ describe('PromptConfigService', () => {
         difficulty: 'b2',
       };
 
-      const a1Prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(a1Context);
-      const b2Prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(b2Context);
+      const a1Prompt = await generalPromptConfigService.buildTranslationPrompt(a1Context);
+      const b2Prompt = await generalPromptConfigService.buildTranslationPrompt(b2Context);
 
       expect(a1Prompt).not.toEqual(b2Prompt);
       expect(a1Prompt).toContain('most common 1000 English words');
@@ -105,8 +105,8 @@ describe('PromptConfigService', () => {
         text: 'Hello, how are you?',
       };
 
-      const enPrompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(enContext);
-      const esPrompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(esContext);
+      const enPrompt = await generalPromptConfigService.buildTranslationPrompt(enContext);
+      const esPrompt = await generalPromptConfigService.buildTranslationPrompt(esContext);
 
       expect(enPrompt).not.toEqual(esPrompt);
       expect(enPrompt).toContain('English');
@@ -223,7 +223,7 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?',
       };
 
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(context);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(context);
       expect(prompt).toContain('Native Speaker Guidance');
       expect(prompt).toContain('Grammar Focus');
       expect(prompt).toContain('Vocabulary Focus');
@@ -237,7 +237,7 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?',
       };
 
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(context);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(context);
       // The prompt should still contain native-to-target instructions since fromLanguage is provided
       expect(prompt).toContain('Native Speaker Guidance');
     });
@@ -253,7 +253,7 @@ describe('PromptConfigService', () => {
       };
 
       const prompt =
-        await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(contextWithEmptyText);
+        await generalPromptConfigService.buildTranslationPrompt(contextWithEmptyText);
 
       // Should handle empty text without errors
       expect(prompt).toContain('es Story:');
@@ -269,7 +269,7 @@ describe('PromptConfigService', () => {
       };
 
       const prompt =
-        await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(contextWithQuotes);
+        await generalPromptConfigService.buildTranslationPrompt(contextWithQuotes);
 
       // Should preserve quotes and apostrophes
       expect(prompt).toContain('"Hello, how are you?"');
@@ -286,7 +286,7 @@ describe('PromptConfigService', () => {
     };
 
     it('should include native-to-target instruction sections when fromLanguage is provided', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for native-to-target sections
       expect(prompt).toContain('Native Speaker Guidance:');
@@ -295,7 +295,7 @@ describe('PromptConfigService', () => {
     });
 
     it('should include specific vocabulary instructions for A1 level', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for A1-specific vocabulary instructions
       expect(prompt).toContain('1000 English words');
@@ -303,7 +303,7 @@ describe('PromptConfigService', () => {
     });
 
     it('should include specific grammar instructions for A1 level', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for A1-specific grammar instructions
       expect(prompt).toContain('present simple');
@@ -312,7 +312,7 @@ describe('PromptConfigService', () => {
     });
 
     it('should include specific style instructions for A1 level', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for A1-specific style instructions
       expect(prompt).toContain('5-10 words');
@@ -320,7 +320,7 @@ describe('PromptConfigService', () => {
     });
 
     it('should include native-to-target grammar focus instructions', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for native-to-target grammar instructions
       expect(prompt).toContain('SUBJECT PRONOUNS:');
@@ -328,7 +328,7 @@ describe('PromptConfigService', () => {
     });
 
     it('should include native-to-target vocabulary focus instructions', async () => {
-      const prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(mockContext);
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for native-to-target vocabulary instructions
       expect(prompt).toContain('FALSE FRIENDS:');
@@ -349,8 +349,8 @@ describe('PromptConfigService', () => {
         text: 'Hola, ¿cómo estás?',
       };
 
-      const a1Prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(a1Context);
-      const b2Prompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(b2Context);
+      const a1Prompt = await generalPromptConfigService.buildTranslationPrompt(a1Context);
+      const b2Prompt = await generalPromptConfigService.buildTranslationPrompt(b2Context);
 
       // A1 should contain beginner-specific content
       expect(a1Prompt).toContain('1000 English words');
@@ -376,8 +376,8 @@ describe('PromptConfigService', () => {
         text: 'Hello, how are you?',
       };
 
-      const enPrompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(enContext);
-      const esPrompt = await generalPromptConfigService.buildDifficultyLevelAndLanguagePrompt(esContext);
+      const enPrompt = await generalPromptConfigService.buildTranslationPrompt(enContext);
+      const esPrompt = await generalPromptConfigService.buildTranslationPrompt(esContext);
 
       // English target should contain English-specific instructions
       expect(enPrompt).toContain('English words');

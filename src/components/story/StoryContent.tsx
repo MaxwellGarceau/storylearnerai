@@ -35,6 +35,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
           savedTranslationId={savedTranslationId}
+          includedVocabulary={translationData.includedVocabulary}
         />
       </div>
     </div>

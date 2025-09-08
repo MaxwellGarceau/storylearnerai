@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Token } from '../../../hooks/interactiveText/useTokenizedText';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import WordToken from './WordToken';
 
 interface InteractiveTextViewProps {
@@ -7,6 +8,8 @@ interface InteractiveTextViewProps {
   tokens: Token[];
   enableTooltips: boolean;
   disabled: boolean;
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   getOriginalSentence: (segmentIndex: number) => string;
   getTranslatedSentence: (originalSentence: string) => string | undefined;
   isSaved: (normalizedWord: string) => boolean;
@@ -20,6 +23,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   tokens,
   enableTooltips,
   disabled,
+  fromLanguage,
+  targetLanguage,
   getOriginalSentence,
   getTranslatedSentence,
   isSaved,
@@ -66,6 +71,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               translatedWord={overlayTranslatedWord}
               originalSentence={originalSentence}
               translatedSentence={translatedSentence}
+              fromLanguage={fromLanguage}
+              targetLanguage={targetLanguage}
               onOpenChange={isOpen => {
                 if (isOpen) setOpenMenuIndex(idx);
                 else if (open) setOpenMenuIndex(null);

@@ -2,6 +2,7 @@ import React from 'react';
 import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
 import { useInteractiveTextContext } from '../useInteractiveTextContext';
+import type { LanguageCode } from '../../../types/llm/prompts';
 
 interface WordTokenProps {
   normalizedWord: string;
@@ -13,6 +14,8 @@ interface WordTokenProps {
   translatedWord?: string; // used for overlay only (runtime translation)
   originalSentence: string;
   translatedSentence?: string;
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   onOpenChange: (open: boolean) => void;
   onWordClick: () => void;
   onTranslate: () => void;
@@ -30,6 +33,8 @@ const WordToken: React.FC<WordTokenProps> = ({
   translatedWord,
   originalSentence,
   translatedSentence,
+  fromLanguage,
+  targetLanguage,
   onOpenChange,
   onWordClick,
   onTranslate,
@@ -37,9 +42,20 @@ const WordToken: React.FC<WordTokenProps> = ({
   disabled,
 }) => {
   const ctx = useInteractiveTextContext();
-  const savedHighlightClass = isSaved
+  const isIncludedVocabulary = ctx?.isIncludedVocabulary(normalizedWord) ?? false;
+
+  // Use green highlighting for included vocabulary words, yellow for saved words
+  const vocabularyHighlightClass = isIncludedVocabulary
+    ? 'bg-green-200 dark:bg-green-900/40'
+    : isSaved
     ? 'bg-yellow-200 dark:bg-yellow-900/30'
     : '';
+
+  const handleWordClick = () => {
+    if (enableTooltips && !disabled) {
+      onWordClick();
+    }
+  };
 
   if (!enableTooltips || disabled) {
     return (
@@ -52,7 +68,7 @@ const WordToken: React.FC<WordTokenProps> = ({
             <WordHighlight
               word={normalizedWord}
               disabled={disabled}
-              className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
+              className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
             >
               {cleanWord}
             </WordHighlight>
@@ -61,7 +77,7 @@ const WordToken: React.FC<WordTokenProps> = ({
           <WordHighlight
             word={normalizedWord}
             disabled={disabled}
-            className={savedHighlightClass}
+            className={vocabularyHighlightClass}
           >
             {cleanWord}
           </WordHighlight>
@@ -80,8 +96,8 @@ const WordToken: React.FC<WordTokenProps> = ({
         onTranslate={() => {
           onTranslate();
         }}
-        fromLanguage={ctx?.fromLanguage}
-        targetLanguage={ctx?.targetLanguage}
+        fromLanguage={fromLanguage}
+        targetLanguage={targetLanguage}
         translatedWord={translatedWord}
         originalSentence={originalSentence}
         translatedSentence={translatedSentence}
@@ -97,8 +113,8 @@ const WordToken: React.FC<WordTokenProps> = ({
               word={normalizedWord}
               disabled={disabled}
               active={isOpen}
-              className={`line-through decoration-2 decoration-red-500 ${savedHighlightClass}`}
-              onClick={onWordClick}
+              className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
+              onClick={handleWordClick}
             >
               {cleanWord}
             </WordHighlight>
@@ -108,8 +124,8 @@ const WordToken: React.FC<WordTokenProps> = ({
             word={normalizedWord}
             disabled={disabled}
             active={isOpen}
-            className={savedHighlightClass}
-            onClick={onWordClick}
+            className={vocabularyHighlightClass}
+              onClick={handleWordClick}
           >
             {cleanWord}
           </WordHighlight>

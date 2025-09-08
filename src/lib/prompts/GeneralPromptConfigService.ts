@@ -269,7 +269,7 @@ class GeneralPromptConfigService {
   /**
    * Build a complete prompt from the template and context
    */
-  async buildDifficultyLevelAndLanguagePrompt(context: PromptBuildContext): Promise<string> {
+  private async buildDifficultyLevelAndLanguagePrompt(context: PromptBuildContext): Promise<string> {
     logger.time('prompts', 'build-prompt');
 
     try {

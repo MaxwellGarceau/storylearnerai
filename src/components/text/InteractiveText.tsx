@@ -15,6 +15,7 @@ interface InteractiveTextProps {
   enableTooltips?: boolean;
   disabled?: boolean;
   savedTranslationId?: number;
+  includedVocabulary?: string[];
 }
 
 const InteractiveText: React.FC<InteractiveTextProps> = ({
@@ -25,6 +26,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   enableTooltips = true,
   disabled = false,
   savedTranslationId,
+  includedVocabulary = [],
 }) => {
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
@@ -54,6 +56,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     targetLanguage,
   });
 
+
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
     const alreadyRuntime = translatedWords.get(w);
@@ -63,6 +66,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     }
     void handleTranslate(w, segmentIndex);
   };
+
 
   return (
     <InteractiveTextProvider
@@ -75,6 +79,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         translatedSentences,
         translatingWords,
         savedTranslationId,
+        includedVocabulary,
         getTranslatedWord: useCallback(
           (word: string) => translatedWords.get(word),
           [translatedWords]
@@ -87,6 +92,10 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
           (word: string) => savedOriginalWords.has(word),
           [savedOriginalWords]
         ),
+        isIncludedVocabulary: useCallback(
+          (word: string) => includedVocabulary.includes(word),
+          [includedVocabulary]
+        ),
       }}
     >
       <InteractiveTextView
@@ -94,6 +103,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         tokens={tokens}
         enableTooltips={enableTooltips}
         disabled={disabled}
+        fromLanguage={fromLanguage}
+        targetLanguage={targetLanguage}
         getOriginalSentence={(segmentIndex: number) =>
           extractSentenceContext(segmentIndex)
         }
