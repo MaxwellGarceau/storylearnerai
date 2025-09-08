@@ -373,7 +373,11 @@ class GeneralPromptConfigService {
       .slice(0, 30)
       .map(w => `- ${w}`)
       .join('\n');
-    const vocabInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching ${context.difficulty} level:\n${vocabList}\n`;
+
+    const vocabInstruction = this.templateConfig.vocabularySection
+      .replace('{difficulty}', context.difficulty)
+      .replace('{vocabList}', vocabList);
+
     return `${basePrompt}${vocabInstruction}`;
   }
 

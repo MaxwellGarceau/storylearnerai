@@ -68,6 +68,7 @@ export interface GeneralPromptConfig {
 
 export interface TemplateConfig {
   template: string;
+  vocabularySection: string;
 }
 
 export type LanguagePromptConfig = {
