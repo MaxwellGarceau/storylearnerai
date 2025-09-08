@@ -9,7 +9,6 @@ import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
 import PDFUploadModal from './PDFUploadModal';
 
 interface FullPageStoryInputProps {
@@ -47,7 +46,6 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const { t } = useTranslation();
   const { vocabulary, loading: vocabLoading } = useVocabulary();
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -305,7 +303,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
               </div>
 
               {/* Vocabulary Selection */}
-              <div className='space-y-2'>
+              <div className='space-y-2' data-vocabulary-section>
                 <label className='text-sm font-medium'>
                   {t('storyInput.optionsModal.vocabularyTitle')}
                 </label>
@@ -425,7 +423,14 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                             type='button'
                             onClick={() => {
                               setShowConfirmation(false);
-                              navigate('/translate#vocabulary');
+                              setShowOptions(true);
+                              // Small delay to ensure modal is rendered before scrolling
+                              setTimeout(() => {
+                                const vocabularySection = document.querySelector('[data-vocabulary-section]');
+                                if (vocabularySection) {
+                                  vocabularySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                              }, 100);
                             }}
                             className='text-primary underline underline-offset-2 hover:opacity-90'
                             aria-label={t(
