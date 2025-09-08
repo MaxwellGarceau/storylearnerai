@@ -546,5 +546,9 @@
       "message": "Crea una cuenta gratis para traducir palabras, abrir el diccionario y guardar vocabulario en tu biblioteca.",
       "cta": "Regístrate para comenzar"
     }
+  },
+  "storyContainer": {
+    "vocabularyWarningTitle": "{{count}} palabra{{count, plural, one {} other {s}}} de vocabulario no incluida{{count, plural, one {} other {s}}}",
+    "vocabularyWarningDescription": "De las {{totalCount}} palabras de vocabulario que seleccionaste, {{missingCount}} no pudieron ser incluidas naturalmente en la historia: {{missingWords}}. Consulta la barra lateral de Información para más detalles."
   }
 }
