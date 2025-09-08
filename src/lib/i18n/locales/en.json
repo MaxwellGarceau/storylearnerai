@@ -266,7 +266,16 @@
       "a2": "A2 (Elementary)",
       "b1": "B1 (Intermediate)",
       "b2": "B2 (Upper Intermediate)"
-    }
+    },
+    "vocabularySection": "Vocabulary in Story",
+    "includedVocabulary": "Included Vocabulary",
+    "includedVocabularyDescription": "These vocabulary words were successfully included in your translated story.",
+    "missingVocabulary": "Missing Vocabulary",
+    "missingVocabularyDescription": "These vocabulary words could not be included naturally in the story. Try selecting fewer words or different vocabulary.",
+    "totalSelected": "Total Selected",
+    "totalIncluded": "Total Included",
+    "totalMissing": "Total Missing",
+    "noVocabularySelected": "No vocabulary words were selected for this translation."
   },
   "storyInput": {
     "placeholder": "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
@@ -555,5 +564,9 @@
       "message": "Create a free account to translate words, open the dictionary, and save vocabulary to your library.",
       "cta": "Sign up to get started"
     }
+  },
+  "storyContainer": {
+    "vocabularyWarningTitle": "{{count}} vocabulary word{{count, plural, one {} other {s}}} not included",
+    "vocabularyWarningDescription": "Of the {{totalCount}} vocabulary words you selected, {{missingCount}} couldn't be naturally included in the story: {{missingWords}}. Check the Info sidebar for details."
   }
 }

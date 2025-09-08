@@ -26,6 +26,9 @@ export interface TranslationResponse {
   difficulty: DifficultyLevel;
   provider?: string;
   model?: string;
+  selectedVocabulary?: string[];
+  includedVocabulary?: string[];
+  missingVocabulary?: string[];
 }
 
 export interface WordTranslationRequest {
@@ -70,6 +73,14 @@ class TranslationService {
         temperature: 0.7,
       });
 
+      // Track vocabulary inclusion
+      const selectedVocabulary = request.selectedVocabulary ?? [];
+      const { includedVocabulary, missingVocabulary } =
+        this.analyzeVocabularyInclusion(
+          llmResponse.content,
+          selectedVocabulary
+        );
+
       return {
         originalText: request.text,
         translatedText: llmResponse.content,
@@ -78,6 +89,9 @@ class TranslationService {
         difficulty: request.difficulty,
         provider: llmResponse.provider,
         model: llmResponse.model,
+        selectedVocabulary,
+        includedVocabulary,
+        missingVocabulary,
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -318,6 +332,12 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
 
+    // Mock vocabulary inclusion detection for development
+    const selectedVocabulary = request.selectedVocabulary ?? [];
+    const includedVocabulary =
+      selectedVocabulary.length > 0 ? [selectedVocabulary[0]] : [];
+    const missingVocabulary = selectedVocabulary.slice(1);
+
     return {
       originalText: request.text,
       translatedText: mockTranslation,
@@ -326,6 +346,9 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
       difficulty: request.difficulty,
       provider: 'mock',
       model: 'mock-model',
+      selectedVocabulary,
+      includedVocabulary,
+      missingVocabulary,
     };
   }
 
@@ -363,6 +386,38 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
   // Method to check if mock translation is enabled
   isMockTranslationEnabled(): boolean {
     return EnvironmentConfig.isMockTranslationEnabled();
+  }
+
+  /**
+   * Analyze which vocabulary words from the selected list are actually included in the translated text
+   */
+  private analyzeVocabularyInclusion(
+    translatedText: string,
+    selectedVocabulary: string[]
+  ): { includedVocabulary: string[]; missingVocabulary: string[] } {
+    if (!selectedVocabulary || selectedVocabulary.length === 0) {
+      return { includedVocabulary: [], missingVocabulary: [] };
+    }
+
+    const normalizedText = translatedText
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ');
+    const includedVocabulary: string[] = [];
+    const missingVocabulary: string[] = [];
+
+    for (const word of selectedVocabulary) {
+      const normalizedWord = word.toLowerCase().trim();
+      // Use word boundaries to avoid partial matches
+      const regex = new RegExp(`\\b${normalizedWord}\\b`, 'i');
+
+      if (regex.test(normalizedText)) {
+        includedVocabulary.push(word);
+      } else {
+        missingVocabulary.push(word);
+      }
+    }
+
+    return { includedVocabulary, missingVocabulary };
   }
 }
 

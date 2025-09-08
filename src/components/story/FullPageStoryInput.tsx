@@ -96,7 +96,9 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     onChange(text);
   };
 
-  const handleGoToOptionsSection = (sectionName: 'language' | 'difficulty' | 'vocabulary') => {
+  const handleGoToOptionsSection = (
+    sectionName: 'language' | 'difficulty' | 'vocabulary'
+  ) => {
     setShowConfirmation(false);
     setShowOptions(true);
     // Small delay to ensure modal is rendered before scrolling
@@ -394,13 +396,17 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                       type='button'
                       onClick={() => handleGoToOptionsSection('language')}
                       className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t('storyInput.confirmationModal.editLanguage')}
+                      aria-label={t(
+                        'storyInput.confirmationModal.editLanguage'
+                      )}
                     >
                       {getLanguageName(formData.fromLanguage)}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
+                    <p>
+                      {t('storyInput.confirmationModal.clickToChangeLanguage')}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -414,13 +420,17 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                       type='button'
                       onClick={() => handleGoToOptionsSection('language')}
                       className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t('storyInput.confirmationModal.editLanguage')}
+                      aria-label={t(
+                        'storyInput.confirmationModal.editLanguage'
+                      )}
                     >
                       {getLanguageName(formData.language)}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
+                    <p>
+                      {t('storyInput.confirmationModal.clickToChangeLanguage')}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -434,13 +444,19 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                       type='button'
                       onClick={() => handleGoToOptionsSection('difficulty')}
                       className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t('storyInput.confirmationModal.editDifficulty')}
+                      aria-label={t(
+                        'storyInput.confirmationModal.editDifficulty'
+                      )}
                     >
                       {getDifficultyLabel(formData.difficulty)}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{t('storyInput.confirmationModal.clickToChangeDifficulty')}</p>
+                    <p>
+                      {t(
+                        'storyInput.confirmationModal.clickToChangeDifficulty'
+                      )}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -455,9 +471,13 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                         <TooltipTrigger asChild>
                           <button
                             type='button'
-                            onClick={() => handleGoToOptionsSection('vocabulary')}
+                            onClick={() =>
+                              handleGoToOptionsSection('vocabulary')
+                            }
                             className='text-xs text-muted-foreground underline underline-offset-2 hover:opacity-90 text-right block'
-                            aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                            aria-label={t(
+                              'storyInput.confirmationModal.editVocabulary'
+                            )}
                           >
                             {t(
                               'storyInput.confirmationModal.vocabularySelectedCount',
@@ -466,22 +486,34 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                          <p>
+                            {t(
+                              'storyInput.confirmationModal.clickToChangeVocabulary'
+                            )}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
                             type='button'
-                            onClick={() => handleGoToOptionsSection('vocabulary')}
+                            onClick={() =>
+                              handleGoToOptionsSection('vocabulary')
+                            }
                             className='mt-1 text-sm underline underline-offset-2 hover:opacity-90 text-right block'
-                            aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                            aria-label={t(
+                              'storyInput.confirmationModal.editVocabulary'
+                            )}
                           >
                             {formData.selectedVocabulary.join(', ')}
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                          <p>
+                            {t(
+                              'storyInput.confirmationModal.clickToChangeVocabulary'
+                            )}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </>
@@ -497,17 +529,25 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                             <TooltipTrigger asChild>
                               <button
                                 type='button'
-                                onClick={() => handleGoToOptionsSection('vocabulary')}
+                                onClick={() =>
+                                  handleGoToOptionsSection('vocabulary')
+                                }
                                 className='text-primary underline underline-offset-2 hover:opacity-90'
                                 aria-label={t(
                                   'storyInput.confirmationModal.goToVocabulary'
                                 )}
                               >
-                                {t('storyInput.confirmationModal.goToVocabulary')}
+                                {t(
+                                  'storyInput.confirmationModal.goToVocabulary'
+                                )}
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>{t('storyInput.confirmationModal.clickToChangeVocabulary')}</p>
+                              <p>
+                                {t(
+                                  'storyInput.confirmationModal.clickToChangeVocabulary'
+                                )}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </>

@@ -25,8 +25,10 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
+    fromLanguage: 'es', // Source language (Spanish)
     language: 'en', // Target language (always English for now)
     difficulty: 'a1',
+    selectedVocabulary: [],
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
