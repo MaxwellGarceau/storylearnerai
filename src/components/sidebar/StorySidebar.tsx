@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStories.json';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
@@ -37,6 +37,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const sampleStories: DatabaseSavedTranslationWithDetails[] =
     savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
@@ -79,11 +80,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
 
   // Allow deep-linking to the vocabulary tab via URL hash
   useEffect(() => {
-    if (window.location.hash === '#vocabulary') {
+    if (location.hash === '#vocabulary') {
       setActiveSection('vocabulary');
       setIsOpen(true);
     }
-  }, []);
+  }, [location]);
 
   const handleStoryClick = async (
     story: DatabaseSavedTranslationWithDetails
