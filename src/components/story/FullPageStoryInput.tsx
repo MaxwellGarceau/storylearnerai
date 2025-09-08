@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
-import { Settings, Check, X, Upload } from 'lucide-react';
+import { Settings, Upload } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../hooks/useAuth';
-import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/Tooltip';
 import PDFUploadModal from './PDFUploadModal';
-import VocabularySelector from './VocabularySelector';
+import OptionsModal from './OptionsModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -47,7 +46,6 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
   const { vocabulary, loading: vocabLoading } = useVocabulary();
-  const { user } = useAuth();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -239,288 +237,33 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       </div>
 
       {/* Options Modal */}
-      {showOptions && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
-            <div className='flex items-center justify-between mb-4'>
-              <h3 className='text-lg font-semibold'>
-                {t('storyInput.optionsModal.title')}
-              </h3>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setShowOptions(false)}
-                className='h-8 w-8 p-0'
-              >
-                <X className='w-4 h-4' />
-              </Button>
-            </div>
-
-            <div className='space-y-4'>
-              {/* Language Selection */}
-              <div className='space-y-2' data-language-section>
-                <label className='text-sm font-medium'>
-                  {t('storyInput.optionsModal.languageLabel')}
-                </label>
-                <select
-                  value={formData.language}
-                  onChange={e =>
-                    onFormDataChange('language', e.target.value as LanguageCode)
-                  }
-                  className='w-full p-2 border rounded-md bg-background'
-                >
-                  <option value='en'>{getLanguageName('en')}</option>
-                </select>
-                <p className='text-xs text-muted-foreground'>
-                  {t('storyInput.currentlySupported', {
-                    language: getLanguageName('en'),
-                  })}
-                </p>
-              </div>
-
-              {/* Difficulty Selection */}
-              <div className='space-y-2' data-difficulty-section>
-                <label className='text-sm font-medium'>
-                  {t('storyInput.optionsModal.difficultyLabel')}
-                </label>
-                <select
-                  value={formData.difficulty}
-                  onChange={e =>
-                    onFormDataChange(
-                      'difficulty',
-                      e.target.value as DifficultyLevel
-                    )
-                  }
-                  className='w-full p-2 border rounded-md bg-background'
-                >
-                  <option value='a1'>{t('storyInput.optionsModal.a1')}</option>
-                  <option value='a2'>{t('storyInput.optionsModal.a2')}</option>
-                  <option value='b1'>{t('storyInput.optionsModal.b1')}</option>
-                  <option value='b2'>{t('storyInput.optionsModal.b2')}</option>
-                </select>
-                <p className='text-xs text-muted-foreground'>
-                  {t('storyInput.difficultyDescription', {
-                    language: getLanguageName('en'),
-                  })}
-                </p>
-              </div>
-
-              {/* Vocabulary Selection */}
-              <VocabularySelector
-                availableVocabulary={availableVocabulary}
-                selectedVocabulary={formData.selectedVocabulary}
-                onVocabularyChange={(vocabulary) => onFormDataChange('selectedVocabulary', vocabulary)}
-                vocabLoading={vocabLoading}
-              />
-            </div>
-
-            <div className='flex justify-end mt-6'>
-              <Button onClick={() => setShowOptions(false)} className='px-6'>
-                {t('storyInput.done')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <OptionsModal
+        isOpen={showOptions}
+        onClose={() => setShowOptions(false)}
+        selectedLanguage={formData.language}
+        onLanguageChange={(language) => onFormDataChange('language', language)}
+        selectedDifficulty={formData.difficulty}
+        onDifficultyChange={(difficulty) => onFormDataChange('difficulty', difficulty)}
+        availableVocabulary={availableVocabulary}
+        selectedVocabulary={formData.selectedVocabulary}
+        onVocabularyChange={(vocabulary) => onFormDataChange('selectedVocabulary', vocabulary)}
+        vocabLoading={vocabLoading}
+        getLanguageName={getLanguageName}
+      />
 
       {/* Confirmation Modal */}
-      {showConfirmation && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
-            <h3 className='text-lg font-semibold mb-4'>
-              {t('storyInput.confirmationModal.title')}
-            </h3>
-
-            <div className='space-y-3 mb-6'>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.from')}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type='button'
-                      onClick={() => handleGoToOptionsSection('language')}
-                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t(
-                        'storyInput.confirmationModal.editLanguage'
-                      )}
-                    >
-                      {getLanguageName(formData.fromLanguage)}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {t('storyInput.confirmationModal.clickToChangeLanguage')}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.to')}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type='button'
-                      onClick={() => handleGoToOptionsSection('language')}
-                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t(
-                        'storyInput.confirmationModal.editLanguage'
-                      )}
-                    >
-                      {getLanguageName(formData.language)}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {t('storyInput.confirmationModal.clickToChangeLanguage')}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.difficulty')}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type='button'
-                      onClick={() => handleGoToOptionsSection('difficulty')}
-                      className='font-medium text-primary underline underline-offset-2 hover:opacity-90'
-                      aria-label={t(
-                        'storyInput.confirmationModal.editDifficulty'
-                      )}
-                    >
-                      {getDifficultyLabel(formData.difficulty)}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {t(
-                        'storyInput.confirmationModal.clickToChangeDifficulty'
-                      )}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className='flex justify-between items-start'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.vocabulary')}
-                </span>
-                <div className='text-right'>
-                  {formData.selectedVocabulary?.length ? (
-                    <>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type='button'
-                            onClick={() =>
-                              handleGoToOptionsSection('vocabulary')
-                            }
-                            className='text-xs text-muted-foreground underline underline-offset-2 hover:opacity-90 text-right block'
-                            aria-label={t(
-                              'storyInput.confirmationModal.editVocabulary'
-                            )}
-                          >
-                            {t(
-                              'storyInput.confirmationModal.vocabularySelectedCount',
-                              { count: formData.selectedVocabulary.length }
-                            )}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {t(
-                              'storyInput.confirmationModal.clickToChangeVocabulary'
-                            )}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type='button'
-                            onClick={() =>
-                              handleGoToOptionsSection('vocabulary')
-                            }
-                            className='mt-1 text-sm underline underline-offset-2 hover:opacity-90 text-right block'
-                            aria-label={t(
-                              'storyInput.confirmationModal.editVocabulary'
-                            )}
-                          >
-                            {formData.selectedVocabulary.join(', ')}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {t(
-                              'storyInput.confirmationModal.clickToChangeVocabulary'
-                            )}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </>
-                  ) : (
-                    <div className='text-sm'>
-                      <span>
-                        {t('storyInput.confirmationModal.noVocabularySelected')}
-                      </span>
-                      {user && (
-                        <>
-                          <span className='mx-1'>·</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type='button'
-                                onClick={() =>
-                                  handleGoToOptionsSection('vocabulary')
-                                }
-                                className='text-primary underline underline-offset-2 hover:opacity-90'
-                                aria-label={t(
-                                  'storyInput.confirmationModal.goToVocabulary'
-                                )}
-                              >
-                                {t(
-                                  'storyInput.confirmationModal.goToVocabulary'
-                                )}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>
-                                {t(
-                                  'storyInput.confirmationModal.clickToChangeVocabulary'
-                                )}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className='flex gap-3'>
-              <Button
-                onClick={handleCancelTranslation}
-                variant='outline'
-                className='flex-1'
-              >
-                <X className='w-4 h-4 mr-2' />
-                {t('storyInput.confirmationModal.cancel')}
-              </Button>
-              <Button onClick={handleConfirmTranslation} className='flex-1'>
-                <Check className='w-4 h-4 mr-2' />
-                {t('storyInput.confirmationModal.confirm')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        onClose={handleCancelTranslation}
+        onConfirm={handleConfirmTranslation}
+        fromLanguage={formData.fromLanguage}
+        toLanguage={formData.language}
+        difficulty={formData.difficulty}
+        selectedVocabulary={formData.selectedVocabulary}
+        getLanguageName={getLanguageName}
+        getDifficultyLabel={getDifficultyLabel}
+        onGoToOptionsSection={handleGoToOptionsSection}
+      />
 
       {/* PDF Upload Modal */}
       <PDFUploadModal
