@@ -24,11 +24,12 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     story: '',
     language: 'en', // Language code instead of name
     difficulty: 'a1', // Difficulty code instead of name
+    selectedVocabulary: [],
   });
 
   const handleFormDataChange = (
-    field: 'language' | 'difficulty',
-    value: LanguageCode | DifficultyLevel
+    field: 'language' | 'difficulty' | 'selectedVocabulary',
+    value: LanguageCode | DifficultyLevel | string[]
   ) => {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -62,6 +63,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
         fromLanguage: 'es', // Spanish language code
         toLanguage: formData.language,
         difficulty: formData.difficulty,
+        selectedVocabulary: formData.selectedVocabulary,
       });
 
       // Trigger the view switch to story reader page

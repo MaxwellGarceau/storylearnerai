@@ -97,6 +97,7 @@ describe('FullPageStoryInput Security Features', () => {
     formData: {
       language: 'en' as LanguageCode,
       difficulty: 'a1' as DifficultyLevel,
+      selectedVocabulary: [] as string[],
     },
     onFormDataChange: vi.fn(),
   };

@@ -360,6 +360,24 @@ class GeneralPromptConfigService {
   }
 
   /**
+   * Build a prompt and append a learner vocabulary inclusion block
+   */
+  async buildPromptWithVocabulary(
+    context: PromptBuildContext,
+    vocabulary: string[]
+  ): Promise<string> {
+    const basePrompt = await this.buildPrompt(context);
+    if (!vocabulary || vocabulary.length === 0) return basePrompt;
+
+    const vocabList = vocabulary
+      .slice(0, 30)
+      .map(w => `- ${w}`)
+      .join('\n');
+    const vocabInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching ${context.difficulty} level:\n${vocabList}\n`;
+    return `${basePrompt}${vocabInstruction}`;
+  }
+
+  /**
    * Build a fallback prompt when language-specific instructions are not available
    */
   private buildFallbackPrompt(context: PromptBuildContext): string {

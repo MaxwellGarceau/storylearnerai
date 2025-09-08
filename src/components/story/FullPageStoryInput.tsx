@@ -5,6 +5,7 @@ import { Settings, Check, X, Upload } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
+import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
 import PDFUploadModal from './PDFUploadModal';
@@ -18,10 +19,11 @@ interface FullPageStoryInputProps {
   formData: {
     language: LanguageCode;
     difficulty: DifficultyLevel;
+    selectedVocabulary: string[];
   };
   onFormDataChange: (
-    field: 'language' | 'difficulty',
-    value: LanguageCode | DifficultyLevel
+    field: 'language' | 'difficulty' | 'selectedVocabulary',
+    value: LanguageCode | DifficultyLevel | string[]
   ) => void;
 }
 
@@ -40,6 +42,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
+  const { vocabulary, loading: vocabLoading } = useVocabulary();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -91,6 +94,32 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
     return t(`difficultyLevels.${difficulty}.label`);
+  };
+
+  // Compute available vocabulary for the current language pair.
+  // Note: We filter by from_language 'es' (source) and the current target language.
+  // We present items as "original_word → translated_word" but when selecting
+  // we store ONLY the translated word (target-language word) so we can ask the LLM
+  // to include those specific target-language words in the output.
+  const availableVocabulary = vocabulary.filter(v => {
+    return (
+      v.from_language?.code === 'es' && v.translated_language?.code === formData.language
+    );
+  });
+
+  const isSelected = (word: string) =>
+    Array.isArray(formData.selectedVocabulary) &&
+    formData.selectedVocabulary.includes(word);
+
+  // Store target-language words in the selection (e.g., English words for es→en)
+  const toggleSelected = (word: string) => {
+    const current = new Set(formData.selectedVocabulary ?? []);
+    if (current.has(word)) {
+      current.delete(word);
+    } else {
+      current.add(word);
+    }
+    onFormDataChange('selectedVocabulary', Array.from(current));
   };
 
   return (
@@ -268,6 +297,55 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                   })}
                 </p>
               </div>
+
+              {/* Vocabulary Selection */}
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>
+                  {t('storyInput.optionsModal.vocabularyTitle')}
+                </label>
+                <p className='text-xs text-muted-foreground'>
+                  {t('storyInput.optionsModal.vocabularySubtitle')}
+                </p>
+                <div className='mt-2 max-h-48 overflow-auto border rounded-md p-2 bg-background'>
+                  {vocabLoading ? (
+                    <div className='text-sm text-muted-foreground'>
+                      {t('common.loading')}
+                    </div>
+                  ) : availableVocabulary.length === 0 ? (
+                    <div className='text-sm text-muted-foreground'>
+                      {t('storyInput.optionsModal.noVocabularyForPair')}
+                    </div>
+                  ) : (
+                    <div className='flex flex-wrap gap-2'>
+                      {availableVocabulary.map(v => {
+                        const display = `${v.original_word} → ${v.translated_word}`;
+                        const key = `${v.id}-${v.translated_word}`;
+                        const selected = isSelected(v.translated_word);
+                        return (
+                          <button
+                            key={key}
+                            type='button'
+                            onClick={() => toggleSelected(v.translated_word)}
+                            className={`text-sm px-2 py-1 rounded-md border transition-colors ${
+                              selected
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background hover:bg-accent border-input'
+                            }`}
+                            aria-pressed={selected}
+                          >
+                            {display}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                <div className='text-xs text-muted-foreground'>
+                  {t('storyInput.optionsModal.selectedCount', {
+                    count: formData.selectedVocabulary?.length ?? 0,
+                  })}
+                </div>
+              </div>
             </div>
 
             <div className='flex justify-end mt-6'>
@@ -309,6 +387,30 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 <span className='font-medium'>
                   {getDifficultyLabel(formData.difficulty)}
                 </span>
+              </div>
+              <div className='flex justify-between items-start'>
+                <span className='text-muted-foreground'>
+                  {t('storyInput.confirmationModal.vocabulary')}
+                </span>
+                <div className='text-right'>
+                  {formData.selectedVocabulary?.length ? (
+                    <>
+                      <div className='text-xs text-muted-foreground'>
+                        {t(
+                          'storyInput.confirmationModal.vocabularySelectedCount',
+                          { count: formData.selectedVocabulary.length }
+                        )}
+                      </div>
+                      <div className='mt-1 text-sm'>
+                        {formData.selectedVocabulary.join(', ')}
+                      </div>
+                    </>
+                  ) : (
+                    <span className='text-sm'>
+                      {t('storyInput.confirmationModal.noVocabularySelected')}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 

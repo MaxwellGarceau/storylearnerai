@@ -85,6 +85,7 @@ describe('FullPageStoryInput Component', () => {
     formData: {
       language: 'en' as const,
       difficulty: 'a1' as const,
+      selectedVocabulary: [] as string[],
     },
     onFormDataChange: vi.fn(),
   };

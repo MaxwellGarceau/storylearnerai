@@ -283,13 +283,20 @@
       "a1": "A1 (Principiante)",
       "a2": "A2 (Elemental)",
       "b1": "B1 (Intermedio)",
-      "b2": "B2 (Intermedio Alto)"
+      "b2": "B2 (Intermedio Alto)",
+      "vocabularyTitle": "Incluir Vocabulario",
+      "vocabularySubtitle": "Elige palabras guardadas para incluir en tu historia traducida.",
+      "noVocabularyForPair": "Aún no hay vocabulario guardado para este par de idiomas.",
+      "selectedCount": "Seleccionadas: {{count}}"
     },
     "confirmationModal": {
       "title": "Confirmar Opciones de Traducción",
       "from": "Desde:",
       "to": "Hacia:",
       "difficulty": "Dificultad:",
+      "vocabulary": "Vocabulario:",
+      "vocabularySelectedCount": "Seleccionadas: {{count}}",
+      "noVocabularySelected": "Ninguno",
       "cancel": "Cancelar",
       "confirm": "Confirmar y Traducir"
     },

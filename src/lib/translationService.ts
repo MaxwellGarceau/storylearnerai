@@ -11,6 +11,11 @@ export interface TranslationRequest {
   toLanguage: LanguageCode;
   difficulty: DifficultyLevel;
   nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
+  // Optional: words the user wants included in the generated translation/story context
+  // IMPORTANT: These should be TARGET-LANGUAGE words (e.g., English when translating es→en).
+  // The UI stores and passes the 'translated_word' values for the selected vocabulary
+  // so the LLM can include those exact target-language words in its output.
+  selectedVocabulary?: string[];
 }
 
 export interface TranslationResponse {
@@ -182,7 +187,20 @@ class TranslationService {
     }
 
     // Use the prompt configuration service to build a customized prompt
-    return generalPromptConfigService.buildPrompt(context);
+    const basePrompt = await generalPromptConfigService.buildPrompt(context);
+
+    // If user selected vocabulary, append a short instruction block to include them.
+    // These are target-language words; the instruction guides the LLM to use them naturally.
+    if (request.selectedVocabulary && request.selectedVocabulary.length > 0) {
+      const vocabList = request.selectedVocabulary
+        .slice(0, 30)
+        .map(w => `- ${w}`)
+        .join('\n');
+      const vocabInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching ${request.difficulty} level:\n${vocabList}\n`;
+      return `${basePrompt}${vocabInstruction}`;
+    }
+
+    return basePrompt;
   }
 
   /**

@@ -4,4 +4,5 @@ export interface StoryFormData {
   story: string;
   language: LanguageCode;
   difficulty: DifficultyLevel;
+  selectedVocabulary: string[];
 }

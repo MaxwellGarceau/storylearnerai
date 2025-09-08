@@ -292,13 +292,20 @@
       "a1": "A1 (Beginner)",
       "a2": "A2 (Elementary)",
       "b1": "B1 (Intermediate)",
-      "b2": "B2 (Upper Intermediate)"
+      "b2": "B2 (Upper Intermediate)",
+      "vocabularyTitle": "Include Vocabulary",
+      "vocabularySubtitle": "Pick saved words to include in your translated story.",
+      "noVocabularyForPair": "No saved vocabulary for this language pair yet.",
+      "selectedCount": "Selected: {{count}}"
     },
     "confirmationModal": {
       "title": "Confirm Translation Options",
       "from": "From:",
       "to": "To:",
       "difficulty": "Difficulty:",
+      "vocabulary": "Vocabulary:",
+      "vocabularySelectedCount": "Selected: {{count}}",
+      "noVocabularySelected": "None",
       "cancel": "Cancel",
       "confirm": "Confirm & Translate"
     },
