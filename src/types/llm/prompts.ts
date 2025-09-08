@@ -81,4 +81,13 @@ export interface PromptBuildContext {
   difficulty: DifficultyLevel;
   text: string;
   nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
+  selectedVocabulary?: string[]; // Optional: words the user wants included in the generated translation/story context
+}
+
+export interface WordTranslationPromptContext {
+  sentence: string;
+  focusWord: string;
+  fromLanguage: LanguageCode; // language of sentence/focus word
+  toLanguage: LanguageCode; // desired output language
+  difficulty: DifficultyLevel;
 }

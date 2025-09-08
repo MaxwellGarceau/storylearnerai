@@ -66,7 +66,15 @@ class TranslationService {
     request: TranslationRequest
   ): TranslationResponsePromise {
     try {
-      const prompt = await this.buildTranslationPrompt(request);
+      const context = {
+        fromLanguage: request.fromLanguage,
+        toLanguage: request.toLanguage,
+        difficulty: request.difficulty,
+        text: request.text,
+        nativeLanguage: request.nativeLanguage,
+        selectedVocabulary: request.selectedVocabulary,
+      };
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -151,7 +159,14 @@ class TranslationService {
     request: WordTranslationRequest
   ): Promise<WordTranslationResponse> {
     try {
-      const prompt = this.buildWordTranslationPrompt(request);
+      const context = {
+        sentence: request.sentence,
+        focusWord: request.focusWord,
+        fromLanguage: request.fromLanguage,
+        toLanguage: request.toLanguage,
+        difficulty: request.difficulty,
+      };
+      const prompt = generalPromptConfigService.buildWordTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -191,94 +206,8 @@ class TranslationService {
     }
   }
 
-  /**
-   * Build a customized translation prompt based on language and difficulty level
-   */
-  private async buildTranslationPrompt(
-    request: TranslationRequest
-  ): Promise<string> {
-    const context = {
-      fromLanguage: request.fromLanguage,
-      toLanguage: request.toLanguage,
-      difficulty: request.difficulty,
-      text: request.text,
-      nativeLanguage: request.nativeLanguage,
-    };
 
-    // If the configuration doesn't support this language/difficulty combination,
-    // fall back to a basic prompt
-    if (
-      !generalPromptConfigService.isSupported(
-        request.toLanguage,
-        request.difficulty
-      )
-    ) {
-      logger.warn(
-        'translation',
-        `Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`
-      );
-      return this.buildFallbackPrompt(request);
-    }
 
-    // Build the base prompt
-    const basePrompt = await generalPromptConfigService.buildPrompt(context);
-
-    // Add vocabulary instruction if vocabulary is selected
-    if (request.selectedVocabulary && request.selectedVocabulary.length > 0) {
-      const vocabInstruction = generalPromptConfigService.buildVocabularyInstruction(context, request.selectedVocabulary);
-      return `${basePrompt}${vocabInstruction}`;
-    }
-
-    return basePrompt;
-  }
-
-  /**
-   * Prompt for translating a single focus word using sentence context
-   */
-  private buildWordTranslationPrompt(request: WordTranslationRequest): string {
-    return `You are a precise translator.
-
-Task: Translate ONLY the specified focus word from {fromLanguage} to {toLanguage}, using the full sentence for context.
-
-Rules:
-- Output ONLY the single translated word.
-- No explanations, punctuation, quotes, or extra words.
-- Choose the most common, natural everyday term in {toLanguage}.
-- If multiple translations exist, pick the most likely given the sentence.
-- If the word is a proper noun that should remain unchanged, return it unchanged.
-- If no single-word translation exists, return the closest single-word equivalent.
-
-Context sentence ({fromLanguage}):
-"{sentence}"
-
-Focus word: {focusWord}
-
-Return: ONLY the translation of the focus word in {toLanguage}.`
-      .replace(/{fromLanguage}/g, request.fromLanguage)
-      .replace(/{toLanguage}/g, request.toLanguage)
-      .replace(/{sentence}/g, request.sentence)
-      .replace(/{focusWord}/g, request.focusWord);
-  }
-
-  /**
-   * Fallback prompt for unsupported language/difficulty combinations
-   */
-  private buildFallbackPrompt(request: TranslationRequest): string {
-    return `
-      Translate the following ${request.fromLanguage} story to ${request.toLanguage}, adapted for ${request.difficulty} CEFR level:
-      
-      Instructions:
-      - Maintain the story's meaning and narrative flow
-      - Adapt vocabulary and sentence complexity to ${request.difficulty} level
-      - Preserve cultural context where appropriate
-      - Keep the story engaging and readable
-      
-      ${request.fromLanguage} Story:
-      ${request.text}
-      
-      Please provide only the ${request.toLanguage} translation.
-    `;
-  }
 
   /**
    * Convert technical error messages to user-friendly messages
@@ -403,8 +332,10 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     targetLanguageVocabularyWords: string[],
     _targetLanguageCode: LanguageCode // Reserved for future validation enhancements
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
-    logger.info('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
-    logger.info('targetLanguageTranslatedText', targetLanguageTranslatedText);
+    logger.info('translation', 'Analyzing vocabulary inclusion', {
+      vocabularyWords: targetLanguageVocabularyWords,
+      translatedTextLength: targetLanguageTranslatedText.length,
+    });
     if (
       !targetLanguageVocabularyWords ||
       targetLanguageVocabularyWords.length === 0

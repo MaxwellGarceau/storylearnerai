@@ -8,6 +8,7 @@ import {
   NativeToTargetInstructions,
   LanguageCode,
   DifficultyLevel,
+  WordTranslationPromptContext,
 } from '../../types/llm/prompts';
 import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
@@ -268,7 +269,7 @@ class GeneralPromptConfigService {
   /**
    * Build a complete prompt from the template and context
    */
-  async buildPrompt(context: PromptBuildContext): Promise<string> {
+  async buildDifficultyLevelAndLanguagePrompt(context: PromptBuildContext): Promise<string> {
     logger.time('prompts', 'build-prompt');
 
     try {
@@ -379,17 +380,79 @@ class GeneralPromptConfigService {
   }
 
   /**
+   * Build a customized translation prompt based on language and difficulty level
+   */
+  async buildTranslationPrompt(context: PromptBuildContext): Promise<string> {
+    // If the configuration doesn't support this language/difficulty combination,
+    // fall back to a basic prompt
+    if (!this.isSupported(context.toLanguage, context.difficulty)) {
+      logger.warn(
+        'prompts',
+        `Unsupported language/difficulty combination: ${context.toLanguage}/${context.difficulty}. Using fallback prompt.`
+      );
+      return this.buildFallbackPrompt(context);
+    }
+
+    // Build the base prompt
+    const basePrompt = await this.buildDifficultyLevelAndLanguagePrompt(context);
+
+    // Add vocabulary instruction if vocabulary is selected
+    if (context.selectedVocabulary && context.selectedVocabulary.length > 0) {
+      const vocabInstruction = this.buildVocabularyInstruction(context, context.selectedVocabulary);
+      return `${basePrompt}${vocabInstruction}`;
+    }
+
+    return basePrompt;
+  }
+
+  /**
+   * Build a prompt for translating a single focus word using sentence context
+   */
+  buildWordTranslationPrompt(context: WordTranslationPromptContext): string {
+    return `You are a precise translator.
+
+Task: Translate ONLY the specified focus word from {fromLanguage} to {toLanguage}, using the full sentence for context.
+
+Rules:
+- Output ONLY the single translated word.
+- No explanations, punctuation, quotes, or extra words.
+- Choose the most common, natural everyday term in {toLanguage}.
+- If multiple translations exist, pick the most likely given the sentence.
+- If the word is a proper noun that should remain unchanged, return it unchanged.
+- If no single-word translation exists, return the closest single-word equivalent.
+
+Context sentence ({fromLanguage}):
+"{sentence}"
+
+Focus word: {focusWord}
+
+Return: ONLY the translation of the focus word in {toLanguage}.`
+      .replace(/{fromLanguage}/g, context.fromLanguage)
+      .replace(/{toLanguage}/g, context.toLanguage)
+      .replace(/{sentence}/g, context.sentence)
+      .replace(/{focusWord}/g, context.focusWord);
+  }
+
+  /**
    * Build a fallback prompt when language-specific instructions are not available
    */
   private buildFallbackPrompt(context: PromptBuildContext): string {
     const { fromLanguage, toLanguage, difficulty, text } = context;
 
-    return `Translate the following ${fromLanguage} story to ${toLanguage}, adapted for ${difficulty} level:
+    return `
+      Translate the following ${fromLanguage} story to ${toLanguage}, adapted for ${difficulty} CEFR level:
 
-${fromLanguage} Story:
-${text}
+      Instructions:
+      - Maintain the story's meaning and narrative flow
+      - Adapt vocabulary and sentence complexity to ${difficulty} level
+      - Preserve cultural context where appropriate
+      - Keep the story engaging and readable
 
-Please provide only the ${toLanguage} translation.`;
+      ${fromLanguage} Story:
+      ${text}
+
+      Please provide only the ${toLanguage} translation.
+    `;
   }
 
   /**
