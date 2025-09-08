@@ -8,6 +8,8 @@ import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import PDFUploadModal from './PDFUploadModal';
 
 interface FullPageStoryInputProps {
@@ -17,12 +19,13 @@ interface FullPageStoryInputProps {
   isTranslating: boolean;
   placeholder?: string;
   formData: {
+    fromLanguage: LanguageCode;
     language: LanguageCode;
     difficulty: DifficultyLevel;
     selectedVocabulary: string[];
   };
   onFormDataChange: (
-    field: 'language' | 'difficulty' | 'selectedVocabulary',
+    field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
     value: LanguageCode | DifficultyLevel | string[]
   ) => void;
 }
@@ -43,6 +46,8 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
   const { vocabulary, loading: vocabLoading } = useVocabulary();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -97,13 +102,14 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   };
 
   // Compute available vocabulary for the current language pair.
-  // Note: We filter by from_language 'es' (source) and the current target language.
+  // Filter by the form's fromLanguage (source) and current target language.
   // We present items as "original_word → translated_word" but when selecting
   // we store ONLY the translated word (target-language word) so we can ask the LLM
   // to include those specific target-language words in the output.
   const availableVocabulary = vocabulary.filter(v => {
     return (
-      v.from_language?.code === 'es' && v.translated_language?.code === formData.language
+      v.from_language?.code === formData.fromLanguage &&
+      v.translated_language?.code === formData.language
     );
   });
 
@@ -370,7 +376,9 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                 <span className='text-muted-foreground'>
                   {t('storyInput.confirmationModal.from')}
                 </span>
-                <span className='font-medium'>{getLanguageName('es')}</span>
+                <span className='font-medium'>
+                  {getLanguageName(formData.fromLanguage)}
+                </span>
               </div>
               <div className='flex justify-between'>
                 <span className='text-muted-foreground'>
@@ -406,9 +414,29 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                       </div>
                     </>
                   ) : (
-                    <span className='text-sm'>
-                      {t('storyInput.confirmationModal.noVocabularySelected')}
-                    </span>
+                    <div className='text-sm'>
+                      <span>
+                        {t('storyInput.confirmationModal.noVocabularySelected')}
+                      </span>
+                      {user && (
+                        <>
+                          <span className='mx-1'>·</span>
+                          <button
+                            type='button'
+                            onClick={() => {
+                              setShowConfirmation(false);
+                              navigate('/translate#vocabulary');
+                            }}
+                            className='text-primary underline underline-offset-2 hover:opacity-90'
+                            aria-label={t(
+                              'storyInput.confirmationModal.goToVocabulary'
+                            )}
+                          >
+                            {t('storyInput.confirmationModal.goToVocabulary')}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

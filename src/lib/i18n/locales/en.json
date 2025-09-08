@@ -307,6 +307,7 @@
       "vocabularySelectedCount": "Selected: {{count}}",
       "noVocabularySelected": "None",
       "cancel": "Cancel",
+      "goToVocabulary": "Go to Vocabulary",
       "confirm": "Confirm & Translate"
     },
     "validation": {

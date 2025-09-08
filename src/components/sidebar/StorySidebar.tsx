@@ -77,6 +77,14 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   }, [isMobile]);
 
+  // Allow deep-linking to the vocabulary tab via URL hash
+  useEffect(() => {
+    if (window.location.hash === '#vocabulary') {
+      setActiveSection('vocabulary');
+      setIsOpen(true);
+    }
+  }, []);
+
   const handleStoryClick = async (
     story: DatabaseSavedTranslationWithDetails
   ) => {

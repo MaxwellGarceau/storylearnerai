@@ -298,6 +298,7 @@
       "vocabularySelectedCount": "Seleccionadas: {{count}}",
       "noVocabularySelected": "Ninguno",
       "cancel": "Cancelar",
+      "goToVocabulary": "Ir a Vocabulario",
       "confirm": "Confirmar y Traducir"
     },
     "validation": {

@@ -22,13 +22,14 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     useState<TranslationError | null>(null);
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
+    fromLanguage: 'es',
     language: 'en', // Language code instead of name
     difficulty: 'a1', // Difficulty code instead of name
     selectedVocabulary: [],
   });
 
   const handleFormDataChange = (
-    field: 'language' | 'difficulty' | 'selectedVocabulary',
+    field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
     value: LanguageCode | DifficultyLevel | string[]
   ) => {
     setFormData(prevFormData => ({
@@ -60,7 +61,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
       // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
       const response = await translationService.translate({
         text: formData.story,
-        fromLanguage: 'es', // Spanish language code
+        fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
         selectedVocabulary: formData.selectedVocabulary,
