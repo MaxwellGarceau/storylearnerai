@@ -63,8 +63,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     setTranslationError(null);
 
     try {
-      // For now: selectedVocabulary is the ORIGINAL variable (which contains target-language words)
-      const selectedOriginalVocabulary = Array.from(
+      const selectedVocabulary = Array.from(
         new Set((formData.selectedVocabulary ?? []).map(w => w.trim()))
       );
 
@@ -73,32 +72,19 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
         fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
-        // Pass original variable as selectedVocabulary for prompt and inclusion check
-        selectedVocabulary: selectedOriginalVocabulary,
-        selectedOriginalVocabulary,
+        selectedVocabulary,
       });
 
-      // Since selectedVocabulary is already the original variable (target-language words),
-      // we can use the inclusion arrays directly for the original lists
-      const responseWithOriginals: TranslationResponse = {
-        ...response,
-        selectedOriginalVocabulary,
-        includedOriginalVocabulary: response.includedVocabulary ?? [],
-        missingOriginalVocabulary: response.missingVocabulary ?? [],
-      };
-
       // Trigger the view switch to story reader page
-      onStoryTranslated(responseWithOriginals);
+      onStoryTranslated(response);
 
-      // Show toast notification if some ORIGINAL vocabulary words weren't included
+      // Show toast notification if some vocabulary words weren't included
       if (
-        responseWithOriginals.missingOriginalVocabulary &&
-        responseWithOriginals.missingOriginalVocabulary.length > 0
+        response.missingVocabulary &&
+        response.missingVocabulary.length > 0
       ) {
-        const missingCount =
-          responseWithOriginals.missingOriginalVocabulary.length;
-        const totalSelected =
-          responseWithOriginals.selectedOriginalVocabulary?.length ?? 0;
+        const missingCount = response.missingVocabulary.length;
+        const totalSelected = response.selectedVocabulary?.length ?? 0;
 
         toast({
           title: t('storyContainer.vocabularyWarningTitle', {
@@ -107,8 +93,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
           description: t('storyContainer.vocabularyWarningDescription', {
             missingCount,
             totalCount: totalSelected,
-            missingWords:
-              responseWithOriginals.missingOriginalVocabulary.join(', '),
+            missingWords: response.missingVocabulary.join(', '),
           }),
           variant: 'destructive',
         });

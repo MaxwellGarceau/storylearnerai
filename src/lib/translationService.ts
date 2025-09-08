@@ -16,9 +16,6 @@ export interface TranslationRequest {
   // The UI stores and passes the 'translated_word' values for the selected vocabulary
   // so the LLM can include those exact target-language words in its output.
   selectedVocabulary?: string[];
-  // Optional: ORIGINAL (source-language) words selected by the user.
-  // These are provided for UI display and prompt guidance when target words are not available.
-  selectedOriginalVocabulary?: string[];
 }
 
 export interface TranslationResponse {
@@ -33,10 +30,6 @@ export interface TranslationResponse {
   selectedVocabulary?: string[];
   includedVocabulary?: string[];
   missingVocabulary?: string[];
-  // ORIGINAL-language vocabulary mirrors for UI
-  selectedOriginalVocabulary?: string[];
-  includedOriginalVocabulary?: string[];
-  missingOriginalVocabulary?: string[];
 }
 
 export interface WordTranslationRequest {
@@ -105,9 +98,6 @@ class TranslationService {
           includedVocabulary,
           missingVocabulary,
           // Echo original selection for UI; inclusion mapping handled by caller
-          selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
-          includedOriginalVocabulary: [],
-          missingOriginalVocabulary: [],
         };
       }
 
@@ -122,9 +112,6 @@ class TranslationService {
         selectedVocabulary,
         includedVocabulary: [],
         missingVocabulary: [],
-        selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
-        includedOriginalVocabulary: [],
-        missingOriginalVocabulary: [],
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -246,18 +233,6 @@ class TranslationService {
       return `${basePrompt}${vocabInstruction}`;
     }
 
-    // Otherwise, if ORIGINAL vocabulary provided, ask to include their natural target equivalents
-    if (
-      request.selectedOriginalVocabulary &&
-      request.selectedOriginalVocabulary.length > 0
-    ) {
-      const originalList = request.selectedOriginalVocabulary
-        .slice(0, 30)
-        .map(w => `- ${w}`)
-        .join('\n');
-      const originalInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the appropriate ${request.toLanguage} equivalents of the following ${request.fromLanguage} words when appropriate, matching ${request.difficulty} level:\n${originalList}\n`;
-      return `${basePrompt}${originalInstruction}`;
-    }
 
     return basePrompt;
   }
@@ -399,9 +374,6 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
       selectedVocabulary,
       includedVocabulary,
       missingVocabulary,
-      selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
-      includedOriginalVocabulary: [],
-      missingOriginalVocabulary: [],
     };
   }
 
