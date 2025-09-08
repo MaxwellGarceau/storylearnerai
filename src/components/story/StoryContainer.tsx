@@ -65,58 +65,41 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     setTranslationError(null);
 
     try {
-      // Ensure selected vocabulary are TARGET-language words for the current language pair
-      const availableVocabulary = vocabulary.filter(v => {
-        return (
-          v.from_language?.code === formData.fromLanguage &&
-          v.translated_language?.code === formData.language
-        );
-      });
-
-      const lowerToTranslated = new Map<string, string>();
-      const lowerToOriginalTranslated = new Map<string, string>();
-      for (const v of availableVocabulary) {
-        lowerToTranslated.set(v.translated_word.toLowerCase(), v.translated_word);
-        lowerToOriginalTranslated.set(
-          v.original_word.toLowerCase(),
-          v.translated_word
-        );
-      }
-
-      const mappedSelectedVocabulary = Array.from(
-        new Set(
-          (formData.selectedVocabulary ?? []).map(word => {
-            const lower = word.toLowerCase().trim();
-            // If already a target word, keep canonical target form
-            if (lowerToTranslated.has(lower)) {
-              return lowerToTranslated.get(lower) as string;
-            }
-            // If it matches a source (original) word, map to target word
-            if (lowerToOriginalTranslated.has(lower)) {
-              return lowerToOriginalTranslated.get(lower) as string;
-            }
-            // Otherwise, keep as-is (best effort)
-            return word;
-          })
-        )
+      // For now: selectedVocabulary is the ORIGINAL variable (which contains target-language words)
+      const selectedOriginalVocabulary = Array.from(
+        new Set((formData.selectedVocabulary ?? []).map(w => w.trim()))
       );
 
-      // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
       const response = await translationService.translate({
         text: formData.story,
         fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
-        selectedVocabulary: mappedSelectedVocabulary,
+        // Pass original variable as selectedVocabulary for prompt and inclusion check
+        selectedVocabulary: selectedOriginalVocabulary,
+        selectedOriginalVocabulary,
       });
 
-      // Trigger the view switch to story reader page
-      onStoryTranslated(response);
+      // Since selectedVocabulary is already the original variable (target-language words),
+      // we can use the inclusion arrays directly for the original lists
+      const responseWithOriginals: TranslationResponse = {
+        ...response,
+        selectedOriginalVocabulary,
+        includedOriginalVocabulary: response.includedVocabulary ?? [],
+        missingOriginalVocabulary: response.missingVocabulary ?? [],
+      };
 
-      // Show toast notification if some TARGET LANGUAGE vocabulary words weren't included in TARGET LANGUAGE text
-      if (response.missingVocabulary && response.missingVocabulary.length > 0) {
-        const missingCount = response.missingVocabulary.length;
-        const totalSelected = response.selectedVocabulary?.length ?? 0;
+      // Trigger the view switch to story reader page
+      onStoryTranslated(responseWithOriginals);
+
+      // Show toast notification if some ORIGINAL vocabulary words weren't included
+      if (
+        responseWithOriginals.missingOriginalVocabulary &&
+        responseWithOriginals.missingOriginalVocabulary.length > 0
+      ) {
+        const missingCount = responseWithOriginals.missingOriginalVocabulary.length;
+        const totalSelected =
+          responseWithOriginals.selectedOriginalVocabulary?.length ?? 0;
 
         toast({
           title: t('storyContainer.vocabularyWarningTitle', {
@@ -125,7 +108,8 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
           description: t('storyContainer.vocabularyWarningDescription', {
             missingCount,
             totalCount: totalSelected,
-            missingWords: response.missingVocabulary.join(', '),
+            missingWords:
+              responseWithOriginals.missingOriginalVocabulary.join(', '),
           }),
           variant: 'destructive',
         });

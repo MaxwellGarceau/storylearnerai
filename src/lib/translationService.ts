@@ -16,6 +16,9 @@ export interface TranslationRequest {
   // The UI stores and passes the 'translated_word' values for the selected vocabulary
   // so the LLM can include those exact target-language words in its output.
   selectedVocabulary?: string[];
+  // Optional: ORIGINAL (source-language) words selected by the user.
+  // These are provided for UI display and prompt guidance when target words are not available.
+  selectedOriginalVocabulary?: string[];
 }
 
 export interface TranslationResponse {
@@ -26,9 +29,14 @@ export interface TranslationResponse {
   difficulty: DifficultyLevel;
   provider?: string;
   model?: string;
+  // TARGET-language vocabulary that we asked to include
   selectedVocabulary?: string[];
   includedVocabulary?: string[];
   missingVocabulary?: string[];
+  // ORIGINAL-language vocabulary mirrors for UI
+  selectedOriginalVocabulary?: string[];
+  includedOriginalVocabulary?: string[];
+  missingOriginalVocabulary?: string[];
 }
 
 export interface WordTranslationRequest {
@@ -96,6 +104,10 @@ class TranslationService {
           selectedVocabulary,
           includedVocabulary,
           missingVocabulary,
+          // Echo original selection for UI; inclusion mapping handled by caller
+          selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
+          includedOriginalVocabulary: [],
+          missingOriginalVocabulary: [],
         };
       }
 
@@ -110,6 +122,9 @@ class TranslationService {
         selectedVocabulary,
         includedVocabulary: [],
         missingVocabulary: [],
+        selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
+        includedOriginalVocabulary: [],
+        missingOriginalVocabulary: [],
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -221,8 +236,7 @@ class TranslationService {
     // Use the prompt configuration service to build a customized prompt
     const basePrompt = await generalPromptConfigService.buildPrompt(context);
 
-    // If user selected vocabulary, append a short instruction block to include them.
-    // These are target-language words; the instruction guides the LLM to use them naturally.
+    // If user selected TARGET vocabulary, append instruction block to include them.
     if (request.selectedVocabulary && request.selectedVocabulary.length > 0) {
       const vocabList = request.selectedVocabulary
         .slice(0, 30)
@@ -230,6 +244,19 @@ class TranslationService {
         .join('\n');
       const vocabInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching ${request.difficulty} level:\n${vocabList}\n`;
       return `${basePrompt}${vocabInstruction}`;
+    }
+
+    // Otherwise, if ORIGINAL vocabulary provided, ask to include their natural target equivalents
+    if (
+      request.selectedOriginalVocabulary &&
+      request.selectedOriginalVocabulary.length > 0
+    ) {
+      const originalList = request.selectedOriginalVocabulary
+        .slice(0, 30)
+        .map(w => `- ${w}`)
+        .join('\n');
+      const originalInstruction = `\n\nLearner Vocabulary Focus:\nPlease include and naturally use the appropriate ${request.toLanguage} equivalents of the following ${request.fromLanguage} words when appropriate, matching ${request.difficulty} level:\n${originalList}\n`;
+      return `${basePrompt}${originalInstruction}`;
     }
 
     return basePrompt;
@@ -372,6 +399,9 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
       selectedVocabulary,
       includedVocabulary,
       missingVocabulary,
+      selectedOriginalVocabulary: request.selectedOriginalVocabulary ?? [],
+      includedOriginalVocabulary: [],
+      missingOriginalVocabulary: [],
     };
   }
 
@@ -381,20 +411,6 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
       return this.mockTranslateStory(request);
     } else {
       return this.translateStory(request);
-    }
-  }
-
-  // New method to check if the LLM service is available
-  async isLLMServiceAvailable(): Promise<boolean> {
-    if (EnvironmentConfig.isMockTranslationEnabled()) {
-      return true; // Mock is always available
-    }
-
-    try {
-      return await llmServiceManager.healthCheck();
-    } catch (error) {
-      logger.warn('translation', 'LLM service health check failed', { error });
-      return false;
     }
   }
 
@@ -420,14 +436,14 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     targetLanguageVocabularyWords: string[],
     _targetLanguageCode: LanguageCode // Reserved for future validation enhancements
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
+    console.log('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
+    console.log('targetLanguageTranslatedText', targetLanguageTranslatedText);
     if (
       !targetLanguageVocabularyWords ||
       targetLanguageVocabularyWords.length === 0
     ) {
       return { includedVocabulary: [], missingVocabulary: [] };
     }
-
-    console.log('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
 
     // Validate that we have target language text to analyze
     if (
