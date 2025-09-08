@@ -11,7 +11,6 @@ import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
 import { useToast } from '../../hooks/useToast';
 import { useTranslation } from 'react-i18next';
-import { useVocabulary } from '../../hooks/useVocabulary';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -33,7 +32,6 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
 
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { vocabulary } = useVocabulary();
 
   const handleFormDataChange = (
     field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
@@ -97,7 +95,8 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
         responseWithOriginals.missingOriginalVocabulary &&
         responseWithOriginals.missingOriginalVocabulary.length > 0
       ) {
-        const missingCount = responseWithOriginals.missingOriginalVocabulary.length;
+        const missingCount =
+          responseWithOriginals.missingOriginalVocabulary.length;
         const totalSelected =
           responseWithOriginals.selectedOriginalVocabulary?.length ?? 0;
 

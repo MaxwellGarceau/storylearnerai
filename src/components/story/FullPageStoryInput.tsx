@@ -134,7 +134,6 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   // Store target-language words in the selection (e.g., English words for es→en)
   // IMPORTANT: This ensures we only store TARGET LANGUAGE words for vocabulary inclusion checking
   const toggleSelected = (word: string) => {
-    console.log('toggleSelected', word);
     const current = new Set(formData.selectedVocabulary ?? []);
     if (current.has(word)) {
       current.delete(word);

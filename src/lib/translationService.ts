@@ -436,8 +436,8 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     targetLanguageVocabularyWords: string[],
     _targetLanguageCode: LanguageCode // Reserved for future validation enhancements
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
-    console.log('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
-    console.log('targetLanguageTranslatedText', targetLanguageTranslatedText);
+    logger.info('targetLanguageVocabularyWords', targetLanguageVocabularyWords);
+    logger.info('targetLanguageTranslatedText', targetLanguageTranslatedText);
     if (
       !targetLanguageVocabularyWords ||
       targetLanguageVocabularyWords.length === 0
