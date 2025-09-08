@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/Tooltip';
 import PDFUploadModal from './PDFUploadModal';
+import VocabularySelector from './VocabularySelector';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -127,21 +128,6 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     );
   });
 
-  const isSelected = (word: string) =>
-    Array.isArray(formData.selectedVocabulary) &&
-    formData.selectedVocabulary.includes(word);
-
-  // Store target-language words in the selection (e.g., English words for es→en)
-  // IMPORTANT: This ensures we only store TARGET LANGUAGE words for vocabulary inclusion checking
-  const toggleSelected = (word: string) => {
-    const current = new Set(formData.selectedVocabulary ?? []);
-    if (current.has(word)) {
-      current.delete(word);
-    } else {
-      current.add(word);
-    }
-    onFormDataChange('selectedVocabulary', Array.from(current));
-  };
 
   return (
     <div className='h-full flex flex-col'>
@@ -320,54 +306,12 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
               </div>
 
               {/* Vocabulary Selection */}
-              <div className='space-y-2' data-vocabulary-section>
-                <label className='text-sm font-medium'>
-                  {t('storyInput.optionsModal.vocabularyTitle')}
-                </label>
-                <p className='text-xs text-muted-foreground'>
-                  {t('storyInput.optionsModal.vocabularySubtitle')}
-                </p>
-                <div className='mt-2 max-h-48 overflow-auto border rounded-md p-2 bg-background'>
-                  {vocabLoading ? (
-                    <div className='text-sm text-muted-foreground'>
-                      {t('common.loading')}
-                    </div>
-                  ) : availableVocabulary.length === 0 ? (
-                    <div className='text-sm text-muted-foreground'>
-                      {t('storyInput.optionsModal.noVocabularyForPair')}
-                    </div>
-                  ) : (
-                    <div className='flex flex-wrap gap-2'>
-                      {availableVocabulary.map(v => {
-                        // Display format: "source_word → target_word" but store only TARGET WORD
-                        const display = `${v.original_word} → ${v.translated_word}`;
-                        const key = `${v.id}-${v.translated_word}`;
-                        const selected = isSelected(v.original_word); // Check target word selection
-                        return (
-                          <button
-                            key={key}
-                            type='button'
-                            onClick={() => toggleSelected(v.original_word)}
-                            className={`text-sm px-2 py-1 rounded-md border transition-colors ${
-                              selected
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'bg-background hover:bg-accent border-input'
-                            }`}
-                            aria-pressed={selected}
-                          >
-                            {display}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                <div className='text-xs text-muted-foreground'>
-                  {t('storyInput.optionsModal.selectedCount', {
-                    count: formData.selectedVocabulary?.length ?? 0,
-                  })}
-                </div>
-              </div>
+              <VocabularySelector
+                availableVocabulary={availableVocabulary}
+                selectedVocabulary={formData.selectedVocabulary}
+                onVocabularyChange={(vocabulary) => onFormDataChange('selectedVocabulary', vocabulary)}
+                vocabLoading={vocabLoading}
+              />
             </div>
 
             <div className='flex justify-end mt-6'>
