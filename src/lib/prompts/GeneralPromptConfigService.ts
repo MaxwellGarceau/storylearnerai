@@ -360,25 +360,22 @@ class GeneralPromptConfigService {
   }
 
   /**
-   * Build a prompt and append a learner vocabulary inclusion block
+   * Build only the vocabulary instruction block for learner vocabulary inclusion
    */
-  async buildPromptWithVocabulary(
+  buildVocabularyInstruction(
     context: PromptBuildContext,
     vocabulary: string[]
-  ): Promise<string> {
-    const basePrompt = await this.buildPrompt(context);
-    if (!vocabulary || vocabulary.length === 0) return basePrompt;
+  ): string {
+    if (!vocabulary || vocabulary.length === 0) return '';
 
     const vocabList = vocabulary
       .slice(0, 30)
       .map(w => `- ${w}`)
       .join('\n');
 
-    const vocabInstruction = this.templateConfig.vocabularySection
+    return this.templateConfig.vocabularySection
       .replace('{difficulty}', context.difficulty)
       .replace('{vocabList}', vocabList);
-
-    return `${basePrompt}${vocabInstruction}`;
   }
 
   /**

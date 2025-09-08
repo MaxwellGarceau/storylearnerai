@@ -220,13 +220,16 @@ class TranslationService {
       return this.buildFallbackPrompt(request);
     }
 
-    // Use the prompt configuration service to build the complete prompt with vocabulary
+    // Build the base prompt
+    const basePrompt = await generalPromptConfigService.buildPrompt(context);
+
+    // Add vocabulary instruction if vocabulary is selected
     if (request.selectedVocabulary && request.selectedVocabulary.length > 0) {
-      return await generalPromptConfigService.buildPromptWithVocabulary(context, request.selectedVocabulary);
+      const vocabInstruction = generalPromptConfigService.buildVocabularyInstruction(context, request.selectedVocabulary);
+      return `${basePrompt}${vocabInstruction}`;
     }
 
-    // Use the prompt configuration service to build a basic prompt without vocabulary
-    return await generalPromptConfigService.buildPrompt(context);
+    return basePrompt;
   }
 
   /**
