@@ -73,13 +73,31 @@ class TranslationService {
         temperature: 0.7,
       });
 
-      // Track vocabulary inclusion
+      // Track vocabulary inclusion - IMPORTANT: We analyze target language words in target language text
       const selectedVocabulary = request.selectedVocabulary ?? [];
-      const { includedVocabulary, missingVocabulary } =
-        this.analyzeVocabularyInclusion(
-          llmResponse.content,
-          selectedVocabulary
-        );
+
+      // Validate that we have target language text and target language vocabulary
+      if (llmResponse.content && selectedVocabulary.length > 0) {
+        const { includedVocabulary, missingVocabulary } =
+          this.analyzeVocabularyInclusionInTargetLanguage(
+            llmResponse.content, // Target language translated text
+            selectedVocabulary, // Target language vocabulary words
+            request.toLanguage // Target language code for validation
+          );
+
+        return {
+          originalText: request.text,
+          translatedText: llmResponse.content,
+          fromLanguage: request.fromLanguage,
+          toLanguage: request.toLanguage,
+          difficulty: request.difficulty,
+          provider: llmResponse.provider,
+          model: llmResponse.model,
+          selectedVocabulary,
+          includedVocabulary,
+          missingVocabulary,
+        };
+      }
 
       return {
         originalText: request.text,
@@ -90,8 +108,8 @@ class TranslationService {
         provider: llmResponse.provider,
         model: llmResponse.model,
         selectedVocabulary,
-        includedVocabulary,
-        missingVocabulary,
+        includedVocabulary: [],
+        missingVocabulary: [],
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -332,11 +350,16 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
 
-    // Mock vocabulary inclusion detection for development
+    // Mock vocabulary inclusion detection for development - using target language logic
     const selectedVocabulary = request.selectedVocabulary ?? [];
-    const includedVocabulary =
-      selectedVocabulary.length > 0 ? [selectedVocabulary[0]] : [];
-    const missingVocabulary = selectedVocabulary.slice(1);
+    let includedVocabulary: string[] = [];
+    let missingVocabulary: string[] = [];
+
+    if (selectedVocabulary.length > 0) {
+      // Simulate that the first word is included, others are missing (for testing)
+      includedVocabulary = [selectedVocabulary[0]];
+      missingVocabulary = selectedVocabulary.slice(1);
+    }
 
     return {
       originalText: request.text,
@@ -389,35 +412,67 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
   }
 
   /**
-   * Analyze which vocabulary words from the selected list are actually included in the translated text
+   * Analyze which target language vocabulary words are actually included in the target language translated text
+   * This ensures we're only checking target language words against target language text, not source language content
    */
-  private analyzeVocabularyInclusion(
-    translatedText: string,
-    selectedVocabulary: string[]
+  private analyzeVocabularyInclusionInTargetLanguage(
+    targetLanguageTranslatedText: string,
+    targetLanguageVocabularyWords: string[],
+    _targetLanguageCode: LanguageCode // Reserved for future validation enhancements
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
-    if (!selectedVocabulary || selectedVocabulary.length === 0) {
+    if (
+      !targetLanguageVocabularyWords ||
+      targetLanguageVocabularyWords.length === 0
+    ) {
       return { includedVocabulary: [], missingVocabulary: [] };
     }
 
-    const normalizedText = translatedText
+    // Validate that we have target language text to analyze
+    if (
+      !targetLanguageTranslatedText ||
+      targetLanguageTranslatedText.trim().length === 0
+    ) {
+      return {
+        includedVocabulary: [],
+        missingVocabulary: targetLanguageVocabularyWords,
+      };
+    }
+
+    const normalizedTargetText = targetLanguageTranslatedText
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ');
     const includedVocabulary: string[] = [];
     const missingVocabulary: string[] = [];
 
-    for (const word of selectedVocabulary) {
-      const normalizedWord = word.toLowerCase().trim();
-      // Use word boundaries to avoid partial matches
-      const regex = new RegExp(`\\b${normalizedWord}\\b`, 'i');
+    for (const targetWord of targetLanguageVocabularyWords) {
+      // Ensure the word is not empty and is a valid target language word
+      const normalizedTargetWord = targetWord.toLowerCase().trim();
 
-      if (regex.test(normalizedText)) {
-        includedVocabulary.push(word);
+      if (!normalizedTargetWord) {
+        continue; // Skip empty words
+      }
+
+      // Use word boundaries to avoid partial matches in target language text
+      const regex = new RegExp(
+        `\\b${this.escapeRegExp(normalizedTargetWord)}\\b`,
+        'i'
+      );
+
+      if (regex.test(normalizedTargetText)) {
+        includedVocabulary.push(targetWord);
       } else {
-        missingVocabulary.push(word);
+        missingVocabulary.push(targetWord);
       }
     }
 
     return { includedVocabulary, missingVocabulary };
+  }
+
+  /**
+   * Escape special regex characters to ensure safe word matching
+   */
+  private escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
 

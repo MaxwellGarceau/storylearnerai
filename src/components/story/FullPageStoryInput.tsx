@@ -132,6 +132,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     formData.selectedVocabulary.includes(word);
 
   // Store target-language words in the selection (e.g., English words for es→en)
+  // IMPORTANT: This ensures we only store TARGET LANGUAGE words for vocabulary inclusion checking
   const toggleSelected = (word: string) => {
     const current = new Set(formData.selectedVocabulary ?? []);
     if (current.has(word)) {
@@ -338,14 +339,15 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
                   ) : (
                     <div className='flex flex-wrap gap-2'>
                       {availableVocabulary.map(v => {
+                        // Display format: "source_word → target_word" but store only TARGET WORD
                         const display = `${v.original_word} → ${v.translated_word}`;
                         const key = `${v.id}-${v.translated_word}`;
-                        const selected = isSelected(v.translated_word);
+                        const selected = isSelected(v.translated_word); // Check target word selection
                         return (
                           <button
                             key={key}
                             type='button'
-                            onClick={() => toggleSelected(v.translated_word)}
+                            onClick={() => toggleSelected(v.translated_word)} // Store target word only
                             className={`text-sm px-2 py-1 rounded-md border transition-colors ${
                               selected
                                 ? 'bg-primary text-primary-foreground border-primary'
