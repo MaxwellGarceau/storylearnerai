@@ -8,7 +8,7 @@ import { InteractiveTextProvider } from './InteractiveTextContext';
 import InteractiveTextView from './interactiveText/InteractiveTextView';
 
 interface InteractiveTextProps {
-  text: string;
+  text: string | undefined;
   className?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
@@ -18,7 +18,7 @@ interface InteractiveTextProps {
   includedVocabulary?: string[];
 }
 
-const InteractiveText: React.FC<InteractiveTextProps> = ({
+const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   text,
   className,
   fromLanguage,
@@ -28,6 +28,11 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   savedTranslationId,
   includedVocabulary = [],
 }) => {
+  // Early return for undefined or empty text
+  if (!text || !text.trim()) {
+    return <span className={className} />;
+  }
+
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
 
@@ -117,5 +122,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     </InteractiveTextProvider>
   );
 };
+
+const InteractiveText = React.memo(InteractiveTextComponent);
+InteractiveText.displayName = 'InteractiveText';
 
 export default InteractiveText;

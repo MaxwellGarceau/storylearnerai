@@ -39,12 +39,12 @@ export const DashboardPage: React.FC = () => {
 
       // Load user profile, create if doesn't exist
       let userProfile = await UserService.getUser(user.id);
-      if (!userProfile) {
-        userProfile = await UserService.getOrCreateUser(user.id, {
-          display_name: user.email?.split('@')[0] || 'User',
-          username: user.email?.split('@')[0] || 'user',
-        });
-      }
+      userProfile =
+        userProfile ??
+        (await UserService.getOrCreateUser(user.id, {
+          display_name: user.email?.split('@')[0] ?? 'User',
+          username: user.email?.split('@')[0] ?? 'user',
+        }));
       setProfile(userProfile);
     } catch (err) {
       setError(

@@ -8,6 +8,11 @@ describe('useTokenizedText', () => {
     expect(result.current).toEqual([]);
   });
 
+  it('returns empty array for undefined input', () => {
+    const { result } = renderHook(() => useTokenizedText(undefined));
+    expect(result.current).toEqual([]);
+  });
+
   it('tokenizes words, whitespace and punctuation', () => {
     const text = "Hello, world! It's 2025.";
     const { result } = renderHook(() => useTokenizedText(text));
