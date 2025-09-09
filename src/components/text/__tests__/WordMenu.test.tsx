@@ -261,7 +261,7 @@ describe('WordMenu Component', () => {
     );
     expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
     expect(vocabularySaveButton).toHaveAttribute(
-      'data-translated-language-id',
+      'data-target-language-id',
       '2'
     );
   });

@@ -70,6 +70,9 @@ describe('translationService', () => {
         difficulty: 'a1',
         provider: 'mock',
         model: 'mock-model',
+        selectedVocabulary: [],
+        includedVocabulary: [],
+        missingVocabulary: [],
       });
     });
 
@@ -102,6 +105,9 @@ describe('translationService', () => {
         difficulty: 'a1',
         provider: 'gemini',
         model: 'gemini-1.5-flash',
+        selectedVocabulary: [],
+        includedVocabulary: [],
+        missingVocabulary: [],
       });
     });
 
@@ -126,42 +132,7 @@ describe('translationService', () => {
     });
   });
 
-  describe('isLLMServiceAvailable', () => {
-    it('should return true when mock translation is enabled', async () => {
-      vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
-        true
-      );
-
-      const result = await translationService.isLLMServiceAvailable();
-
-      expect(result).toBe(true);
-    });
-
-    it('should check health when mock translation is disabled', async () => {
-      vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
-        false
-      );
-      vi.mocked(llmServiceManager.healthCheck).mockResolvedValue(true);
-
-      const result = await translationService.isLLMServiceAvailable();
-
-      expect(result).toBe(true);
-      expect(llmServiceManager.healthCheck).toHaveBeenCalled();
-    });
-
-    it('should return false when health check fails', async () => {
-      vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
-        false
-      );
-      vi.mocked(llmServiceManager.healthCheck).mockRejectedValue(
-        new Error('Service unavailable')
-      );
-
-      const result = await translationService.isLLMServiceAvailable();
-
-      expect(result).toBe(false);
-    });
-  });
+  // Availability checks removed in service; tests updated accordingly
 
   describe('getLLMProviderInfo', () => {
     it('should return provider info', () => {

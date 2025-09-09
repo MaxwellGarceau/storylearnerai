@@ -36,7 +36,7 @@ describe('VocabularyHighlightService', () => {
       };
 
       const result = VocabularyHighlightService.getHighlightClass(state);
-      expect(result).toBe('bg-blue-200 dark:bg-blue-900/30 animate-pulse');
+      expect(result).toBe('bg-blue-200 dark:bg-blue-900/30');
     });
 
     it('should return active class when word is active but not in other states', () => {
@@ -96,7 +96,7 @@ describe('VocabularyHighlightService', () => {
       };
 
       const result = VocabularyHighlightService.getHighlightClass(state);
-      expect(result).toBe('bg-blue-200 dark:bg-blue-900/30 animate-pulse');
+      expect(result).toBe('bg-blue-200 dark:bg-blue-900/30');
     });
   });
 

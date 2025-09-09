@@ -314,6 +314,17 @@ describe('PromptConfigService', () => {
       expect(prompt).toContain('simple alternatives');
     });
 
+    it('should append learner vocabulary section when selectedVocabulary is provided', async () => {
+      const contextWithVocab = { ...mockContext, selectedVocabulary: ['apple', 'banana'] };
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(contextWithVocab);
+
+      // Expect vocabulary section header
+      expect(prompt).toContain('Learner Vocabulary Focus:');
+      // Expect the listed words to be present as bullet points
+      expect(prompt).toContain('- apple');
+      expect(prompt).toContain('- banana');
+    });
+
     it('should include specific grammar instructions for A1 level', async () => {
       const prompt =
         await generalPromptConfigService.buildTranslationPrompt(mockContext);
