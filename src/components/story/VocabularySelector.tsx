@@ -50,17 +50,9 @@ const VocabularySelector: React.FC<VocabularySelectorProps> = ({
         ) : (
           <div className='flex flex-wrap gap-2'>
             {availableVocabulary.map(v => {
-              // TODO: We're selecting the target language word. We need to change the nomenclature to be more direct.
-              // First we need to update the DB schema.
-              //
-              // Idea
-              // from_word -> target_word
-              // target_word -> from_word
-
-              // Display format: "source_word → target_word" but store only TARGET WORD
               const display = `${v.from_word} → ${v.target_word}`;
               const key = `${v.id}-${v.from_word}`;
-              const selected = isSelected(v.from_word); // Check target word selection
+              const selected = isSelected(v.from_word);
               return (
                 <button
                   key={key}
