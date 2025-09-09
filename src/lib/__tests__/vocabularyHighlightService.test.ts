@@ -191,56 +191,6 @@ describe('VocabularyHighlightService', () => {
     });
   });
 
-  describe('utility methods', () => {
-    it('should return available states', () => {
-      const states = VocabularyHighlightService.getAvailableStates();
-      expect(states).toEqual(['included', 'saved', 'translating', 'active']);
-    });
-
-    it('should return available themes', () => {
-      const themes = VocabularyHighlightService.getAvailableThemes();
-      expect(themes).toEqual([
-        'default',
-        'high-contrast',
-        'colorblind-friendly',
-      ]);
-    });
-
-    it('should validate correct state objects', () => {
-      const validState: VocabularyHighlightState = {
-        isIncludedVocabulary: true,
-        isSaved: false,
-        isTranslating: true,
-        isActive: false,
-        isDisabled: true,
-      };
-
-      expect(VocabularyHighlightService.isValidState(validState)).toBe(true);
-    });
-
-    it('should reject invalid state objects', () => {
-      const invalidState = {
-        isIncludedVocabulary: 'true', // should be boolean
-        isSaved: false,
-      };
-
-      expect(
-        VocabularyHighlightService.isValidState(
-          invalidState as unknown as VocabularyHighlightState
-        )
-      ).toBe(false);
-    });
-
-    it('should handle partial state objects', () => {
-      const partialState: VocabularyHighlightState = {
-        isIncludedVocabulary: true,
-        isSaved: false,
-        // isTranslating, isActive, isDisabled are optional
-      };
-
-      expect(VocabularyHighlightService.isValidState(partialState)).toBe(true);
-    });
-  });
 
   describe('convenience function', () => {
     it('should work the same as the service method', () => {

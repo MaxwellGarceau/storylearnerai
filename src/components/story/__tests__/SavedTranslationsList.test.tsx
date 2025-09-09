@@ -211,7 +211,7 @@ describe('SavedTranslationsList', () => {
     fireEvent.click(screen.getByText('Sample Title'));
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith('/story', {
+      expect(navigateMock).toHaveBeenCalledWith('/story?id=1', {
         state: expect.objectContaining({
           translationData: expect.objectContaining({
             originalText: 'Hola mundo',
@@ -241,7 +241,7 @@ describe('SavedTranslationsList', () => {
     fireEvent.click(viewButton);
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith('/story', expect.anything());
+      expect(navigateMock).toHaveBeenCalledWith('/story?id=2', expect.anything());
     });
   });
 

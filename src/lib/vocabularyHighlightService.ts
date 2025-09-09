@@ -103,37 +103,6 @@ export class VocabularyHighlightService {
     return baseClass;
   }
 
-  /**
-   * Get all available highlight states for testing or documentation
-   */
-  static getAvailableStates(): Array<
-    keyof typeof VocabularyHighlightService.HIGHLIGHT_CLASSES
-  > {
-    return Object.keys(this.HIGHLIGHT_CLASSES) as Array<
-      keyof typeof VocabularyHighlightService.HIGHLIGHT_CLASSES
-    >;
-  }
-
-  /**
-   * Get all available themes
-   */
-  static getAvailableThemes(): VocabularyHighlightOptions['theme'][] {
-    return ['default', 'high-contrast', 'colorblind-friendly'];
-  }
-
-  /**
-   * Check if a state combination is valid
-   */
-  static isValidState(state: VocabularyHighlightState): boolean {
-    return (
-      typeof state.isIncludedVocabulary === 'boolean' &&
-      typeof state.isSaved === 'boolean' &&
-      (state.isTranslating === undefined ||
-        typeof state.isTranslating === 'boolean') &&
-      (state.isActive === undefined || typeof state.isActive === 'boolean') &&
-      (state.isDisabled === undefined || typeof state.isDisabled === 'boolean')
-    );
-  }
 }
 
 /**
