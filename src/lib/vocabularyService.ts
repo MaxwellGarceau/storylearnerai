@@ -30,7 +30,7 @@ export class VocabularyService {
         .from('vocabulary')
         .upsert(vocabularyData, {
           onConflict:
-            'user_id,original_word,translated_word,translated_language_id,from_language_id',
+            'user_id,from_word,target_word,target_language_id,from_language_id',
           ignoreDuplicates: false,
         })
         .select()
@@ -202,10 +202,10 @@ export class VocabularyService {
         .from('vocabulary')
         .select('id')
         .eq('user_id', userId)
-        .eq('original_word', originalWord)
-        .eq('translated_word', translatedWord)
+        .eq('from_word', originalWord)
+        .eq('target_word', translatedWord)
         .eq('from_language_id', fromLanguageId)
-        .eq('translated_language_id', translatedLanguageId)
+        .eq('target_language_id', translatedLanguageId)
         .single();
 
       if (error && (error as { code?: string }).code !== 'PGRST116') {

@@ -54,18 +54,18 @@ const VocabularySelector: React.FC<VocabularySelectorProps> = ({
               // First we need to update the DB schema.
               //
               // Idea
-              // original_word -> target_word
-              // translated_word -> from_word
+              // from_word -> target_word
+              // target_word -> from_word
 
               // Display format: "source_word → target_word" but store only TARGET WORD
-              const display = `${v.original_word} → ${v.translated_word}`;
-              const key = `${v.id}-${v.original_word}`;
-              const selected = isSelected(v.original_word); // Check target word selection
+              const display = `${v.from_word} → ${v.target_word}`;
+              const key = `${v.id}-${v.from_word}`;
+              const selected = isSelected(v.from_word); // Check target word selection
               return (
                 <button
                   key={key}
                   type='button'
-                  onClick={() => toggleSelected(v.original_word)}
+                  onClick={() => toggleSelected(v.from_word)}
                   className={`text-sm px-2 py-1 rounded-md border transition-colors ${
                     selected
                       ? 'bg-primary text-primary-foreground border-primary'

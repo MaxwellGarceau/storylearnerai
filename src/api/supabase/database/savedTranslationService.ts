@@ -337,18 +337,18 @@ export class SavedTranslationService {
       .from('saved_translations')
       .insert({
         user_id: userId,
-        original_story: sanitizedRequest.original_story,
-        translated_story: sanitizedRequest.translated_story,
-        original_language_id: originalLanguage.id,
-        translated_language_id: translatedLanguage.id,
+        from_story: sanitizedRequest.original_story,
+        target_story: sanitizedRequest.translated_story,
+        from_language_id: originalLanguage.id,
+        target_language_id: translatedLanguage.id,
         difficulty_level_id: difficultyLevel.id,
         title: sanitizedRequest.title,
         notes: sanitizedRequest.notes,
       })
       .select(`
         *,
-        original_language:languages!saved_translations_original_language_id_fkey(*),
-        translated_language:languages!saved_translations_translated_language_id_fkey(*),
+        original_language:languages!saved_translations_from_language_id_fkey(*),
+        translated_language:languages!saved_translations_target_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .single();
@@ -391,14 +391,14 @@ export class SavedTranslationService {
     if (filters.original_language_code) {
       const originalLanguage = await this.getLanguageByCode(filters.original_language_code);
       if (originalLanguage) {
-        query = query.eq('original_language_id', originalLanguage.id);
+        query = query.eq('from_language_id', originalLanguage.id);
       }
     }
 
     if (filters.translated_language_code) {
       const translatedLanguage = await this.getLanguageByCode(filters.translated_language_code);
       if (translatedLanguage) {
-        query = query.eq('translated_language_id', translatedLanguage.id);
+        query = query.eq('target_language_id', translatedLanguage.id);
       }
     }
 
@@ -450,8 +450,8 @@ export class SavedTranslationService {
       .from('saved_translations')
       .select(`
         *,
-        original_language:languages!saved_translations_original_language_id_fkey(*),
-        translated_language:languages!saved_translations_translated_language_id_fkey(*),
+        original_language:languages!saved_translations_from_language_id_fkey(*),
+        translated_language:languages!saved_translations_target_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .eq('id', translationId)
@@ -500,8 +500,8 @@ export class SavedTranslationService {
       .eq('user_id', userId)
       .select(`
         *,
-        original_language:languages!saved_translations_original_language_id_fkey(*),
-        translated_language:languages!saved_translations_translated_language_id_fkey(*),
+        original_language:languages!saved_translations_from_language_id_fkey(*),
+        translated_language:languages!saved_translations_target_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .single();
@@ -560,14 +560,14 @@ export class SavedTranslationService {
     if (filters.original_language_code) {
       const originalLanguage = await this.getLanguageByCode(filters.original_language_code);
       if (originalLanguage) {
-        query = query.eq('original_language_id', originalLanguage.id);
+        query = query.eq('from_language_id', originalLanguage.id);
       }
     }
 
     if (filters.translated_language_code) {
       const translatedLanguage = await this.getLanguageByCode(filters.translated_language_code);
       if (translatedLanguage) {
-        query = query.eq('translated_language_id', translatedLanguage.id);
+        query = query.eq('target_language_id', translatedLanguage.id);
       }
     }
 

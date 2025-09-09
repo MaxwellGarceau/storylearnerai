@@ -53,7 +53,7 @@ export interface DatabaseSavedTranslationWithDetails {
   original_story: string;
   translated_story: string;
   original_language_id: number;
-  translated_language_id: number;
+  target_language_id: number;
   difficulty_level_id: number;
   title: NullableString;
   notes: NullableString;

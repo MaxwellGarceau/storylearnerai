@@ -59,8 +59,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
     const alreadyRuntime = translatedWords.get(w);
-    if (saved?.translated_word && !alreadyRuntime) {
-      setWordTranslation(w, saved.translated_word);
+    if (saved?.target_word && !alreadyRuntime) {
+      setWordTranslation(w, saved.target_word);
       return;
     }
     void handleTranslate(w, segmentIndex);

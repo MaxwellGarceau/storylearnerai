@@ -116,12 +116,12 @@ export function VocabularySaveButton({
     // Assume not saved based on upstream check; proceed to save
 
     const payload: VocabularyInsert = {
-      original_word: originalWord,
-      translated_word: translatedWord,
+      from_word: originalWord,
+      target_word: translatedWord,
       from_language_id: fromLanguageId,
-      translated_language_id: translatedLanguageId,
-      original_word_context: originalContext,
-      translated_word_context: translatedContext,
+      target_language_id: translatedLanguageId,
+      from_word_context: originalContext,
+      target_word_context: translatedContext,
       ...(typeof savedTranslationId === 'number'
         ? { saved_translation_id: savedTranslationId }
         : {}),

@@ -13,7 +13,7 @@ export interface TranslationRequest {
   nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
   // Optional: words the user wants included in the generated translation/story context
   // IMPORTANT: These should be TARGET-LANGUAGE words (e.g., English when translating es→en).
-  // The UI stores and passes the 'translated_word' values for the selected vocabulary
+  // The UI stores and passes the 'target_word' values for the selected vocabulary
   // so the LLM can include those exact target-language words in its output.
   selectedVocabulary?: string[];
 }

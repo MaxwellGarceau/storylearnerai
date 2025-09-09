@@ -18,12 +18,12 @@ export type VoidPromise = Promise<void>;
 export interface Vocabulary {
   id: number;
   user_id: string; // Foreign key reference to users.id (UUID)
-  original_word: string;
-  translated_word: string;
-  translated_language_id: number; // Foreign key reference to languages.id
+  from_word: string;
+  target_word: string;
+  target_language_id: number; // Foreign key reference to languages.id
   from_language_id: number; // Foreign key reference to languages.id
-  original_word_context: NullableString; // Context sentence where the original word appears
-  translated_word_context: NullableString; // Context sentence where the translated word appears
+  from_word_context: NullableString; // Context sentence where the original word appears
+  target_word_context: NullableString; // Context sentence where the translated word appears
   definition: NullableString; // Definition of the word
   part_of_speech: NullableString; // Part of speech (noun, verb, adjective, etc.)
   frequency_level: NullableString; // Frequency/level (common, rare, etc.)
@@ -35,12 +35,12 @@ export interface Vocabulary {
 export interface VocabularyInsert {
   id?: number;
   user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-  original_word: string;
-  translated_word: string;
-  translated_language_id: number; // Foreign key reference to languages.id
+  from_word: string;
+  target_word: string;
+  target_language_id: number; // Foreign key reference to languages.id
   from_language_id: number; // Foreign key reference to languages.id
-  original_word_context?: NullableString; // Context sentence where the original word appears
-  translated_word_context?: NullableString; // Context sentence where the translated word appears
+  from_word_context?: NullableString; // Context sentence where the original word appears
+  target_word_context?: NullableString; // Context sentence where the translated word appears
   definition?: NullableString; // Definition of the word
   part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
   frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
@@ -52,12 +52,12 @@ export interface VocabularyInsert {
 export interface VocabularyUpdate {
   id?: number;
   user_id?: string; // Foreign key reference to users.id (UUID)
-  original_word?: string;
-  translated_word?: string;
-  translated_language_id?: number; // Foreign key reference to languages.id
+  from_word?: string;
+  target_word?: string;
+  target_language_id?: number; // Foreign key reference to languages.id
   from_language_id?: number; // Foreign key reference to languages.id
-  original_word_context?: NullableString; // Context sentence where the original word appears
-  translated_word_context?: NullableString; // Context sentence where the translated word appears
+  from_word_context?: NullableString; // Context sentence where the original word appears
+  target_word_context?: NullableString; // Context sentence where the translated word appears
   definition?: NullableString; // Definition of the word
   part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
   frequency_level?: NullableString; // Frequency/level (common, rare, etc.)

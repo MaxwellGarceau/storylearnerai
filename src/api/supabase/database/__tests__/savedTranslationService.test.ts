@@ -43,7 +43,7 @@ const createMockQueryBuilder = () => {
         original_story: 'Test story',
         translated_story: 'Historia de prueba',
         original_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
         difficulty_level_id: 1,
         title: 'Test Title',
         notes: 'Test notes',

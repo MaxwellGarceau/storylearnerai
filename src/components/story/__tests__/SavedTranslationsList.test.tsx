@@ -83,7 +83,7 @@ const makeSaved = (
   original_story: overrides.original_story ?? 'Hola mundo',
   translated_story: overrides.translated_story ?? 'Hello world',
   original_language_id: 1,
-  translated_language_id: 2,
+  target_language_id: 2,
   difficulty_level_id: 1,
   title: overrides.title ?? 'Sample Title',
   notes: overrides.notes ?? 'Some helpful notes',

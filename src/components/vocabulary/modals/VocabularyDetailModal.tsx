@@ -79,8 +79,8 @@ export function VocabularyDetailModal({
           <div className='space-y-3'>
             <div className='flex items-center justify-between py-3'>
               <WordDisplay
-                originalWord={vocabulary.original_word}
-                translatedWord={vocabulary.translated_word}
+                originalWord={vocabulary.from_word}
+                translatedWord={vocabulary.target_word}
               />
               <div className='flex gap-1'>
                 <Button
@@ -131,8 +131,8 @@ export function VocabularyDetailModal({
 
           {/* Context */}
           <ContextSection
-            originalContext={vocabulary.original_word_context}
-            translatedContext={vocabulary.translated_word_context}
+            originalContext={vocabulary.from_word_context}
+            translatedContext={vocabulary.target_word_context}
           />
 
           {/* Saved Translation Navigation */}

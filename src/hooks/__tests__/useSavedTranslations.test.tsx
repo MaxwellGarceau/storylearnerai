@@ -21,7 +21,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           source_text: 'Hello',
           translated_text: 'Hola',
           from_language_id: 1,
-          translated_language_id: 2,
+          target_language_id: 2,
           difficulty_level_id: 1,
           from_language: {
             id: 1,
@@ -47,7 +47,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
         source_text: 'Bye',
         translated_text: 'Adiós',
         from_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
         difficulty_level_id: 1,
         from_language: {
           id: 1,
@@ -84,7 +84,7 @@ describe.skip('useSavedTranslations', () => {
         source_text: 'Bye',
         translated_text: 'Adiós',
         from_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
         difficulty_level_id: 1,
       });
       expect(created).not.toBeNull();

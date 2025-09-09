@@ -42,12 +42,12 @@ export function VocabularySidebar({
   const filteredVocabulary = vocabulary.filter(item => {
     const matchesSearch =
       !searchTerm ||
-      item.original_word.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.translated_word.toLowerCase().includes(searchTerm.toLowerCase());
+      item.from_word.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.target_word.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesLanguage =
       !selectedLanguageFilter ||
-      item.translated_language_id === selectedLanguageFilter;
+      item.target_language_id === selectedLanguageFilter;
 
     return matchesSearch && matchesLanguage;
   });

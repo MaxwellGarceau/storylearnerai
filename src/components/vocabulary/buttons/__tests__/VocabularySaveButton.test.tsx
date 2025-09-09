@@ -58,10 +58,10 @@ describe('VocabularySaveButton', () => {
     });
     expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
       expect.objectContaining({
-        original_word: 'hola',
-        translated_word: 'hello',
+        from_word: 'hola',
+        target_word: 'hello',
         from_language_id: 2,
-        translated_language_id: 1,
+        target_language_id: 1,
         saved_translation_id: 42,
       })
     );
@@ -111,10 +111,10 @@ describe('VocabularySaveButton', () => {
     });
     expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
       expect.objectContaining({
-        original_word: 'hola',
-        translated_word: 'hello',
+        from_word: 'hola',
+        target_word: 'hello',
         from_language_id: 2,
-        translated_language_id: 1,
+        target_language_id: 1,
         saved_translation_id: 99,
       })
     );

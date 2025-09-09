@@ -116,7 +116,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
 
   // Compute available vocabulary for the current language pair.
   // Filter by the form's fromLanguage (source) and current target language.
-  // We present items as "original_word → translated_word" but when selecting
+  // We present items as "from_word → target_word" but when selecting
   // we store ONLY the translated word (target-language word) so we can ask the LLM
   // to include those specific target-language words in the output.
   const availableVocabulary = vocabulary.filter(v => {

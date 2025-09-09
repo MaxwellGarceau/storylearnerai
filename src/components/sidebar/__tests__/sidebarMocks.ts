@@ -110,7 +110,7 @@ export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
   original_story: 'This is the original story text',
   translated_story: 'Este es el texto de la historia original',
   original_language_id: 1,
-  translated_language_id: 2,
+  target_language_id: 2,
   difficulty_level_id: 1,
   title: 'Test Story',
   notes: 'Sample story notes',
@@ -147,7 +147,7 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
     original_story: 'Érase una vez tres cerditos...',
     translated_story: '',
     original_language_id: 1,
-    translated_language_id: 2,
+    target_language_id: 2,
     difficulty_level_id: 1,
     title: 'The Three Little Pigs',
     notes:
@@ -182,7 +182,7 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
     original_story: 'Érase una vez una niña...',
     translated_story: '',
     original_language_id: 1,
-    translated_language_id: 2,
+    target_language_id: 2,
     difficulty_level_id: 2,
     title: 'Little Red Riding Hood',
     notes:
