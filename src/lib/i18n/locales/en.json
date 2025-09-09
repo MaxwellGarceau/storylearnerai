@@ -44,7 +44,7 @@
     "signUpWithGoogle": "Sign up with Google",
     "userProfile": {
       "title": "User Profile",
-      "welcomeBack": "Welcome back, {name}!",
+      "welcomeBack": "Welcome back, {{name}}!",
       "editProfile": "Edit Profile",
       "saveChanges": "Save Changes",
       "cancel": "Cancel",
