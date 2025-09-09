@@ -4,25 +4,25 @@ import InteractiveText from '../text/InteractiveText';
 
 interface StoryContentProps {
   translationData: TranslationResponse;
-  showOriginal: boolean;
+  showFrom: boolean;
   savedTranslationId?: number;
 }
 
 const StoryContent: React.FC<StoryContentProps> = ({
   translationData,
-  showOriginal,
+  showFrom,
   savedTranslationId,
 }) => {
-  const displayText = showOriginal
-    ? translationData.originalText
-    : translationData.translatedText;
+  const displayText = showFrom
+    ? translationData.fromText
+    : translationData.targetText;
 
   // Default from and target language
   let fromLanguage = translationData.fromLanguage;
   let targetLanguage = translationData.toLanguage;
 
-  // If showOriginal is toggled then swap from and target language
-  if (showOriginal) {
+  // If showFrom is toggled then swap from and target language
+  if (showFrom) {
     fromLanguage = translationData.toLanguage;
     targetLanguage = translationData.fromLanguage;
   }
@@ -35,6 +35,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
           savedTranslationId={savedTranslationId}
+          includedVocabulary={translationData.includedVocabulary}
         />
       </div>
     </div>

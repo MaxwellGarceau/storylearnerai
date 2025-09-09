@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
-import { Settings, Check, X, Upload } from 'lucide-react';
+import { Settings, Upload } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
+import { useVocabulary } from '../../hooks/useVocabulary';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
 import PDFUploadModal from './PDFUploadModal';
+import OptionsModal from './OptionsModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface FullPageStoryInputProps {
   value: string;
@@ -16,12 +19,14 @@ interface FullPageStoryInputProps {
   isTranslating: boolean;
   placeholder?: string;
   formData: {
+    fromLanguage: LanguageCode;
     language: LanguageCode;
     difficulty: DifficultyLevel;
+    selectedVocabulary: string[];
   };
   onFormDataChange: (
-    field: 'language' | 'difficulty',
-    value: LanguageCode | DifficultyLevel
+    field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
+    value: LanguageCode | DifficultyLevel | string[]
   ) => void;
 }
 
@@ -40,6 +45,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
+  const { vocabulary, loading: vocabLoading } = useVocabulary();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;
@@ -89,9 +95,36 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     onChange(text);
   };
 
+  const handleGoToOptionsSection = (
+    sectionName: 'language' | 'difficulty' | 'vocabulary'
+  ) => {
+    setShowConfirmation(false);
+    setShowOptions(true);
+    // Small delay to ensure modal is rendered before scrolling
+    setTimeout(() => {
+      const sectionSelector = `[data-${sectionName}-section]`;
+      const sectionElement = document.querySelector(sectionSelector);
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
   const getDifficultyLabel = (difficulty: DifficultyLevel) => {
     return t(`difficultyLevels.${difficulty}.label`);
   };
+
+  // Compute available vocabulary for the current language pair.
+  // Filter by the form's fromLanguage (source) and current target language.
+  // We present items as "from_word → target_word" but when selecting
+  // we store ONLY the translated word (target-language word) so we can ask the LLM
+  // to include those specific target-language words in the output.
+  const availableVocabulary = vocabulary.filter(v => {
+    return (
+      v.from_language?.code === formData.fromLanguage &&
+      v.target_language?.code === formData.language
+    );
+  });
 
   return (
     <div className='h-full flex flex-col'>
@@ -203,132 +236,37 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       </div>
 
       {/* Options Modal */}
-      {showOptions && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
-            <div className='flex items-center justify-between mb-4'>
-              <h3 className='text-lg font-semibold'>
-                {t('storyInput.optionsModal.title')}
-              </h3>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setShowOptions(false)}
-                className='h-8 w-8 p-0'
-              >
-                <X className='w-4 h-4' />
-              </Button>
-            </div>
-
-            <div className='space-y-4'>
-              {/* Language Selection */}
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>
-                  {t('storyInput.optionsModal.languageLabel')}
-                </label>
-                <select
-                  value={formData.language}
-                  onChange={e =>
-                    onFormDataChange('language', e.target.value as LanguageCode)
-                  }
-                  className='w-full p-2 border rounded-md bg-background'
-                >
-                  <option value='en'>{getLanguageName('en')}</option>
-                </select>
-                <p className='text-xs text-muted-foreground'>
-                  {t('storyInput.currentlySupported', {
-                    language: getLanguageName('en'),
-                  })}
-                </p>
-              </div>
-
-              {/* Difficulty Selection */}
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>
-                  {t('storyInput.optionsModal.difficultyLabel')}
-                </label>
-                <select
-                  value={formData.difficulty}
-                  onChange={e =>
-                    onFormDataChange(
-                      'difficulty',
-                      e.target.value as DifficultyLevel
-                    )
-                  }
-                  className='w-full p-2 border rounded-md bg-background'
-                >
-                  <option value='a1'>{t('storyInput.optionsModal.a1')}</option>
-                  <option value='a2'>{t('storyInput.optionsModal.a2')}</option>
-                  <option value='b1'>{t('storyInput.optionsModal.b1')}</option>
-                  <option value='b2'>{t('storyInput.optionsModal.b2')}</option>
-                </select>
-                <p className='text-xs text-muted-foreground'>
-                  {t('storyInput.difficultyDescription', {
-                    language: getLanguageName('en'),
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className='flex justify-end mt-6'>
-              <Button onClick={() => setShowOptions(false)} className='px-6'>
-                {t('storyInput.done')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <OptionsModal
+        isOpen={showOptions}
+        onClose={() => setShowOptions(false)}
+        selectedLanguage={formData.language}
+        onLanguageChange={language => onFormDataChange('language', language)}
+        selectedDifficulty={formData.difficulty}
+        onDifficultyChange={difficulty =>
+          onFormDataChange('difficulty', difficulty)
+        }
+        availableVocabulary={availableVocabulary}
+        selectedVocabulary={formData.selectedVocabulary}
+        onVocabularyChange={vocabulary =>
+          onFormDataChange('selectedVocabulary', vocabulary)
+        }
+        vocabLoading={vocabLoading}
+        getLanguageName={getLanguageName}
+      />
 
       {/* Confirmation Modal */}
-      {showConfirmation && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-background rounded-lg p-6 max-w-md w-full mx-4'>
-            <h3 className='text-lg font-semibold mb-4'>
-              {t('storyInput.confirmationModal.title')}
-            </h3>
-
-            <div className='space-y-3 mb-6'>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.from')}
-                </span>
-                <span className='font-medium'>{getLanguageName('es')}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.to')}
-                </span>
-                <span className='font-medium'>
-                  {getLanguageName(formData.language)}
-                </span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-muted-foreground'>
-                  {t('storyInput.confirmationModal.difficulty')}
-                </span>
-                <span className='font-medium'>
-                  {getDifficultyLabel(formData.difficulty)}
-                </span>
-              </div>
-            </div>
-
-            <div className='flex gap-3'>
-              <Button
-                onClick={handleCancelTranslation}
-                variant='outline'
-                className='flex-1'
-              >
-                <X className='w-4 h-4 mr-2' />
-                {t('storyInput.confirmationModal.cancel')}
-              </Button>
-              <Button onClick={handleConfirmTranslation} className='flex-1'>
-                <Check className='w-4 h-4 mr-2' />
-                {t('storyInput.confirmationModal.confirm')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        onClose={handleCancelTranslation}
+        onConfirm={handleConfirmTranslation}
+        fromLanguage={formData.fromLanguage}
+        toLanguage={formData.language}
+        difficulty={formData.difficulty}
+        selectedVocabulary={formData.selectedVocabulary}
+        getLanguageName={getLanguageName}
+        getDifficultyLabel={getDifficultyLabel}
+        onGoToOptionsSection={handleGoToOptionsSection}
+      />
 
       {/* PDF Upload Modal */}
       <PDFUploadModal

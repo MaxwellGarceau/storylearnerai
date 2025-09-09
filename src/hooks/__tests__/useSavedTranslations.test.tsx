@@ -19,9 +19,9 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           user_id: 'u1',
           created_at: 'now',
           source_text: 'Hello',
-          translated_text: 'Hola',
+          target_text: 'Hola',
           from_language_id: 1,
-          translated_language_id: 2,
+          target_language_id: 2,
           difficulty_level_id: 1,
           from_language: {
             id: 1,
@@ -29,7 +29,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
             name: 'English',
             native_name: 'English',
           },
-          translated_language: {
+          target_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',
@@ -45,9 +45,9 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
         user_id: 'u1',
         created_at: 'now',
         source_text: 'Bye',
-        translated_text: 'Adiós',
+        target_text: 'Adiós',
         from_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
         difficulty_level_id: 1,
         from_language: {
           id: 1,
@@ -55,7 +55,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           name: 'English',
           native_name: 'English',
         },
-        translated_language: {
+        target_language: {
           id: 2,
           code: 'es',
           name: 'Spanish',
@@ -82,9 +82,9 @@ describe.skip('useSavedTranslations', () => {
     await act(async () => {
       const created = await result.current.createSavedTranslation({
         source_text: 'Bye',
-        translated_text: 'Adiós',
+        target_text: 'Adiós',
         from_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
         difficulty_level_id: 1,
       });
       expect(created).not.toBeNull();

@@ -17,19 +17,19 @@ import type { VocabularyWithLanguages } from '../../../../types/database/vocabul
 
 const vocab: VocabularyWithLanguages = {
   id: 1,
-  original_word: 'hola',
-  translated_word: 'hello',
+  from_word: 'hola',
+  target_word: 'hello',
   from_language_id: 2,
-  translated_language_id: 1,
+  target_language_id: 1,
   created_at: '2024-01-01T00:00:00Z',
   definition: null,
   part_of_speech: null,
   frequency_level: null,
-  original_word_context: null,
-  translated_word_context: null,
+  from_word_context: null,
+  target_word_context: null,
   saved_translation_id: null,
   from_language: { id: 2, code: 'es', name: 'Spanish' },
-  translated_language: { id: 1, code: 'en', name: 'English' },
+  target_language: { id: 1, code: 'en', name: 'English' },
 };
 
 describe('VocabularyEditModal', () => {
@@ -42,6 +42,6 @@ describe('VocabularyEditModal', () => {
       vocabulary: VocabularyWithLanguages;
     };
     expect(props.mode).toBe('edit');
-    expect(props.vocabulary.original_word).toBe('hola');
+    expect(props.vocabulary.from_word).toBe('hola');
   });
 });

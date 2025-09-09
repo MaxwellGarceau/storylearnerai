@@ -33,7 +33,7 @@ describe('VocabularyUpsertModal (create)', () => {
         onClose={() => {}}
         currentLanguageId={1}
         currentFromLanguageId={2}
-        initialData={{ originalWord: 'hola', translatedWord: 'hello' }}
+        initialData={{ fromWord: 'hola', targetWord: 'hello' }}
       />
     );
 
@@ -44,12 +44,10 @@ describe('VocabularyUpsertModal (create)', () => {
     const toSelect = screen.getByLabelText(/vocabulary\.form\.toLanguage/i);
     fireEvent.change(toSelect, { target: { value: '1' } });
 
-    const original = screen.getByLabelText(/vocabulary\.form\.originalWord/i);
+    const original = screen.getByLabelText(/vocabulary\.form\.fromWord/i);
     fireEvent.change(original, { target: { value: 'hola' } });
 
-    const translated = screen.getByLabelText(
-      /vocabulary\.form\.translatedWord/i
-    );
+    const translated = screen.getByLabelText(/vocabulary\.form\.targetWord/i);
     fireEvent.change(translated, { target: { value: 'hello' } });
 
     // Fill optional fields and submit
@@ -62,10 +60,10 @@ describe('VocabularyUpsertModal (create)', () => {
 
     await waitFor(() => expect(mockSave).toHaveBeenCalledTimes(1));
     expect(mockSave.mock.calls[0][0]).toMatchObject({
-      original_word: 'hola',
-      translated_word: 'hello',
+      from_word: 'hola',
+      target_word: 'hello',
       from_language_id: 2,
-      translated_language_id: 1,
+      target_language_id: 1,
       definition: 'greeting',
     });
   });

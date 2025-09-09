@@ -4,6 +4,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import StoryContainer from '../StoryContainer';
 import { translationService } from '../../../lib/translationService';
 import type { TranslationResponse } from '../../../lib/translationService';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+
+// Helper function to wrap components with TooltipProvider
+const renderWithTooltipProvider = (component: React.ReactElement) => {
+  return render(<TooltipProvider>{component}</TooltipProvider>);
+};
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -28,14 +34,14 @@ vi.mock('react-i18next', () => ({
         'storyInput.theStoryWillBeAdaptedToThis':
           'The story will be adapted to this',
         'storyInput.proficiencyLevel': 'proficiency level.',
-        'storyInput.translateStory': 'Translate Story',
+        'storyInput.targetStory': 'Translate Story',
         'difficultyLevels.a1.label': 'A1 (Beginner)',
         'difficultyLevels.a2.label': 'A2 (Elementary)',
         'difficultyLevels.b1.label': 'B1 (Intermediate)',
         'difficultyLevels.b2.label': 'B2 (Upper Intermediate)',
         'storySidebar.confirmTranslation': 'Confirm Translation Options',
         'storySidebar.translationOptions': 'Translation Options',
-        'storySidebar.originalLanguage': 'Original Language',
+        'storySidebar.fromLanguage': 'Original Language',
         'storySidebar.targetLanguage': 'Target Language',
         'storySidebar.difficulty': 'Difficulty',
         'storySidebar.confirm': 'Confirm',
@@ -60,7 +66,7 @@ vi.mock('../../../lib/translationService', () => ({
   translationService: {
     translate: vi.fn(),
     mockTranslateStory: vi.fn(),
-    translateStory: vi.fn(),
+    targetStory: vi.fn(),
   },
 }));
 
@@ -78,8 +84,8 @@ describe('StoryContainer Component', () => {
 
   it('renders StoryRender with translation data when a story is submitted', async () => {
     const mockTranslationResponse: TranslationResponse = {
-      originalText: 'Esta es una historia de prueba.',
-      translatedText: 'This is a test story.',
+      fromText: 'Esta es una historia de prueba.',
+      targetText: 'This is a test story.',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
@@ -88,7 +94,7 @@ describe('StoryContainer Component', () => {
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
     const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(
+    const { container } = renderWithTooltipProvider(
       <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
     );
 
@@ -111,9 +117,7 @@ describe('StoryContainer Component', () => {
       ).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', {
-      name: /confirm/i,
-    });
+    const confirmButton = within(container).getByText('Confirm');
     fireEvent.click(confirmButton);
 
     // Wait for translation to complete - check that the callback was called
@@ -129,6 +133,7 @@ describe('StoryContainer Component', () => {
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
+      selectedVocabulary: [],
     });
 
     // Verify the callback was called with the correct translation data
@@ -148,7 +153,7 @@ describe('StoryContainer Component', () => {
     mockTranslationService.translate.mockRejectedValue(mockTranslationError);
     const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(
+    const { container } = renderWithTooltipProvider(
       <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
     );
 
@@ -167,9 +172,7 @@ describe('StoryContainer Component', () => {
       ).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', {
-      name: /confirm/i,
-    });
+    const confirmButton = within(container).getByText('Confirm');
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -197,7 +200,7 @@ describe('StoryContainer Component', () => {
     mockTranslationService.translate.mockRejectedValue(mockTranslationError);
     const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(
+    const { container } = renderWithTooltipProvider(
       <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
     );
 
@@ -216,9 +219,7 @@ describe('StoryContainer Component', () => {
       ).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', {
-      name: /confirm/i,
-    });
+    const confirmButton = within(container).getByText('Confirm');
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -241,7 +242,7 @@ describe('StoryContainer Component', () => {
     );
     const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(
+    const { container } = renderWithTooltipProvider(
       <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
     );
 
@@ -260,9 +261,7 @@ describe('StoryContainer Component', () => {
       ).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', {
-      name: /confirm/i,
-    });
+    const confirmButton = within(container).getByText('Confirm');
     fireEvent.click(confirmButton);
 
     // Should show loading state in the button
@@ -276,8 +275,8 @@ describe('StoryContainer Component', () => {
 
   it('calls translation service with correct parameters', async () => {
     const mockTranslationResponse: TranslationResponse = {
-      originalText: 'Test story',
-      translatedText: 'Translated story',
+      fromText: 'Test story',
+      targetText: 'Translated story',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'b1',
@@ -286,7 +285,7 @@ describe('StoryContainer Component', () => {
     mockTranslationService.translate.mockResolvedValue(mockTranslationResponse);
     const mockOnStoryTranslated = vi.fn();
 
-    const { container } = render(
+    const { container } = renderWithTooltipProvider(
       <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
     );
 
@@ -305,9 +304,7 @@ describe('StoryContainer Component', () => {
       ).toBeInTheDocument();
     });
 
-    const confirmButton = within(container).getByRole('button', {
-      name: /confirm/i,
-    });
+    const confirmButton = within(container).getByText('Confirm');
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -316,6 +313,7 @@ describe('StoryContainer Component', () => {
         fromLanguage: 'es',
         toLanguage: 'en',
         difficulty: 'a1', // Default difficulty
+        selectedVocabulary: [],
       });
     });
   });

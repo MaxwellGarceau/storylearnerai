@@ -30,10 +30,10 @@ interface CreateProps extends BaseProps {
   currentLanguageId: number;
   currentFromLanguageId: number;
   initialData?: {
-    originalWord?: string;
-    translatedWord?: string;
-    originalContext?: string;
-    translatedContext?: string;
+    fromWord?: string;
+    targetWord?: string;
+    fromContext?: string;
+    targetContext?: string;
   };
 }
 
@@ -57,21 +57,21 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   const editVocabulary = (props as EditProps).vocabulary;
 
   const [formData, setFormData] = useState({
-    original_word: isCreateMode
-      ? (props.initialData?.originalWord ?? '')
-      : editVocabulary.original_word,
-    translated_word: isCreateMode
-      ? (props.initialData?.translatedWord ?? '')
-      : editVocabulary.translated_word,
+    from_word: isCreateMode
+      ? (props.initialData?.fromWord ?? '')
+      : editVocabulary.from_word,
+    target_word: isCreateMode
+      ? (props.initialData?.targetWord ?? '')
+      : editVocabulary.target_word,
     // Language IDs are required in create mode
     from_language_id: isCreateMode ? props.currentFromLanguageId : 0,
-    translated_language_id: isCreateMode ? props.currentLanguageId : 0,
-    original_word_context: isCreateMode
-      ? (props.initialData?.originalContext ?? '')
-      : (editVocabulary.original_word_context ?? ''),
-    translated_word_context: isCreateMode
-      ? (props.initialData?.translatedContext ?? '')
-      : (editVocabulary.translated_word_context ?? ''),
+    target_language_id: isCreateMode ? props.currentLanguageId : 0,
+    from_word_context: isCreateMode
+      ? (props.initialData?.fromContext ?? '')
+      : (editVocabulary.from_word_context ?? ''),
+    target_word_context: isCreateMode
+      ? (props.initialData?.targetContext ?? '')
+      : (editVocabulary.target_word_context ?? ''),
     definition: isCreateMode ? '' : (editVocabulary.definition ?? ''),
     part_of_speech: isCreateMode ? '' : (editVocabulary.part_of_speech ?? ''),
     frequency_level: isCreateMode ? '' : (editVocabulary.frequency_level ?? ''),
@@ -120,32 +120,30 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.original_word.trim()) {
-      newErrors.original_word = t('vocabulary.validation.originalWordRequired');
+    if (!formData.from_word.trim()) {
+      newErrors.from_word = t('vocabulary.validation.fromWordRequired');
     }
 
-    if (!formData.translated_word.trim()) {
-      newErrors.translated_word = t(
-        'vocabulary.validation.translatedWordRequired'
-      );
+    if (!formData.target_word.trim()) {
+      newErrors.target_word = t('vocabulary.validation.targetWordRequired');
     }
 
     if (isCreateMode) {
       // Prevent same language pair
       if (
         formData.from_language_id &&
-        formData.translated_language_id &&
-        formData.from_language_id === formData.translated_language_id
+        formData.target_language_id &&
+        formData.from_language_id === formData.target_language_id
       ) {
         const msg = t('vocabulary.validation.languagesMustDiffer');
         newErrors.from_language_id = msg;
-        newErrors.translated_language_id = msg;
+        newErrors.target_language_id = msg;
       }
 
-      const trimmedOriginalLower = formData.original_word.trim().toLowerCase();
+      const trimmedOriginalLower = formData.from_word.trim().toLowerCase();
       if (trimmedOriginalLower) {
         const existsLocal = userVocabulary.some(
-          v => v.original_word.trim().toLowerCase() === trimmedOriginalLower
+          v => v.from_word.trim().toLowerCase() === trimmedOriginalLower
         );
         if (existsLocal) {
           newErrors.general = t('vocabulary.validation.alreadyExists');
@@ -169,13 +167,12 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     try {
       if (isCreateMode) {
         const vocabularyData: VocabularyInsert = {
-          original_word: formData.original_word.trim(),
-          translated_word: formData.translated_word.trim(),
+          from_word: formData.from_word.trim(),
+          target_word: formData.target_word.trim(),
           from_language_id: formData.from_language_id,
-          translated_language_id: formData.translated_language_id,
-          original_word_context: formData.original_word_context.trim() || null,
-          translated_word_context:
-            formData.translated_word_context.trim() || null,
+          target_language_id: formData.target_language_id,
+          from_word_context: formData.from_word_context.trim() || null,
+          target_word_context: formData.target_word_context.trim() || null,
           definition: formData.definition.trim() || null,
           part_of_speech: formData.part_of_speech || null,
           frequency_level: formData.frequency_level || null,
@@ -188,11 +185,10 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         }
       } else {
         const updates: VocabularyUpdate = {
-          original_word: formData.original_word.trim(),
-          translated_word: formData.translated_word.trim(),
-          original_word_context: formData.original_word_context.trim() || null,
-          translated_word_context:
-            formData.translated_word_context.trim() || null,
+          from_word: formData.from_word.trim(),
+          target_word: formData.target_word.trim(),
+          from_word_context: formData.from_word_context.trim() || null,
+          target_word_context: formData.target_word_context.trim() || null,
           definition: formData.definition.trim() || null,
           part_of_speech: formData.part_of_speech || null,
           frequency_level: formData.frequency_level || null,
@@ -228,9 +224,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
       return;
     }
 
-    const trimmedOriginal = formData.original_word.trim();
+    const trimmedOriginal = formData.from_word.trim();
     const fromId = formData.from_language_id;
-    const toId = formData.translated_language_id;
+    const toId = formData.target_language_id;
 
     // Require original word and different languages before checking
     if (!trimmedOriginal || fromId === toId) {
@@ -247,8 +243,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         if (lastDuplicateCheckIdRef.current === currentCheckId) {
           const existsLocal = userVocabulary.some(
             v =>
-              v.original_word.trim().toLowerCase() ===
-              trimmedOriginal.toLowerCase()
+              v.from_word.trim().toLowerCase() === trimmedOriginal.toLowerCase()
           );
           if (existsLocal) {
             setErrors(prev => ({
@@ -274,9 +269,9 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isCreateMode,
-    formData.original_word,
+    formData.from_word,
     formData.from_language_id,
-    formData.translated_language_id,
+    formData.target_language_id,
     t,
     userVocabulary,
   ]);
@@ -300,22 +295,22 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         {/* Word Fields */}
         <div className='grid grid-cols-2 gap-4 pt-4'>
           <TextField
-            id='original_word'
-            label={t('vocabulary.form.originalWord')}
-            value={formData.original_word}
-            onChange={value => handleInputChange('original_word', value)}
-            placeholder={t('vocabulary.form.originalWordPlaceholder')}
-            error={errors.original_word}
+            id='from_word'
+            label={t('vocabulary.form.fromWord')}
+            value={formData.from_word}
+            onChange={value => handleInputChange('from_word', value)}
+            placeholder={t('vocabulary.form.fromWordPlaceholder')}
+            error={errors.from_word}
             required={isCreateMode}
           />
 
           <TextField
-            id='translated_word'
-            label={t('vocabulary.form.translatedWord')}
-            value={formData.translated_word}
-            onChange={value => handleInputChange('translated_word', value)}
-            placeholder={t('vocabulary.form.translatedWordPlaceholder')}
-            error={errors.translated_word}
+            id='target_word'
+            label={t('vocabulary.form.targetWord')}
+            value={formData.target_word}
+            onChange={value => handleInputChange('target_word', value)}
+            placeholder={t('vocabulary.form.targetWordPlaceholder')}
+            error={errors.target_word}
             required={isCreateMode}
           />
         </div>
@@ -342,13 +337,11 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             </SelectField>
 
             <SelectField
-              id='translated_language'
+              id='target_language'
               label={t('vocabulary.form.toLanguage')}
-              value={formData.translated_language_id}
-              onChange={value =>
-                handleInputChange('translated_language_id', value)
-              }
-              error={errors.translated_language_id}
+              value={formData.target_language_id}
+              onChange={value => handleInputChange('target_language_id', value)}
+              error={errors.target_language_id}
               required
             >
               <option value='' disabled>
@@ -366,7 +359,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             <p>
               <strong>{t('vocabulary.form.languages')}:</strong>{' '}
               {editVocabulary.from_language.name} →{' '}
-              {editVocabulary.translated_language.name}
+              {editVocabulary.target_language.name}
             </p>
           </div>
         )}
@@ -414,22 +407,20 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
         {/* Context Fields */}
         <TextareaField
-          id='original_word_context'
-          label={t('vocabulary.form.originalContext')}
-          value={formData.original_word_context}
-          onChange={value => handleInputChange('original_word_context', value)}
-          placeholder={t('vocabulary.form.originalContextPlaceholder')}
+          id='from_word_context'
+          label={t('vocabulary.form.fromContext')}
+          value={formData.from_word_context}
+          onChange={value => handleInputChange('from_word_context', value)}
+          placeholder={t('vocabulary.form.fromContextPlaceholder')}
           rows={2}
         />
 
         <TextareaField
-          id='translated_word_context'
-          label={t('vocabulary.form.translatedContext')}
-          value={formData.translated_word_context}
-          onChange={value =>
-            handleInputChange('translated_word_context', value)
-          }
-          placeholder={t('vocabulary.form.translatedContextPlaceholder')}
+          id='target_word_context'
+          label={t('vocabulary.form.targetContext')}
+          value={formData.target_word_context}
+          onChange={value => handleInputChange('target_word_context', value)}
+          placeholder={t('vocabulary.form.targetContextPlaceholder')}
           rows={2}
         />
 
@@ -445,10 +436,10 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           isDisabled={
             isCheckingDuplicate ||
             Boolean(
-              errors.original_word ||
-                errors.translated_word ||
+              errors.from_word ||
+                errors.target_word ||
                 errors.from_language_id ||
-                errors.translated_language_id ||
+                errors.target_language_id ||
                 errors.general
             )
           }

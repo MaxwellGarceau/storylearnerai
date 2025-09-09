@@ -23,10 +23,10 @@ interface UseVocabularyReturn {
   deleteVocabularyWord: (id: number) => BooleanPromise;
 
   checkVocabularyExists: (
-    originalWord: string,
-    translatedWord: string,
+    fromWord: string,
+    targetWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ) => BooleanPromise;
 }
 
@@ -209,20 +209,20 @@ export function useVocabulary(): UseVocabularyReturn {
 
   const checkVocabularyExists = useCallback(
     async (
-      originalWord: string,
-      translatedWord: string,
+      fromWord: string,
+      targetWord: string,
       fromLanguageId: number,
-      translatedLanguageId: number
+      targetLanguageId: number
     ): BooleanPromise => {
       if (!user?.id) return false;
 
       try {
         return await VocabularyService.checkVocabularyExists(
           user.id,
-          originalWord,
-          translatedWord,
+          fromWord,
+          targetWord,
           fromLanguageId,
-          translatedLanguageId
+          targetLanguageId
         );
       } catch (err) {
         const errorMessage =

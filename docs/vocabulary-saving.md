@@ -34,15 +34,15 @@
 />
 ```
 
-- `original_word`, `translated_word`
-- `from_language_id`, `translated_language_id`
-- `original_word_context`, `translated_word_context` (nullable)
+- `from_word`, `target_word`
+- `from_language_id`, `target_language_id`
+- `from_word_context`, `target_word_context` (nullable)
 - `definition: null`
 
 ### Saving Indicator and Pending Translation
 
 - On click, if the translation is not yet available, the button switches to a localized "Saving..." state with a spinner and waits for the translation to arrive.
-- As soon as `translatedWord` is provided (e.g., after `onBeforeOpen` triggers translation), the save proceeds automatically.
+- As soon as `targetWord` is provided (e.g., after `onBeforeOpen` triggers translation), the save proceeds automatically.
 - When saved, the button shows a disabled "Saved" state.
 
 ### TODO

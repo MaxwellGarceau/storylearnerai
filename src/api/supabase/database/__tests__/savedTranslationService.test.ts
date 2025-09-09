@@ -40,17 +40,17 @@ const createMockQueryBuilder = () => {
         code: 'en',
         name: 'English',
         user_id: 'test-user-id',
-        original_story: 'Test story',
-        translated_story: 'Historia de prueba',
-        original_language_id: 1,
-        translated_language_id: 2,
+        from_story: 'Test story',
+        target_story: 'Historia de prueba',
+        from_language_id: 1,
+        target_language_id: 2,
         difficulty_level_id: 1,
         title: 'Test Title',
         notes: 'Test notes',
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
-        original_language: { id: 1, code: 'en', name: 'English' },
-        translated_language: { id: 2, code: 'es', name: 'Spanish' },
+        from_language: { id: 1, code: 'en', name: 'English' },
+        target_language: { id: 2, code: 'es', name: 'Spanish' },
         difficulty_level: { id: 1, code: 'a1', name: 'Beginner' }
       },
       error: null
@@ -83,10 +83,10 @@ describe('SavedTranslationService', () => {
 
   describe('createSavedTranslation', () => {
     const validRequest: CreateSavedTranslationRequest = {
-      original_story: 'This is a test story in English.',
-      translated_story: 'Esta es una historia de prueba en español.',
-      original_language_code: 'en',
-      translated_language_code: 'es',
+      from_story: 'This is a test story in English.',
+      target_story: 'Esta es una historia de prueba en español.',
+      from_language_code: 'en',
+      target_language_code: 'es',
       difficulty_level_code: 'a1',
       title: 'Test Translation',
       notes: 'This is a test translation'
@@ -98,27 +98,27 @@ describe('SavedTranslationService', () => {
     });
 
     it('should throw error for missing original story', async () => {
-      const invalidRequest = { ...validRequest, original_story: '' };
+      const invalidRequest = { ...validRequest, from_story: '' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: original_story: Original story is required');
+        .rejects.toThrow('Validation failed: from_story: Original story is required');
     });
 
     it('should throw error for missing translated story', async () => {
-      const invalidRequest = { ...validRequest, translated_story: '' };
+      const invalidRequest = { ...validRequest, target_story: '' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: translated_story: Translated story is required');
+        .rejects.toThrow('Validation failed: target_story: Translated story is required');
     });
 
     it('should throw error for invalid original language code', async () => {
-      const invalidRequest = { ...validRequest, original_language_code: 'invalid' as 'en' | 'es' };
+      const invalidRequest = { ...validRequest, from_language_code: 'invalid' as 'en' | 'es' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: original_language_code: Original language code must be a valid ISO 639-1 code');
+        .rejects.toThrow('Validation failed: from_language_code: Original language code must be a valid ISO 639-1 code');
     });
 
     it('should throw error for invalid translated language code', async () => {
-      const invalidRequest = { ...validRequest, translated_language_code: 'invalid' as 'en' | 'es' };
+      const invalidRequest = { ...validRequest, target_language_code: 'invalid' as 'en' | 'es' };
       await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: translated_language_code: Translated language code must be a valid ISO 639-1 code');
+        .rejects.toThrow('Validation failed: target_language_code: Translated language code must be a valid ISO 639-1 code');
     });
 
     it('should throw error for invalid difficulty level code', async () => {
@@ -130,21 +130,21 @@ describe('SavedTranslationService', () => {
     it('should reject malicious content in original story', async () => {
       const maliciousRequest = {
         ...validRequest,
-        original_story: '<script>alert("xss")</script>This is a test story.'
+        from_story: '<script>alert("xss")</script>This is a test story.'
       };
 
       await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: original_story: Input contains potentially dangerous content');
+        .rejects.toThrow('Validation failed: from_story: Input contains potentially dangerous content');
     });
 
     it('should reject malicious content in translated story', async () => {
       const maliciousRequest = {
         ...validRequest,
-        translated_story: '<script>alert("xss")</script>Esta es una historia de prueba.'
+        target_story: '<script>alert("xss")</script>Esta es una historia de prueba.'
       };
 
       await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: translated_story: Input contains potentially dangerous content');
+        .rejects.toThrow('Validation failed: target_story: Input contains potentially dangerous content');
     });
 
     it('should reject malicious content in title', () => {

@@ -76,7 +76,7 @@ export default function SavedTranslationsList() {
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
     logger.info('ui', 'Filtering not yet implemented', {
-      translated_language_code: selectedLanguage || undefined,
+      target_language_code: selectedLanguage || undefined,
       difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
@@ -101,10 +101,10 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ): TranslationResponse => {
     return {
-      originalText: savedTranslation.original_story,
-      translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.code,
-      toLanguage: savedTranslation.translated_language.code,
+      fromText: savedTranslation.from_story,
+      targetText: savedTranslation.target_story,
+      fromLanguage: savedTranslation.from_language.code,
+      toLanguage: savedTranslation.target_language.code,
       difficulty: savedTranslation.difficulty_level.code,
       provider: 'saved',
       model: 'saved-translation',
@@ -115,7 +115,7 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
     const translationData = convertToTranslationResponse(savedTranslation);
-    void navigate('/story', {
+    void navigate(`/story?id=${savedTranslation.id}`, {
       state: {
         translationData,
         isSavedStory: true,
@@ -255,7 +255,7 @@ export default function SavedTranslationsList() {
                       month: 'short',
                       day: 'numeric',
                     })}
-                    {` • ${translation.original_language.name} → ${translation.translated_language.name}`}
+                    {` • ${translation.from_language.name} → ${translation.target_language.name}`}
                   </CardDescription>
                 </div>
                 <div className='flex gap-2' onClick={e => e.stopPropagation()}>
@@ -295,10 +295,10 @@ export default function SavedTranslationsList() {
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                 <div>
                   <h4 className='font-medium text-sm mb-2'>
-                    {t('savedTranslations.content.originalStory')}
+                    {t('savedTranslations.content.fromStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.original_story}
+                    {translation.from_story}
                   </div>
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.translatedStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.translated_story}
+                    {translation.target_story}
                   </div>
                 </div>
               </div>

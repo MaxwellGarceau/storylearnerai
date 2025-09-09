@@ -235,7 +235,7 @@ static async createTranslation(data: CreateTranslationData): Promise<DatabaseTra
     .insert({
       story_id: sanitizedData.story_id,
       target_language: sanitizedData.target_language,
-      translated_content: sanitizedData.translated_content,
+      target_content: sanitizedData.target_content,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     })
@@ -279,17 +279,17 @@ private static validateCreateTranslationData(data: CreateTranslationData): {
   }
 
   // Validate and sanitize translated content
-  if (!data.translated_content || typeof data.translated_content !== 'string') {
-    errors.push({ field: 'translated_content', message: 'Translated content is required and must be a string' });
+  if (!data.target_content || typeof data.target_content !== 'string') {
+    errors.push({ field: 'target_content', message: 'Translated content is required and must be a string' });
   } else {
-    const contentValidation = validateStoryText(data.translated_content);
+    const contentValidation = validateStoryText(data.target_content);
     if (!contentValidation.isValid) {
       errors.push({
-        field: 'translated_content',
+        field: 'target_content',
         message: contentValidation.errors[0] || 'Invalid translated content format'
       });
     } else {
-      sanitizedData.translated_content = contentValidation.sanitizedText;
+      sanitizedData.target_content = contentValidation.sanitizedText;
     }
   }
 

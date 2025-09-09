@@ -8,16 +8,17 @@ import { InteractiveTextProvider } from './InteractiveTextContext';
 import InteractiveTextView from './interactiveText/InteractiveTextView';
 
 interface InteractiveTextProps {
-  text: string;
+  text: string | undefined;
   className?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   enableTooltips?: boolean;
   disabled?: boolean;
   savedTranslationId?: number;
+  includedVocabulary?: string[];
 }
 
-const InteractiveText: React.FC<InteractiveTextProps> = ({
+const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   text,
   className,
   fromLanguage,
@@ -25,12 +26,14 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
   enableTooltips = true,
   disabled = false,
   savedTranslationId,
+  includedVocabulary = [],
 }) => {
+  // Always call hooks first, regardless of text content
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
 
   // Split text into segments for sentence extraction (keeps indices aligned with token.segmentIndex)
-  const words = useMemo(() => text.split(/(\s+)/), [text]);
+  const words = useMemo(() => text?.split(/(\s+)/) ?? [], [text]);
 
   // Sentence context helpers
   const { extractSentenceContext } = useSentenceContext(words);
@@ -43,8 +46,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
   // Translation cache and handler
   const {
-    translatedWords,
-    translatedSentences,
+    targetWords,
+    targetSentences,
     translatingWords,
     setWordTranslation,
     handleTranslate,
@@ -54,15 +57,41 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
     targetLanguage,
   });
 
+  // Create callbacks before conditional return (hooks must be called unconditionally)
+  const getTargetWord = useCallback(
+    (word: string) => targetWords.get(word),
+    [targetWords]
+  );
+
+  const isTranslatingWord = useCallback(
+    (word: string) => translatingWords.has(word),
+    [translatingWords]
+  );
+
+  const isSavedWord = useCallback(
+    (word: string) => savedOriginalWords.has(word),
+    [savedOriginalWords]
+  );
+
+  const isIncludedVocabulary = useCallback(
+    (word: string) => includedVocabulary.includes(word),
+    [includedVocabulary]
+  );
+
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
-    const alreadyRuntime = translatedWords.get(w);
-    if (saved?.translated_word && !alreadyRuntime) {
-      setWordTranslation(w, saved.translated_word);
+    const alreadyRuntime = targetWords.get(w);
+    if (saved?.target_word && !alreadyRuntime) {
+      setWordTranslation(w, saved.target_word);
       return;
     }
     void handleTranslate(w, segmentIndex);
   };
+
+  // Early return for undefined or empty text (after all hooks are called)
+  if (!text?.trim()) {
+    return <span className={className} />;
+  }
 
   return (
     <InteractiveTextProvider
@@ -71,22 +100,15 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         targetLanguage,
         savedOriginalWords,
         findSavedWordData,
-        translatedWords,
-        translatedSentences,
+        targetWords,
+        targetSentences,
         translatingWords,
         savedTranslationId,
-        getTranslatedWord: useCallback(
-          (word: string) => translatedWords.get(word),
-          [translatedWords]
-        ),
-        isTranslatingWord: useCallback(
-          (word: string) => translatingWords.has(word),
-          [translatingWords]
-        ),
-        isSavedWord: useCallback(
-          (word: string) => savedOriginalWords.has(word),
-          [savedOriginalWords]
-        ),
+        includedVocabulary,
+        getTargetWord,
+        isTranslatingWord,
+        isSavedWord,
+        isIncludedVocabulary,
       }}
     >
       <InteractiveTextView
@@ -94,19 +116,24 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         tokens={tokens}
         enableTooltips={enableTooltips}
         disabled={disabled}
+        fromLanguage={fromLanguage}
+        targetLanguage={targetLanguage}
         getOriginalSentence={(segmentIndex: number) =>
           extractSentenceContext(segmentIndex)
         }
-        getTranslatedSentence={(originalSentence: string) =>
-          translatedSentences.get(originalSentence)
+        getTargetSentence={(fromSentence: string) =>
+          targetSentences.get(fromSentence)
         }
         isSaved={(w: string) => savedOriginalWords.has(w)}
-        getDisplayTranslation={(w: string) => translatedWords.get(w)}
+        getDisplayTranslation={(w: string) => targetWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
       />
     </InteractiveTextProvider>
   );
 };
+
+const InteractiveText = React.memo(InteractiveTextComponent);
+InteractiveText.displayName = 'InteractiveText';
 
 export default InteractiveText;

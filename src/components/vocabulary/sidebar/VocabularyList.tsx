@@ -23,11 +23,9 @@ export function VocabularyListItem({
         <div className='space-y-1'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
-              <span className='font-medium text-sm'>{item.original_word}</span>
+              <span className='font-medium text-sm'>{item.from_word}</span>
               <span className='text-muted-foreground text-xs'>→</span>
-              <span className='font-medium text-sm'>
-                {item.translated_word}
-              </span>
+              <span className='font-medium text-sm'>{item.target_word}</span>
             </div>
             {item.part_of_speech && (
               <Badge variant='outline' className='text-xs'>
@@ -39,7 +37,7 @@ export function VocabularyListItem({
           <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <span>
               {getLanguageName(item.from_language_id)} →{' '}
-              {getLanguageName(item.translated_language_id)}
+              {getLanguageName(item.target_language_id)}
             </span>
             {item.frequency_level && (
               <Badge variant='secondary' className='text-xs'>

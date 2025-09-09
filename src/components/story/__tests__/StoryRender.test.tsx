@@ -7,14 +7,14 @@ import { TranslationResponse } from '../../../lib/translationService';
 // Mock the child components
 vi.mock('../StoryHeader', () => ({
   default: ({
-    showOriginal,
+    showFrom,
     onToggleView,
   }: {
-    showOriginal: boolean;
+    showFrom: boolean;
     onToggleView: () => void;
   }) => (
     <div data-testid='story-header'>
-      <div>Header - showOriginal: {showOriginal.toString()}</div>
+      <div>Header - showFrom: {showFrom.toString()}</div>
       <button onClick={onToggleView}>Toggle View</button>
     </div>
   ),
@@ -23,25 +23,23 @@ vi.mock('../StoryHeader', () => ({
 vi.mock('../StoryContent', () => ({
   default: ({
     translationData,
-    showOriginal,
+    showFrom,
   }: {
     translationData: TranslationResponse;
-    showOriginal: boolean;
+    showFrom: boolean;
   }) => (
     <div data-testid='story-content'>
-      <div>Content - showOriginal: {showOriginal.toString()}</div>
+      <div>Content - showFrom: {showFrom.toString()}</div>
       <div>
-        {showOriginal
-          ? translationData.originalText
-          : translationData.translatedText}
+        {showFrom ? translationData.fromText : translationData.targetText}
       </div>
     </div>
   ),
 }));
 
 const mockTranslationData: TranslationResponse = {
-  originalText: 'Esta es una historia de prueba.',
-  translatedText: 'This is a test story.',
+  fromText: 'Esta es una historia de prueba.',
+  targetText: 'This is a test story.',
   fromLanguage: 'Spanish',
   toLanguage: 'en',
   difficulty: 'a1',
@@ -86,7 +84,7 @@ describe('StoryRender Component', () => {
 
     // Initially showing translated
     expect(
-      within(container).getByText('Content - showOriginal: false')
+      within(container).getByText('Content - showFrom: false')
     ).toBeInTheDocument();
     expect(
       within(container).getByText('This is a test story.')
@@ -100,10 +98,10 @@ describe('StoryRender Component', () => {
 
     // Now showing original
     expect(
-      within(container).getByText('Header - showOriginal: true')
+      within(container).getByText('Header - showFrom: true')
     ).toBeInTheDocument();
     expect(
-      within(container).getByText('Content - showOriginal: true')
+      within(container).getByText('Content - showFrom: true')
     ).toBeInTheDocument();
     expect(
       within(container).getByText('Esta es una historia de prueba.')
@@ -121,19 +119,19 @@ describe('StoryRender Component', () => {
 
     // Start with translated (false)
     expect(
-      within(container).getByText('Content - showOriginal: false')
+      within(container).getByText('Content - showFrom: false')
     ).toBeInTheDocument();
 
     // Toggle to original (true)
     fireEvent.click(toggleButton);
     expect(
-      within(container).getByText('Content - showOriginal: true')
+      within(container).getByText('Content - showFrom: true')
     ).toBeInTheDocument();
 
     // Toggle back to translated (false)
     fireEvent.click(toggleButton);
     expect(
-      within(container).getByText('Content - showOriginal: false')
+      within(container).getByText('Content - showFrom: false')
     ).toBeInTheDocument();
   });
 
@@ -144,10 +142,10 @@ describe('StoryRender Component', () => {
 
     const storyHeader = within(container).getByTestId('story-header');
 
-    // Should pass translationData, showOriginal, and onToggleView
+    // Should pass translationData, showFrom, and onToggleView
     expect(storyHeader).toBeInTheDocument();
     expect(
-      within(storyHeader).getByText('Header - showOriginal: false')
+      within(storyHeader).getByText('Header - showFrom: false')
     ).toBeInTheDocument();
     expect(
       within(storyHeader).getByRole('button', { name: 'Toggle View' })
@@ -161,10 +159,10 @@ describe('StoryRender Component', () => {
 
     const storyContent = within(container).getByTestId('story-content');
 
-    // Should pass translationData and showOriginal
+    // Should pass translationData and showFrom
     expect(storyContent).toBeInTheDocument();
     expect(
-      within(storyContent).getByText('Content - showOriginal: false')
+      within(storyContent).getByText('Content - showFrom: false')
     ).toBeInTheDocument();
     expect(
       within(storyContent).getByText('This is a test story.')
@@ -193,7 +191,7 @@ describe('StoryRender Component', () => {
     // First toggle
     fireEvent.click(toggleButton);
     expect(
-      within(container).getByText('Content - showOriginal: true')
+      within(container).getByText('Content - showFrom: true')
     ).toBeInTheDocument();
     expect(
       within(container).getByText('Esta es una historia de prueba.')
@@ -202,7 +200,7 @@ describe('StoryRender Component', () => {
     // Second toggle
     fireEvent.click(toggleButton);
     expect(
-      within(container).getByText('Content - showOriginal: false')
+      within(container).getByText('Content - showFrom: false')
     ).toBeInTheDocument();
     expect(
       within(container).getByText('This is a test story.')
@@ -211,7 +209,7 @@ describe('StoryRender Component', () => {
     // Third toggle
     fireEvent.click(toggleButton);
     expect(
-      within(container).getByText('Content - showOriginal: true')
+      within(container).getByText('Content - showFrom: true')
     ).toBeInTheDocument();
     expect(
       within(container).getByText('Esta es una historia de prueba.')
@@ -227,8 +225,8 @@ describe('StoryRender Component', () => {
 
   it('handles empty translation data gracefully', () => {
     const emptyTranslationData: TranslationResponse = {
-      originalText: '',
-      translatedText: '',
+      fromText: '',
+      targetText: '',
       fromLanguage: 'Spanish',
       toLanguage: 'en',
       difficulty: 'a1',

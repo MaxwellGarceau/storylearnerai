@@ -14,9 +14,9 @@ export type Token =
 
 const LEADING_WORD_RE = /^[\p{L}\p{N}'']+/u;
 
-export function useTokenizedText(text: string): Token[] {
+export function useTokenizedText(text: string | undefined): Token[] {
   return useMemo(() => {
-    if (!text.trim()) return [];
+    if (!text?.trim()) return [];
 
     const segments = text.split(/(\s+)/);
     const tokens: Token[] = [];

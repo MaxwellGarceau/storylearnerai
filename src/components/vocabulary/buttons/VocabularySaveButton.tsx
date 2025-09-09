@@ -9,19 +9,19 @@ import type { VocabularyInsert } from '../../../types/database/vocabulary';
 import { logger } from '../../../lib/logger';
 
 interface VocabularySaveButtonProps {
-  originalWord: string;
-  translatedWord: string;
-  originalContext?: string;
-  translatedContext?: string;
+  fromWord: string;
+  targetWord: string;
+  fromContext?: string;
+  targetContext?: string;
   fromLanguageId: number;
-  translatedLanguageId: number;
+  targetLanguageId: number;
   className?: string;
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
   showTextOnly?: boolean;
   // New props for sentence-level context
-  originalSentence?: string;
-  translatedSentence?: string;
+  fromSentence?: string;
+  targetSentence?: string;
   // New lifecycle hook to run before opening the modal (e.g., trigger translation)
   onBeforeOpen?: () => Promise<void> | void;
   // Override internal saved state check - useful for consistency with other UI elements
@@ -33,20 +33,20 @@ interface VocabularySaveButtonProps {
   // Optional overrides for testing to bypass hooks
   saveVocabularyOverride?: (data: VocabularyInsert) => Promise<unknown>;
   checkExistsOverride?: (
-    originalWord: string,
-    translatedWord: string,
+    fromWord: string,
+    targetWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ) => Promise<boolean>;
 }
 
 export function VocabularySaveButton({
-  originalWord,
-  translatedWord,
-  originalContext,
-  translatedContext,
+  fromWord,
+  targetWord,
+  fromContext,
+  targetContext,
   fromLanguageId,
-  translatedLanguageId,
+  targetLanguageId,
   className,
   variant = 'outline',
   size = 'sm',
@@ -83,10 +83,10 @@ export function VocabularySaveButton({
       setIsChecking(true);
       try {
         const exists = await effectiveCheck(
-          originalWord,
-          translatedWord,
+          fromWord,
+          targetWord,
           fromLanguageId,
-          translatedLanguageId
+          targetLanguageId
         );
         setIsSaved(exists);
       } catch (error) {
@@ -96,14 +96,14 @@ export function VocabularySaveButton({
       }
     };
 
-    if (originalWord && translatedWord) {
+    if (fromWord && targetWord) {
       void checkIfSaved();
     }
   }, [
-    originalWord,
-    translatedWord,
+    fromWord,
+    targetWord,
     fromLanguageId,
-    translatedLanguageId,
+    targetLanguageId,
     checkVocabularyExists,
     externalIsSaved,
     effectiveCheck,
@@ -111,17 +111,17 @@ export function VocabularySaveButton({
 
   const attemptSave = async () => {
     // Do not proceed without required fields
-    if (!originalWord || !translatedWord) return;
+    if (!fromWord || !targetWord) return;
 
     // Assume not saved based on upstream check; proceed to save
 
     const payload: VocabularyInsert = {
-      original_word: originalWord,
-      translated_word: translatedWord,
+      from_word: fromWord,
+      target_word: targetWord,
       from_language_id: fromLanguageId,
-      translated_language_id: translatedLanguageId,
-      original_word_context: originalContext,
-      translated_word_context: translatedContext,
+      target_language_id: targetLanguageId,
+      from_word_context: fromContext,
+      target_word_context: targetContext,
       ...(typeof savedTranslationId === 'number'
         ? { saved_translation_id: savedTranslationId }
         : {}),
@@ -144,7 +144,7 @@ export function VocabularySaveButton({
     }
 
     // If translation not yet available, enter pending save state
-    if (!originalWord || !translatedWord) {
+    if (!fromWord || !targetWord) {
       setIsSaving(true);
       setIsPendingSave(true);
       return;
@@ -159,7 +159,7 @@ export function VocabularySaveButton({
 
   // If we clicked save while translation was not ready, auto-save once it arrives
   React.useEffect(() => {
-    if (isPendingSave && originalWord && translatedWord) {
+    if (isPendingSave && fromWord && targetWord) {
       setIsSaving(true);
       const run = async () => {
         await delay(0);
@@ -168,7 +168,7 @@ export function VocabularySaveButton({
       void run();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPendingSave, originalWord, translatedWord]);
+  }, [isPendingSave, fromWord, targetWord]);
 
   const isDisabled = isChecking || isSaving || isSaved;
   const currentVariant = isSaved ? 'ghost' : variant;
@@ -186,10 +186,10 @@ export function VocabularySaveButton({
       disabled={isDisabled}
       type='button'
       data-testid='vocabulary-save-button'
-      data-original-word={originalWord}
-      data-translated-word={translatedWord}
+      data-original-word={fromWord}
+      data-translated-word={targetWord}
       data-from-language-id={fromLanguageId}
-      data-translated-language-id={translatedLanguageId}
+      data-target-language-id={targetLanguageId}
     >
       {isChecking || isSaving ? (
         <>

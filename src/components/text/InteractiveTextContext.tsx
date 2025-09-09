@@ -5,17 +5,17 @@ export interface InteractiveTextContextValue {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   savedOriginalWords: Set<string>;
-  findSavedWordData: (
-    word: string
-  ) => { translated_word?: string | null } | null;
-  translatedWords: Map<string, string>;
-  translatedSentences: Map<string, string>;
+  findSavedWordData: (word: string) => { target_word?: string | null } | null;
+  targetWords: Map<string, string>;
+  targetSentences: Map<string, string>;
   translatingWords: Set<string>;
   savedTranslationId?: number;
+  includedVocabulary: string[];
   // Selector helpers
-  getTranslatedWord: (word: string) => string | undefined;
+  getTargetWord: (word: string) => string | undefined;
   isTranslatingWord: (word: string) => boolean;
   isSavedWord: (word: string) => boolean;
+  isIncludedVocabulary: (word: string) => boolean;
 }
 
 export const InteractiveTextContext =

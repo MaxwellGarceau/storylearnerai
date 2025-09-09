@@ -8,6 +8,12 @@ import {
 import { vi } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
 import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+
+// Helper function to wrap components with TooltipProvider
+const renderWithTooltipProvider = (component: React.ReactElement) => {
+  return render(<TooltipProvider>{component}</TooltipProvider>);
+};
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -97,6 +103,7 @@ describe('FullPageStoryInput Security Features', () => {
     formData: {
       language: 'en' as LanguageCode,
       difficulty: 'a1' as DifficultyLevel,
+      selectedVocabulary: [] as string[],
     },
     onFormDataChange: vi.fn(),
   };
@@ -112,7 +119,7 @@ describe('FullPageStoryInput Security Features', () => {
   describe('XSS Prevention', () => {
     it('should sanitize script tags from input', async () => {
       const { onChange } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const maliciousInput = '<script>alert("xss")</script>Hello world';
@@ -125,7 +132,7 @@ describe('FullPageStoryInput Security Features', () => {
     });
 
     it('should show security warning for malicious content', async () => {
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const maliciousInput = '<script>alert("xss")</script>Hello world';
@@ -147,7 +154,7 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should prevent translation when malicious content is detected', async () => {
       const { onSubmit } = defaultProps;
-      render(
+      renderWithTooltipProvider(
         <FullPageStoryInput
           {...defaultProps}
           value="<script>alert('xss')</script>Hello"
@@ -165,7 +172,7 @@ describe('FullPageStoryInput Security Features', () => {
     });
 
     it('should handle javascript protocol attempts', async () => {
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const maliciousInput = 'javascript:alert("xss")';
@@ -178,7 +185,7 @@ describe('FullPageStoryInput Security Features', () => {
     });
 
     it('should handle event handler attempts', async () => {
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const maliciousInput = '<img src="x" onerror="alert(\'xss\')">';
@@ -194,7 +201,7 @@ describe('FullPageStoryInput Security Features', () => {
   describe('Normal Text Handling', () => {
     it('should allow normal Spanish text without warnings', async () => {
       const { onChange } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const normalText = '¡Hola mundo! ¿Cómo estás?';
@@ -211,7 +218,7 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should allow special characters and accents', async () => {
       const { onChange } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const textWithAccents =
@@ -229,7 +236,7 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should allow line breaks in normal text', async () => {
       const { onChange } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const textWithBreaks = 'Primera línea.\nSegunda línea.\nTercera línea.';
@@ -248,7 +255,7 @@ describe('FullPageStoryInput Security Features', () => {
   describe('Translation Prevention', () => {
     it('should prevent translation when validation errors exist', async () => {
       const { onSubmit } = defaultProps;
-      render(
+      renderWithTooltipProvider(
         <FullPageStoryInput
           {...defaultProps}
           value="<script>alert('xss')</script>Hello"
@@ -267,7 +274,9 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should allow translation when text is clean', async () => {
       const { onSubmit } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} value='¡Hola mundo!' />);
+      renderWithTooltipProvider(
+        <FullPageStoryInput {...defaultProps} value='¡Hola mundo!' />
+      );
 
       const translateButton = screen.getByTestId('translate-button');
       fireEvent.click(translateButton);
@@ -291,7 +300,7 @@ describe('FullPageStoryInput Security Features', () => {
 
   describe('User Experience', () => {
     it('should clear security warning when user fixes the input', async () => {
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
 
@@ -316,7 +325,7 @@ describe('FullPageStoryInput Security Features', () => {
 
     it('should maintain user input even when sanitized', async () => {
       const { onChange } = defaultProps;
-      render(<FullPageStoryInput {...defaultProps} />);
+      renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
       const textarea = screen.getByTestId('story-textarea');
       const mixedInput = 'Hello <script>alert("xss")</script> world';

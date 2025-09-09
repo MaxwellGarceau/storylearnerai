@@ -70,6 +70,7 @@ Each page includes appropriate navigation buttons:
   - "Translate Another Story" → `/translate`
   - "Go Home" → `/`
   - "Translate a Story" (when no data) → `/translate`
+  - Vocabulary deep-link: `/translate#vocabulary` opens the sidebar with the Vocabulary tab active
 
 ## Components Overview
 

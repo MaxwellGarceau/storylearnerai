@@ -8,12 +8,12 @@ vi.mock('../../useVocabulary', () => ({
       {
         id: 1,
         user_id: 'u1',
-        original_word: 'Hello',
-        translated_word: 'Hola',
+        from_word: 'Hello',
+        target_word: 'Hola',
         from_language_id: 1,
-        translated_language_id: 2,
-        original_word_context: null,
-        translated_word_context: null,
+        target_language_id: 2,
+        from_word_context: null,
+        target_word_context: null,
         definition: null,
         part_of_speech: null,
         frequency_level: null,
@@ -26,7 +26,7 @@ vi.mock('../../useVocabulary', () => ({
           name: 'English',
           native_name: 'English',
         },
-        translated_language: {
+        target_language: {
           id: 2,
           code: 'es',
           name: 'Spanish',
@@ -53,8 +53,8 @@ describe('useSavedWords', () => {
 
     expect(result.current.savedOriginalWords.has('hello')).toBe(true);
     expect(result.current.findSavedWordData('hello')).toMatchObject({
-      original_word: 'Hello',
-      translated_word: 'Hola',
+      from_word: 'Hello',
+      target_word: 'Hola',
     });
     expect(result.current.findSavedWordData('missing')).toBeNull();
   });

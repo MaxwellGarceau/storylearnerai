@@ -33,26 +33,26 @@ vi.mock('../../../hooks/useLanguages', () => ({
 // Mock the VocabularySaveButton component
 vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   VocabularySaveButton: ({
-    originalWord,
-    translatedWord,
+    fromWord,
+    targetWord,
     fromLanguageId,
-    translatedLanguageId,
+    targetLanguageId,
     onClick,
     children,
   }: {
-    originalWord: string;
-    translatedWord: string;
+    fromWord: string;
+    targetWord: string;
     fromLanguageId: number;
-    translatedLanguageId: number;
+    targetLanguageId: number;
     onClick?: () => void;
     children?: React.ReactNode;
   }) => (
     <button
       data-testid='vocabulary-save-button'
-      data-original-word={originalWord}
-      data-translated-word={translatedWord}
+      data-original-word={fromWord}
+      data-translated-word={targetWord}
       data-from-language-id={fromLanguageId}
-      data-translated-language-id={translatedLanguageId}
+      data-target-language-id={targetLanguageId}
       onClick={onClick}
     >
       {children ?? 'Save'}
@@ -247,7 +247,7 @@ describe('WordMenu Component', () => {
         open={true}
         fromLanguage='en'
         targetLanguage='es'
-        translatedWord='mundo'
+        targetWord='mundo'
       >
         <span>world</span>
       </WordMenu>
@@ -261,7 +261,7 @@ describe('WordMenu Component', () => {
     );
     expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
     expect(vocabularySaveButton).toHaveAttribute(
-      'data-translated-language-id',
+      'data-target-language-id',
       '2'
     );
   });
@@ -420,7 +420,7 @@ describe('WordMenu Component', () => {
       <WordMenu
         word='hello'
         open={true}
-        translatedWord='hola'
+        targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
       >
@@ -445,7 +445,7 @@ describe('WordMenu Component', () => {
         word='hello'
         open={true}
         isSaved={true}
-        translatedWord='hola'
+        targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
       >

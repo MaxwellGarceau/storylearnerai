@@ -22,18 +22,18 @@ import type { SaveFieldType, TextAreaChangeEvent } from '../../types/common';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
-  originalStory: string;
-  originalLanguage: string;
-  translatedLanguage: string;
+  fromStory: string;
+  fromLanguage: string;
+  targetLanguage: string;
   difficultyLevel: DifficultyLevel;
   isSavedStory?: boolean;
 }
 
 export default function SaveTranslationButton({
   translationData,
-  originalStory,
-  originalLanguage,
-  translatedLanguage,
+  fromStory,
+  fromLanguage,
+  targetLanguage,
   difficultyLevel,
   isSavedStory = false,
 }: SaveTranslationButtonProps) {
@@ -99,7 +99,7 @@ export default function SaveTranslationButton({
   };
 
   const handleSave = async () => {
-    if (!translationData.translatedText) {
+    if (!translationData.targetText) {
       setError('No translated text available to save');
       return;
     }
@@ -118,19 +118,19 @@ export default function SaveTranslationButton({
       setIsSaving(true);
       setError(null);
 
-      const originalLanguageCode = getLanguageCode(originalLanguage);
-      const translatedLanguageCode = getLanguageCode(translatedLanguage);
+      const fromLanguageCode = getLanguageCode(fromLanguage);
+      const targetLanguageCode = getLanguageCode(targetLanguage);
 
-      if (!originalLanguageCode || !translatedLanguageCode) {
+      if (!fromLanguageCode || !targetLanguageCode) {
         setError('Unsupported language combination');
         return;
       }
 
       const result = await createSavedTranslation({
-        original_story: originalStory,
-        translated_story: translationData.translatedText,
-        original_language_code: originalLanguageCode,
-        translated_language_code: translatedLanguageCode,
+        from_story: fromStory,
+        target_story: translationData.targetText,
+        from_language_code: fromLanguageCode,
+        target_language_code: targetLanguageCode,
         difficulty_level_code: difficultyLevel,
         title: sanitizedTitle ?? undefined,
         notes: sanitizedNotes ?? undefined,
@@ -252,11 +252,11 @@ export default function SaveTranslationButton({
               <div className='text-sm text-muted-foreground space-y-1'>
                 <div>
                   <span className='font-medium'>Original Language:</span>{' '}
-                  {originalLanguage}
+                  {fromLanguage}
                 </div>
                 <div>
                   <span className='font-medium'>Translated Language:</span>{' '}
-                  {translatedLanguage}
+                  {targetLanguage}
                 </div>
                 <div>
                   <span className='font-medium'>Difficulty Level:</span>{' '}

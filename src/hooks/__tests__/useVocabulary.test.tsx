@@ -12,12 +12,12 @@ vi.mock('../../lib/vocabularyService', () => ({
         {
           id: 1,
           user_id: 'u1',
-          original_word: 'Hello',
-          translated_word: 'Hola',
+          from_word: 'Hello',
+          target_word: 'Hola',
           from_language_id: 1,
-          translated_language_id: 2,
-          original_word_context: null,
-          translated_word_context: null,
+          target_language_id: 2,
+          from_word_context: null,
+          target_word_context: null,
           definition: null,
           part_of_speech: null,
           frequency_level: null,
@@ -30,7 +30,7 @@ vi.mock('../../lib/vocabularyService', () => ({
             name: 'English',
             native_name: 'English',
           },
-          translated_language: {
+          target_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',
@@ -64,17 +64,17 @@ describe.skip('useVocabulary', () => {
 
     await act(async () => {
       const saved = await result.current.saveVocabularyWord({
-        original_word: 'Bye',
-        translated_word: 'Adiós',
+        from_word: 'Bye',
+        target_word: 'Adiós',
         from_language_id: 1,
-        translated_language_id: 2,
+        target_language_id: 2,
       });
       expect(saved).not.toBeNull();
     });
 
     await act(async () => {
       const updated = await result.current.updateVocabularyWord(1, {
-        translated_word: 'Hola!',
+        target_word: 'Hola!',
       });
       expect(updated).not.toBeNull();
     });

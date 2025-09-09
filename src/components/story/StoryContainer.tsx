@@ -9,6 +9,8 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
 import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
+import { useToast } from '../../hooks/useToast';
+import { useTranslation } from 'react-i18next';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -22,13 +24,18 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     useState<TranslationError | null>(null);
   const [formData, setFormData] = useState<StoryFormData>({
     story: '',
+    fromLanguage: 'es',
     language: 'en', // Language code instead of name
     difficulty: 'a1', // Difficulty code instead of name
+    selectedVocabulary: [],
   });
 
+  const { toast } = useToast();
+  const { t } = useTranslation();
+
   const handleFormDataChange = (
-    field: 'language' | 'difficulty',
-    value: LanguageCode | DifficultyLevel
+    field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
+    value: LanguageCode | DifficultyLevel | string[]
   ) => {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -56,16 +63,38 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     setTranslationError(null);
 
     try {
-      // Automatically uses mock or real translation based on VITE_ENABLE_MOCK_TRANSLATION env variable
+      const selectedVocabulary = Array.from(
+        new Set((formData.selectedVocabulary ?? []).map(w => w.trim()))
+      );
+
       const response = await translationService.translate({
         text: formData.story,
-        fromLanguage: 'es', // Spanish language code
+        fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
+        selectedVocabulary,
       });
 
       // Trigger the view switch to story reader page
       onStoryTranslated(response);
+
+      // Show toast notification if some vocabulary words weren't included
+      if (response.missingVocabulary && response.missingVocabulary.length > 0) {
+        const missingCount = response.missingVocabulary.length;
+        const totalSelected = response.selectedVocabulary?.length ?? 0;
+
+        toast({
+          title: t('storyContainer.vocabularyWarningTitle', {
+            count: missingCount,
+          }),
+          description: t('storyContainer.vocabularyWarningDescription', {
+            missingCount,
+            totalCount: totalSelected,
+            missingWords: response.missingVocabulary.join(', '),
+          }),
+          variant: 'destructive',
+        });
+      }
     } catch (error) {
       logger.error('translation', 'Translation failed', { error });
 

@@ -30,10 +30,10 @@ describe('VocabularySaveButton', () => {
 
     render(
       <VocabularySaveButton
-        originalWord='hola'
-        translatedWord='hello'
+        fromWord='hola'
+        targetWord='hello'
         fromLanguageId={2}
-        translatedLanguageId={1}
+        targetLanguageId={1}
         savedTranslationId={42}
         isSaved={false}
         t={(k: string) => k}
@@ -58,16 +58,16 @@ describe('VocabularySaveButton', () => {
     });
     expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
       expect.objectContaining({
-        original_word: 'hola',
-        translated_word: 'hello',
+        from_word: 'hola',
+        target_word: 'hello',
         from_language_id: 2,
-        translated_language_id: 1,
+        target_language_id: 1,
         saved_translation_id: 42,
       })
     );
   });
 
-  it('shows saving state and auto-saves when translatedWord arrives later', async () => {
+  it('shows saving state and auto-saves when targetWord arrives later', async () => {
     const user = userEvent.setup();
 
     // Component to simulate delayed translation arrival
@@ -76,10 +76,10 @@ describe('VocabularySaveButton', () => {
       return (
         <div>
           <VocabularySaveButton
-            originalWord='hola'
-            translatedWord={translated}
+            fromWord='hola'
+            targetWord={translated}
             fromLanguageId={2}
-            translatedLanguageId={1}
+            targetLanguageId={1}
             savedTranslationId={99}
             isSaved={false}
             onBeforeOpen={async () => {
@@ -105,16 +105,16 @@ describe('VocabularySaveButton', () => {
 
     await user.click(button);
 
-    // Eventually auto-saves once translatedWord arrives
+    // Eventually auto-saves once targetWord arrives
     await waitFor(() => {
       expect(mockSaveVocabularyWord).toHaveBeenCalledTimes(1);
     });
     expect(mockSaveVocabularyWord).toHaveBeenCalledWith(
       expect.objectContaining({
-        original_word: 'hola',
-        translated_word: 'hello',
+        from_word: 'hola',
+        target_word: 'hello',
         from_language_id: 2,
-        translated_language_id: 1,
+        target_language_id: 1,
         saved_translation_id: 99,
       })
     );

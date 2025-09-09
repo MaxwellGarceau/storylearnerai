@@ -44,7 +44,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
     };
 
     it('should build a complete prompt with all placeholders replaced', async () => {
-      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('es');
@@ -64,7 +65,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
     });
 
     it('should include all general instructions', async () => {
-      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for all general instructions
       expect(prompt).toContain(
@@ -78,7 +80,8 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
     });
 
     it('should include all language-specific instruction types', async () => {
-      const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
       // Check for all instruction types
       expect(prompt).toContain('Vocabulary:');
@@ -99,7 +102,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
         nativeLanguage: 'es',
       };
 
-      const prompt = await generalPromptConfigService.buildPrompt(
+      const prompt = await generalPromptConfigService.buildTranslationPrompt(
         contextWithSpecialChars
       );
 
@@ -118,7 +121,9 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       };
 
       const prompt =
-        await generalPromptConfigService.buildPrompt(contextWithMultiLine);
+        await generalPromptConfigService.buildTranslationPrompt(
+          contextWithMultiLine
+        );
 
       // Should preserve line breaks in the story text
       expect(prompt).toContain(
@@ -137,7 +142,9 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       };
 
       const prompt =
-        await generalPromptConfigService.buildPrompt(unsupportedContext);
+        await generalPromptConfigService.buildTranslationPrompt(
+          unsupportedContext
+        );
 
       expect(typeof prompt).toBe('string');
       expect(prompt).toContain('es story to unsupported');
@@ -155,7 +162,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
   };
 
   it('should have correct section ordering in the prompt', async () => {
-    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+    const prompt =
+      await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
     // Split prompt into lines to check ordering
     const lines = prompt.split('\n');
@@ -185,7 +193,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
   });
 
   it('should have proper formatting with line breaks between sections', async () => {
-    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+    const prompt =
+      await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
     // Check for proper spacing between major sections
     expect(prompt).toMatch(/Instructions:\n/);
@@ -194,7 +203,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
   });
 
   it('should have correct header format', async () => {
-    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+    const prompt =
+      await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
     // Check header format
     expect(prompt).toMatch(
@@ -203,7 +213,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
   });
 
   it('should have correct footer format', async () => {
-    const prompt = await generalPromptConfigService.buildPrompt(mockContext);
+    const prompt =
+      await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
     // Check footer format
     expect(prompt).toMatch(/Please provide only the en translation\.$/);

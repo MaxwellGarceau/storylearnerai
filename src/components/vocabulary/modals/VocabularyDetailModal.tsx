@@ -47,11 +47,11 @@ export function VocabularyDetailModal({
             state: {
               // Keep fast-path state for instant render when available
               translationData: {
-                originalText: savedTranslation.original_story,
-                translatedText: savedTranslation.translated_story,
+                fromText: savedTranslation.from_story,
+                targetText: savedTranslation.target_story,
                 difficulty: savedTranslation.difficulty_level.code,
-                fromLanguage: savedTranslation.original_language.code,
-                toLanguage: savedTranslation.translated_language.code,
+                fromLanguage: savedTranslation.from_language.code,
+                toLanguage: savedTranslation.target_language.code,
                 provider: 'saved',
                 model: 'saved-translation',
               },
@@ -79,8 +79,8 @@ export function VocabularyDetailModal({
           <div className='space-y-3'>
             <div className='flex items-center justify-between py-3'>
               <WordDisplay
-                originalWord={vocabulary.original_word}
-                translatedWord={vocabulary.translated_word}
+                fromWord={vocabulary.from_word}
+                targetWord={vocabulary.target_word}
               />
               <div className='flex gap-1'>
                 <Button
@@ -104,7 +104,7 @@ export function VocabularyDetailModal({
             {/* Language and Metadata */}
             <LanguageMetadata
               fromLanguage={vocabulary.from_language.name}
-              toLanguage={vocabulary.translated_language.name}
+              toLanguage={vocabulary.target_language.name}
               createdAt={DateUtils.formatDate(vocabulary.created_at)}
             />
           </div>
@@ -131,8 +131,8 @@ export function VocabularyDetailModal({
 
           {/* Context */}
           <ContextSection
-            originalContext={vocabulary.original_word_context}
-            translatedContext={vocabulary.translated_word_context}
+            fromContext={vocabulary.from_word_context}
+            targetContext={vocabulary.target_word_context}
           />
 
           {/* Saved Translation Navigation */}

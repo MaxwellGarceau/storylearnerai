@@ -13,7 +13,7 @@ export interface DatabaseTranslationInsert {
   id?: string;
   story_id: string;
   target_language: LanguageCode;
-  translated_content: string;
+  target_content: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -22,7 +22,7 @@ export interface DatabaseTranslationUpdate {
   id?: string;
   story_id?: string;
   target_language?: LanguageCode;
-  translated_content?: string;
+  target_content?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -50,26 +50,26 @@ export interface DatabaseDifficultyLevel {
 export interface DatabaseSavedTranslationWithDetails {
   id: number;
   user_id: string;
-  original_story: string;
-  translated_story: string;
-  original_language_id: number;
-  translated_language_id: number;
+  from_story: string;
+  target_story: string;
+  from_language_id: number;
+  target_language_id: number;
   difficulty_level_id: number;
   title: NullableString;
   notes: NullableString;
   created_at: string;
   updated_at: string;
-  original_language: DatabaseLanguage;
-  translated_language: DatabaseLanguage;
+  from_language: DatabaseLanguage;
+  target_language: DatabaseLanguage;
   difficulty_level: DatabaseDifficultyLevel;
 }
 
 // API request types for easier service usage
 export interface CreateSavedTranslationRequest {
-  original_story: string;
-  translated_story: string;
-  original_language_code: LanguageCode;
-  translated_language_code: LanguageCode;
+  from_story: string;
+  target_story: string;
+  from_language_code: LanguageCode;
+  target_language_code: LanguageCode;
   difficulty_level_code: DifficultyLevel;
   title?: string;
   notes?: string;
@@ -81,8 +81,8 @@ export interface UpdateSavedTranslationRequest {
 }
 
 export interface SavedTranslationFilters {
-  original_language_code?: LanguageCode;
-  translated_language_code?: LanguageCode;
+  from_language_code?: LanguageCode;
+  target_language_code?: LanguageCode;
   difficulty_level_code?: DifficultyLevel;
   search?: string; // Search in title, notes, or story content
   limit?: number;

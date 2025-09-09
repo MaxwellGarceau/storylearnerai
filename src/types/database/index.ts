@@ -93,12 +93,12 @@ export interface Database {
         Row: {
           id: number;
           user_id: string; // Foreign key reference to users.id (UUID)
-          original_word: string;
-          translated_word: string;
-          translated_language_id: number; // Foreign key reference to languages.id
+          from_word: string;
+          target_word: string;
+          target_language_id: number; // Foreign key reference to languages.id
           from_language_id: number; // Foreign key reference to languages.id
-          original_word_context: NullableString; // Context sentence where the original word appears
-          translated_word_context: NullableString; // Context sentence where the translated word appears
+          from_word_context: NullableString; // Context sentence where the original word appears
+          target_word_context: NullableString; // Context sentence where the translated word appears
           definition: NullableString; // Definition of the word
           part_of_speech: NullableString; // Part of speech (noun, verb, adjective, etc.)
           frequency_level: NullableString; // Frequency/level (common, rare, etc.)
@@ -109,12 +109,12 @@ export interface Database {
         Insert: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-          original_word: string;
-          translated_word: string;
-          translated_language_id: number; // Foreign key reference to languages.id
+          from_word: string;
+          target_word: string;
+          target_language_id: number; // Foreign key reference to languages.id
           from_language_id: number; // Foreign key reference to languages.id
-          original_word_context?: NullableString; // Context sentence where the original word appears
-          translated_word_context?: NullableString; // Context sentence where the translated word appears
+          from_word_context?: NullableString; // Context sentence where the original word appears
+          target_word_context?: NullableString; // Context sentence where the translated word appears
           definition?: NullableString; // Definition of the word
           part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
           frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
@@ -125,12 +125,12 @@ export interface Database {
         Update: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID)
-          original_word?: string;
-          translated_word?: string;
-          translated_language_id?: number; // Foreign key reference to languages.id
+          from_word?: string;
+          target_word?: string;
+          target_language_id?: number; // Foreign key reference to languages.id
           from_language_id?: number; // Foreign key reference to languages.id
-          original_word_context?: NullableString; // Context sentence where the original word appears
-          translated_word_context?: NullableString; // Context sentence where the translated word appears
+          from_word_context?: NullableString; // Context sentence where the original word appears
+          target_word_context?: NullableString; // Context sentence where the translated word appears
           definition?: NullableString; // Definition of the word
           part_of_speech?: NullableString; // Part of speech (noun, verb, adjective, etc.)
           frequency_level?: NullableString; // Frequency/level (common, rare, etc.)
@@ -144,10 +144,10 @@ export interface Database {
         Row: {
           id: number;
           user_id: string; // Foreign key reference to users.id (UUID)
-          original_story: string;
-          translated_story: string;
-          original_language_id: number; // Foreign key reference to languages.id
-          translated_language_id: number; // Foreign key reference to languages.id
+          from_story: string;
+          target_story: string;
+          from_language_id: number; // Foreign key reference to languages.id
+          target_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title: NullableString;
           notes: NullableString;
@@ -157,10 +157,10 @@ export interface Database {
         Insert: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-          original_story: string;
-          translated_story: string;
-          original_language_id: number; // Foreign key reference to languages.id
-          translated_language_id: number; // Foreign key reference to languages.id
+          from_story: string;
+          target_story: string;
+          from_language_id: number; // Foreign key reference to languages.id
+          target_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title?: NullableString;
           notes?: NullableString;
@@ -170,10 +170,10 @@ export interface Database {
         Update: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID)
-          original_story?: string;
-          translated_story?: string;
-          original_language_id?: number; // Foreign key reference to languages.id
-          translated_language_id?: number; // Foreign key reference to languages.id
+          from_story?: string;
+          target_story?: string;
+          from_language_id?: number; // Foreign key reference to languages.id
+          target_language_id?: number; // Foreign key reference to languages.id
           difficulty_level_id?: number;
           title?: NullableString;
           notes?: NullableString;

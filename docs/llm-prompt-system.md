@@ -53,7 +53,7 @@ const context = {
   difficulty: 'a1',
   text: 'Hola, ¿cómo estás?',
 };
-const prompt = await generalPromptConfigService.buildPrompt(context);
+const prompt = await generalPromptConfigService.buildTranslationPrompt(context);
 ```
 
 ### Integration with Translation Service
@@ -74,7 +74,7 @@ private async buildTranslationPrompt(request: TranslationRequest): Promise<strin
   if (!generalPromptConfigService.isSupported(request.toLanguage, request.difficulty)) {
     return this.buildFallbackPrompt(request);
   }
-  return generalPromptConfigService.buildPrompt(context);
+  return generalPromptConfigService.buildTranslationPrompt(context);
 }
 ```
 

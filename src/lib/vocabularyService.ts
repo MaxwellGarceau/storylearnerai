@@ -26,11 +26,19 @@ export class VocabularyService {
     vocabularyData: VocabularyInsert
   ): VocabularyPromise {
     try {
+      // Avoid FK violations on upsert by linking saved_translation_id after insert
+      const desiredLinkId = (
+        vocabularyData as { saved_translation_id?: number }
+      ).saved_translation_id;
+      const upsertData: VocabularyInsert = { ...vocabularyData };
+      delete (upsertData as { saved_translation_id?: number })
+        .saved_translation_id;
+
       const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
-        .upsert(vocabularyData, {
+        .upsert(upsertData, {
           onConflict:
-            'user_id,original_word,translated_word,translated_language_id,from_language_id',
+            'user_id,from_word,target_word,target_language_id,from_language_id',
           ignoreDuplicates: false,
         })
         .select()
@@ -50,14 +58,34 @@ export class VocabularyService {
         throw new Error('No data returned when saving vocabulary word');
       }
 
-      // If a saved_translation_id was provided but not persisted (e.g., existing row without link), update it
+      // If a saved_translation_id was provided, set it in a follow-up update
       if (
-        typeof (vocabularyData as { saved_translation_id?: number })
-          .saved_translation_id === 'number' &&
+        typeof desiredLinkId === 'number' &&
         data.saved_translation_id == null
       ) {
-        const desiredId = (vocabularyData as { saved_translation_id: number })
-          .saved_translation_id;
+        // Verify the saved translation exists to avoid FK violation (DB may have been reset)
+        const {
+          data: existingSaved,
+          error: savedLookupError,
+        }: SupabaseResponse<{ id: number } | null> = await supabase
+          .from('saved_translations')
+          .select('id')
+          .eq('id', desiredLinkId)
+          .maybeSingle();
+
+        if (savedLookupError || !existingSaved) {
+          logger.warn(
+            'database',
+            'Skipping link: saved translation not found',
+            {
+              desiredLinkId,
+              error: savedLookupError,
+            }
+          );
+          return data;
+        }
+
+        const desiredId = desiredLinkId;
         const {
           data: updated,
           error: updateError,
@@ -102,7 +130,7 @@ export class VocabularyService {
           .select(
             `
           *,
-          translated_language:languages!vocabulary_translated_language_id_fkey(*),
+          target_language:languages!vocabulary_target_language_id_fkey(*),
           from_language:languages!vocabulary_from_language_id_fkey(*)
         `
           )
@@ -192,20 +220,20 @@ export class VocabularyService {
    */
   static async checkVocabularyExists(
     userId: string,
-    originalWord: string,
-    translatedWord: string,
+    fromWord: string,
+    targetWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ): Promise<boolean> {
     try {
       const { data, error }: SupabaseResponse<{ id: number }> = await supabase
         .from('vocabulary')
         .select('id')
         .eq('user_id', userId)
-        .eq('original_word', originalWord)
-        .eq('translated_word', translatedWord)
+        .eq('from_word', fromWord)
+        .eq('target_word', targetWord)
         .eq('from_language_id', fromLanguageId)
-        .eq('translated_language_id', translatedLanguageId)
+        .eq('target_language_id', targetLanguageId)
         .single();
 
       if (error && (error as { code?: string }).code !== 'PGRST116') {

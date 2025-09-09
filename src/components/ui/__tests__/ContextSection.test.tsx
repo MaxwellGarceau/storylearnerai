@@ -12,8 +12,8 @@ describe('ContextSection Component', () => {
   it('renders original and translated sections', () => {
     render(
       <ContextSection
-        originalContext='Original text'
-        translatedContext='Translated text'
+        fromContext='Original text'
+        targetContext='Translated text'
         data-testid='context'
       />
     );

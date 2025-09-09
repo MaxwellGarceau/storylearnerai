@@ -11,16 +11,25 @@ export interface TranslationRequest {
   toLanguage: LanguageCode;
   difficulty: DifficultyLevel;
   nativeLanguage?: LanguageCode; // Optional: user's native language for enhanced customization
+  // Optional: words the user wants included in the generated translation/story context
+  // IMPORTANT: These should be TARGET-LANGUAGE words (e.g., English when translating es→en).
+  // The UI stores and passes the 'target_word' values for the selected vocabulary
+  // so the LLM can include those exact target-language words in its output.
+  selectedVocabulary?: string[];
 }
 
 export interface TranslationResponse {
-  originalText: string;
-  translatedText: string;
+  fromText: string;
+  targetText: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
   difficulty: DifficultyLevel;
   provider?: string;
   model?: string;
+  // TARGET-language vocabulary that we asked to include
+  selectedVocabulary?: string[];
+  includedVocabulary?: string[];
+  missingVocabulary?: string[];
 }
 
 export interface WordTranslationRequest {
@@ -32,8 +41,8 @@ export interface WordTranslationRequest {
 }
 
 export interface WordTranslationResponse {
-  originalWord: string;
-  translatedWord: string;
+  fromWord: string;
+  targetWord: string;
   sentence: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
@@ -53,11 +62,18 @@ export interface TranslationError {
 }
 
 class TranslationService {
-  async translateStory(
-    request: TranslationRequest
-  ): TranslationResponsePromise {
+  async targetStory(request: TranslationRequest): TranslationResponsePromise {
     try {
-      const prompt = await this.buildTranslationPrompt(request);
+      const context = {
+        fromLanguage: request.fromLanguage,
+        toLanguage: request.toLanguage,
+        difficulty: request.difficulty,
+        text: request.text,
+        nativeLanguage: request.nativeLanguage,
+        selectedVocabulary: request.selectedVocabulary,
+      };
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -65,14 +81,44 @@ class TranslationService {
         temperature: 0.7,
       });
 
+      // Track vocabulary inclusion - IMPORTANT: We analyze target language words in target language text
+      const selectedVocabulary = request.selectedVocabulary ?? [];
+
+      // Validate that we have target language text and target language vocabulary
+      if (llmResponse.content && selectedVocabulary.length > 0) {
+        const { includedVocabulary, missingVocabulary } =
+          this.analyzeVocabularyInclusionInTargetLanguage(
+            llmResponse.content, // Target language translated text
+            selectedVocabulary, // Target language vocabulary words
+            request.toLanguage // Target language code for validation
+          );
+
+        return {
+          fromText: request.text,
+          targetText: llmResponse.content,
+          fromLanguage: request.fromLanguage,
+          toLanguage: request.toLanguage,
+          difficulty: request.difficulty,
+          provider: llmResponse.provider,
+          model: llmResponse.model,
+          selectedVocabulary,
+          includedVocabulary,
+          missingVocabulary,
+          // Echo original selection for UI; inclusion mapping handled by caller
+        };
+      }
+
       return {
-        originalText: request.text,
-        translatedText: llmResponse.content,
+        fromText: request.text,
+        targetText: llmResponse.content,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
         difficulty: request.difficulty,
         provider: llmResponse.provider,
         model: llmResponse.model,
+        selectedVocabulary,
+        includedVocabulary: [],
+        missingVocabulary: [],
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -108,11 +154,19 @@ class TranslationService {
     }
   }
 
-  async translateWordWithContext(
+  async targetWordWithContext(
     request: WordTranslationRequest
   ): Promise<WordTranslationResponse> {
     try {
-      const prompt = this.buildWordTranslationPrompt(request);
+      const context = {
+        sentence: request.sentence,
+        focusWord: request.focusWord,
+        fromLanguage: request.fromLanguage,
+        toLanguage: request.toLanguage,
+        difficulty: request.difficulty,
+      };
+      const prompt =
+        generalPromptConfigService.buildWordTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -125,8 +179,8 @@ class TranslationService {
       const singleWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
 
       return {
-        originalWord: request.focusWord,
-        translatedWord: singleWord,
+        fromWord: request.focusWord,
+        targetWord: singleWord,
         sentence: request.sentence,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
@@ -150,87 +204,6 @@ class TranslationService {
         })
       );
     }
-  }
-
-  /**
-   * Build a customized translation prompt based on language and difficulty level
-   */
-  private async buildTranslationPrompt(
-    request: TranslationRequest
-  ): Promise<string> {
-    const context = {
-      fromLanguage: request.fromLanguage,
-      toLanguage: request.toLanguage,
-      difficulty: request.difficulty,
-      text: request.text,
-      nativeLanguage: request.nativeLanguage,
-    };
-
-    // If the configuration doesn't support this language/difficulty combination,
-    // fall back to a basic prompt
-    if (
-      !generalPromptConfigService.isSupported(
-        request.toLanguage,
-        request.difficulty
-      )
-    ) {
-      logger.warn(
-        'translation',
-        `Unsupported language/difficulty combination: ${request.toLanguage}/${request.difficulty}. Using fallback prompt.`
-      );
-      return this.buildFallbackPrompt(request);
-    }
-
-    // Use the prompt configuration service to build a customized prompt
-    return generalPromptConfigService.buildPrompt(context);
-  }
-
-  /**
-   * Prompt for translating a single focus word using sentence context
-   */
-  private buildWordTranslationPrompt(request: WordTranslationRequest): string {
-    return `You are a precise translator.
-
-Task: Translate ONLY the specified focus word from {fromLanguage} to {toLanguage}, using the full sentence for context.
-
-Rules:
-- Output ONLY the single translated word.
-- No explanations, punctuation, quotes, or extra words.
-- Choose the most common, natural everyday term in {toLanguage}.
-- If multiple translations exist, pick the most likely given the sentence.
-- If the word is a proper noun that should remain unchanged, return it unchanged.
-- If no single-word translation exists, return the closest single-word equivalent.
-
-Context sentence ({fromLanguage}):
-"{sentence}"
-
-Focus word: {focusWord}
-
-Return: ONLY the translation of the focus word in {toLanguage}.`
-      .replace(/{fromLanguage}/g, request.fromLanguage)
-      .replace(/{toLanguage}/g, request.toLanguage)
-      .replace(/{sentence}/g, request.sentence)
-      .replace(/{focusWord}/g, request.focusWord);
-  }
-
-  /**
-   * Fallback prompt for unsupported language/difficulty combinations
-   */
-  private buildFallbackPrompt(request: TranslationRequest): string {
-    return `
-      Translate the following ${request.fromLanguage} story to ${request.toLanguage}, adapted for ${request.difficulty} CEFR level:
-      
-      Instructions:
-      - Maintain the story's meaning and narrative flow
-      - Adapt vocabulary and sentence complexity to ${request.difficulty} level
-      - Preserve cultural context where appropriate
-      - Keep the story engaging and readable
-      
-      ${request.fromLanguage} Story:
-      ${request.text}
-      
-      Please provide only the ${request.toLanguage} translation.
-    `;
   }
 
   /**
@@ -300,14 +273,28 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
 
+    // Mock vocabulary inclusion detection for development - using target language logic
+    const selectedVocabulary = request.selectedVocabulary ?? [];
+    let includedVocabulary: string[] = [];
+    let missingVocabulary: string[] = [];
+
+    if (selectedVocabulary.length > 0) {
+      // Simulate that the first word is included, others are missing (for testing)
+      includedVocabulary = [selectedVocabulary[0]];
+      missingVocabulary = selectedVocabulary.slice(1);
+    }
+
     return {
-      originalText: request.text,
-      translatedText: mockTranslation,
+      fromText: request.text,
+      targetText: mockTranslation,
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
       provider: 'mock',
       model: 'mock-model',
+      selectedVocabulary,
+      includedVocabulary,
+      missingVocabulary,
     };
   }
 
@@ -316,21 +303,7 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
     if (EnvironmentConfig.isMockTranslationEnabled()) {
       return this.mockTranslateStory(request);
     } else {
-      return this.translateStory(request);
-    }
-  }
-
-  // New method to check if the LLM service is available
-  async isLLMServiceAvailable(): Promise<boolean> {
-    if (EnvironmentConfig.isMockTranslationEnabled()) {
-      return true; // Mock is always available
-    }
-
-    try {
-      return await llmServiceManager.healthCheck();
-    } catch (error) {
-      logger.warn('translation', 'LLM service health check failed', { error });
-      return false;
+      return this.targetStory(request);
     }
   }
 
@@ -345,6 +318,74 @@ Return: ONLY the translation of the focus word in {toLanguage}.`
   // Method to check if mock translation is enabled
   isMockTranslationEnabled(): boolean {
     return EnvironmentConfig.isMockTranslationEnabled();
+  }
+
+  /**
+   * Analyze which target language vocabulary words are actually included in the target language translated text
+   * This ensures we're only checking target language words against target language text, not source language content
+   */
+  private analyzeVocabularyInclusionInTargetLanguage(
+    targetLanguageTranslatedText: string,
+    targetLanguageVocabularyWords: string[],
+    _targetLanguageCode: LanguageCode // Reserved for future validation enhancements
+  ): { includedVocabulary: string[]; missingVocabulary: string[] } {
+    logger.info('translation', 'Analyzing vocabulary inclusion', {
+      vocabularyWords: targetLanguageVocabularyWords,
+      targetTextLength: targetLanguageTranslatedText.length,
+    });
+    if (
+      !targetLanguageVocabularyWords ||
+      targetLanguageVocabularyWords.length === 0
+    ) {
+      return { includedVocabulary: [], missingVocabulary: [] };
+    }
+
+    // Validate that we have target language text to analyze
+    if (
+      !targetLanguageTranslatedText ||
+      targetLanguageTranslatedText.trim().length === 0
+    ) {
+      return {
+        includedVocabulary: [],
+        missingVocabulary: targetLanguageVocabularyWords,
+      };
+    }
+
+    const normalizedTargetText = targetLanguageTranslatedText
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ');
+    const includedVocabulary: string[] = [];
+    const missingVocabulary: string[] = [];
+
+    for (const targetWord of targetLanguageVocabularyWords) {
+      // Ensure the word is not empty and is a valid target language word
+      const normalizedTargetWord = targetWord.toLowerCase().trim();
+
+      if (!normalizedTargetWord) {
+        continue; // Skip empty words
+      }
+
+      // Use word boundaries to avoid partial matches in target language text
+      const regex = new RegExp(
+        `\\b${this.escapeRegExp(normalizedTargetWord)}\\b`,
+        'i'
+      );
+
+      if (regex.test(normalizedTargetText)) {
+        includedVocabulary.push(targetWord);
+      } else {
+        missingVocabulary.push(targetWord);
+      }
+    }
+
+    return { includedVocabulary, missingVocabulary };
+  }
+
+  /**
+   * Escape special regex characters to ensure safe word matching
+   */
+  private escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
 

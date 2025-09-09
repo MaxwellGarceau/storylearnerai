@@ -174,7 +174,7 @@ CREATE TABLE translations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
     target_language VARCHAR(10) NOT NULL,
-    translated_content TEXT NOT NULL,
+    target_content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(story_id, target_language)

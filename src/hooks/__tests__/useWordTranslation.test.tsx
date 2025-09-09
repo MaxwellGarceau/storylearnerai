@@ -6,10 +6,8 @@ vi.mock('../useToast', () => ({ useToast: () => ({ toast: vi.fn() }) }));
 
 vi.mock('../../lib/translationService', () => ({
   translationService: {
-    translate: vi.fn(() => Promise.resolve({ translatedText: 'hola' })),
-    translateWordWithContext: vi.fn(() =>
-      Promise.resolve({ translatedWord: 'hola' })
-    ),
+    translate: vi.fn(() => Promise.resolve({ targetText: 'hola' })),
+    targetWordWithContext: vi.fn(() => Promise.resolve({ targetWord: 'hola' })),
   },
 }));
 
@@ -27,7 +25,7 @@ describe('useWordTranslation', () => {
   it('translates word in sentence', async () => {
     const { result } = renderHook(() => useWordTranslation());
     await act(async () => {
-      const out = await result.current.translateWordInSentence(
+      const out = await result.current.targetWordInSentence(
         'Hello',
         'Hello world.',
         'en',

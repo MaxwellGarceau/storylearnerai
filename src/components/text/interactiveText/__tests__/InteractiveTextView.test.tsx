@@ -10,9 +10,9 @@ interface WordTokenProps {
   isOpen: boolean;
   isSaved: boolean;
   isTranslating: boolean;
-  translatedWord?: string;
-  originalSentence: string;
-  translatedSentence?: string;
+  targetWord?: string;
+  fromSentence: string;
+  targetSentence?: string;
   onOpenChange: (open: boolean) => void;
   onWordClick: () => void;
   onTranslate: () => void;
@@ -30,9 +30,9 @@ vi.mock('../WordToken', () => ({
     isOpen,
     isSaved,
     isTranslating,
-    translatedWord,
-    originalSentence,
-    translatedSentence,
+    targetWord,
+    fromSentence,
+    targetSentence,
     onOpenChange,
     onWordClick,
     onTranslate,
@@ -59,12 +59,10 @@ vi.mock('../WordToken', () => ({
       <span data-testid={`translating-${normalizedWord}`}>
         {String(isTranslating)}
       </span>
-      <span data-testid={`overlay-${normalizedWord}`}>
-        {translatedWord ?? ''}
-      </span>
-      <span data-testid={`orig-${normalizedWord}`}>{originalSentence}</span>
+      <span data-testid={`overlay-${normalizedWord}`}>{targetWord ?? ''}</span>
+      <span data-testid={`orig-${normalizedWord}`}>{fromSentence}</span>
       <span data-testid={`trans-${normalizedWord}`}>
-        {translatedSentence ?? ''}
+        {targetSentence ?? ''}
       </span>
       <span data-testid={`tooltips-${normalizedWord}`}>
         {String(enableTooltips)}
@@ -90,7 +88,7 @@ describe('InteractiveTextView', () => {
     disabled: false,
     getOriginalSentence: (segmentIndex: number) =>
       segmentIndex === 0 ? 'Hello world.' : 'Goodbye world.',
-    getTranslatedSentence: (sentence: string) =>
+    getTargetSentence: (sentence: string) =>
       sentence === 'Hello world.' ? 'Hola mundo.' : undefined,
     isSaved: (w: string) => w === 'hello',
     getDisplayTranslation: (w: string) => (w === 'world' ? 'mundo' : undefined),

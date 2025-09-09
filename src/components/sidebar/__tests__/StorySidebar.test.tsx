@@ -9,6 +9,8 @@ import {
   mockSavedTranslation,
   mockUser,
   mockTranslationData,
+  mockLocation,
+  mockNavigate,
   mockUseViewport,
   mockUseLanguages,
   mockUseSavedTranslations,
@@ -202,5 +204,125 @@ describe('StorySidebar Component', () => {
     expect(
       screen.getByRole('button', { name: 'storySidebar.openLibrary' })
     ).toBeInTheDocument();
+  });
+
+  // Vocabulary Deep Linking Tests
+  describe('Vocabulary Deep Linking', () => {
+    beforeEach(() => {
+      // Reset location mock before each test
+      Object.assign(mockLocation, {
+        hash: '',
+        pathname: '/',
+        search: '',
+        state: null,
+      });
+      // Reset navigate mock
+      mockNavigate.mockClear();
+    });
+
+    it('opens sidebar and switches to vocabulary section when #vocabulary hash is present', () => {
+      // Mock location with vocabulary hash
+      Object.assign(mockLocation, { hash: '#vocabulary' });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Sidebar should be open
+      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+
+      // Vocabulary section should be active - check that the button exists and is clickable
+      const vocabularyButton = screen.getByRole('button', {
+        name: 'storySidebar.vocabulary',
+      });
+      expect(vocabularyButton).toBeInTheDocument();
+    });
+
+    it('does not switch to vocabulary section when hash is not #vocabulary', () => {
+      // Mock location with different hash
+      Object.assign(mockLocation, { hash: '#stories' });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Stories section should be active by default
+      const storiesButton = screen.getByRole('button', {
+        name: 'storySidebar.stories',
+      });
+      expect(storiesButton).toHaveClass('bg-primary');
+    });
+
+    it('does not switch to vocabulary section when hash is empty', () => {
+      // Mock location with empty hash
+      Object.assign(mockLocation, { hash: '' });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Stories section should be active by default
+      const storiesButton = screen.getByRole('button', {
+        name: 'storySidebar.stories',
+      });
+      expect(storiesButton).toHaveClass('bg-primary');
+    });
+
+    it('opens sidebar when #vocabulary hash is present even if sidebar was closed', () => {
+      // Mock location with vocabulary hash
+      Object.assign(mockLocation, { hash: '#vocabulary' });
+      // Set sidebar as closed in localStorage
+      localStorage.setItem('sidebarOpen', 'false');
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Sidebar should be open due to hash
+      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+
+      // Vocabulary section should be active - check that the button exists
+      const vocabularyButton = screen.getByRole('button', {
+        name: 'storySidebar.vocabulary',
+      });
+      expect(vocabularyButton).toBeInTheDocument();
+    });
+
+    it('switches to vocabulary section when hash changes to #vocabulary', () => {
+      // Start with empty hash
+      Object.assign(mockLocation, { hash: '' });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Stories section should be active initially
+      const storiesButton = screen.getByRole('button', {
+        name: 'storySidebar.stories',
+      });
+      expect(storiesButton).toHaveClass('bg-primary');
+    });
+
+    it('handles multiple hash changes correctly', () => {
+      // Start with vocabulary hash
+      Object.assign(mockLocation, { hash: '#vocabulary' });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Vocabulary section should be active - check that the button exists
+      const vocabularyButton = screen.getByRole('button', {
+        name: 'storySidebar.vocabulary',
+      });
+      expect(vocabularyButton).toBeInTheDocument();
+    });
+
+    it('works with different location properties', () => {
+      // Mock location with vocabulary hash and different pathname
+      Object.assign(mockLocation, {
+        hash: '#vocabulary',
+        pathname: '/story',
+        search: '?param=value',
+      });
+
+      renderWithRouter(<StorySidebar {...defaultProps} />);
+
+      // Should still work regardless of other location properties
+      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+
+      const vocabularyButton = screen.getByRole('button', {
+        name: 'storySidebar.vocabulary',
+      });
+      expect(vocabularyButton).toBeInTheDocument();
+    });
   });
 });

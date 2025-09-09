@@ -44,7 +44,7 @@
     "signUpWithGoogle": "Sign up with Google",
     "userProfile": {
       "title": "User Profile",
-      "welcomeBack": "Welcome back, {name}!",
+      "welcomeBack": "Welcome back, {{name}}!",
       "editProfile": "Edit Profile",
       "saveChanges": "Save Changes",
       "cancel": "Cancel",
@@ -74,51 +74,6 @@
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required"
     }
-  },
-  "story": {
-    "uploadTitle": "Upload Story",
-    "uploadDescription": "Upload a story file or paste text to get started",
-    "uploadButton": "Upload File",
-    "uploadPDF": "Upload PDF",
-    "pasteText": "Paste Text",
-    "textPlaceholder": "Paste your story text here...",
-    "difficultyLevel": "Difficulty Level",
-    "targetLanguage": "Target Language",
-    "translateButton": "Translate Story",
-    "saveTranslation": "Save Translation",
-    "savedTranslations": "Saved Translations",
-    "noSavedTranslations": "No saved translations yet",
-    "loadingTranslation": "Translating your story...",
-    "translationComplete": "Translation complete!",
-    "errors": {
-      "fileRequired": "Please upload a file or paste text",
-      "textRequired": "Please enter some text to translate",
-      "translationFailed": "Translation failed. Please try again."
-    }
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back",
-    "recentActivity": "Recent Activity",
-    "quickActions": "Quick Actions",
-    "stats": {
-      "storiesTranslated": "Stories Translated",
-      "wordsLearned": "Words Learned",
-      "timeSpent": "Time Spent"
-    }
-  },
-  "languages": {
-    "en": "English",
-    "es": "Spanish"
-  },
-  "difficultyLevels": {
-    "beginner": "Beginner",
-    "intermediate": "Intermediate",
-    "advanced": "Advanced"
-  },
-  "languageSelector": {
-    "title": "Language",
-    "changeLanguage": "Change Language"
   },
   "home": {
     "hero": {
@@ -155,24 +110,45 @@
       "subtitle": "Get started in just three simple steps",
       "step1": {
         "title": "Upload Your Story",
-        "description": "Enter a story in any language you want to learn from"
+        "description": "Input a story in any language you want to learn from"
       },
       "step2": {
         "title": "AI Translation",
         "description": "Our AI translates it to English with detailed explanations"
       },
       "step3": {
-        "title": "Learn & Practice",
+        "title": "Learn and Practice",
         "description": "Read and learn with side-by-side translations and vocabulary help"
       }
     },
     "cta": {
-      "title": "Ready to Start Your Language Learning Journey?",
+      "title": "Ready to start your language learning journey?",
       "subtitleUser": "Continue your learning journey with personalized insights and progress tracking",
-      "subtitleGuest": "Join thousands of learners who are already improving their language skills with Story Learner AI",
+      "subtitleGuest": "Join thousands of students who are already improving their language skills with Story Learner AI",
       "startTranslating": "Start Translating",
       "createAccount": "Create Free Account",
       "viewDashboard": "View Dashboard"
+    }
+  },
+  "story": {
+    "uploadTitle": "Upload Story",
+    "uploadDescription": "Upload a story file or paste text to get started",
+    "uploadButton": "Upload File",
+    "uploadPDF": "Upload PDF",
+    "pasteText": "Paste Text",
+    "textPlaceholder": "Paste your story text here...",
+    "difficultyLevel": "Difficulty Level",
+    "targetLanguage": "Target Language",
+    "translateButton": "Translate Story",
+    "saveTranslation": "Save Translation",
+    "savedTranslations": "Saved Translations",
+    "noSavedTranslations": "No saved translations yet",
+    "loadingTranslation": "Translating your story...",
+    "translationComplete": "Translation complete!",
+    "errors": {
+      "fileRequired": "Please upload a file or paste text",
+      "textRequired": "Please enter some text to translate",
+      "translationFailed": "Translation failed. Please try again."
     }
   },
   "dashboard": {
@@ -217,7 +193,7 @@
     "noStory": {
       "title": "No Story Found",
       "description": "Please translate a story first to view it here.",
-      "translateStory": "Translate a Story",
+      "targetStory": "Translate a Story",
       "home": "Home"
     },
     "header": {
@@ -266,7 +242,16 @@
       "a2": "A2 (Elementary)",
       "b1": "B1 (Intermediate)",
       "b2": "B2 (Upper Intermediate)"
-    }
+    },
+    "vocabularySection": "Vocabulary in Story",
+    "includedVocabulary": "Included Vocabulary",
+    "includedVocabularyDescription": "These vocabulary words were successfully included in your translated story.",
+    "missingVocabulary": "Missing Vocabulary",
+    "missingVocabularyDescription": "These vocabulary words could not be included naturally in the story. Try selecting fewer words or different vocabulary.",
+    "totalSelected": "Total Selected",
+    "totalIncluded": "Total Included",
+    "totalMissing": "Total Missing",
+    "noVocabularySelected": "No vocabulary words were selected for this translation."
   },
   "storyInput": {
     "placeholder": "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
@@ -284,7 +269,7 @@
     "translationIsSupported": "translation is supported.",
     "theStoryWillBeAdaptedToThis": "The story will be adapted to this",
     "proficiencyLevel": "proficiency level.",
-    "translateStory": "Translate Story",
+    "targetStory": "Translate Story",
     "optionsModal": {
       "title": "Story Options",
       "languageLabel": "Target Language",
@@ -292,15 +277,26 @@
       "a1": "A1 (Beginner)",
       "a2": "A2 (Elementary)",
       "b1": "B1 (Intermediate)",
-      "b2": "B2 (Upper Intermediate)"
+      "b2": "B2 (Upper Intermediate)",
+      "vocabularyTitle": "Include Vocabulary",
+      "vocabularySubtitle": "Pick saved words to include in your translated story.",
+      "noVocabularyForPair": "No saved vocabulary for this language pair yet.",
+      "selectedCount": "Selected: {{count}}"
     },
     "confirmationModal": {
       "title": "Confirm Translation Options",
       "from": "From:",
       "to": "To:",
       "difficulty": "Difficulty:",
+      "vocabulary": "Vocabulary:",
+      "vocabularySelectedCount": "Selected: {{count}}",
+      "noVocabularySelected": "None",
       "cancel": "Cancel",
-      "confirm": "Confirm & Translate"
+      "goToVocabulary": "Go to Vocabulary",
+      "confirm": "Confirm & Translate",
+      "clickToChangeLanguage": "Click to change language settings",
+      "clickToChangeDifficulty": "Click to change difficulty settings",
+      "clickToChangeVocabulary": "Click to change vocabulary settings"
     },
     "validation": {
       "invalidInput": "Invalid input detected",
@@ -335,7 +331,7 @@
     },
     "content": {
       "notes": "Notes",
-      "originalStory": "Original Story",
+      "fromStory": "Original Story",
       "translatedStory": "Translated Story"
     },
     "emptyState": {
@@ -411,19 +407,20 @@
     "deleteError": "Failed to delete vocabulary word",
     "alreadyExists": "This word is already saved in your vocabulary",
     "form": {
-      "originalWord": "Original Word",
-      "translatedWord": "Translated Word",
-      "originalContext": "Original Context",
-      "translatedContext": "Translated Context",
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
       "fromLanguage": "From Language",
       "toLanguage": "To Language",
-      "originalWordPlaceholder": "Enter the original word...",
-      "translatedWordPlaceholder": "Enter the translated word...",
-      "originalContextPlaceholder": "Enter the context sentence...",
-      "translatedContextPlaceholder": "Enter the translated context...",
+      "fromWord": "From Word",
+      "targetWord": "Target Word",
+      "fromContext": "From Context",
+      "targetContext": "Target Context",
+
+      "fromWordPlaceholder": "Enter the from word...",
+      "targetWordPlaceholder": "Enter the target word...",
+      "fromContextPlaceholder": "Enter the context sentence...",
+      "targetContextPlaceholder": "Enter the target context...",
       "definitionPlaceholder": "Enter the definition...",
       "partOfSpeechPlaceholder": "Select part of speech...",
       "frequencyLevelPlaceholder": "Select frequency level...",
@@ -452,13 +449,15 @@
     },
     "details": {
       "title": "Vocabulary Details",
-      "originalWord": "Original Word",
-      "translatedWord": "Translated Word",
+
+      "fromWord": "From Word",
+      "targetWord": "Target Word",
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
-      "originalContext": "Original Context",
-      "translatedContext": "Translated Context",
+
+      "fromContext": "From Context",
+      "targetContext": "Target Context",
       "fromLanguage": "From Language",
       "toLanguage": "To Language",
       "savedFrom": "Saved from story",
@@ -486,10 +485,10 @@
       "allLanguages": "All Languages"
     },
     "validation": {
-      "originalWordRequired": "Original word is required",
-      "translatedWordRequired": "Translated word is required",
+      "fromWordRequired": "From word is required",
+      "targetWordRequired": "Target word is required",
       "fromLanguageRequired": "From language is required",
-      "translatedLanguageRequired": "To language is required",
+      "targetLanguageRequired": "To language is required",
       "languagesMustDiffer": "From and To languages must be different",
       "alreadyExists": "This word is already saved in your vocabulary"
     },
@@ -522,8 +521,8 @@
       "placeholder": "Search vocabulary..."
     },
     "context": {
-      "original": "Original Context",
-      "translated": "Translated Context"
+      "from": "From Context",
+      "target": "Target Context"
     },
     "noResults": "No words found",
     "checking": "Checking...",
@@ -544,5 +543,9 @@
       "message": "Create a free account to translate words, open the dictionary, and save vocabulary to your library.",
       "cta": "Sign up to get started"
     }
+  },
+  "storyContainer": {
+    "vocabularyWarningTitle": "{{count}} vocabulary word{{count, plural, one {} other {s}}} not included",
+    "vocabularyWarningDescription": "Of the {{totalCount}} vocabulary words you selected, {{missingCount}} couldn't be naturally included in the story: {{missingWords}}. Check the Info sidebar for details."
   }
 }

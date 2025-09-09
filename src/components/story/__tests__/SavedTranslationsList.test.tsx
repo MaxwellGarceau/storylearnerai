@@ -24,7 +24,7 @@ const mockT = (key: string, params?: Record<string, string | number>) => {
     'savedTranslations.results.viewStory': 'View Story',
     'savedTranslations.results.delete': 'Delete',
     'savedTranslations.content.notes': 'Notes',
-    'savedTranslations.content.originalStory': 'Original Story',
+    'savedTranslations.content.fromStory': 'Original Story',
     'savedTranslations.content.translatedStory': 'Translated Story',
     'savedTranslations.emptyState.title': 'No saved translations yet',
     'savedTranslations.emptyState.description':
@@ -80,23 +80,23 @@ const makeSaved = (
 ): DatabaseSavedTranslationWithDetails => ({
   id: overrides.id ?? 1,
   user_id: 'user-1',
-  original_story: overrides.original_story ?? 'Hola mundo',
-  translated_story: overrides.translated_story ?? 'Hello world',
-  original_language_id: 1,
-  translated_language_id: 2,
+  from_story: overrides.from_story ?? 'Hola mundo',
+  target_story: overrides.target_story ?? 'Hello world',
+  from_language_id: 1,
+  target_language_id: 2,
   difficulty_level_id: 1,
   title: overrides.title ?? 'Sample Title',
   notes: overrides.notes ?? 'Some helpful notes',
   created_at: '2024-01-01T00:00:00.000Z',
   updated_at: '2024-01-01T00:00:00.000Z',
-  original_language: {
+  from_language: {
     id: 1,
     code: 'es',
     name: 'Spanish',
     native_name: 'Español',
     created_at: '2023-01-01T00:00:00.000Z',
   },
-  translated_language: {
+  target_language: {
     id: 2,
     code: 'en',
     name: 'English',
@@ -211,11 +211,11 @@ describe('SavedTranslationsList', () => {
     fireEvent.click(screen.getByText('Sample Title'));
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith('/story', {
+      expect(navigateMock).toHaveBeenCalledWith('/story?id=1', {
         state: expect.objectContaining({
           translationData: expect.objectContaining({
-            originalText: 'Hola mundo',
-            translatedText: 'Hello world',
+            fromText: 'Hola mundo',
+            targetText: 'Hello world',
             fromLanguage: 'es',
             toLanguage: 'en',
             difficulty: 'a1',
@@ -241,7 +241,10 @@ describe('SavedTranslationsList', () => {
     fireEvent.click(viewButton);
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith('/story', expect.anything());
+      expect(navigateMock).toHaveBeenCalledWith(
+        '/story?id=2',
+        expect.anything()
+      );
     });
   });
 

@@ -6,6 +6,8 @@ import {
   setupSidebarMocks,
   resetSidebarMocks,
   mockTranslationData,
+  mockTranslationDataNoVocabulary,
+  mockTranslationDataAllIncluded,
   mockT,
 } from './sidebarMocks';
 import type { DifficultyLevel, LanguageCode } from '../../../types/llm/prompts';
@@ -312,5 +314,213 @@ describe('InfoSection Component', () => {
 
     const badge = screen.getByText('UNKNOWN');
     expect(badge).toHaveClass('bg-gray-100', 'text-gray-800');
+  });
+
+  // Vocabulary Display Tests
+  describe('Vocabulary Display', () => {
+    it('displays vocabulary section when vocabulary is selected', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.includedVocabulary')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabulary')
+      ).toBeInTheDocument();
+    });
+
+    it('displays included vocabulary words as badges', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      expect(screen.getByText('hello')).toBeInTheDocument();
+      expect(screen.getByText('world')).toBeInTheDocument();
+
+      const includedBadges = screen.getAllByText(/hello|world/);
+      includedBadges.forEach(badge => {
+        expect(badge).toHaveClass('bg-green-100', 'text-green-800');
+      });
+    });
+
+    it('displays missing vocabulary words as badges', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      expect(screen.getByText('good')).toBeInTheDocument();
+      expect(screen.getByText('morning')).toBeInTheDocument();
+
+      const missingBadges = screen.getAllByText(/good|morning/);
+      missingBadges.forEach(badge => {
+        expect(badge).toHaveClass('bg-amber-100', 'text-amber-800');
+      });
+    });
+
+    it('displays vocabulary summary with correct counts', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      // Check for the text that contains the translation keys using getAllByText
+      const totalSelectedElements = screen.getAllByText((content, element) => {
+        return (
+          element?.textContent?.includes('storySidebar.totalSelected') ?? false
+        );
+      });
+      expect(totalSelectedElements.length).toBeGreaterThan(0);
+      expect(screen.getByText('4')).toBeInTheDocument(); // selectedVocabulary.length
+
+      const totalIncludedElements = screen.getAllByText((content, element) => {
+        return (
+          element?.textContent?.includes('storySidebar.totalIncluded') ?? false
+        );
+      });
+      expect(totalIncludedElements.length).toBeGreaterThan(0);
+      expect(screen.getAllByText('2')).toHaveLength(2); // includedVocabulary.length and missingVocabulary.length
+
+      const totalMissingElements = screen.getAllByText((content, element) => {
+        return (
+          element?.textContent?.includes('storySidebar.totalMissing') ?? false
+        );
+      });
+      expect(totalMissingElements.length).toBeGreaterThan(0);
+      // We already checked for 2 elements with "2" text above
+    });
+
+    it('displays CheckCircle icon for included vocabulary', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      const checkIcon = document.querySelector('.lucide-circle-check-big');
+      expect(checkIcon).toBeInTheDocument();
+    });
+
+    it('displays AlertTriangle icon for missing vocabulary', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      const alertIcon = document.querySelector('.lucide-triangle-alert');
+      expect(alertIcon).toBeInTheDocument();
+    });
+
+    it('displays vocabulary descriptions', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      expect(
+        screen.getByText('storySidebar.includedVocabularyDescription')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabularyDescription')
+      ).toBeInTheDocument();
+    });
+
+    it('handles case when no vocabulary is selected', () => {
+      const propsNoVocabulary = {
+        ...defaultProps,
+        translationData: mockTranslationDataNoVocabulary,
+      };
+
+      render(<InfoSection {...propsNoVocabulary} />);
+
+      expect(
+        screen.getByText('storySidebar.noVocabularySelected')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.vocabularySection')
+      ).not.toBeInTheDocument();
+    });
+
+    it('handles case when all vocabulary is included', () => {
+      const propsAllIncluded = {
+        ...defaultProps,
+        translationData: mockTranslationDataAllIncluded,
+      };
+
+      render(<InfoSection {...propsAllIncluded} />);
+
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.includedVocabulary')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.missingVocabulary')
+      ).not.toBeInTheDocument();
+
+      // Check that missing vocabulary count is 0
+      const missingCount = screen.getByText('0');
+      expect(missingCount).toBeInTheDocument();
+    });
+
+    it('handles case when no vocabulary is included', () => {
+      const translationDataNoIncluded = {
+        ...mockTranslationData,
+        includedVocabulary: [],
+        missingVocabulary: ['hello', 'world', 'good', 'morning'],
+      };
+
+      const propsNoIncluded = {
+        ...defaultProps,
+        translationData: translationDataNoIncluded,
+      };
+
+      render(<InfoSection {...propsNoIncluded} />);
+
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.includedVocabulary')
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabulary')
+      ).toBeInTheDocument();
+
+      // Check that included vocabulary count is 0
+      const includedCount = screen.getByText('0');
+      expect(includedCount).toBeInTheDocument();
+    });
+
+    it('applies correct styling to vocabulary cards', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      // Check included vocabulary card
+      const includedCard = screen
+        .getByText('storySidebar.includedVocabulary')
+        .closest('.mb-4');
+      expect(includedCard).toBeInTheDocument();
+
+      // Check missing vocabulary card
+      const missingCard = screen
+        .getByText('storySidebar.missingVocabulary')
+        .closest('.mb-4');
+      expect(missingCard).toBeInTheDocument();
+
+      // Check summary card - look for the text that contains "totalSelected"
+      const summaryTexts = screen.getAllByText((content, element) => {
+        return (
+          element?.textContent?.includes('storySidebar.totalSelected') ?? false
+        );
+      });
+      expect(summaryTexts.length).toBeGreaterThan(0);
+
+      // Check that the summary text exists
+      const summaryElement = summaryTexts[0];
+      expect(summaryElement).toBeInTheDocument();
+    });
+
+    it('calls translation function for vocabulary-related keys', () => {
+      render(<InfoSection {...defaultProps} />);
+
+      expect(mockT).toHaveBeenCalledWith('storySidebar.vocabularySection');
+      expect(mockT).toHaveBeenCalledWith('storySidebar.includedVocabulary');
+      expect(mockT).toHaveBeenCalledWith('storySidebar.missingVocabulary');
+      expect(mockT).toHaveBeenCalledWith('storySidebar.totalSelected');
+      expect(mockT).toHaveBeenCalledWith('storySidebar.totalIncluded');
+      expect(mockT).toHaveBeenCalledWith('storySidebar.totalMissing');
+      expect(mockT).toHaveBeenCalledWith(
+        'storySidebar.includedVocabularyDescription'
+      );
+      expect(mockT).toHaveBeenCalledWith(
+        'storySidebar.missingVocabularyDescription'
+      );
+    });
   });
 });

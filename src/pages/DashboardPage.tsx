@@ -37,8 +37,14 @@ export const DashboardPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Load user profile
-      const userProfile = await UserService.getUser(user.id);
+      // Load user profile, create if doesn't exist
+      let userProfile = await UserService.getUser(user.id);
+      userProfile =
+        userProfile ??
+        (await UserService.getOrCreateUser(user.id, {
+          display_name: user.email?.split('@')[0] ?? 'User',
+          username: user.email?.split('@')[0] ?? 'user',
+        }));
       setProfile(userProfile);
     } catch (err) {
       setError(
@@ -89,7 +95,11 @@ export const DashboardPage: React.FC = () => {
           <div>
             <h1 className='text-3xl font-bold'>
               {t('auth.userProfile.welcomeBack', {
-                name: profile?.display_name ?? user.email?.split('@')[0],
+                name:
+                  profile?.display_name ??
+                  profile?.username ??
+                  user.email?.split('@')[0] ??
+                  'User',
               })}
             </h1>
             <p className='text-muted-foreground'>{t('dashboard.subtitle')}</p>

@@ -27,8 +27,8 @@ vi.mock('../../../hooks/useToast', () => ({
 
 describe('SaveTranslationButton Component', () => {
   const mockTranslationData: TranslationResponse = {
-    originalText: 'Hola mundo',
-    translatedText: 'Hello world',
+    fromText: 'Hola mundo',
+    targetText: 'Hello world',
     fromLanguage: 'es',
     toLanguage: 'en',
     difficulty: 'a1',
@@ -49,9 +49,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -68,9 +68,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />
@@ -87,9 +87,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />
@@ -108,9 +108,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -129,9 +129,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -161,9 +161,9 @@ describe('SaveTranslationButton Component', () => {
       <TooltipProvider>
         <SaveTranslationButton
           translationData={mockTranslationData}
-          originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromStory='Esta es una historia de prueba.'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />

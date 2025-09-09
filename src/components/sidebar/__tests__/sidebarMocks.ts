@@ -16,6 +16,12 @@ export const mockT: TFunction = vi.fn((key: string, options?: any) => {
 
 // Mock react-router-dom
 export const mockNavigate = vi.fn();
+export const mockLocation = {
+  hash: '',
+  pathname: '/',
+  search: '',
+  state: null,
+};
 
 // Mock hooks
 export const mockUseViewport = vi.fn();
@@ -71,33 +77,58 @@ export const mockUser: User = {
 } as User;
 
 export const mockTranslationData: TranslationResponse = {
-  originalText: 'Hello world',
-  translatedText: 'Hola mundo',
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: ['hello', 'world', 'good', 'morning'],
+  includedVocabulary: ['hello', 'world'],
+  missingVocabulary: ['good', 'morning'],
+};
+
+export const mockTranslationDataNoVocabulary: TranslationResponse = {
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
+  difficulty: 'a1' as DifficultyLevel,
+  fromLanguage: 'en' as LanguageCode,
+  toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: [],
+  includedVocabulary: [],
+  missingVocabulary: [],
+};
+
+export const mockTranslationDataAllIncluded: TranslationResponse = {
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
+  difficulty: 'a1' as DifficultyLevel,
+  fromLanguage: 'en' as LanguageCode,
+  toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: ['hello', 'world'],
+  includedVocabulary: ['hello', 'world'],
+  missingVocabulary: [],
 };
 
 export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
   id: 1,
   user_id: 'test-user-id',
-  original_story: 'This is the original story text',
-  translated_story: 'Este es el texto de la historia original',
-  original_language_id: 1,
-  translated_language_id: 2,
+  from_story: 'This is the original story text',
+  target_story: 'Este es el texto de la historia original',
+  from_language_id: 1,
+  target_language_id: 2,
   difficulty_level_id: 1,
   title: 'Test Story',
   notes: 'Sample story notes',
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
-  original_language: {
+  from_language: {
     id: 1,
     code: 'en' as LanguageCode,
     name: 'English' as const,
     native_name: 'English' as const,
     created_at: '2024-01-01T00:00:00Z',
   },
-  translated_language: {
+  target_language: {
     id: 2,
     code: 'es' as LanguageCode,
     name: 'Spanish' as const,
@@ -118,24 +149,24 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
   {
     id: 1,
     user_id: 'sample-user-id',
-    original_story: 'Érase una vez tres cerditos...',
-    translated_story: '',
-    original_language_id: 1,
-    translated_language_id: 2,
+    from_story: 'Érase una vez tres cerditos...',
+    target_story: '',
+    from_language_id: 1,
+    target_language_id: 2,
     difficulty_level_id: 1,
     title: 'The Three Little Pigs',
     notes:
       'A classic tale about three pigs who build different houses and learn the value of hard work.',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-    original_language: {
+    from_language: {
       id: 1,
       code: 'es' as LanguageCode,
       name: 'Spanish' as const,
       native_name: 'Español' as const,
       created_at: '2020-01-01T00:00:00Z',
     },
-    translated_language: {
+    target_language: {
       id: 2,
       code: 'en' as LanguageCode,
       name: 'English' as const,
@@ -153,24 +184,24 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
   {
     id: 2,
     user_id: 'sample-user-id',
-    original_story: 'Érase una vez una niña...',
-    translated_story: '',
-    original_language_id: 1,
-    translated_language_id: 2,
+    from_story: 'Érase una vez una niña...',
+    target_story: '',
+    from_language_id: 1,
+    target_language_id: 2,
     difficulty_level_id: 2,
     title: 'Little Red Riding Hood',
     notes:
       'The story of a little girl who visits her grandmother and encounters a cunning wolf.',
     created_at: '2024-01-02T00:00:00Z',
     updated_at: '2024-01-02T00:00:00Z',
-    original_language: {
+    from_language: {
       id: 1,
       code: 'es' as LanguageCode,
       name: 'Spanish' as const,
       native_name: 'Español' as const,
       created_at: '2020-01-01T00:00:00Z',
     },
-    translated_language: {
+    target_language: {
       id: 2,
       code: 'en' as LanguageCode,
       name: 'English' as const,
@@ -201,6 +232,7 @@ export const setupSidebarMocks = () => {
   // Mock react-router-dom
   vi.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
     Link: mockLink,
     BrowserRouter: ({ children }: { children: React.ReactNode }) =>
       React.createElement('div', null, children),

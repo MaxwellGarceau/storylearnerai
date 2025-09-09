@@ -79,12 +79,12 @@ describe('VocabularyService', () => {
     it('should save a vocabulary word successfully', async () => {
       const mockVocabularyData = {
         user_id: 'test-user-id',
-        original_word: 'hello',
-        translated_word: 'hola',
-        translated_language_id: 2,
+        from_word: 'hello',
+        target_word: 'hola',
+        target_language_id: 2,
         from_language_id: 1,
-        original_word_context: 'Hello, how are you?',
-        translated_word_context: 'Hola, ¿cómo estás?',
+        from_word_context: 'Hello, how are you?',
+        target_word_context: 'Hola, ¿cómo estás?',
         definition: 'A greeting',
         part_of_speech: 'interjection',
         frequency_level: 'common',
@@ -132,9 +132,9 @@ describe('VocabularyService', () => {
     it('should throw an error when save fails', async () => {
       const mockVocabularyData = {
         user_id: 'test-user-id',
-        original_word: 'hello',
-        translated_word: 'hola',
-        translated_language_id: 2,
+        from_word: 'hello',
+        target_word: 'hola',
+        target_language_id: 2,
         from_language_id: 1,
       };
 
@@ -177,11 +177,11 @@ describe('VocabularyService', () => {
         {
           id: 1,
           user_id: 'test-user-id',
-          original_word: 'hello',
-          translated_word: 'hola',
-          translated_language_id: 2,
+          from_word: 'hello',
+          target_word: 'hola',
+          target_language_id: 2,
           from_language_id: 1,
-          translated_language: {
+          target_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',

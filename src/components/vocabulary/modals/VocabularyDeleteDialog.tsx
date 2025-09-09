@@ -45,8 +45,8 @@ export function VocabularyDeleteDialog({
         </h2>
         <p className='text-muted-foreground mb-6'>
           {t('vocabulary.delete.description', {
-            originalWord: vocabulary.original_word,
-            translatedWord: vocabulary.translated_word,
+            fromWord: vocabulary.from_word,
+            targetWord: vocabulary.target_word,
           })}
         </p>
         <div className='flex justify-end space-x-2'>

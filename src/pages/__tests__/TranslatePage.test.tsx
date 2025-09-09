@@ -48,8 +48,8 @@ vi.mock('../../components/story/StoryContainer', () => ({
       <button
         onClick={() =>
           onStoryTranslated({
-            originalText: 'Test story',
-            translatedText: 'Translated test story',
+            fromText: 'Test story',
+            targetText: 'Translated test story',
             fromLanguage: 'Spanish',
             toLanguage: 'en',
             difficulty: 'Intermediate',
@@ -107,8 +107,8 @@ describe('TranslatePage', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/story', {
         state: {
           translationData: {
-            originalText: 'Test story',
-            translatedText: 'Translated test story',
+            fromText: 'Test story',
+            targetText: 'Translated test story',
             fromLanguage: 'Spanish',
             toLanguage: 'en',
             difficulty: 'Intermediate',

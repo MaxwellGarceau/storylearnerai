@@ -19,11 +19,11 @@ vi.mock('../../../../api/supabase/database/savedTranslationService', () => ({
     getSavedTranslation() {
       return {
         id: 42,
-        original_story: 'o',
-        translated_story: 't',
+        from_story: 'o',
+        target_story: 't',
         difficulty_level: { code: 'a1' },
-        original_language: { code: 'es' },
-        translated_language: { code: 'en' },
+        from_language: { code: 'es' },
+        target_language: { code: 'en' },
       };
     }
   },
@@ -34,19 +34,19 @@ import type { VocabularyWithLanguages } from '../../../../types/database/vocabul
 
 const vocab: VocabularyWithLanguages = {
   id: 1,
-  original_word: 'hola',
-  translated_word: 'hello',
+  from_word: 'hola',
+  target_word: 'hello',
   from_language_id: 2,
-  translated_language_id: 1,
+  target_language_id: 1,
   created_at: '2024-01-01T00:00:00Z',
   definition: 'greeting',
   part_of_speech: 'interjection',
   frequency_level: 'common',
-  original_word_context: 'ctx1',
-  translated_word_context: 'ctx2',
+  from_word_context: 'ctx1',
+  target_word_context: 'ctx2',
   saved_translation_id: 42,
   from_language: { id: 2, code: 'es', name: 'Spanish' },
-  translated_language: { id: 1, code: 'en', name: 'English' },
+  target_language: { id: 1, code: 'en', name: 'English' },
 };
 
 describe('VocabularyDetailModal', () => {

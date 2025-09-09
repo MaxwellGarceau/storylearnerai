@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Token } from '../../../hooks/interactiveText/useTokenizedText';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import WordToken from './WordToken';
 
 interface InteractiveTextViewProps {
@@ -7,8 +8,10 @@ interface InteractiveTextViewProps {
   tokens: Token[];
   enableTooltips: boolean;
   disabled: boolean;
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   getOriginalSentence: (segmentIndex: number) => string;
-  getTranslatedSentence: (originalSentence: string) => string | undefined;
+  getTargetSentence: (fromSentence: string) => string | undefined;
   isSaved: (normalizedWord: string) => boolean;
   getDisplayTranslation: (normalizedWord: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
@@ -20,8 +23,10 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   tokens,
   enableTooltips,
   disabled,
+  fromLanguage,
+  targetLanguage,
   getOriginalSentence,
-  getTranslatedSentence,
+  getTargetSentence,
   isSaved,
   getDisplayTranslation,
   isTranslating,
@@ -45,8 +50,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const punctuation = t.punctuation;
         const saved = isSaved(normalizedWord);
         const overlayTranslatedWord = getDisplayTranslation(normalizedWord);
-        const originalSentence = getOriginalSentence(t.segmentIndex);
-        const translatedSentence = getTranslatedSentence(originalSentence);
+        const fromSentence = getOriginalSentence(t.segmentIndex);
+        const targetSentence = getTargetSentence(fromSentence);
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = () => {
@@ -63,9 +68,11 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               isOpen={open}
               isSaved={saved}
               isTranslating={isTranslating(normalizedWord)}
-              translatedWord={overlayTranslatedWord}
-              originalSentence={originalSentence}
-              translatedSentence={translatedSentence}
+              targetWord={overlayTranslatedWord}
+              fromSentence={fromSentence}
+              targetSentence={targetSentence}
+              fromLanguage={fromLanguage}
+              targetLanguage={targetLanguage}
               onOpenChange={isOpen => {
                 if (isOpen) setOpenMenuIndex(idx);
                 else if (open) setOpenMenuIndex(null);

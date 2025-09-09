@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStories.json';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
@@ -32,11 +32,15 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
 }) => {
   const { isMobile } = useViewport();
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
-  const { savedTranslations, loading: isLoadingSavedTranslations } =
-    useSavedTranslations();
+  const {
+    savedTranslations,
+    loading: isLoadingSavedTranslations,
+    refreshTranslations,
+  } = useSavedTranslations();
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const sampleStories: DatabaseSavedTranslationWithDetails[] =
     savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
@@ -77,19 +81,46 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   }, [isMobile]);
 
+  // Allow deep-linking to the vocabulary tab via URL hash
+  useEffect(() => {
+    if (location.hash === '#vocabulary') {
+      setActiveSection('vocabulary');
+      setIsOpen(true);
+    }
+  }, [location]);
+
+  // Listen for saved translations updates to refresh the sidebar
+  useEffect(() => {
+    const handleSavedTranslationsUpdate = () => {
+      void refreshTranslations();
+    };
+
+    window.addEventListener(
+      'saved-translations:updated',
+      handleSavedTranslationsUpdate
+    );
+
+    return () => {
+      window.removeEventListener(
+        'saved-translations:updated',
+        handleSavedTranslationsUpdate
+      );
+    };
+  }, [refreshTranslations]);
+
   const handleStoryClick = async (
     story: DatabaseSavedTranslationWithDetails
   ) => {
     setIsLoading(String(story.id));
     try {
       const response = await translationService.translate({
-        text: story.original_story,
-        fromLanguage: story.original_language.code,
-        toLanguage: story.translated_language.code,
+        text: story.from_story,
+        fromLanguage: story.from_language.code,
+        toLanguage: story.target_language.code,
         difficulty: story.difficulty_level.code,
       });
 
-      void navigate('/story', {
+      void navigate(`/story?id=${story.id}`, {
         state: {
           translationData: response,
           isSavedStory: true,
@@ -104,14 +135,14 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   };
 
   const openSavedTranslation = (saved: DatabaseSavedTranslationWithDetails) => {
-    void navigate('/story', {
+    void navigate(`/story?id=${saved.id}`, {
       state: {
         translationData: {
-          originalText: saved.original_story,
-          translatedText: saved.translated_story,
+          fromText: saved.from_story,
+          targetText: saved.target_story,
           difficulty: saved.difficulty_level.code,
-          fromLanguage: saved.original_language.code,
-          toLanguage: saved.translated_language.code,
+          fromLanguage: saved.from_language.code,
+          toLanguage: saved.target_language.code,
         },
         isSavedStory: true,
         savedTranslationId: saved.id,

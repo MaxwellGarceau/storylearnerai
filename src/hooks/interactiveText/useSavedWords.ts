@@ -32,10 +32,10 @@ export function useSavedWords(
     for (const item of vocabulary) {
       if (
         item.from_language_id === fromLanguageId &&
-        item.translated_language_id === targetLanguageId &&
-        item.original_word
+        item.target_language_id === targetLanguageId &&
+        item.from_word
       ) {
-        set.add(item.original_word.toLowerCase());
+        set.add(item.from_word.toLowerCase());
       }
     }
     return set;
@@ -50,8 +50,8 @@ export function useSavedWords(
         vocabulary.find(
           item =>
             item.from_language_id === fromLanguageId &&
-            item.translated_language_id === targetLanguageId &&
-            item.original_word?.toLowerCase() === normalizedWord
+            item.target_language_id === targetLanguageId &&
+            item.from_word?.toLowerCase() === normalizedWord
         ) ?? null
       );
     },

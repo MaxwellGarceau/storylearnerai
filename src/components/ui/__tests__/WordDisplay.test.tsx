@@ -5,7 +5,7 @@ import { WordDisplay } from '../WordDisplay';
 
 describe('WordDisplay', () => {
   it('renders original and translated words', () => {
-    render(<WordDisplay originalWord='hola' translatedWord='hello' />);
+    render(<WordDisplay fromWord='hola' targetWord='hello' />);
     expect(screen.getByText('hola')).toBeInTheDocument();
     expect(screen.getByText('hello')).toBeInTheDocument();
     expect(screen.getByText('→')).toBeInTheDocument();

@@ -44,7 +44,7 @@
     "signUpWithGoogle": "Registrarse con Google",
     "userProfile": {
       "title": "Perfil de Usuario",
-      "welcomeBack": "¡Bienvenido de vuelta, {name}!",
+      "welcomeBack": "¡Bienvenido de vuelta, {{name}}!",
       "description": "Gestiona la configuración y preferencias de tu cuenta",
       "editProfile": "Editar Perfil",
       "saveChanges": "Guardar Cambios",
@@ -175,49 +175,11 @@
       "viewDashboard": "Ver Panel"
     }
   },
-  "dashboard": {
-    "loading": "Cargando tu panel...",
-    "welcome": "¡Bienvenido de vuelta, {name}!",
-    "subtitle": "Tu panel de aprendizaje de idiomas",
-    "profile": "Perfil",
-    "newTranslation": "Nueva Traducción",
-    "stats": {
-      "totalTranslations": "Total de Traducciones",
-      "storiesTranslated": "Historias traducidas",
-      "languages": "Idiomas",
-      "learningLevel": "Nivel de Aprendizaje",
-      "currentDifficulty": "Nivel de dificultad actual",
-      "beginner": "Principiante"
-    },
-    "quickActions": {
-      "title": "Acciones Rápidas",
-      "newTranslation": {
-        "title": "Nueva Traducción",
-        "description": "Comenzar a traducir una nueva historia"
-      },
-      "viewSaved": {
-        "title": "Ver Guardadas",
-        "description": "Revisar tus traducciones guardadas"
-      },
-      "editProfile": {
-        "title": "Editar Perfil",
-        "description": "Actualizar tus preferencias"
-      }
-    },
-    "recentActivity": {
-      "title": "Actividad Reciente",
-      "noActivity": "Sin actividad reciente",
-      "noActivityDescription": "Comienza a traducir historias para ver tu actividad aquí"
-    },
-    "errors": {
-      "loadFailed": "Error al cargar los datos del panel"
-    }
-  },
   "storyReader": {
     "noStory": {
       "title": "No se Encontró Historia",
       "description": "Por favor traduce una historia primero para verla aquí.",
-      "translateStory": "Traducir una Historia",
+      "targetStory": "Traducir una Historia",
       "home": "Inicio"
     },
     "header": {
@@ -283,15 +245,26 @@
       "a1": "A1 (Principiante)",
       "a2": "A2 (Elemental)",
       "b1": "B1 (Intermedio)",
-      "b2": "B2 (Intermedio Alto)"
+      "b2": "B2 (Intermedio Alto)",
+      "vocabularyTitle": "Incluir Vocabulario",
+      "vocabularySubtitle": "Elige palabras guardadas para incluir en tu historia traducida.",
+      "noVocabularyForPair": "Aún no hay vocabulario guardado para este par de idiomas.",
+      "selectedCount": "Seleccionadas: {{count}}"
     },
     "confirmationModal": {
       "title": "Confirmar Opciones de Traducción",
       "from": "Desde:",
       "to": "Hacia:",
       "difficulty": "Dificultad:",
+      "vocabulary": "Vocabulario:",
+      "vocabularySelectedCount": "Seleccionadas: {{count}}",
+      "noVocabularySelected": "Ninguno",
       "cancel": "Cancelar",
-      "confirm": "Confirmar y Traducir"
+      "goToVocabulary": "Ir a Vocabulario",
+      "confirm": "Confirmar y Traducir",
+      "clickToChangeLanguage": "Haz clic para cambiar la configuración de idioma",
+      "clickToChangeDifficulty": "Haz clic para cambiar la configuración de dificultad",
+      "clickToChangeVocabulary": "Haz clic para cambiar la configuración de vocabulario"
     },
     "validation": {
       "invalidInput": "Entrada inválida detectada",
@@ -326,30 +299,12 @@
     },
     "content": {
       "notes": "Notas",
-      "originalStory": "Historia Original",
+      "fromStory": "Historia Original",
       "translatedStory": "Historia Traducida"
     },
     "emptyState": {
       "title": "Aún no hay traducciones guardadas",
       "description": "Comienza a traducir historias y guárdalas para verlas aquí."
-    }
-  },
-  "difficultyLevels": {
-    "a1": {
-      "label": "A1 (Principiante)",
-      "description": "Nivel básico - Puede entender y usar expresiones cotidianas familiares"
-    },
-    "a2": {
-      "label": "A2 (Elemental)",
-      "description": "Nivel elemental - Puede comunicarse en tareas simples y rutinarias"
-    },
-    "b1": {
-      "label": "B1 (Intermedio)",
-      "description": "Nivel intermedio - Puede manejar la mayoría de situaciones mientras viaja"
-    },
-    "b2": {
-      "label": "B2 (Intermedio Alto)",
-      "description": "Nivel intermedio alto - Puede interactuar con fluidez y espontaneidad"
     }
   },
   "pdfUpload": {
@@ -402,19 +357,20 @@
     "deleteError": "Error al eliminar la palabra de vocabulario",
     "alreadyExists": "Esta palabra ya está guardada en tu vocabulario",
     "form": {
-      "originalWord": "Palabra Original",
-      "translatedWord": "Palabra Traducida",
-      "originalContext": "Contexto Original",
-      "translatedContext": "Contexto Traducido",
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
       "fromLanguage": "Desde Idioma",
       "toLanguage": "A Idioma",
-      "originalWordPlaceholder": "Ingresa la palabra original...",
-      "translatedWordPlaceholder": "Ingresa la palabra traducida...",
-      "originalContextPlaceholder": "Ingresa la oración de contexto...",
-      "translatedContextPlaceholder": "Ingresa el contexto traducido...",
+      "fromWord": "Palabra Origen",
+      "targetWord": "Palabra Objetivo",
+      "fromContext": "Contexto Origen",
+      "targetContext": "Contexto Objetivo",
+
+      "fromWordPlaceholder": "Ingresa la palabra de origen...",
+      "targetWordPlaceholder": "Ingresa la palabra objetivo...",
+      "fromContextPlaceholder": "Ingresa la oración de contexto...",
+      "targetContextPlaceholder": "Ingresa el contexto objetivo...",
       "definitionPlaceholder": "Ingresa la definición...",
       "partOfSpeechPlaceholder": "Selecciona parte de la oración...",
       "frequencyLevelPlaceholder": "Selecciona nivel de frecuencia...",
@@ -443,13 +399,15 @@
     },
     "details": {
       "title": "Detalles del Vocabulario",
-      "originalWord": "Palabra Original",
-      "translatedWord": "Palabra Traducida",
+
+      "fromWord": "Palabra Origen",
+      "targetWord": "Palabra Objetivo",
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
-      "originalContext": "Contexto Original",
-      "translatedContext": "Contexto Traducido",
+
+      "fromContext": "Contexto Origen",
+      "targetContext": "Contexto Objetivo",
       "fromLanguage": "Desde Idioma",
       "toLanguage": "A Idioma",
       "savedFrom": "Guardado de la historia",
@@ -477,10 +435,10 @@
       "allLanguages": "Todos los Idiomas"
     },
     "validation": {
-      "originalWordRequired": "La palabra original es requerida",
-      "translatedWordRequired": "La palabra traducida es requerida",
+      "fromWordRequired": "La palabra de origen es requerida",
+      "targetWordRequired": "La palabra objetivo es requerida",
       "fromLanguageRequired": "El idioma de origen es requerido",
-      "translatedLanguageRequired": "El idioma de destino es requerido",
+      "targetLanguageRequired": "El idioma de destino es requerido",
       "languagesMustDiffer": "Los idiomas de origen y destino deben ser diferentes",
       "alreadyExists": "Esta palabra ya está guardada en tu vocabulario"
     },
@@ -513,8 +471,8 @@
       "placeholder": "Buscar vocabulario..."
     },
     "context": {
-      "original": "Contexto Original",
-      "translated": "Contexto Traducido"
+      "from": "Contexto Origen",
+      "target": "Contexto Objetivo"
     },
     "noResults": "No se encontraron palabras",
     "checking": "Verificando...",
@@ -535,5 +493,9 @@
       "message": "Crea una cuenta gratis para traducir palabras, abrir el diccionario y guardar vocabulario en tu biblioteca.",
       "cta": "Regístrate para comenzar"
     }
+  },
+  "storyContainer": {
+    "vocabularyWarningTitle": "{{count}} palabra{{count, plural, one {} other {s}}} de vocabulario no incluida{{count, plural, one {} other {s}}}",
+    "vocabularyWarningDescription": "De las {{totalCount}} palabras de vocabulario que seleccionaste, {{missingCount}} no pudieron ser incluidas naturalmente en la historia: {{missingWords}}. Consulta la barra lateral de Información para más detalles."
   }
 }

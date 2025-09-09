@@ -109,10 +109,10 @@ CREATE TABLE difficulty_levels (
 CREATE TABLE saved_translations (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    original_story TEXT NOT NULL,
-    translated_story TEXT NOT NULL,
-    original_language_id INTEGER NOT NULL REFERENCES languages(id),
-    translated_language_id INTEGER NOT NULL REFERENCES languages(id),
+    from_story TEXT NOT NULL,
+    target_story TEXT NOT NULL,
+    from_language_id INTEGER NOT NULL REFERENCES languages(id),
+    target_language_id INTEGER NOT NULL REFERENCES languages(id),
     difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id),
     title VARCHAR(255),
     notes TEXT,
@@ -127,12 +127,12 @@ CREATE TABLE saved_translations (
 CREATE TABLE vocabulary (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    original_word VARCHAR(255) NOT NULL,
-    translated_word VARCHAR(255) NOT NULL,
-    translated_language_id INTEGER NOT NULL REFERENCES languages(id),
+    from_word VARCHAR(255) NOT NULL,
+    target_word VARCHAR(255) NOT NULL,
+    target_language_id INTEGER NOT NULL REFERENCES languages(id),
     from_language_id INTEGER NOT NULL REFERENCES languages(id),
-    original_word_context TEXT,
-    translated_word_context TEXT,
+    from_word_context TEXT,
+    target_word_context TEXT,
     definition TEXT,
     part_of_speech VARCHAR(50),
     frequency_level VARCHAR(50),
@@ -217,7 +217,7 @@ import { TranslationService } from '@/api/supabase';
 const translation = await TranslationService.createTranslation({
   story_id: 'story-uuid',
   target_language: 'es',
-  translated_content: 'Érase una vez...',
+  target_content: 'Érase una vez...',
 });
 
 // Get translation for specific story and language

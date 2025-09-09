@@ -12,14 +12,14 @@ const StoryRender: React.FC<StoryRenderProps> = ({
   translationData,
   savedTranslationId,
 }) => {
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [showFrom, setShowFrom] = useState(false);
 
   if (!translationData) {
     return null;
   }
 
   const toggleStoryView = () => {
-    setShowOriginal(!showOriginal);
+    setShowFrom(!showFrom);
   };
 
   return (
@@ -28,13 +28,13 @@ const StoryRender: React.FC<StoryRenderProps> = ({
       <div className='transition-all duration-300 relative'>
         <StoryHeader
           translationData={translationData}
-          showOriginal={showOriginal}
+          showFrom={showFrom}
           onToggleView={toggleStoryView}
         />
 
         <StoryContent
           translationData={translationData}
-          showOriginal={showOriginal}
+          showFrom={showFrom}
           savedTranslationId={savedTranslationId}
         />
       </div>
