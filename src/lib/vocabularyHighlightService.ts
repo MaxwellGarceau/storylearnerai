@@ -36,11 +36,11 @@ export class VocabularyHighlightService {
         'bg-amber-200 dark:bg-amber-900/40 border border-amber-300',
     },
     translating: {
-      default: 'bg-blue-200 dark:bg-blue-900/30 animate-pulse',
+      default: 'bg-blue-200 dark:bg-blue-900/30',
       highContrast:
-        'bg-blue-300 dark:bg-blue-800 border border-blue-400 animate-pulse',
+        'bg-blue-300 dark:bg-blue-800 border border-blue-400',
       colorblindFriendly:
-        'bg-sky-200 dark:bg-sky-900/40 border border-sky-300 animate-pulse',
+        'bg-sky-200 dark:bg-sky-900/40 border border-sky-300',
     },
     active: {
       default: 'bg-purple-200 dark:bg-purple-900/40',
