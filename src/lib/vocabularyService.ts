@@ -58,6 +58,24 @@ export class VocabularyService {
 
       // If a saved_translation_id was provided, set it in a follow-up update
       if (typeof desiredLinkId === 'number' && data.saved_translation_id == null) {
+        // Verify the saved translation exists to avoid FK violation (DB may have been reset)
+        const {
+          data: existingSaved,
+          error: savedLookupError,
+        }: SupabaseResponse<{ id: number } | null> = await supabase
+          .from('saved_translations')
+          .select('id')
+          .eq('id', desiredLinkId)
+          .maybeSingle();
+
+        if (savedLookupError || !existingSaved) {
+          logger.warn('database', 'Skipping link: saved translation not found', {
+            desiredLinkId,
+            error: savedLookupError,
+          });
+          return data;
+        }
+
         const desiredId = desiredLinkId;
         const {
           data: updated,
