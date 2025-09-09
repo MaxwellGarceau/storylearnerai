@@ -122,7 +122,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const availableVocabulary = vocabulary.filter(v => {
     return (
       v.from_language?.code === formData.fromLanguage &&
-      v.translated_language?.code === formData.language
+      v.target_language?.code === formData.language
     );
   });
 

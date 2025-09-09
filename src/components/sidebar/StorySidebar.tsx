@@ -92,9 +92,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     setIsLoading(String(story.id));
     try {
       const response = await translationService.translate({
-        text: story.original_story,
-        fromLanguage: story.original_language.code,
-        toLanguage: story.translated_language.code,
+        text: story.from_story,
+        fromLanguage: story.from_language.code,
+        toLanguage: story.target_language.code,
         difficulty: story.difficulty_level.code,
       });
 
@@ -116,11 +116,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     void navigate('/story', {
       state: {
         translationData: {
-          originalText: saved.original_story,
-          translatedText: saved.translated_story,
+          originalText: saved.from_story,
+          translatedText: saved.target_story,
           difficulty: saved.difficulty_level.code,
-          fromLanguage: saved.original_language.code,
-          toLanguage: saved.translated_language.code,
+          fromLanguage: saved.from_language.code,
+          toLanguage: saved.target_language.code,
         },
         isSavedStory: true,
         savedTranslationId: saved.id,

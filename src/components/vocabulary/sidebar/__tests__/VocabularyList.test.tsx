@@ -19,7 +19,7 @@ const items: VocabularyWithLanguages[] = [
     target_word_context: null,
     saved_translation_id: null,
     from_language: { id: 2, code: 'es', name: 'Spanish' },
-    translated_language: { id: 1, code: 'en', name: 'English' },
+    target_language: { id: 1, code: 'en', name: 'English' },
   },
 ];
 

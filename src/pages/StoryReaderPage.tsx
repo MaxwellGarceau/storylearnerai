@@ -53,10 +53,10 @@ const StoryReaderPage: React.FC = () => {
           );
           if (saved) {
             const response: TranslationResponse = {
-              originalText: saved.original_story,
-              translatedText: saved.translated_story,
-              fromLanguage: saved.original_language.code,
-              toLanguage: saved.translated_language.code,
+              originalText: saved.from_story,
+              translatedText: saved.target_story,
+              fromLanguage: saved.from_language.code,
+              toLanguage: saved.target_language.code,
               difficulty: saved.difficulty_level.code,
               provider: 'saved',
               model: 'saved-translation',

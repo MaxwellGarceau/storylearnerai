@@ -181,7 +181,7 @@ describe('VocabularyService', () => {
           target_word: 'hola',
           target_language_id: 2,
           from_language_id: 1,
-          translated_language: {
+          target_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',

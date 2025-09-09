@@ -19,11 +19,11 @@ vi.mock('../../../../api/supabase/database/savedTranslationService', () => ({
     getSavedTranslation() {
       return {
         id: 42,
-        original_story: 'o',
-        translated_story: 't',
+        from_story: 'o',
+        target_story: 't',
         difficulty_level: { code: 'a1' },
-        original_language: { code: 'es' },
-        translated_language: { code: 'en' },
+        from_language: { code: 'es' },
+        target_language: { code: 'en' },
       };
     }
   },
@@ -46,7 +46,7 @@ const vocab: VocabularyWithLanguages = {
   target_word_context: 'ctx2',
   saved_translation_id: 42,
   from_language: { id: 2, code: 'es', name: 'Spanish' },
-  translated_language: { id: 1, code: 'en', name: 'English' },
+  target_language: { id: 1, code: 'en', name: 'English' },
 };
 
 describe('VocabularyDetailModal', () => {

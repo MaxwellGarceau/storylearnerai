@@ -68,6 +68,6 @@ export interface VocabularyUpdate {
 
 // Extended vocabulary type with joined language information
 export interface VocabularyWithLanguages extends Vocabulary {
-  translated_language: LanguageRecord;
+  target_language: LanguageRecord;
   from_language: LanguageRecord;
 }

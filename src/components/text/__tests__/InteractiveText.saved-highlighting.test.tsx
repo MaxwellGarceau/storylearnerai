@@ -21,7 +21,7 @@ vi.mock('../../../hooks/useVocabulary', () => ({
         created_at: '',
         updated_at: '',
         from_language_name: 'Spanish',
-        translated_language_name: 'English',
+        target_language_name: 'English',
       },
     ],
   }),

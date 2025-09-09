@@ -342,7 +342,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             </SelectField>
 
             <SelectField
-              id='translated_language'
+              id='target_language'
               label={t('vocabulary.form.toLanguage')}
               value={formData.target_language_id}
               onChange={value =>
@@ -366,7 +366,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
             <p>
               <strong>{t('vocabulary.form.languages')}:</strong>{' '}
               {editVocabulary.from_language.name} →{' '}
-              {editVocabulary.translated_language.name}
+              {editVocabulary.target_language.name}
             </p>
           </div>
         )}

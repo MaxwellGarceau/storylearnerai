@@ -144,7 +144,7 @@ export interface Database {
         Row: {
           id: number;
           user_id: string; // Foreign key reference to users.id (UUID)
-          original_story: string;
+          from_story: string;
           target_story: string;
           from_language_id: number; // Foreign key reference to languages.id
           target_language_id: number; // Foreign key reference to languages.id
@@ -157,7 +157,7 @@ export interface Database {
         Insert: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-          original_story: string;
+          from_story: string;
           target_story: string;
           from_language_id: number; // Foreign key reference to languages.id
           target_language_id: number; // Foreign key reference to languages.id
@@ -170,7 +170,7 @@ export interface Database {
         Update: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID)
-          original_story?: string;
+          from_story?: string;
           target_story?: string;
           from_language_id?: number; // Foreign key reference to languages.id
           target_language_id?: number; // Foreign key reference to languages.id

@@ -121,7 +121,7 @@ export class VocabularyService {
           .select(
             `
           *,
-          translated_language:languages!vocabulary_target_language_id_fkey(*),
+          target_language:languages!vocabulary_target_language_id_fkey(*),
           from_language:languages!vocabulary_from_language_id_fkey(*)
         `
           )

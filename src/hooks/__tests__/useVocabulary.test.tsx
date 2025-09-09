@@ -30,7 +30,7 @@ vi.mock('../../lib/vocabularyService', () => ({
             name: 'English',
             native_name: 'English',
           },
-          translated_language: {
+          target_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',

@@ -217,7 +217,7 @@ import { TranslationService } from '@/api/supabase';
 const translation = await TranslationService.createTranslation({
   story_id: 'story-uuid',
   target_language: 'es',
-  translated_content: 'Érase una vez...',
+  target_content: 'Érase una vez...',
 });
 
 // Get translation for specific story and language

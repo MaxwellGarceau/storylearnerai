@@ -220,7 +220,7 @@ describe('StoriesSection Component', () => {
         ...mockSavedTranslation,
         id: 3,
         title: 'Another Test Story',
-        original_story: 'Another story content',
+        from_story: 'Another story content',
       },
     ];
 

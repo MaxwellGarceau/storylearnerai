@@ -76,7 +76,7 @@ export default function SavedTranslationsList() {
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
     logger.info('ui', 'Filtering not yet implemented', {
-      translated_language_code: selectedLanguage || undefined,
+      target_language_code: selectedLanguage || undefined,
       difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
@@ -101,10 +101,10 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ): TranslationResponse => {
     return {
-      originalText: savedTranslation.original_story,
-      translatedText: savedTranslation.translated_story,
-      fromLanguage: savedTranslation.original_language.code,
-      toLanguage: savedTranslation.translated_language.code,
+      originalText: savedTranslation.from_story,
+      translatedText: savedTranslation.target_story,
+      fromLanguage: savedTranslation.from_language.code,
+      toLanguage: savedTranslation.target_language.code,
       difficulty: savedTranslation.difficulty_level.code,
       provider: 'saved',
       model: 'saved-translation',
@@ -255,7 +255,7 @@ export default function SavedTranslationsList() {
                       month: 'short',
                       day: 'numeric',
                     })}
-                    {` • ${translation.original_language.name} → ${translation.translated_language.name}`}
+                    {` • ${translation.from_language.name} → ${translation.target_language.name}`}
                   </CardDescription>
                 </div>
                 <div className='flex gap-2' onClick={e => e.stopPropagation()}>
@@ -298,7 +298,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.originalStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.original_story}
+                    {translation.from_story}
                   </div>
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.translatedStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.translated_story}
+                    {translation.target_story}
                   </div>
                 </div>
               </div>

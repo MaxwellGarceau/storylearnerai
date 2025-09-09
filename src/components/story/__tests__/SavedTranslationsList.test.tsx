@@ -80,23 +80,23 @@ const makeSaved = (
 ): DatabaseSavedTranslationWithDetails => ({
   id: overrides.id ?? 1,
   user_id: 'user-1',
-  original_story: overrides.original_story ?? 'Hola mundo',
-  translated_story: overrides.translated_story ?? 'Hello world',
-  original_language_id: 1,
+  from_story: overrides.from_story ?? 'Hola mundo',
+  target_story: overrides.target_story ?? 'Hello world',
+  from_language_id: 1,
   target_language_id: 2,
   difficulty_level_id: 1,
   title: overrides.title ?? 'Sample Title',
   notes: overrides.notes ?? 'Some helpful notes',
   created_at: '2024-01-01T00:00:00.000Z',
   updated_at: '2024-01-01T00:00:00.000Z',
-  original_language: {
+  from_language: {
     id: 1,
     code: 'es',
     name: 'Spanish',
     native_name: 'Español',
     created_at: '2023-01-01T00:00:00.000Z',
   },
-  translated_language: {
+  target_language: {
     id: 2,
     code: 'en',
     name: 'English',
