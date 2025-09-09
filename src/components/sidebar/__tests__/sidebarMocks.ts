@@ -16,6 +16,7 @@ export const mockT: TFunction = vi.fn((key: string, options?: any) => {
 
 // Mock react-router-dom
 export const mockNavigate = vi.fn();
+export const mockLocation = { hash: '', pathname: '/', search: '', state: null };
 
 // Mock hooks
 export const mockUseViewport = vi.fn();
@@ -76,6 +77,31 @@ export const mockTranslationData: TranslationResponse = {
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: ['hello', 'world', 'good', 'morning'],
+  includedVocabulary: ['hello', 'world'],
+  missingVocabulary: ['good', 'morning'],
+};
+
+export const mockTranslationDataNoVocabulary: TranslationResponse = {
+  originalText: 'Hello world',
+  translatedText: 'Hola mundo',
+  difficulty: 'a1' as DifficultyLevel,
+  fromLanguage: 'en' as LanguageCode,
+  toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: [],
+  includedVocabulary: [],
+  missingVocabulary: [],
+};
+
+export const mockTranslationDataAllIncluded: TranslationResponse = {
+  originalText: 'Hello world',
+  translatedText: 'Hola mundo',
+  difficulty: 'a1' as DifficultyLevel,
+  fromLanguage: 'en' as LanguageCode,
+  toLanguage: 'es' as LanguageCode,
+  selectedVocabulary: ['hello', 'world'],
+  includedVocabulary: ['hello', 'world'],
+  missingVocabulary: [],
 };
 
 export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
@@ -201,6 +227,7 @@ export const setupSidebarMocks = () => {
   // Mock react-router-dom
   vi.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
     Link: mockLink,
     BrowserRouter: ({ children }: { children: React.ReactNode }) =>
       React.createElement('div', null, children),
