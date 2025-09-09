@@ -115,7 +115,7 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
     const translationData = convertToTranslationResponse(savedTranslation);
-    void navigate('/story', {
+    void navigate(`/story?id=${savedTranslation.id}`, {
       state: {
         translationData,
         isSavedStory: true,
