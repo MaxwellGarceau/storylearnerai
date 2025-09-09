@@ -2,6 +2,7 @@ import React from 'react';
 import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
 import { useInteractiveTextContext } from '../useInteractiveTextContext';
+import { getVocabularyHighlightClass } from '../../../lib/vocabularyHighlightService';
 import type { LanguageCode } from '../../../types/llm/prompts';
 
 interface WordTokenProps {
@@ -45,12 +46,14 @@ const WordToken: React.FC<WordTokenProps> = ({
   const isIncludedVocabulary =
     ctx?.isIncludedVocabulary(normalizedWord) ?? false;
 
-  // Use green highlighting for included vocabulary words, yellow for saved words
-  const vocabularyHighlightClass = isIncludedVocabulary
-    ? 'bg-green-200 dark:bg-green-900/40'
-    : isSaved
-      ? 'bg-yellow-200 dark:bg-yellow-900/30'
-      : '';
+  // Use the vocabulary highlighting service for consistent color coding
+  const vocabularyHighlightClass = getVocabularyHighlightClass({
+    isIncludedVocabulary,
+    isSaved,
+    isTranslating,
+    isActive: isOpen,
+    isDisabled: disabled,
+  });
 
   const handleWordClick = () => {
     if (enableTooltips && !disabled) {
