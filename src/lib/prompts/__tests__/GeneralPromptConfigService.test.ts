@@ -315,8 +315,14 @@ describe('PromptConfigService', () => {
     });
 
     it('should append learner vocabulary section when selectedVocabulary is provided', async () => {
-      const contextWithVocab = { ...mockContext, selectedVocabulary: ['apple', 'banana'] };
-      const prompt = await generalPromptConfigService.buildTranslationPrompt(contextWithVocab);
+      const contextWithVocab = {
+        ...mockContext,
+        selectedVocabulary: ['apple', 'banana'],
+      };
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(
+          contextWithVocab
+        );
 
       // Expect vocabulary section header
       expect(prompt).toContain('Learner Vocabulary Focus:');

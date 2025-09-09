@@ -2,6 +2,12 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import FullPageStoryInput from '../FullPageStoryInput';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+
+// Helper function to wrap components with TooltipProvider
+const renderWithTooltipProvider = (component: React.ReactElement) => {
+  return render(<TooltipProvider>{component}</TooltipProvider>);
+};
 
 // Mock PDFUploadModal component
 vi.mock('../PDFUploadModal', () => ({
@@ -95,7 +101,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('renders with correct title and description', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     expect(screen.getByText('Upload Story')).toBeInTheDocument();
     expect(
@@ -104,7 +110,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('renders textarea with correct placeholder', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const textarea = screen.getByPlaceholderText(
       'Ingresa tu historia en español aquí... (Enter your Spanish story here...)'
@@ -113,7 +119,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('calls onChange when user types in textarea', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const textarea = screen.getByRole('textbox');
     fireEvent.change(textarea, { target: { value: 'Test story' } });
@@ -123,7 +129,9 @@ describe('FullPageStoryInput Component', () => {
 
   it('displays the provided value in textarea', () => {
     const testValue = 'Esta es una historia de prueba.';
-    render(<FullPageStoryInput {...defaultProps} value={testValue} />);
+    renderWithTooltipProvider(
+      <FullPageStoryInput {...defaultProps} value={testValue} />
+    );
 
     const textarea = screen.getByDisplayValue(testValue);
     expect(textarea).toBeInTheDocument();
@@ -131,7 +139,7 @@ describe('FullPageStoryInput Component', () => {
 
   it('renders with custom placeholder when provided', () => {
     const customPlaceholder = 'Custom placeholder text';
-    render(
+    renderWithTooltipProvider(
       <FullPageStoryInput {...defaultProps} placeholder={customPlaceholder} />
     );
 
@@ -140,14 +148,14 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('renders translate button', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const translateButton = screen.getByText('Translate Story');
     expect(translateButton).toBeInTheDocument();
   });
 
   it('renders PDF upload button', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const pdfUploadButton = screen.getByTestId('pdf-upload-button');
     expect(pdfUploadButton).toBeInTheDocument();
@@ -155,7 +163,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('opens PDF upload modal when upload button is clicked', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const pdfUploadButton = screen.getByTestId('pdf-upload-button');
     fireEvent.click(pdfUploadButton);
@@ -165,7 +173,9 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('calls onSubmit when translate button is clicked', () => {
-    render(<FullPageStoryInput {...defaultProps} value='Test story' />);
+    renderWithTooltipProvider(
+      <FullPageStoryInput {...defaultProps} value='Test story' />
+    );
 
     const translateButton = screen.getByRole('button', {
       name: /translate story/i,
@@ -182,7 +192,9 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('disables translate button when textarea is empty', () => {
-    render(<FullPageStoryInput {...defaultProps} value='' />);
+    renderWithTooltipProvider(
+      <FullPageStoryInput {...defaultProps} value='' />
+    );
 
     const translateButton = screen.getByRole('button', {
       name: /translate story/i,
@@ -191,7 +203,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('disables translate button when isTranslating is true', () => {
-    render(
+    renderWithTooltipProvider(
       <FullPageStoryInput
         {...defaultProps}
         isTranslating={true}
@@ -206,7 +218,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('shows loading state when isTranslating is true', () => {
-    render(
+    renderWithTooltipProvider(
       <FullPageStoryInput
         {...defaultProps}
         isTranslating={true}
@@ -219,7 +231,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('renders tip text at the bottom', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     expect(
       screen.getByText(/💡 Tip: You can paste long stories/)
@@ -227,7 +239,7 @@ describe('FullPageStoryInput Component', () => {
   });
 
   it('has correct textarea styling classes', () => {
-    render(<FullPageStoryInput {...defaultProps} />);
+    renderWithTooltipProvider(<FullPageStoryInput {...defaultProps} />);
 
     const textarea = screen.getByRole('textbox');
     expect(textarea).toHaveClass('w-full', 'h-full', 'resize-none', 'border-0');

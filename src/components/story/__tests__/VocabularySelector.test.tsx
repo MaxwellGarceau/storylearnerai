@@ -11,17 +11,25 @@ vi.mock('react-i18next', () => ({
     t: (key: string, vars?: Record<string, unknown>) => {
       const map: Record<string, string> = {
         'storyInput.optionsModal.vocabularyTitle': 'Learner Vocabulary',
-        'storyInput.optionsModal.vocabularySubtitle': 'Select target words to include',
-        'storyInput.optionsModal.noVocabularyForPair': 'No vocabulary available',
+        'storyInput.optionsModal.vocabularySubtitle':
+          'Select target words to include',
+        'storyInput.optionsModal.noVocabularyForPair':
+          'No vocabulary available',
         'common.loading': 'Loading…',
-        'storyInput.optionsModal.selectedCount': String((vars?.count as number) ?? 0),
+        'storyInput.optionsModal.selectedCount': String(
+          (vars?.count as number) ?? 0
+        ),
       };
       return map[key] ?? key;
     },
   }),
 }));
 
-const makeVocab = (id: number, from: string, target: string): VocabularyWithLanguages => ({
+const makeVocab = (
+  id: number,
+  from: string,
+  target: string
+): VocabularyWithLanguages => ({
   id,
   user_id: 'u1',
   from_word: from,
@@ -37,7 +45,12 @@ const makeVocab = (id: number, from: string, target: string): VocabularyWithLang
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
   from_language: { id: 1, code: 'es', name: 'Spanish', native_name: 'Español' },
-  target_language: { id: 2, code: 'en', name: 'English', native_name: 'English' },
+  target_language: {
+    id: 2,
+    code: 'en',
+    name: 'English',
+    native_name: 'English',
+  },
 });
 
 describe('VocabularySelector', () => {
@@ -95,5 +108,3 @@ describe('VocabularySelector', () => {
     expect(onChange).toHaveBeenLastCalledWith(['hola', 'adiós']);
   });
 });
-
-

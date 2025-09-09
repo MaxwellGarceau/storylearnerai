@@ -40,5 +40,3 @@ describe('LanguageSelector', () => {
     expect(screen.getByText('Only English is supported')).toBeInTheDocument();
   });
 });
-
-

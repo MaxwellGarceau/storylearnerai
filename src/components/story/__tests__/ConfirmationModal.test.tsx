@@ -16,12 +16,16 @@ vi.mock('react-i18next', () => ({
         'storyInput.confirmationModal.difficulty': 'Difficulty',
         'storyInput.confirmationModal.vocabulary': 'Vocabulary',
         'storyInput.confirmationModal.editLanguage': 'Edit language',
-        'storyInput.confirmationModal.clickToChangeLanguage': 'Click to change language',
+        'storyInput.confirmationModal.clickToChangeLanguage':
+          'Click to change language',
         'storyInput.confirmationModal.editDifficulty': 'Edit difficulty',
-        'storyInput.confirmationModal.clickToChangeDifficulty': 'Click to change difficulty',
-        'storyInput.confirmationModal.noVocabularySelected': 'No vocabulary selected',
+        'storyInput.confirmationModal.clickToChangeDifficulty':
+          'Click to change difficulty',
+        'storyInput.confirmationModal.noVocabularySelected':
+          'No vocabulary selected',
         'storyInput.confirmationModal.goToVocabulary': 'Choose vocabulary',
-        'storyInput.confirmationModal.clickToChangeVocabulary': 'Click to change vocabulary',
+        'storyInput.confirmationModal.clickToChangeVocabulary':
+          'Click to change vocabulary',
         'storyInput.confirmationModal.vocabularySelectedCount': `${(vars?.count as number) ?? 0} selected`,
         'storyInput.confirmationModal.cancel': 'Cancel',
         'storyInput.confirmationModal.confirm': 'Confirm',
@@ -40,7 +44,9 @@ describe('ConfirmationModal', () => {
     const onClose = vi.fn();
     const onConfirm = vi.fn();
     const onGoTo = vi.fn();
-    const getLanguageName = vi.fn((code: string) => (code === 'es' ? 'Spanish' : 'English'));
+    const getLanguageName = vi.fn((code: string) =>
+      code === 'es' ? 'Spanish' : 'English'
+    );
     const getDifficultyLabel = vi.fn(() => 'A1 (Beginner)');
 
     render(
@@ -73,5 +79,3 @@ describe('ConfirmationModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 });
-
-

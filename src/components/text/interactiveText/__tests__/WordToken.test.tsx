@@ -10,6 +10,16 @@ vi.mock('../../useInteractiveTextContext', () => ({
   useInteractiveTextContext: () => ({
     fromLanguage: 'en',
     targetLanguage: 'es',
+    isIncludedVocabulary: vi.fn(() => false),
+    getTranslatedWord: vi.fn(),
+    isTranslatingWord: vi.fn(() => false),
+    isSavedWord: vi.fn(() => false),
+    savedOriginalWords: new Set(),
+    findSavedWordData: vi.fn(),
+    translatedWords: new Map(),
+    translatedSentences: new Map(),
+    translatingWords: new Set(),
+    includedVocabulary: [],
   }),
 }));
 
@@ -82,6 +92,8 @@ describe('WordToken', () => {
     translatedWord: undefined as string | undefined,
     originalSentence: 'Hello world.',
     translatedSentence: 'Hola mundo.',
+    fromLanguage: 'en' as LanguageCode,
+    targetLanguage: 'es' as LanguageCode,
     onOpenChange: vi.fn(),
     onWordClick: vi.fn(),
     onTranslate: vi.fn(),

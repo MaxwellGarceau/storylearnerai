@@ -44,12 +44,10 @@ describe('VocabularyUpsertModal (create)', () => {
     const toSelect = screen.getByLabelText(/vocabulary\.form\.toLanguage/i);
     fireEvent.change(toSelect, { target: { value: '1' } });
 
-    const original = screen.getByLabelText(/vocabulary\.form\.originalWord/i);
+    const original = screen.getByLabelText(/vocabulary\.form\.fromWord/i);
     fireEvent.change(original, { target: { value: 'hola' } });
 
-    const translated = screen.getByLabelText(
-      /vocabulary\.form\.translatedWord/i
-    );
+    const translated = screen.getByLabelText(/vocabulary\.form\.targetWord/i);
     fireEvent.change(translated, { target: { value: 'hello' } });
 
     // Fill optional fields and submit

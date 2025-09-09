@@ -32,12 +32,16 @@ describe('translationService vocabulary inclusion', () => {
   });
 
   it('includes selectedVocabulary analysis in translateStory results', async () => {
-    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(false);
+    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
+      false
+    );
     vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
       content: 'An apple a day keeps the doctor away. I like banana splits.',
       provider: 'gemini',
       model: 'gemini-1.5-flash',
-    } as unknown as Awaited<ReturnType<typeof llmServiceManager.generateCompletion>>);
+    } as unknown as Awaited<
+      ReturnType<typeof llmServiceManager.generateCompletion>
+    >);
 
     const result = await translationService.translate({
       text: 'Texto de ejemplo',
@@ -53,12 +57,16 @@ describe('translationService vocabulary inclusion', () => {
   });
 
   it('handles regex characters in selectedVocabulary safely (no false positives)', async () => {
-    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(false);
+    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
+      false
+    );
     vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
       content: 'C++ is a powerful language. I also enjoy C.',
       provider: 'gemini',
       model: 'gemini-1.5-flash',
-    } as unknown as Awaited<ReturnType<typeof llmServiceManager.generateCompletion>>);
+    } as unknown as Awaited<
+      ReturnType<typeof llmServiceManager.generateCompletion>
+    >);
 
     const result = await translationService.translate({
       text: 'Texto de ejemplo',
@@ -76,12 +84,16 @@ describe('translationService vocabulary inclusion', () => {
   });
 
   it('returns empty arrays when no selectedVocabulary provided', async () => {
-    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(false);
+    vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
+      false
+    );
     vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
       content: 'Translation output',
       provider: 'gemini',
       model: 'gemini-1.5-flash',
-    } as unknown as Awaited<ReturnType<typeof llmServiceManager.generateCompletion>>);
+    } as unknown as Awaited<
+      ReturnType<typeof llmServiceManager.generateCompletion>
+    >);
 
     const result = await translationService.translate({
       text: 'Texto de ejemplo',
@@ -111,5 +123,3 @@ describe('translationService vocabulary inclusion', () => {
     expect(result.missingVocabulary).toEqual(['beta', 'gamma']);
   });
 });
-
-

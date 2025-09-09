@@ -357,7 +357,6 @@
     "deleteError": "Error al eliminar la palabra de vocabulario",
     "alreadyExists": "Esta palabra ya está guardada en tu vocabulario",
     "form": {
-      
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
@@ -367,7 +366,7 @@
       "targetWord": "Palabra Objetivo",
       "fromContext": "Contexto Origen",
       "targetContext": "Contexto Objetivo",
-      
+
       "fromWordPlaceholder": "Ingresa la palabra de origen...",
       "targetWordPlaceholder": "Ingresa la palabra objetivo...",
       "fromContextPlaceholder": "Ingresa la oración de contexto...",
@@ -400,13 +399,13 @@
     },
     "details": {
       "title": "Detalles del Vocabulario",
-      
+
       "fromWord": "Palabra Origen",
       "targetWord": "Palabra Objetivo",
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
-      
+
       "fromContext": "Contexto Origen",
       "targetContext": "Contexto Objetivo",
       "fromLanguage": "Desde Idioma",

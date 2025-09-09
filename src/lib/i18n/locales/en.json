@@ -352,7 +352,6 @@
     "deleteError": "Failed to delete vocabulary word",
     "alreadyExists": "This word is already saved in your vocabulary",
     "form": {
-      
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
@@ -362,7 +361,7 @@
       "targetWord": "Target Word",
       "fromContext": "From Context",
       "targetContext": "Target Context",
-      
+
       "fromWordPlaceholder": "Enter the from word...",
       "targetWordPlaceholder": "Enter the target word...",
       "fromContextPlaceholder": "Enter the context sentence...",
@@ -395,13 +394,13 @@
     },
     "details": {
       "title": "Vocabulary Details",
-      
+
       "fromWord": "From Word",
       "targetWord": "Target Word",
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
-      
+
       "fromContext": "From Context",
       "targetContext": "Target Context",
       "fromLanguage": "From Language",

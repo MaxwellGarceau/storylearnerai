@@ -44,5 +44,3 @@ describe('DifficultySelector', () => {
     expect(screen.getByText('Adapted for English')).toBeInTheDocument();
   });
 });
-
-

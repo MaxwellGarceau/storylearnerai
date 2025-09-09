@@ -22,7 +22,8 @@ vi.mock('react-i18next', () => ({
         'storyInput.currentlySupported': 'Only English is supported',
         'storyInput.difficultyDescription': 'Adapted',
         'storyInput.optionsModal.vocabularySubtitle': 'Select words',
-        'storyInput.optionsModal.noVocabularyForPair': 'No vocabulary available',
+        'storyInput.optionsModal.noVocabularyForPair':
+          'No vocabulary available',
         'common.loading': 'Loading…',
         'storyInput.optionsModal.selectedCount': '0',
       };
@@ -31,7 +32,11 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-const makeVocab = (id: number, from: string, target: string): VocabularyWithLanguages => ({
+const makeVocab = (
+  id: number,
+  from: string,
+  target: string
+): VocabularyWithLanguages => ({
   id,
   user_id: 'u1',
   from_word: from,
@@ -47,7 +52,12 @@ const makeVocab = (id: number, from: string, target: string): VocabularyWithLang
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
   from_language: { id: 1, code: 'es', name: 'Spanish', native_name: 'Español' },
-  target_language: { id: 2, code: 'en', name: 'English', native_name: 'English' },
+  target_language: {
+    id: 2,
+    code: 'en',
+    name: 'English',
+    native_name: 'English',
+  },
 });
 
 describe('OptionsModal', () => {
@@ -83,5 +93,3 @@ describe('OptionsModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 });
-
-

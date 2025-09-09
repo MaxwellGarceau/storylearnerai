@@ -132,8 +132,10 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia de prueba',
+      fromLanguage: 'es',
       language: 'en',
       difficulty: 'a1',
+      selectedVocabulary: [],
     });
     expect(onSubmitStoryMock).toHaveBeenCalledTimes(1);
   });
@@ -227,8 +229,10 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia compleja',
+      fromLanguage: 'es',
       language: 'en',
       difficulty: 'b2',
+      selectedVocabulary: [],
     });
   });
 
@@ -250,8 +254,10 @@ describe('StoryUploadForm', () => {
 
     expect(onSubmitStoryMock).toHaveBeenCalledWith({
       story: 'Historia básica',
+      fromLanguage: 'es',
       language: 'en',
       difficulty: 'a1',
+      selectedVocabulary: [],
     });
   });
 });
