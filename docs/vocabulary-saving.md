@@ -34,9 +34,9 @@
 />
 ```
 
-- `original_word`, `translated_word`
-- `from_language_id`, `translated_language_id`
-- `original_word_context`, `translated_word_context` (nullable)
+- `from_word`, `target_word`
+- `from_language_id`, `target_language_id`
+- `from_word_context`, `target_word_context` (nullable)
 - `definition: null`
 
 ### Saving Indicator and Pending Translation
