@@ -79,10 +79,7 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
       onStoryTranslated(response);
 
       // Show toast notification if some vocabulary words weren't included
-      if (
-        response.missingVocabulary &&
-        response.missingVocabulary.length > 0
-      ) {
+      if (response.missingVocabulary && response.missingVocabulary.length > 0) {
         const missingCount = response.missingVocabulary.length;
         const totalSelected = response.selectedVocabulary?.length ?? 0;
 

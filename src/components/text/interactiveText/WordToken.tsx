@@ -42,14 +42,15 @@ const WordToken: React.FC<WordTokenProps> = ({
   disabled,
 }) => {
   const ctx = useInteractiveTextContext();
-  const isIncludedVocabulary = ctx?.isIncludedVocabulary(normalizedWord) ?? false;
+  const isIncludedVocabulary =
+    ctx?.isIncludedVocabulary(normalizedWord) ?? false;
 
   // Use green highlighting for included vocabulary words, yellow for saved words
   const vocabularyHighlightClass = isIncludedVocabulary
     ? 'bg-green-200 dark:bg-green-900/40'
     : isSaved
-    ? 'bg-yellow-200 dark:bg-yellow-900/30'
-    : '';
+      ? 'bg-yellow-200 dark:bg-yellow-900/30'
+      : '';
 
   const handleWordClick = () => {
     if (enableTooltips && !disabled) {
@@ -125,7 +126,7 @@ const WordToken: React.FC<WordTokenProps> = ({
             disabled={disabled}
             active={isOpen}
             className={vocabularyHighlightClass}
-              onClick={handleWordClick}
+            onClick={handleWordClick}
           >
             {cleanWord}
           </WordHighlight>

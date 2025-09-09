@@ -269,7 +269,9 @@ class GeneralPromptConfigService {
   /**
    * Build a complete prompt from the template and context
    */
-  private async buildDifficultyLevelAndLanguagePrompt(context: PromptBuildContext): Promise<string> {
+  private async buildDifficultyLevelAndLanguagePrompt(
+    context: PromptBuildContext
+  ): Promise<string> {
     logger.time('prompts', 'build-prompt');
 
     try {
@@ -394,11 +396,15 @@ class GeneralPromptConfigService {
     }
 
     // Build the base prompt
-    const basePrompt = await this.buildDifficultyLevelAndLanguagePrompt(context);
+    const basePrompt =
+      await this.buildDifficultyLevelAndLanguagePrompt(context);
 
     // Add vocabulary instruction if vocabulary is selected
     if (context.selectedVocabulary && context.selectedVocabulary.length > 0) {
-      const vocabInstruction = this.buildVocabularyInstruction(context, context.selectedVocabulary);
+      const vocabInstruction = this.buildVocabularyInstruction(
+        context,
+        context.selectedVocabulary
+      );
       return `${basePrompt}${vocabInstruction}`;
     }
 

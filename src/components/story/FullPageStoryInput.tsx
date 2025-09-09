@@ -126,7 +126,6 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
     );
   });
 
-
   return (
     <div className='h-full flex flex-col'>
       {/* Header */}
@@ -241,12 +240,16 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
         isOpen={showOptions}
         onClose={() => setShowOptions(false)}
         selectedLanguage={formData.language}
-        onLanguageChange={(language) => onFormDataChange('language', language)}
+        onLanguageChange={language => onFormDataChange('language', language)}
         selectedDifficulty={formData.difficulty}
-        onDifficultyChange={(difficulty) => onFormDataChange('difficulty', difficulty)}
+        onDifficultyChange={difficulty =>
+          onFormDataChange('difficulty', difficulty)
+        }
         availableVocabulary={availableVocabulary}
         selectedVocabulary={formData.selectedVocabulary}
-        onVocabularyChange={(vocabulary) => onFormDataChange('selectedVocabulary', vocabulary)}
+        onVocabularyChange={vocabulary =>
+          onFormDataChange('selectedVocabulary', vocabulary)
+        }
         vocabLoading={vocabLoading}
         getLanguageName={getLanguageName}
       />

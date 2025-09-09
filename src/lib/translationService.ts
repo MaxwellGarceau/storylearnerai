@@ -74,7 +74,8 @@ class TranslationService {
         nativeLanguage: request.nativeLanguage,
         selectedVocabulary: request.selectedVocabulary,
       };
-      const prompt = await generalPromptConfigService.buildTranslationPrompt(context);
+      const prompt =
+        await generalPromptConfigService.buildTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -166,7 +167,8 @@ class TranslationService {
         toLanguage: request.toLanguage,
         difficulty: request.difficulty,
       };
-      const prompt = generalPromptConfigService.buildWordTranslationPrompt(context);
+      const prompt =
+        generalPromptConfigService.buildWordTranslationPrompt(context);
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
@@ -205,9 +207,6 @@ class TranslationService {
       );
     }
   }
-
-
-
 
   /**
    * Convert technical error messages to user-friendly messages

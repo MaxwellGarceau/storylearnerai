@@ -16,7 +16,9 @@ interface ConfirmationModalProps {
   selectedVocabulary: string[];
   getLanguageName: (code: LanguageCode) => string;
   getDifficultyLabel: (difficulty: DifficultyLevel) => string;
-  onGoToOptionsSection: (section: 'language' | 'difficulty' | 'vocabulary') => void;
+  onGoToOptionsSection: (
+    section: 'language' | 'difficulty' | 'vocabulary'
+  ) => void;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -60,9 +62,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>
-                  {t('storyInput.confirmationModal.clickToChangeLanguage')}
-                </p>
+                <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -82,9 +82,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>
-                  {t('storyInput.confirmationModal.clickToChangeLanguage')}
-                </p>
+                <p>{t('storyInput.confirmationModal.clickToChangeLanguage')}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -123,16 +121,23 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         type='button'
                         onClick={() => onGoToOptionsSection('vocabulary')}
                         className='text-xs text-muted-foreground underline underline-offset-2 hover:opacity-90 text-right block'
-                        aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                        aria-label={t(
+                          'storyInput.confirmationModal.editVocabulary'
+                        )}
                       >
-                        {t('storyInput.confirmationModal.vocabularySelectedCount', {
-                          count: selectedVocabulary.length
-                        })}
+                        {t(
+                          'storyInput.confirmationModal.vocabularySelectedCount',
+                          {
+                            count: selectedVocabulary.length,
+                          }
+                        )}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>
-                        {t('storyInput.confirmationModal.clickToChangeVocabulary')}
+                        {t(
+                          'storyInput.confirmationModal.clickToChangeVocabulary'
+                        )}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -142,14 +147,18 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         type='button'
                         onClick={() => onGoToOptionsSection('vocabulary')}
                         className='mt-1 text-sm underline underline-offset-2 hover:opacity-90 text-right block'
-                        aria-label={t('storyInput.confirmationModal.editVocabulary')}
+                        aria-label={t(
+                          'storyInput.confirmationModal.editVocabulary'
+                        )}
                       >
                         {selectedVocabulary.join(', ')}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>
-                        {t('storyInput.confirmationModal.clickToChangeVocabulary')}
+                        {t(
+                          'storyInput.confirmationModal.clickToChangeVocabulary'
+                        )}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -168,14 +177,18 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                             type='button'
                             onClick={() => onGoToOptionsSection('vocabulary')}
                             className='text-primary underline underline-offset-2 hover:opacity-90'
-                            aria-label={t('storyInput.confirmationModal.goToVocabulary')}
+                            aria-label={t(
+                              'storyInput.confirmationModal.goToVocabulary'
+                            )}
                           >
                             {t('storyInput.confirmationModal.goToVocabulary')}
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {t('storyInput.confirmationModal.clickToChangeVocabulary')}
+                            {t(
+                              'storyInput.confirmationModal.clickToChangeVocabulary'
+                            )}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -188,11 +201,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </div>
 
         <div className='flex gap-3'>
-          <Button
-            onClick={onClose}
-            variant='outline'
-            className='flex-1'
-          >
+          <Button onClick={onClose} variant='outline' className='flex-1'>
             <X className='w-4 h-4 mr-2' />
             {t('storyInput.confirmationModal.cancel')}
           </Button>
