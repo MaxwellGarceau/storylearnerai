@@ -28,16 +28,12 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   savedTranslationId,
   includedVocabulary = [],
 }) => {
-  // Early return for undefined or empty text
-  if (!text || !text.trim()) {
-    return <span className={className} />;
-  }
-
+  // Always call hooks first, regardless of text content
   // Tokenize for rendering
   const tokens = useTokenizedText(text);
 
   // Split text into segments for sentence extraction (keeps indices aligned with token.segmentIndex)
-  const words = useMemo(() => text.split(/(\s+)/), [text]);
+  const words = useMemo(() => text?.split(/(\s+)/) ?? [], [text]);
 
   // Sentence context helpers
   const { extractSentenceContext } = useSentenceContext(words);
@@ -61,6 +57,27 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     targetLanguage,
   });
 
+  // Create callbacks before conditional return (hooks must be called unconditionally)
+  const getTargetWord = useCallback(
+    (word: string) => targetWords.get(word),
+    [targetWords]
+  );
+
+  const isTranslatingWord = useCallback(
+    (word: string) => translatingWords.has(word),
+    [translatingWords]
+  );
+
+  const isSavedWord = useCallback(
+    (word: string) => savedOriginalWords.has(word),
+    [savedOriginalWords]
+  );
+
+  const isIncludedVocabulary = useCallback(
+    (word: string) => includedVocabulary.includes(word),
+    [includedVocabulary]
+  );
+
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
     const alreadyRuntime = targetWords.get(w);
@@ -70,6 +87,11 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     }
     void handleTranslate(w, segmentIndex);
   };
+
+  // Early return for undefined or empty text (after all hooks are called)
+  if (!text?.trim()) {
+    return <span className={className} />;
+  }
 
   return (
     <InteractiveTextProvider
@@ -83,22 +105,10 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         translatingWords,
         savedTranslationId,
         includedVocabulary,
-        getTargetWord: useCallback(
-          (word: string) => targetWords.get(word),
-          [targetWords]
-        ),
-        isTranslatingWord: useCallback(
-          (word: string) => translatingWords.has(word),
-          [translatingWords]
-        ),
-        isSavedWord: useCallback(
-          (word: string) => savedOriginalWords.has(word),
-          [savedOriginalWords]
-        ),
-        isIncludedVocabulary: useCallback(
-          (word: string) => includedVocabulary.includes(word),
-          [includedVocabulary]
-        ),
+        getTargetWord,
+        isTranslatingWord,
+        isSavedWord,
+        isIncludedVocabulary,
       }}
     >
       <InteractiveTextView
