@@ -193,7 +193,7 @@
     "noStory": {
       "title": "No Story Found",
       "description": "Please translate a story first to view it here.",
-      "translateStory": "Translate a Story",
+      "targetStory": "Translate a Story",
       "home": "Home"
     },
     "header": {
@@ -269,7 +269,7 @@
     "translationIsSupported": "translation is supported.",
     "theStoryWillBeAdaptedToThis": "The story will be adapted to this",
     "proficiencyLevel": "proficiency level.",
-    "translateStory": "Translate Story",
+    "targetStory": "Translate Story",
     "optionsModal": {
       "title": "Story Options",
       "languageLabel": "Target Language",
@@ -331,7 +331,7 @@
     },
     "content": {
       "notes": "Notes",
-      "originalStory": "Original Story",
+      "fromStory": "Original Story",
       "translatedStory": "Translated Story"
     },
     "emptyState": {

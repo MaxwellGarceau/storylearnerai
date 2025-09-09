@@ -11,13 +11,13 @@ vi.mock('../../useInteractiveTextContext', () => ({
     fromLanguage: 'en',
     targetLanguage: 'es',
     isIncludedVocabulary: vi.fn(() => false),
-    getTranslatedWord: vi.fn(),
+    getTargetWord: vi.fn(),
     isTranslatingWord: vi.fn(() => false),
     isSavedWord: vi.fn(() => false),
     savedOriginalWords: new Set(),
     findSavedWordData: vi.fn(),
-    translatedWords: new Map(),
-    translatedSentences: new Map(),
+    targetWords: new Map(),
+    targetSentences: new Map(),
     translatingWords: new Set(),
     includedVocabulary: [],
   }),
@@ -31,9 +31,9 @@ interface WordMenuProps {
   onTranslate?: (word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
-  translatedWord?: string;
-  originalSentence?: string;
-  translatedSentence?: string;
+  targetWord?: string;
+  fromSentence?: string;
+  targetSentence?: string;
   isSaved?: boolean;
   isTranslating?: boolean;
 }
@@ -48,9 +48,9 @@ vi.mock('../../WordMenu', () => ({
     onTranslate,
     fromLanguage,
     targetLanguage,
-    translatedWord,
-    originalSentence,
-    translatedSentence,
+    targetWord,
+    fromSentence,
+    targetSentence,
     isSaved,
     isTranslating,
     children,
@@ -62,9 +62,9 @@ vi.mock('../../WordMenu', () => ({
         <span data-testid='menu-target'>{targetLanguage}</span>
         <span data-testid='menu-saved'>{String(isSaved)}</span>
         <span data-testid='menu-translating'>{String(isTranslating)}</span>
-        <span data-testid='menu-translated-word'>{translatedWord ?? ''}</span>
-        <span data-testid='menu-orig-sent'>{originalSentence ?? ''}</span>
-        <span data-testid='menu-trans-sent'>{translatedSentence ?? ''}</span>
+        <span data-testid='menu-translated-word'>{targetWord ?? ''}</span>
+        <span data-testid='menu-orig-sent'>{fromSentence ?? ''}</span>
+        <span data-testid='menu-trans-sent'>{targetSentence ?? ''}</span>
       </div>
       <button data-testid='menu-open-true' onClick={() => onOpenChange?.(true)}>
         open
@@ -89,9 +89,9 @@ describe('WordToken', () => {
     isOpen: false,
     isSaved: true,
     isTranslating: false,
-    translatedWord: undefined as string | undefined,
-    originalSentence: 'Hello world.',
-    translatedSentence: 'Hola mundo.',
+    targetWord: undefined as string | undefined,
+    fromSentence: 'Hello world.',
+    targetSentence: 'Hola mundo.',
     fromLanguage: 'en' as LanguageCode,
     targetLanguage: 'es' as LanguageCode,
     onOpenChange: vi.fn(),
@@ -103,11 +103,7 @@ describe('WordToken', () => {
 
   it('renders with tooltips disabled using plain highlight and overlay when provided', () => {
     render(
-      <WordToken
-        {...commonProps}
-        enableTooltips={false}
-        translatedWord='hola'
-      />
+      <WordToken {...commonProps} enableTooltips={false} targetWord='hola' />
     );
 
     // No WordMenu when tooltips disabled

@@ -7,12 +7,12 @@ import type { NullableStringPromise } from '../types/common';
 import { logger } from '../lib/logger';
 
 interface UseWordTranslationReturn {
-  translateWord: (
+  targetWord: (
     word: string,
     fromLanguage: LanguageCode,
     toLanguage: LanguageCode
   ) => NullableStringPromise;
-  translateWordInSentence: (
+  targetWordInSentence: (
     focusWord: string,
     sentence: string,
     fromLanguage: LanguageCode,
@@ -62,10 +62,10 @@ export function useWordTranslation(): UseWordTranslationReturn {
           sentence,
           fromLanguage,
           toLanguage,
-          translatedText: response.translatedText,
+          targetText: response.targetText,
         });
 
-        return response.translatedText;
+        return response.targetText;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to translate sentence';
@@ -92,7 +92,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
     [toast]
   );
 
-  const translateWordInSentence = useCallback(
+  const targetWordInSentence = useCallback(
     async (
       focusWord: string,
       sentence: string,
@@ -105,7 +105,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
       try {
         const defaultDifficulty: DifficultyLevel = 'a2';
 
-        const response = await translationService.translateWordWithContext({
+        const response = await translationService.targetWordWithContext({
           sentence,
           focusWord,
           fromLanguage,
@@ -118,10 +118,10 @@ export function useWordTranslation(): UseWordTranslationReturn {
           sentence,
           fromLanguage,
           toLanguage,
-          translatedWord: response.translatedWord,
+          targetWord: response.targetWord,
         });
 
-        return response.translatedWord;
+        return response.targetWord;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to translate word';
@@ -149,7 +149,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
     [toast]
   );
 
-  const translateWord = useCallback(
+  const targetWord = useCallback(
     async (
       word: string,
       fromLanguage: LanguageCode,
@@ -162,8 +162,8 @@ export function useWordTranslation(): UseWordTranslationReturn {
   );
 
   return {
-    translateWord,
-    translateWordInSentence,
+    targetWord,
+    targetWordInSentence,
     translateSentence,
     isTranslating,
     error,

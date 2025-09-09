@@ -220,8 +220,8 @@ export class VocabularyService {
    */
   static async checkVocabularyExists(
     userId: string,
-    originalWord: string,
-    translatedWord: string,
+    fromWord: string,
+    targetWord: string,
     fromLanguageId: number,
     targetLanguageId: number
   ): Promise<boolean> {
@@ -230,8 +230,8 @@ export class VocabularyService {
         .from('vocabulary')
         .select('id')
         .eq('user_id', userId)
-        .eq('from_word', originalWord)
-        .eq('target_word', translatedWord)
+        .eq('from_word', fromWord)
+        .eq('target_word', targetWord)
         .eq('from_language_id', fromLanguageId)
         .eq('target_language_id', targetLanguageId)
         .single();

@@ -47,8 +47,8 @@ export function VocabularyDetailModal({
             state: {
               // Keep fast-path state for instant render when available
               translationData: {
-                originalText: savedTranslation.from_story,
-                translatedText: savedTranslation.target_story,
+                fromText: savedTranslation.from_story,
+                targetText: savedTranslation.target_story,
                 difficulty: savedTranslation.difficulty_level.code,
                 fromLanguage: savedTranslation.from_language.code,
                 toLanguage: savedTranslation.target_language.code,
@@ -79,8 +79,8 @@ export function VocabularyDetailModal({
           <div className='space-y-3'>
             <div className='flex items-center justify-between py-3'>
               <WordDisplay
-                originalWord={vocabulary.from_word}
-                translatedWord={vocabulary.target_word}
+                fromWord={vocabulary.from_word}
+                targetWord={vocabulary.target_word}
               />
               <div className='flex gap-1'>
                 <Button
@@ -131,8 +131,8 @@ export function VocabularyDetailModal({
 
           {/* Context */}
           <ContextSection
-            originalContext={vocabulary.from_word_context}
-            translatedContext={vocabulary.target_word_context}
+            fromContext={vocabulary.from_word_context}
+            targetContext={vocabulary.target_word_context}
           />
 
           {/* Saved Translation Navigation */}

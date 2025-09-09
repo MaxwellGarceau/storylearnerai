@@ -31,7 +31,7 @@ describe('translationService vocabulary inclusion', () => {
     vi.restoreAllMocks();
   });
 
-  it('includes selectedVocabulary analysis in translateStory results', async () => {
+  it('includes selectedVocabulary analysis in targetStory results', async () => {
     vi.mocked(EnvironmentConfig.isMockTranslationEnabled).mockReturnValue(
       false
     );

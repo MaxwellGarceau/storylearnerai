@@ -1,19 +1,19 @@
 interface WordDisplayProps {
-  originalWord: string;
-  translatedWord: string;
+  fromWord: string;
+  targetWord: string;
   className?: string;
 }
 
 export function WordDisplay({
-  originalWord,
-  translatedWord,
+  fromWord,
+  targetWord,
   className = '',
 }: WordDisplayProps) {
   return (
     <div className={`flex items-center gap-2 mr-2 ${className}`}>
-      <span className='font-semibold text-lg'>{originalWord}</span>
+      <span className='font-semibold text-lg'>{fromWord}</span>
       <span className='text-muted-foreground'>→</span>
-      <span className='font-semibold text-lg'>{translatedWord}</span>
+      <span className='font-semibold text-lg'>{targetWord}</span>
     </div>
   );
 }

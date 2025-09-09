@@ -7,59 +7,55 @@ export function useTranslationCache(args: {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
 }) {
-  const { translateWordInSentence, translateSentence } = useWordTranslation();
+  const { targetWordInSentence, translateSentence } = useWordTranslation();
   const { extractSentenceContext, fromLanguage, targetLanguage } = args;
 
-  const [translatedWords, setTranslatedWords] = useState<Map<string, string>>(
+  const [targetWords, setTargetWords] = useState<Map<string, string>>(
     new Map()
   );
-  const [translatedSentences, setTranslatedSentences] = useState<
-    Map<string, string>
-  >(new Map());
+  const [targetSentences, setTargetSentences] = useState<Map<string, string>>(
+    new Map()
+  );
   const [translatingWords, setTranslatingWords] = useState<Set<string>>(
     new Set()
   );
 
   const setWordTranslation = useCallback(
-    (normalizedWord: string, translatedText: string) => {
-      setTranslatedWords(prev =>
-        new Map(prev).set(normalizedWord, translatedText)
-      );
+    (normalizedWord: string, targetText: string) => {
+      setTargetWords(prev => new Map(prev).set(normalizedWord, targetText));
     },
     []
   );
 
   const handleTranslate = useCallback(
     async (normalizedWord: string, wordIndex: number) => {
-      if (translatedWords.has(normalizedWord)) return;
+      if (targetWords.has(normalizedWord)) return;
       setTranslatingWords(prev => new Set(prev).add(normalizedWord));
 
       try {
         const sentenceContext = extractSentenceContext(wordIndex);
 
-        if (!translatedSentences.has(sentenceContext)) {
-          const translatedSentence = await translateSentence(
+        if (!targetSentences.has(sentenceContext)) {
+          const targetSentence = await translateSentence(
             sentenceContext,
             targetLanguage,
             fromLanguage
           );
-          if (translatedSentence) {
-            setTranslatedSentences(prev =>
-              new Map(prev).set(sentenceContext, translatedSentence)
+          if (targetSentence) {
+            setTargetSentences(prev =>
+              new Map(prev).set(sentenceContext, targetSentence)
             );
           }
         }
 
-        const translatedText = await translateWordInSentence(
+        const targetText = await targetWordInSentence(
           normalizedWord,
           sentenceContext,
           targetLanguage,
           fromLanguage
         );
-        if (translatedText) {
-          setTranslatedWords(prev =>
-            new Map(prev).set(normalizedWord, translatedText)
-          );
+        if (targetText) {
+          setTargetWords(prev => new Map(prev).set(normalizedWord, targetText));
         }
       } finally {
         setTranslatingWords(prev => {
@@ -70,19 +66,19 @@ export function useTranslationCache(args: {
       }
     },
     [
-      translatedWords,
+      targetWords,
       extractSentenceContext,
-      translatedSentences,
+      targetSentences,
       translateSentence,
-      translateWordInSentence,
+      targetWordInSentence,
       targetLanguage,
       fromLanguage,
     ]
   );
 
   return {
-    translatedWords,
-    translatedSentences,
+    targetWords,
+    targetSentences,
     translatingWords,
     setWordTranslation,
     handleTranslate,

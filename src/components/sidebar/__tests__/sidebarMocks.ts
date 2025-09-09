@@ -77,8 +77,8 @@ export const mockUser: User = {
 } as User;
 
 export const mockTranslationData: TranslationResponse = {
-  originalText: 'Hello world',
-  translatedText: 'Hola mundo',
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
@@ -88,8 +88,8 @@ export const mockTranslationData: TranslationResponse = {
 };
 
 export const mockTranslationDataNoVocabulary: TranslationResponse = {
-  originalText: 'Hello world',
-  translatedText: 'Hola mundo',
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
@@ -99,8 +99,8 @@ export const mockTranslationDataNoVocabulary: TranslationResponse = {
 };
 
 export const mockTranslationDataAllIncluded: TranslationResponse = {
-  originalText: 'Hello world',
-  translatedText: 'Hola mundo',
+  fromText: 'Hello world',
+  targetText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,

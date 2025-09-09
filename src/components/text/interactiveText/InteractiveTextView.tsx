@@ -11,7 +11,7 @@ interface InteractiveTextViewProps {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   getOriginalSentence: (segmentIndex: number) => string;
-  getTranslatedSentence: (originalSentence: string) => string | undefined;
+  getTargetSentence: (fromSentence: string) => string | undefined;
   isSaved: (normalizedWord: string) => boolean;
   getDisplayTranslation: (normalizedWord: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
@@ -26,7 +26,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   fromLanguage,
   targetLanguage,
   getOriginalSentence,
-  getTranslatedSentence,
+  getTargetSentence,
   isSaved,
   getDisplayTranslation,
   isTranslating,
@@ -50,8 +50,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const punctuation = t.punctuation;
         const saved = isSaved(normalizedWord);
         const overlayTranslatedWord = getDisplayTranslation(normalizedWord);
-        const originalSentence = getOriginalSentence(t.segmentIndex);
-        const translatedSentence = getTranslatedSentence(originalSentence);
+        const fromSentence = getOriginalSentence(t.segmentIndex);
+        const targetSentence = getTargetSentence(fromSentence);
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = () => {
@@ -68,9 +68,9 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               isOpen={open}
               isSaved={saved}
               isTranslating={isTranslating(normalizedWord)}
-              translatedWord={overlayTranslatedWord}
-              originalSentence={originalSentence}
-              translatedSentence={translatedSentence}
+              targetWord={overlayTranslatedWord}
+              fromSentence={fromSentence}
+              targetSentence={targetSentence}
               fromLanguage={fromLanguage}
               targetLanguage={targetLanguage}
               onOpenChange={isOpen => {

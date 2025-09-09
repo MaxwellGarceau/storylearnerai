@@ -22,9 +22,9 @@ interface WordMenuProps {
   onTranslate?: (word: string) => void;
   fromLanguage?: LanguageCode;
   targetLanguage?: LanguageCode;
-  translatedWord?: string;
-  originalSentence?: string;
-  translatedSentence?: string;
+  targetWord?: string;
+  fromSentence?: string;
+  targetSentence?: string;
   isSaved?: boolean;
   isTranslating?: boolean;
 }
@@ -37,9 +37,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
   onTranslate,
   fromLanguage,
   targetLanguage,
-  translatedWord,
-  originalSentence,
-  translatedSentence,
+  targetWord,
+  fromSentence,
+  targetSentence,
   isSaved,
   isTranslating,
 }) => {
@@ -58,8 +58,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
   const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
-  const effectiveTranslatedWord =
-    translatedWord ?? ctx?.getTranslatedWord?.(word);
+  const effectiveTargetWord = targetWord ?? ctx?.getTargetWord?.(word);
   const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(word) ?? false;
   const effectiveIsTranslating =
     isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
@@ -80,7 +79,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const handleTranslate = () => {
     // Allow translate if there is no runtime translation yet
-    if (!effectiveTranslatedWord && !effectiveIsTranslating) {
+    if (!effectiveTargetWord && !effectiveIsTranslating) {
       onTranslate?.(word);
     }
   };
@@ -102,11 +101,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
     : null;
 
   const translateButtonDisabled =
-    effectiveIsTranslating || Boolean(effectiveTranslatedWord);
+    effectiveIsTranslating || Boolean(effectiveTargetWord);
 
   const translateButtonLabel = effectiveIsTranslating
     ? 'Translating...'
-    : effectiveTranslatedWord
+    : effectiveTargetWord
       ? effectiveIsSaved
         ? 'Already Saved'
         : 'Translated'
@@ -153,9 +152,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
             <>
               <div className='text-center mb-3'>
                 <div className='text-sm font-medium mb-1'>{word}</div>
-                {effectiveTranslatedWord && (
+                {effectiveTargetWord && (
                   <div className='text-sm text-muted-foreground'>
-                    {effectiveTranslatedWord}
+                    {effectiveTargetWord}
                   </div>
                 )}
               </div>
@@ -185,10 +184,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     </Button>
                     {fromLanguageId && targetLanguageId && (
                       <VocabularySaveButton
-                        originalWord={word}
-                        translatedWord={effectiveTranslatedWord ?? ''}
-                        originalContext={originalSentence}
-                        translatedContext={translatedSentence}
+                        fromWord={word}
+                        targetWord={effectiveTargetWord ?? ''}
+                        fromContext={fromSentence}
+                        targetContext={targetSentence}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
                         savedTranslationId={effectiveSavedTranslationId}
@@ -196,7 +195,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         variant='outline'
                         isSaved={effectiveIsSaved}
                         onBeforeOpen={() => {
-                          if (!effectiveTranslatedWord) {
+                          if (!effectiveTargetWord) {
                             onTranslate?.(word);
                           }
                         }}
@@ -215,10 +214,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 <div className='flex items-center gap-2'>
                   {user && fromLanguageId && targetLanguageId && (
                     <VocabularySaveButton
-                      originalWord={word}
-                      translatedWord={effectiveTranslatedWord ?? ''}
-                      originalContext={originalSentence}
-                      translatedContext={translatedSentence}
+                      fromWord={word}
+                      targetWord={effectiveTargetWord ?? ''}
+                      fromContext={fromSentence}
+                      targetContext={targetSentence}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       savedTranslationId={effectiveSavedTranslationId}
@@ -228,7 +227,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       showTextOnly={true}
                       isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
-                        if (!effectiveTranslatedWord) {
+                        if (!effectiveTargetWord) {
                           onTranslate?.(word);
                         }
                       }}

@@ -102,7 +102,6 @@ export class VocabularyHighlightService {
 
     return baseClass;
   }
-
 }
 
 /**

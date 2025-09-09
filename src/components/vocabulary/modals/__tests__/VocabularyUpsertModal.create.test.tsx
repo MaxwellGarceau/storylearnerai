@@ -33,7 +33,7 @@ describe('VocabularyUpsertModal (create)', () => {
         onClose={() => {}}
         currentLanguageId={1}
         currentFromLanguageId={2}
-        initialData={{ originalWord: 'hola', translatedWord: 'hello' }}
+        initialData={{ fromWord: 'hola', targetWord: 'hello' }}
       />
     );
 

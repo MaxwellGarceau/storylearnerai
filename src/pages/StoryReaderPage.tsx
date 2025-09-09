@@ -53,8 +53,8 @@ const StoryReaderPage: React.FC = () => {
           );
           if (saved) {
             const response: TranslationResponse = {
-              originalText: saved.from_story,
-              translatedText: saved.target_story,
+              fromText: saved.from_story,
+              targetText: saved.target_story,
               fromLanguage: saved.from_language.code,
               toLanguage: saved.target_language.code,
               difficulty: saved.difficulty_level.code,
@@ -131,7 +131,7 @@ const StoryReaderPage: React.FC = () => {
               <div className='text-sm text-destructive'>{errorById}</div>
             )}
             <Button onClick={handleTranslateAnother} size='lg'>
-              {t('storyReader.noStory.translateStory')}
+              {t('storyReader.noStory.targetStory')}
             </Button>
             <Button onClick={handleGoHome} variant='secondary' size='lg'>
               {t('storyReader.noStory.home')}
@@ -184,7 +184,7 @@ const StoryReaderPage: React.FC = () => {
       <div className='flex flex-col sm:flex-row gap-4 justify-center'>
         <SaveTranslationButton
           translationData={finalTranslationData}
-          originalStory={finalTranslationData.originalText || ''}
+          fromStory={finalTranslationData.fromText || ''}
           fromLanguage='Spanish'
           targetLanguage='English'
           difficultyLevel={finalTranslationData.difficulty}

@@ -19,8 +19,8 @@ export interface TranslationRequest {
 }
 
 export interface TranslationResponse {
-  originalText: string;
-  translatedText: string;
+  fromText: string;
+  targetText: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
   difficulty: DifficultyLevel;
@@ -41,8 +41,8 @@ export interface WordTranslationRequest {
 }
 
 export interface WordTranslationResponse {
-  originalWord: string;
-  translatedWord: string;
+  fromWord: string;
+  targetWord: string;
   sentence: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
@@ -62,9 +62,7 @@ export interface TranslationError {
 }
 
 class TranslationService {
-  async translateStory(
-    request: TranslationRequest
-  ): TranslationResponsePromise {
+  async targetStory(request: TranslationRequest): TranslationResponsePromise {
     try {
       const context = {
         fromLanguage: request.fromLanguage,
@@ -96,8 +94,8 @@ class TranslationService {
           );
 
         return {
-          originalText: request.text,
-          translatedText: llmResponse.content,
+          fromText: request.text,
+          targetText: llmResponse.content,
           fromLanguage: request.fromLanguage,
           toLanguage: request.toLanguage,
           difficulty: request.difficulty,
@@ -111,8 +109,8 @@ class TranslationService {
       }
 
       return {
-        originalText: request.text,
-        translatedText: llmResponse.content,
+        fromText: request.text,
+        targetText: llmResponse.content,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
         difficulty: request.difficulty,
@@ -156,7 +154,7 @@ class TranslationService {
     }
   }
 
-  async translateWordWithContext(
+  async targetWordWithContext(
     request: WordTranslationRequest
   ): Promise<WordTranslationResponse> {
     try {
@@ -181,8 +179,8 @@ class TranslationService {
       const singleWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
 
       return {
-        originalWord: request.focusWord,
-        translatedWord: singleWord,
+        fromWord: request.focusWord,
+        targetWord: singleWord,
         sentence: request.sentence,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
@@ -287,8 +285,8 @@ class TranslationService {
     }
 
     return {
-      originalText: request.text,
-      translatedText: mockTranslation,
+      fromText: request.text,
+      targetText: mockTranslation,
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
@@ -305,7 +303,7 @@ class TranslationService {
     if (EnvironmentConfig.isMockTranslationEnabled()) {
       return this.mockTranslateStory(request);
     } else {
-      return this.translateStory(request);
+      return this.targetStory(request);
     }
   }
 
@@ -333,7 +331,7 @@ class TranslationService {
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
     logger.info('translation', 'Analyzing vocabulary inclusion', {
       vocabularyWords: targetLanguageVocabularyWords,
-      translatedTextLength: targetLanguageTranslatedText.length,
+      targetTextLength: targetLanguageTranslatedText.length,
     });
     if (
       !targetLanguageVocabularyWords ||

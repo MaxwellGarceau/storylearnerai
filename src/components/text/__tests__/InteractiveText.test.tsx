@@ -22,8 +22,8 @@ vi.mock('../../../hooks/useDictionary', () => ({
 // Mock the useWordTranslation hook
 vi.mock('../../../hooks/useWordTranslation', () => ({
   useWordTranslation: () => ({
-    translateWord: vi.fn().mockResolvedValue('translated'),
-    translateWordInSentence: vi.fn().mockResolvedValue('translated word'),
+    targetWord: vi.fn().mockResolvedValue('translated'),
+    targetWordInSentence: vi.fn().mockResolvedValue('translated word'),
     translateSentence: vi.fn().mockResolvedValue('translated sentence'),
     isTranslating: false,
     error: null,
@@ -66,7 +66,7 @@ vi.mock('../WordMenu', () => ({
     onSave,
     fromLanguage,
     targetLanguage,
-    translatedWord,
+    targetWord,
   }: {
     word: string;
     children: React.ReactNode;
@@ -76,12 +76,12 @@ vi.mock('../WordMenu', () => ({
     onSave?: WordCallback;
     fromLanguage?: string;
     targetLanguage?: string;
-    translatedWord?: string;
+    targetWord?: string;
   }) => {
     // Use the parameters to avoid unused variable warnings
     void fromLanguage;
     void targetLanguage;
-    void translatedWord;
+    void targetWord;
     return (
       <span data-word={word}>
         {children}

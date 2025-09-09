@@ -95,7 +95,11 @@ export const DashboardPage: React.FC = () => {
           <div>
             <h1 className='text-3xl font-bold'>
               {t('auth.userProfile.welcomeBack', {
-                name: profile?.display_name ?? profile?.username ?? user.email?.split('@')[0] ?? 'User',
+                name:
+                  profile?.display_name ??
+                  profile?.username ??
+                  user.email?.split('@')[0] ??
+                  'User',
               })}
             </h1>
             <p className='text-muted-foreground'>{t('dashboard.subtitle')}</p>

@@ -20,7 +20,7 @@ vi.mock('react-i18next', () => ({
         'storyInput.theStoryWillBeAdaptedToThis':
           'The story will be adapted to this',
         'storyInput.proficiencyLevel': 'proficiency level.',
-        'storyInput.translateStory': 'Translate Story',
+        'storyInput.targetStory': 'Translate Story',
         'storyInput.placeholder':
           'Ingresa tu historia en español aquí... (Enter your Spanish story here...)',
         'difficultyLevels.a1.label': 'A1 (Beginner)',

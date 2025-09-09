@@ -101,8 +101,8 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ): TranslationResponse => {
     return {
-      originalText: savedTranslation.from_story,
-      translatedText: savedTranslation.target_story,
+      fromText: savedTranslation.from_story,
+      targetText: savedTranslation.target_story,
       fromLanguage: savedTranslation.from_language.code,
       toLanguage: savedTranslation.target_language.code,
       difficulty: savedTranslation.difficulty_level.code,
@@ -295,7 +295,7 @@ export default function SavedTranslationsList() {
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                 <div>
                   <h4 className='font-medium text-sm mb-2'>
-                    {t('savedTranslations.content.originalStory')}
+                    {t('savedTranslations.content.fromStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
                     {translation.from_story}

@@ -30,8 +30,8 @@ describe('VocabularySaveButton', () => {
 
     render(
       <VocabularySaveButton
-        originalWord='hola'
-        translatedWord='hello'
+        fromWord='hola'
+        targetWord='hello'
         fromLanguageId={2}
         targetLanguageId={1}
         savedTranslationId={42}
@@ -67,7 +67,7 @@ describe('VocabularySaveButton', () => {
     );
   });
 
-  it('shows saving state and auto-saves when translatedWord arrives later', async () => {
+  it('shows saving state and auto-saves when targetWord arrives later', async () => {
     const user = userEvent.setup();
 
     // Component to simulate delayed translation arrival
@@ -76,8 +76,8 @@ describe('VocabularySaveButton', () => {
       return (
         <div>
           <VocabularySaveButton
-            originalWord='hola'
-            translatedWord={translated}
+            fromWord='hola'
+            targetWord={translated}
             fromLanguageId={2}
             targetLanguageId={1}
             savedTranslationId={99}
@@ -105,7 +105,7 @@ describe('VocabularySaveButton', () => {
 
     await user.click(button);
 
-    // Eventually auto-saves once translatedWord arrives
+    // Eventually auto-saves once targetWord arrives
     await waitFor(() => {
       expect(mockSaveVocabularyWord).toHaveBeenCalledTimes(1);
     });

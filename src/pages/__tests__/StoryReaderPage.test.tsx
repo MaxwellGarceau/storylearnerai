@@ -30,7 +30,7 @@ vi.mock('react-i18next', () => ({
         'storyReader.noStory.title': 'No Story Found',
         'storyReader.noStory.description':
           'Please translate a story first to view it here.',
-        'storyReader.noStory.translateStory': 'Translate a Story',
+        'storyReader.noStory.targetStory': 'Translate a Story',
         'storyReader.noStory.home': 'Home',
         'storyReader.header.translatedStory': 'Your Translated Story',
         'storyReader.header.translatedDescription':
@@ -84,8 +84,8 @@ vi.mock('../../hooks/useWalkthrough', () => ({
 vi.mock('../../components/story/StoryRender', () => ({
   default: ({ translationData }: { translationData: TranslationResponse }) => (
     <div data-testid='story-render'>
-      <div>Original: {translationData.originalText}</div>
-      <div>Translated: {translationData.translatedText}</div>
+      <div>Original: {translationData.fromText}</div>
+      <div>Translated: {translationData.targetText}</div>
     </div>
   ),
 }));
@@ -161,8 +161,8 @@ describe('StoryReaderPage', () => {
 
   it('renders story content when translation data is available', () => {
     const mockTranslationData: TranslationResponse = {
-      originalText: 'Test story in Spanish',
-      translatedText: 'Test story in English',
+      fromText: 'Test story in Spanish',
+      targetText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',
@@ -183,8 +183,8 @@ describe('StoryReaderPage', () => {
 
   it('shows navigation buttons when story is displayed', () => {
     const mockTranslationData: TranslationResponse = {
-      originalText: 'Test story in Spanish',
-      translatedText: 'Test story in English',
+      fromText: 'Test story in Spanish',
+      targetText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',
@@ -207,8 +207,8 @@ describe('StoryReaderPage', () => {
 
   it('navigates to /translate when Translate Another Story button is clicked', () => {
     const mockTranslationData: TranslationResponse = {
-      originalText: 'Test story in Spanish',
-      translatedText: 'Test story in English',
+      fromText: 'Test story in Spanish',
+      targetText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',

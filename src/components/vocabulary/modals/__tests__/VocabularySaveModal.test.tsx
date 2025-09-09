@@ -25,7 +25,7 @@ describe('VocabularySaveModal', () => {
         onClose={() => {}}
         currentLanguageId={1}
         currentFromLanguageId={2}
-        initialData={{ originalWord: 'hola', translatedWord: 'hello' }}
+        initialData={{ fromWord: 'hola', targetWord: 'hello' }}
       />
     );
 
@@ -34,11 +34,11 @@ describe('VocabularySaveModal', () => {
       mode: string;
       currentLanguageId: number;
       currentFromLanguageId: number;
-      initialData: { originalWord: string; translatedWord: string };
+      initialData: { fromWord: string; targetWord: string };
     };
     expect(props.mode).toBe('create');
     expect(props.currentLanguageId).toBe(1);
     expect(props.currentFromLanguageId).toBe(2);
-    expect(props.initialData.originalWord).toBe('hola');
+    expect(props.initialData.fromWord).toBe('hola');
   });
 });

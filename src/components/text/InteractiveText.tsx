@@ -45,8 +45,8 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
   // Translation cache and handler
   const {
-    translatedWords,
-    translatedSentences,
+    targetWords,
+    targetSentences,
     translatingWords,
     setWordTranslation,
     handleTranslate,
@@ -58,7 +58,7 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
 
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
     const saved = findSavedWordData(w);
-    const alreadyRuntime = translatedWords.get(w);
+    const alreadyRuntime = targetWords.get(w);
     if (saved?.target_word && !alreadyRuntime) {
       setWordTranslation(w, saved.target_word);
       return;
@@ -73,14 +73,14 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         targetLanguage,
         savedOriginalWords,
         findSavedWordData,
-        translatedWords,
-        translatedSentences,
+        targetWords,
+        targetSentences,
         translatingWords,
         savedTranslationId,
         includedVocabulary,
-        getTranslatedWord: useCallback(
-          (word: string) => translatedWords.get(word),
-          [translatedWords]
+        getTargetWord: useCallback(
+          (word: string) => targetWords.get(word),
+          [targetWords]
         ),
         isTranslatingWord: useCallback(
           (word: string) => translatingWords.has(word),
@@ -106,11 +106,11 @@ const InteractiveText: React.FC<InteractiveTextProps> = ({
         getOriginalSentence={(segmentIndex: number) =>
           extractSentenceContext(segmentIndex)
         }
-        getTranslatedSentence={(originalSentence: string) =>
-          translatedSentences.get(originalSentence)
+        getTargetSentence={(fromSentence: string) =>
+          targetSentences.get(fromSentence)
         }
         isSaved={(w: string) => savedOriginalWords.has(w)}
-        getDisplayTranslation={(w: string) => translatedWords.get(w)}
+        getDisplayTranslation={(w: string) => targetWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
       />

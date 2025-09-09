@@ -22,7 +22,7 @@ import type { SaveFieldType, TextAreaChangeEvent } from '../../types/common';
 
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
-  originalStory: string;
+  fromStory: string;
   fromLanguage: string;
   targetLanguage: string;
   difficultyLevel: DifficultyLevel;
@@ -31,7 +31,7 @@ interface SaveTranslationButtonProps {
 
 export default function SaveTranslationButton({
   translationData,
-  originalStory,
+  fromStory,
   fromLanguage,
   targetLanguage,
   difficultyLevel,
@@ -99,7 +99,7 @@ export default function SaveTranslationButton({
   };
 
   const handleSave = async () => {
-    if (!translationData.translatedText) {
+    if (!translationData.targetText) {
       setError('No translated text available to save');
       return;
     }
@@ -127,8 +127,8 @@ export default function SaveTranslationButton({
       }
 
       const result = await createSavedTranslation({
-        from_story: originalStory,
-        target_story: translationData.translatedText,
+        from_story: fromStory,
+        target_story: translationData.targetText,
         from_language_code: fromLanguageCode,
         target_language_code: targetLanguageCode,
         difficulty_level_code: difficultyLevel,

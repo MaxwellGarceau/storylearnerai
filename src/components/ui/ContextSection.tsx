@@ -1,15 +1,15 @@
 interface ContextSectionProps {
-  originalContext?: string | null;
-  translatedContext?: string | null;
+  fromContext?: string | null;
+  targetContext?: string | null;
   className?: string;
 }
 
 export function ContextSection({
-  originalContext,
-  translatedContext,
+  fromContext,
+  targetContext,
   className = '',
 }: ContextSectionProps) {
-  if (!originalContext && !translatedContext) {
+  if (!fromContext && !targetContext) {
     return null;
   }
 
@@ -18,19 +18,19 @@ export function ContextSection({
       <hr className='border-t border-border' />
       <h4 className='font-medium'>Context</h4>
 
-      {originalContext && (
+      {fromContext && (
         <div className='space-y-1'>
           <p className='text-sm font-medium text-muted-foreground'>Original:</p>
-          <p className='text-sm bg-muted p-2 rounded'>{originalContext}</p>
+          <p className='text-sm bg-muted p-2 rounded'>{fromContext}</p>
         </div>
       )}
 
-      {translatedContext && (
+      {targetContext && (
         <div className='space-y-1'>
           <p className='text-sm font-medium text-muted-foreground'>
             Translated:
           </p>
-          <p className='text-sm bg-muted p-2 rounded'>{translatedContext}</p>
+          <p className='text-sm bg-muted p-2 rounded'>{targetContext}</p>
         </div>
       )}
     </div>

@@ -32,8 +32,11 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
 }) => {
   const { isMobile } = useViewport();
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
-  const { savedTranslations, loading: isLoadingSavedTranslations, refreshTranslations } =
-    useSavedTranslations();
+  const {
+    savedTranslations,
+    loading: isLoadingSavedTranslations,
+    refreshTranslations,
+  } = useSavedTranslations();
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -92,10 +95,16 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       void refreshTranslations();
     };
 
-    window.addEventListener('saved-translations:updated', handleSavedTranslationsUpdate);
+    window.addEventListener(
+      'saved-translations:updated',
+      handleSavedTranslationsUpdate
+    );
 
     return () => {
-      window.removeEventListener('saved-translations:updated', handleSavedTranslationsUpdate);
+      window.removeEventListener(
+        'saved-translations:updated',
+        handleSavedTranslationsUpdate
+      );
     };
   }, [refreshTranslations]);
 
@@ -129,8 +138,8 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     void navigate(`/story?id=${saved.id}`, {
       state: {
         translationData: {
-          originalText: saved.from_story,
-          translatedText: saved.target_story,
+          fromText: saved.from_story,
+          targetText: saved.target_story,
           difficulty: saved.difficulty_level.code,
           fromLanguage: saved.from_language.code,
           toLanguage: saved.target_language.code,

@@ -24,7 +24,7 @@ const mockT = (key: string, params?: Record<string, string | number>) => {
     'savedTranslations.results.viewStory': 'View Story',
     'savedTranslations.results.delete': 'Delete',
     'savedTranslations.content.notes': 'Notes',
-    'savedTranslations.content.originalStory': 'Original Story',
+    'savedTranslations.content.fromStory': 'Original Story',
     'savedTranslations.content.translatedStory': 'Translated Story',
     'savedTranslations.emptyState.title': 'No saved translations yet',
     'savedTranslations.emptyState.description':
@@ -214,8 +214,8 @@ describe('SavedTranslationsList', () => {
       expect(navigateMock).toHaveBeenCalledWith('/story?id=1', {
         state: expect.objectContaining({
           translationData: expect.objectContaining({
-            originalText: 'Hola mundo',
-            translatedText: 'Hello world',
+            fromText: 'Hola mundo',
+            targetText: 'Hello world',
             fromLanguage: 'es',
             toLanguage: 'en',
             difficulty: 'a1',
@@ -241,7 +241,10 @@ describe('SavedTranslationsList', () => {
     fireEvent.click(viewButton);
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith('/story?id=2', expect.anything());
+      expect(navigateMock).toHaveBeenCalledWith(
+        '/story?id=2',
+        expect.anything()
+      );
     });
   });
 

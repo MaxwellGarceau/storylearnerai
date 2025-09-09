@@ -61,8 +61,8 @@ describe('translationService', () => {
       const result = await translationService.translate(request);
 
       expect(result).toEqual({
-        originalText: 'Hello world',
-        translatedText: expect.stringContaining(
+        fromText: 'Hello world',
+        targetText: expect.stringContaining(
           '[TRANSLATED FROM SPANISH - a1 LEVEL]'
         ) as string,
         fromLanguage: 'en',
@@ -98,8 +98,8 @@ describe('translationService', () => {
       const result = await translationService.translate(request);
 
       expect(result).toEqual({
-        originalText: 'Hello world',
-        translatedText: 'Hola mundo',
+        fromText: 'Hello world',
+        targetText: 'Hola mundo',
         fromLanguage: 'en',
         toLanguage: 'es',
         difficulty: 'a1',

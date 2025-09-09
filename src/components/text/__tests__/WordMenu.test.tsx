@@ -33,15 +33,15 @@ vi.mock('../../../hooks/useLanguages', () => ({
 // Mock the VocabularySaveButton component
 vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   VocabularySaveButton: ({
-    originalWord,
-    translatedWord,
+    fromWord,
+    targetWord,
     fromLanguageId,
     targetLanguageId,
     onClick,
     children,
   }: {
-    originalWord: string;
-    translatedWord: string;
+    fromWord: string;
+    targetWord: string;
     fromLanguageId: number;
     targetLanguageId: number;
     onClick?: () => void;
@@ -49,8 +49,8 @@ vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   }) => (
     <button
       data-testid='vocabulary-save-button'
-      data-original-word={originalWord}
-      data-translated-word={translatedWord}
+      data-original-word={fromWord}
+      data-translated-word={targetWord}
       data-from-language-id={fromLanguageId}
       data-target-language-id={targetLanguageId}
       onClick={onClick}
@@ -247,7 +247,7 @@ describe('WordMenu Component', () => {
         open={true}
         fromLanguage='en'
         targetLanguage='es'
-        translatedWord='mundo'
+        targetWord='mundo'
       >
         <span>world</span>
       </WordMenu>
@@ -420,7 +420,7 @@ describe('WordMenu Component', () => {
       <WordMenu
         word='hello'
         open={true}
-        translatedWord='hola'
+        targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
       >
@@ -445,7 +445,7 @@ describe('WordMenu Component', () => {
         word='hello'
         open={true}
         isSaved={true}
-        translatedWord='hola'
+        targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
       >

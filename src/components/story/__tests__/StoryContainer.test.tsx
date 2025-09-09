@@ -34,7 +34,7 @@ vi.mock('react-i18next', () => ({
         'storyInput.theStoryWillBeAdaptedToThis':
           'The story will be adapted to this',
         'storyInput.proficiencyLevel': 'proficiency level.',
-        'storyInput.translateStory': 'Translate Story',
+        'storyInput.targetStory': 'Translate Story',
         'difficultyLevels.a1.label': 'A1 (Beginner)',
         'difficultyLevels.a2.label': 'A2 (Elementary)',
         'difficultyLevels.b1.label': 'B1 (Intermediate)',
@@ -66,7 +66,7 @@ vi.mock('../../../lib/translationService', () => ({
   translationService: {
     translate: vi.fn(),
     mockTranslateStory: vi.fn(),
-    translateStory: vi.fn(),
+    targetStory: vi.fn(),
   },
 }));
 
@@ -84,8 +84,8 @@ describe('StoryContainer Component', () => {
 
   it('renders StoryRender with translation data when a story is submitted', async () => {
     const mockTranslationResponse: TranslationResponse = {
-      originalText: 'Esta es una historia de prueba.',
-      translatedText: 'This is a test story.',
+      fromText: 'Esta es una historia de prueba.',
+      targetText: 'This is a test story.',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
@@ -275,8 +275,8 @@ describe('StoryContainer Component', () => {
 
   it('calls translation service with correct parameters', async () => {
     const mockTranslationResponse: TranslationResponse = {
-      originalText: 'Test story',
-      translatedText: 'Translated story',
+      fromText: 'Test story',
+      targetText: 'Translated story',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'b1',

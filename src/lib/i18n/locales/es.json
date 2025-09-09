@@ -179,7 +179,7 @@
     "noStory": {
       "title": "No se Encontró Historia",
       "description": "Por favor traduce una historia primero para verla aquí.",
-      "translateStory": "Traducir una Historia",
+      "targetStory": "Traducir una Historia",
       "home": "Inicio"
     },
     "header": {
@@ -299,7 +299,7 @@
     },
     "content": {
       "notes": "Notas",
-      "originalStory": "Historia Original",
+      "fromStory": "Historia Original",
       "translatedStory": "Historia Traducida"
     },
     "emptyState": {

@@ -139,7 +139,7 @@ const StoryUploadForm: React.FC<StoryUploadFormProps> = ({ onSubmitStory }) => {
         type='submit'
         className='w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-300'
       >
-        {t('storyInput.translateStory')}
+        {t('storyInput.targetStory')}
       </Button>
     </form>
   );

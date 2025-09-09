@@ -41,8 +41,8 @@ vi.mock('../../../hooks/useDifficultyLevels', () => ({
 }));
 
 const mockTranslationData: TranslationResponse = {
-  originalText: 'Esta es una historia de prueba.',
-  translatedText: 'This is a test story.',
+  fromText: 'Esta es una historia de prueba.',
+  targetText: 'This is a test story.',
   fromLanguage: 'es',
   toLanguage: 'en',
   difficulty: 'a1',
@@ -51,11 +51,11 @@ const mockTranslationData: TranslationResponse = {
 };
 
 describe('StoryHeader Component', () => {
-  it('renders translated story header when showOriginal is false', () => {
+  it('renders translated story header when showFrom is false', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );
@@ -65,11 +65,11 @@ describe('StoryHeader Component', () => {
     expect(header).toHaveClass('text-foreground');
   });
 
-  it('renders original story header when showOriginal is true', () => {
+  it('renders original story header when showFrom is true', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={true}
+        showFrom={true}
         onToggleView={vi.fn()}
       />
     );
@@ -83,7 +83,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );
@@ -96,7 +96,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={true}
+        showFrom={true}
         onToggleView={vi.fn()}
       />
     );
@@ -107,27 +107,26 @@ describe('StoryHeader Component', () => {
   });
 
   it('renders toggle button with correct text based on current view', () => {
-    const { container: translatedContainer } = render(
+    const { container: targetContainer } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );
 
-    const { container: originalContainer } = render(
+    const { container: fromContainer } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={true}
+        showFrom={true}
         onToggleView={vi.fn()}
       />
     );
 
-    const translatedToggleButton = within(translatedContainer).getByRole(
-      'button',
-      { name: 'Show original story' }
-    );
-    const originalToggleButton = within(originalContainer).getByRole('button', {
+    const translatedToggleButton = within(targetContainer).getByRole('button', {
+      name: 'Show original story',
+    });
+    const originalToggleButton = within(fromContainer).getByRole('button', {
       name: 'Show translated story',
     });
 
@@ -140,7 +139,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={onToggleView}
       />
     );
@@ -157,7 +156,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={true}
+        showFrom={true}
         onToggleView={vi.fn()}
       />
     );
@@ -175,7 +174,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );
@@ -190,7 +189,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );
@@ -209,7 +208,7 @@ describe('StoryHeader Component', () => {
     const { container } = render(
       <StoryHeader
         translationData={mockTranslationData}
-        showOriginal={false}
+        showFrom={false}
         onToggleView={vi.fn()}
       />
     );

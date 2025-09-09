@@ -30,10 +30,10 @@ interface CreateProps extends BaseProps {
   currentLanguageId: number;
   currentFromLanguageId: number;
   initialData?: {
-    originalWord?: string;
-    translatedWord?: string;
-    originalContext?: string;
-    translatedContext?: string;
+    fromWord?: string;
+    targetWord?: string;
+    fromContext?: string;
+    targetContext?: string;
   };
 }
 
@@ -58,19 +58,19 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
 
   const [formData, setFormData] = useState({
     from_word: isCreateMode
-      ? (props.initialData?.originalWord ?? '')
+      ? (props.initialData?.fromWord ?? '')
       : editVocabulary.from_word,
     target_word: isCreateMode
-      ? (props.initialData?.translatedWord ?? '')
+      ? (props.initialData?.targetWord ?? '')
       : editVocabulary.target_word,
     // Language IDs are required in create mode
     from_language_id: isCreateMode ? props.currentFromLanguageId : 0,
     target_language_id: isCreateMode ? props.currentLanguageId : 0,
     from_word_context: isCreateMode
-      ? (props.initialData?.originalContext ?? '')
+      ? (props.initialData?.fromContext ?? '')
       : (editVocabulary.from_word_context ?? ''),
     target_word_context: isCreateMode
-      ? (props.initialData?.translatedContext ?? '')
+      ? (props.initialData?.targetContext ?? '')
       : (editVocabulary.target_word_context ?? ''),
     definition: isCreateMode ? '' : (editVocabulary.definition ?? ''),
     part_of_speech: isCreateMode ? '' : (editVocabulary.part_of_speech ?? ''),

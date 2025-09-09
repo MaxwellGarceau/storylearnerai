@@ -12,9 +12,9 @@ interface WordTokenProps {
   isOpen: boolean;
   isSaved: boolean;
   isTranslating: boolean;
-  translatedWord?: string; // used for overlay only (runtime translation)
-  originalSentence: string;
-  translatedSentence?: string;
+  targetWord?: string; // used for overlay only (runtime translation)
+  fromSentence: string;
+  targetSentence?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   onOpenChange: (open: boolean) => void;
@@ -31,9 +31,9 @@ const WordToken: React.FC<WordTokenProps> = ({
   isOpen,
   isSaved,
   isTranslating,
-  translatedWord,
-  originalSentence,
-  translatedSentence,
+  targetWord,
+  fromSentence,
+  targetSentence,
   fromLanguage,
   targetLanguage,
   onOpenChange,
@@ -64,10 +64,10 @@ const WordToken: React.FC<WordTokenProps> = ({
   if (!enableTooltips || disabled) {
     return (
       <span>
-        {translatedWord ? (
+        {targetWord ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-              {translatedWord}
+              {targetWord}
             </span>
             <WordHighlight
               word={normalizedWord}
@@ -102,16 +102,16 @@ const WordToken: React.FC<WordTokenProps> = ({
         }}
         fromLanguage={fromLanguage}
         targetLanguage={targetLanguage}
-        translatedWord={translatedWord}
-        originalSentence={originalSentence}
-        translatedSentence={translatedSentence}
+        targetWord={targetWord}
+        fromSentence={fromSentence}
+        targetSentence={targetSentence}
         isSaved={isSaved}
         isTranslating={isTranslating}
       >
-        {translatedWord ? (
+        {targetWord ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-              {translatedWord}
+              {targetWord}
             </span>
             <WordHighlight
               word={normalizedWord}

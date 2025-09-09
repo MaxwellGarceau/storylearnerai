@@ -191,7 +191,6 @@ describe('VocabularyHighlightService', () => {
     });
   });
 
-
   describe('convenience function', () => {
     it('should work the same as the service method', () => {
       const state: VocabularyHighlightState = {

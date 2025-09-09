@@ -6,10 +6,10 @@ interface VocabularySaveModalProps {
   currentLanguageId?: number;
   currentFromLanguageId?: number;
   initialData?: {
-    originalWord?: string;
-    translatedWord?: string;
-    originalContext?: string;
-    translatedContext?: string;
+    fromWord?: string;
+    targetWord?: string;
+    fromContext?: string;
+    targetContext?: string;
   };
   onSaveSuccess?: VoidFunction;
 }

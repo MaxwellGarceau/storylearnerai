@@ -27,8 +27,8 @@ vi.mock('../../../lib/config/env', () => ({
 
 describe('StoryContent Component', () => {
   const mockTranslationData: TranslationResponse = {
-    originalText: 'Hola mundo',
-    translatedText: 'Hello world',
+    fromText: 'Hola mundo',
+    targetText: 'Hello world',
     fromLanguage: 'es',
     toLanguage: 'en',
     difficulty: 'a1',
@@ -43,12 +43,9 @@ describe('StoryContent Component', () => {
   const renderWithRouter = (ui: React.ReactElement) =>
     render(<MemoryRouter>{ui}</MemoryRouter>);
 
-  it('displays translated text when showOriginal is false', () => {
+  it('displays translated text when showFrom is false', () => {
     const { container } = renderWithRouter(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={mockTranslationData} showFrom={false} />
     );
 
     // Check that individual words are present
@@ -56,9 +53,9 @@ describe('StoryContent Component', () => {
     expect(within(container).getByText('world')).toBeInTheDocument();
   });
 
-  it('displays original text when showOriginal is true', () => {
+  it('displays original text when showFrom is true', () => {
     const { container } = renderWithRouter(
-      <StoryContent translationData={mockTranslationData} showOriginal={true} />
+      <StoryContent translationData={mockTranslationData} showFrom={true} />
     );
 
     // Check that individual words are present
@@ -68,10 +65,7 @@ describe('StoryContent Component', () => {
 
   it('has correct styling classes', () => {
     const { container } = renderWithRouter(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={mockTranslationData} showFrom={false} />
     );
 
     const contentContainer = container.firstChild as HTMLElement;
@@ -84,14 +78,14 @@ describe('StoryContent Component', () => {
   it('preserves whitespace formatting with whitespace-pre-wrap', () => {
     const multilineTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText: 'Primera línea.\n\nSegunda línea.',
-      translatedText: 'First line.\n\nSecond line.',
+      fromText: 'Primera línea.\n\nSegunda línea.',
+      targetText: 'First line.\n\nSecond line.',
     };
 
     const { container } = renderWithRouter(
       <StoryContent
         translationData={multilineTranslationData}
-        showOriginal={false}
+        showFrom={false}
       />
     );
 
@@ -103,27 +97,21 @@ describe('StoryContent Component', () => {
   it('handles empty content gracefully', () => {
     const emptyTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText: '',
-      translatedText: '',
+      fromText: '',
+      targetText: '',
     };
 
-    const { container: translatedContainer } = renderWithRouter(
-      <StoryContent
-        translationData={emptyTranslationData}
-        showOriginal={false}
-      />
+    const { container: targetContainer } = renderWithRouter(
+      <StoryContent translationData={emptyTranslationData} showFrom={false} />
     );
 
-    const { container: originalContainer } = renderWithRouter(
-      <StoryContent
-        translationData={emptyTranslationData}
-        showOriginal={true}
-      />
+    const { container: fromContainer } = renderWithRouter(
+      <StoryContent translationData={emptyTranslationData} showFrom={true} />
     );
 
     // Should still render the component even with empty content
-    expect(translatedContainer.querySelector('div')).toBeInTheDocument();
-    expect(originalContainer.querySelector('div')).toBeInTheDocument();
+    expect(targetContainer.querySelector('div')).toBeInTheDocument();
+    expect(fromContainer.querySelector('div')).toBeInTheDocument();
   });
 
   it('handles long content properly', () => {
@@ -134,14 +122,11 @@ describe('StoryContent Component', () => {
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      translatedText: longText,
+      targetText: longText,
     };
 
     const { container } = renderWithRouter(
-      <StoryContent
-        translationData={longTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={longTranslationData} showFrom={false} />
     );
 
     // Check that the component renders and contains the long text
@@ -151,43 +136,34 @@ describe('StoryContent Component', () => {
   it('handles special characters and unicode content', () => {
     const unicodeTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText:
+      fromText:
         'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
-      translatedText:
+      targetText:
         'Once upon a time there was a boy who lived in Spain... What an exciting story!',
     };
 
-    const { container: originalContainer } = renderWithRouter(
-      <StoryContent
-        translationData={unicodeTranslationData}
-        showOriginal={true}
-      />
+    const { container: fromContainer } = renderWithRouter(
+      <StoryContent translationData={unicodeTranslationData} showFrom={true} />
     );
 
-    const { container: translatedContainer } = renderWithRouter(
-      <StoryContent
-        translationData={unicodeTranslationData}
-        showOriginal={false}
-      />
+    const { container: targetContainer } = renderWithRouter(
+      <StoryContent translationData={unicodeTranslationData} showFrom={false} />
     );
 
     // Check that key words are present in the original text
-    expect(within(originalContainer).getByText('Había')).toBeInTheDocument();
-    expect(within(originalContainer).getByText('vez')).toBeInTheDocument();
-    expect(within(originalContainer).getByText('niño')).toBeInTheDocument();
+    expect(within(fromContainer).getByText('Había')).toBeInTheDocument();
+    expect(within(fromContainer).getByText('vez')).toBeInTheDocument();
+    expect(within(fromContainer).getByText('niño')).toBeInTheDocument();
 
     // Check that key words are present in the translated text
-    expect(within(translatedContainer).getByText('Once')).toBeInTheDocument();
-    expect(within(translatedContainer).getByText('upon')).toBeInTheDocument();
-    expect(within(translatedContainer).getByText('time')).toBeInTheDocument();
+    expect(within(targetContainer).getByText('Once')).toBeInTheDocument();
+    expect(within(targetContainer).getByText('upon')).toBeInTheDocument();
+    expect(within(targetContainer).getByText('time')).toBeInTheDocument();
   });
 
-  it('switches content correctly when showOriginal prop changes', () => {
+  it('switches content correctly when showFrom prop changes', () => {
     const { container, rerender } = renderWithRouter(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={mockTranslationData} showFrom={false} />
     );
 
     // Initially shows translated text
@@ -196,13 +172,10 @@ describe('StoryContent Component', () => {
     expect(within(container).queryByText('Hola')).not.toBeInTheDocument();
     expect(within(container).queryByText('mundo')).not.toBeInTheDocument();
 
-    // After rerender with showOriginal=true, shows original text
+    // After rerender with showFrom=true, shows original text
     rerender(
       <MemoryRouter>
-        <StoryContent
-          translationData={mockTranslationData}
-          showOriginal={true}
-        />
+        <StoryContent translationData={mockTranslationData} showFrom={true} />
       </MemoryRouter>
     );
 
@@ -214,10 +187,7 @@ describe('StoryContent Component', () => {
 
   it('has transition classes for smooth content switching', () => {
     const { container } = renderWithRouter(
-      <StoryContent
-        translationData={mockTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={mockTranslationData} showFrom={false} />
     );
 
     // Check that the component renders with transition classes
@@ -228,30 +198,24 @@ describe('StoryContent Component', () => {
   it('maintains consistent structure regardless of content', () => {
     const shortTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText: 'Corto.',
-      translatedText: 'Short.',
+      fromText: 'Corto.',
+      targetText: 'Short.',
     };
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      originalText:
+      fromText:
         'Esta es una historia muy larga que contiene múltiples párrafos y líneas de texto para probar el comportamiento del componente.',
-      translatedText:
+      targetText:
         'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
     };
 
     const { container: shortContainer } = renderWithRouter(
-      <StoryContent
-        translationData={shortTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={shortTranslationData} showFrom={false} />
     );
 
     const { container: longContainer } = renderWithRouter(
-      <StoryContent
-        translationData={longTranslationData}
-        showOriginal={false}
-      />
+      <StoryContent translationData={longTranslationData} showFrom={false} />
     );
 
     // Both should have the same container structure
