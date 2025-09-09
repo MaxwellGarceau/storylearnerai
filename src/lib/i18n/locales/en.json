@@ -75,6 +75,61 @@
       "lastNameRequired": "Last name is required"
     }
   },
+  "home": {
+    "hero": {
+      "badge": "AI-Powered Language Learning",
+      "title": "Story Learner AI",
+      "subtitle": "Transform any story into a powerful learning tool. Translate, understand, and master new languages with AI assistance.",
+      "startTranslating": "Start Translating",
+      "restartTutorial": "Restart Tutorial",
+      "signUpFree": "Sign Up Free",
+      "myDashboard": "My Dashboard"
+    },
+    "features": {
+      "title": "Why Choose Story Learner AI?",
+      "subtitle": "Our platform combines cutting-edge AI technology with proven language learning methodologies",
+      "multiLanguage": {
+        "title": "Multi-Language Support",
+        "description": "Translate stories from any language to English with AI-powered accuracy"
+      },
+      "sideBySide": {
+        "title": "Side-by-Side Reading",
+        "description": "Read original and translated text simultaneously for better comprehension"
+      },
+      "learningInsights": {
+        "title": "Learning Insights",
+        "description": "Get detailed explanations and vocabulary help to enhance your learning"
+      },
+      "aiPowered": {
+        "title": "AI-Powered",
+        "description": "Advanced language models provide accurate and contextual translations"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Get started in just three simple steps",
+      "step1": {
+        "title": "Upload Your Story",
+        "description": "Input a story in any language you want to learn from"
+      },
+      "step2": {
+        "title": "AI Translation",
+        "description": "Our AI translates it to English with detailed explanations"
+      },
+      "step3": {
+        "title": "Learn and Practice",
+        "description": "Read and learn with side-by-side translations and vocabulary help"
+      }
+    },
+    "cta": {
+      "title": "Ready to start your language learning journey?",
+      "subtitleUser": "Continue your learning journey with personalized insights and progress tracking",
+      "subtitleGuest": "Join thousands of students who are already improving their language skills with Story Learner AI",
+      "startTranslating": "Start Translating",
+      "createAccount": "Create Free Account",
+      "viewDashboard": "View Dashboard"
+    }
+  },
   "story": {
     "uploadTitle": "Upload Story",
     "uploadDescription": "Upload a story file or paste text to get started",
