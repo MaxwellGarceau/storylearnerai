@@ -380,8 +380,8 @@ export class SavedTranslationService {
       .from('saved_translations')
       .select(`
         *,
-        original_language:languages!saved_translations_original_language_id_fkey(*),
-        translated_language:languages!saved_translations_translated_language_id_fkey(*),
+        original_language:languages!saved_translations_from_language_id_fkey(*),
+        translated_language:languages!saved_translations_target_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .eq('user_id', userId)

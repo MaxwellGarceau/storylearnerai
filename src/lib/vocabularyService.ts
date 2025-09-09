@@ -26,9 +26,15 @@ export class VocabularyService {
     vocabularyData: VocabularyInsert
   ): VocabularyPromise {
     try {
+      // Avoid FK violations on upsert by linking saved_translation_id after insert
+      const desiredLinkId = (vocabularyData as { saved_translation_id?: number })
+        .saved_translation_id;
+      const upsertData: VocabularyInsert = { ...vocabularyData };
+      delete (upsertData as { saved_translation_id?: number }).saved_translation_id;
+
       const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
-        .upsert(vocabularyData, {
+        .upsert(upsertData, {
           onConflict:
             'user_id,from_word,target_word,target_language_id,from_language_id',
           ignoreDuplicates: false,
@@ -50,14 +56,9 @@ export class VocabularyService {
         throw new Error('No data returned when saving vocabulary word');
       }
 
-      // If a saved_translation_id was provided but not persisted (e.g., existing row without link), update it
-      if (
-        typeof (vocabularyData as { saved_translation_id?: number })
-          .saved_translation_id === 'number' &&
-        data.saved_translation_id == null
-      ) {
-        const desiredId = (vocabularyData as { saved_translation_id: number })
-          .saved_translation_id;
+      // If a saved_translation_id was provided, set it in a follow-up update
+      if (typeof desiredLinkId === 'number' && data.saved_translation_id == null) {
+        const desiredId = desiredLinkId;
         const {
           data: updated,
           error: updateError,
@@ -102,7 +103,7 @@ export class VocabularyService {
           .select(
             `
           *,
-          translated_language:languages!vocabulary_translated_language_id_fkey(*),
+          translated_language:languages!vocabulary_target_language_id_fkey(*),
           from_language:languages!vocabulary_from_language_id_fkey(*)
         `
           )
