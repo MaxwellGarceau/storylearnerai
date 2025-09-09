@@ -27,10 +27,12 @@ export class VocabularyService {
   ): VocabularyPromise {
     try {
       // Avoid FK violations on upsert by linking saved_translation_id after insert
-      const desiredLinkId = (vocabularyData as { saved_translation_id?: number })
-        .saved_translation_id;
+      const desiredLinkId = (
+        vocabularyData as { saved_translation_id?: number }
+      ).saved_translation_id;
       const upsertData: VocabularyInsert = { ...vocabularyData };
-      delete (upsertData as { saved_translation_id?: number }).saved_translation_id;
+      delete (upsertData as { saved_translation_id?: number })
+        .saved_translation_id;
 
       const { data, error }: SupabaseResponse<Vocabulary> = await supabase
         .from('vocabulary')
@@ -57,7 +59,10 @@ export class VocabularyService {
       }
 
       // If a saved_translation_id was provided, set it in a follow-up update
-      if (typeof desiredLinkId === 'number' && data.saved_translation_id == null) {
+      if (
+        typeof desiredLinkId === 'number' &&
+        data.saved_translation_id == null
+      ) {
         // Verify the saved translation exists to avoid FK violation (DB may have been reset)
         const {
           data: existingSaved,
@@ -69,10 +74,14 @@ export class VocabularyService {
           .maybeSingle();
 
         if (savedLookupError || !existingSaved) {
-          logger.warn('database', 'Skipping link: saved translation not found', {
-            desiredLinkId,
-            error: savedLookupError,
-          });
+          logger.warn(
+            'database',
+            'Skipping link: saved translation not found',
+            {
+              desiredLinkId,
+              error: savedLookupError,
+            }
+          );
           return data;
         }
 

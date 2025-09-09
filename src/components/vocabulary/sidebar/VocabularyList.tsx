@@ -25,9 +25,7 @@ export function VocabularyListItem({
             <div className='flex items-center gap-1'>
               <span className='font-medium text-sm'>{item.from_word}</span>
               <span className='text-muted-foreground text-xs'>→</span>
-              <span className='font-medium text-sm'>
-                {item.target_word}
-              </span>
+              <span className='font-medium text-sm'>{item.target_word}</span>
             </div>
             {item.part_of_speech && (
               <Badge variant='outline' className='text-xs'>

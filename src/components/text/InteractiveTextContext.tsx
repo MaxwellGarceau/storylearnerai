@@ -5,9 +5,7 @@ export interface InteractiveTextContextValue {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   savedOriginalWords: Set<string>;
-  findSavedWordData: (
-    word: string
-  ) => { target_word?: string | null } | null;
+  findSavedWordData: (word: string) => { target_word?: string | null } | null;
   translatedWords: Map<string, string>;
   translatedSentences: Map<string, string>;
   translatingWords: Set<string>;

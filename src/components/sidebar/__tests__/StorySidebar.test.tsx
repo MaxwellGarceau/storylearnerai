@@ -142,7 +142,7 @@ describe('StorySidebar Component', () => {
     fireEvent.click(infoButton);
 
     // Info section should be active
-      expect(infoButton).toHaveClass('bg-primary');
+    expect(infoButton).toHaveClass('bg-primary');
   });
 
   it('displays info section content when active', () => {
@@ -179,7 +179,7 @@ describe('StorySidebar Component', () => {
     fireEvent.click(vocabButton);
 
     // Vocabulary section should be active (button should have primary styling)
-      expect(vocabButton).toHaveClass('bg-primary');
+    expect(vocabButton).toHaveClass('bg-primary');
   });
 
   it('displays footer text', () => {
@@ -210,7 +210,12 @@ describe('StorySidebar Component', () => {
   describe('Vocabulary Deep Linking', () => {
     beforeEach(() => {
       // Reset location mock before each test
-      Object.assign(mockLocation, { hash: '', pathname: '/', search: '', state: null });
+      Object.assign(mockLocation, {
+        hash: '',
+        pathname: '/',
+        search: '',
+        state: null,
+      });
       // Reset navigate mock
       mockNavigate.mockClear();
     });
@@ -223,7 +228,7 @@ describe('StorySidebar Component', () => {
 
       // Sidebar should be open
       expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
-      
+
       // Vocabulary section should be active - check that the button exists and is clickable
       const vocabularyButton = screen.getByRole('button', {
         name: 'storySidebar.vocabulary',
@@ -267,7 +272,7 @@ describe('StorySidebar Component', () => {
 
       // Sidebar should be open due to hash
       expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
-      
+
       // Vocabulary section should be active - check that the button exists
       const vocabularyButton = screen.getByRole('button', {
         name: 'storySidebar.vocabulary',
@@ -303,17 +308,17 @@ describe('StorySidebar Component', () => {
 
     it('works with different location properties', () => {
       // Mock location with vocabulary hash and different pathname
-      Object.assign(mockLocation, { 
-        hash: '#vocabulary', 
+      Object.assign(mockLocation, {
+        hash: '#vocabulary',
         pathname: '/story',
-        search: '?param=value'
+        search: '?param=value',
       });
 
       renderWithRouter(<StorySidebar {...defaultProps} />);
 
       // Should still work regardless of other location properties
       expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
-      
+
       const vocabularyButton = screen.getByRole('button', {
         name: 'storySidebar.vocabulary',
       });

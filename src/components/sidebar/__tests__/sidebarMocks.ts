@@ -16,7 +16,12 @@ export const mockT: TFunction = vi.fn((key: string, options?: any) => {
 
 // Mock react-router-dom
 export const mockNavigate = vi.fn();
-export const mockLocation = { hash: '', pathname: '/', search: '', state: null };
+export const mockLocation = {
+  hash: '',
+  pathname: '/',
+  search: '',
+  state: null,
+};
 
 // Mock hooks
 export const mockUseViewport = vi.fn();

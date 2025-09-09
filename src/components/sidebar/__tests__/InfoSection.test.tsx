@@ -321,9 +321,15 @@ describe('InfoSection Component', () => {
     it('displays vocabulary section when vocabulary is selected', () => {
       render(<InfoSection {...defaultProps} />);
 
-      expect(screen.getByText('storySidebar.vocabularySection')).toBeInTheDocument();
-      expect(screen.getByText('storySidebar.includedVocabulary')).toBeInTheDocument();
-      expect(screen.getByText('storySidebar.missingVocabulary')).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.includedVocabulary')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabulary')
+      ).toBeInTheDocument();
     });
 
     it('displays included vocabulary words as badges', () => {
@@ -331,7 +337,7 @@ describe('InfoSection Component', () => {
 
       expect(screen.getByText('hello')).toBeInTheDocument();
       expect(screen.getByText('world')).toBeInTheDocument();
-      
+
       const includedBadges = screen.getAllByText(/hello|world/);
       includedBadges.forEach(badge => {
         expect(badge).toHaveClass('bg-green-100', 'text-green-800');
@@ -343,7 +349,7 @@ describe('InfoSection Component', () => {
 
       expect(screen.getByText('good')).toBeInTheDocument();
       expect(screen.getByText('morning')).toBeInTheDocument();
-      
+
       const missingBadges = screen.getAllByText(/good|morning/);
       missingBadges.forEach(badge => {
         expect(badge).toHaveClass('bg-amber-100', 'text-amber-800');
@@ -355,19 +361,25 @@ describe('InfoSection Component', () => {
 
       // Check for the text that contains the translation keys using getAllByText
       const totalSelectedElements = screen.getAllByText((content, element) => {
-        return element?.textContent?.includes('storySidebar.totalSelected') ?? false;
+        return (
+          element?.textContent?.includes('storySidebar.totalSelected') ?? false
+        );
       });
       expect(totalSelectedElements.length).toBeGreaterThan(0);
       expect(screen.getByText('4')).toBeInTheDocument(); // selectedVocabulary.length
-      
+
       const totalIncludedElements = screen.getAllByText((content, element) => {
-        return element?.textContent?.includes('storySidebar.totalIncluded') ?? false;
+        return (
+          element?.textContent?.includes('storySidebar.totalIncluded') ?? false
+        );
       });
       expect(totalIncludedElements.length).toBeGreaterThan(0);
       expect(screen.getAllByText('2')).toHaveLength(2); // includedVocabulary.length and missingVocabulary.length
-      
+
       const totalMissingElements = screen.getAllByText((content, element) => {
-        return element?.textContent?.includes('storySidebar.totalMissing') ?? false;
+        return (
+          element?.textContent?.includes('storySidebar.totalMissing') ?? false
+        );
       });
       expect(totalMissingElements.length).toBeGreaterThan(0);
       // We already checked for 2 elements with "2" text above
@@ -390,8 +402,12 @@ describe('InfoSection Component', () => {
     it('displays vocabulary descriptions', () => {
       render(<InfoSection {...defaultProps} />);
 
-      expect(screen.getByText('storySidebar.includedVocabularyDescription')).toBeInTheDocument();
-      expect(screen.getByText('storySidebar.missingVocabularyDescription')).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.includedVocabularyDescription')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabularyDescription')
+      ).toBeInTheDocument();
     });
 
     it('handles case when no vocabulary is selected', () => {
@@ -402,8 +418,12 @@ describe('InfoSection Component', () => {
 
       render(<InfoSection {...propsNoVocabulary} />);
 
-      expect(screen.getByText('storySidebar.noVocabularySelected')).toBeInTheDocument();
-      expect(screen.queryByText('storySidebar.vocabularySection')).not.toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.noVocabularySelected')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.vocabularySection')
+      ).not.toBeInTheDocument();
     });
 
     it('handles case when all vocabulary is included', () => {
@@ -414,10 +434,16 @@ describe('InfoSection Component', () => {
 
       render(<InfoSection {...propsAllIncluded} />);
 
-      expect(screen.getByText('storySidebar.vocabularySection')).toBeInTheDocument();
-      expect(screen.getByText('storySidebar.includedVocabulary')).toBeInTheDocument();
-      expect(screen.queryByText('storySidebar.missingVocabulary')).not.toBeInTheDocument();
-      
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.includedVocabulary')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.missingVocabulary')
+      ).not.toBeInTheDocument();
+
       // Check that missing vocabulary count is 0
       const missingCount = screen.getByText('0');
       expect(missingCount).toBeInTheDocument();
@@ -437,10 +463,16 @@ describe('InfoSection Component', () => {
 
       render(<InfoSection {...propsNoIncluded} />);
 
-      expect(screen.getByText('storySidebar.vocabularySection')).toBeInTheDocument();
-      expect(screen.queryByText('storySidebar.includedVocabulary')).not.toBeInTheDocument();
-      expect(screen.getByText('storySidebar.missingVocabulary')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('storySidebar.vocabularySection')
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('storySidebar.includedVocabulary')
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText('storySidebar.missingVocabulary')
+      ).toBeInTheDocument();
+
       // Check that included vocabulary count is 0
       const includedCount = screen.getByText('0');
       expect(includedCount).toBeInTheDocument();
@@ -450,19 +482,25 @@ describe('InfoSection Component', () => {
       render(<InfoSection {...defaultProps} />);
 
       // Check included vocabulary card
-      const includedCard = screen.getByText('storySidebar.includedVocabulary').closest('.mb-4');
+      const includedCard = screen
+        .getByText('storySidebar.includedVocabulary')
+        .closest('.mb-4');
       expect(includedCard).toBeInTheDocument();
 
       // Check missing vocabulary card
-      const missingCard = screen.getByText('storySidebar.missingVocabulary').closest('.mb-4');
+      const missingCard = screen
+        .getByText('storySidebar.missingVocabulary')
+        .closest('.mb-4');
       expect(missingCard).toBeInTheDocument();
 
       // Check summary card - look for the text that contains "totalSelected"
       const summaryTexts = screen.getAllByText((content, element) => {
-        return element?.textContent?.includes('storySidebar.totalSelected') ?? false;
+        return (
+          element?.textContent?.includes('storySidebar.totalSelected') ?? false
+        );
       });
       expect(summaryTexts.length).toBeGreaterThan(0);
-      
+
       // Check that the summary text exists
       const summaryElement = summaryTexts[0];
       expect(summaryElement).toBeInTheDocument();
@@ -477,8 +515,12 @@ describe('InfoSection Component', () => {
       expect(mockT).toHaveBeenCalledWith('storySidebar.totalSelected');
       expect(mockT).toHaveBeenCalledWith('storySidebar.totalIncluded');
       expect(mockT).toHaveBeenCalledWith('storySidebar.totalMissing');
-      expect(mockT).toHaveBeenCalledWith('storySidebar.includedVocabularyDescription');
-      expect(mockT).toHaveBeenCalledWith('storySidebar.missingVocabularyDescription');
+      expect(mockT).toHaveBeenCalledWith(
+        'storySidebar.includedVocabularyDescription'
+      );
+      expect(mockT).toHaveBeenCalledWith(
+        'storySidebar.missingVocabularyDescription'
+      );
     });
   });
 });

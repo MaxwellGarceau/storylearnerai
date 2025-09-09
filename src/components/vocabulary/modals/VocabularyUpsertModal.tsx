@@ -125,9 +125,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     }
 
     if (!formData.target_word.trim()) {
-      newErrors.target_word = t(
-        'vocabulary.validation.translatedWordRequired'
-      );
+      newErrors.target_word = t('vocabulary.validation.translatedWordRequired');
     }
 
     if (isCreateMode) {
@@ -174,8 +172,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           from_language_id: formData.from_language_id,
           target_language_id: formData.target_language_id,
           from_word_context: formData.from_word_context.trim() || null,
-          target_word_context:
-            formData.target_word_context.trim() || null,
+          target_word_context: formData.target_word_context.trim() || null,
           definition: formData.definition.trim() || null,
           part_of_speech: formData.part_of_speech || null,
           frequency_level: formData.frequency_level || null,
@@ -191,8 +188,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           from_word: formData.from_word.trim(),
           target_word: formData.target_word.trim(),
           from_word_context: formData.from_word_context.trim() || null,
-          target_word_context:
-            formData.target_word_context.trim() || null,
+          target_word_context: formData.target_word_context.trim() || null,
           definition: formData.definition.trim() || null,
           part_of_speech: formData.part_of_speech || null,
           frequency_level: formData.frequency_level || null,
@@ -247,8 +243,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         if (lastDuplicateCheckIdRef.current === currentCheckId) {
           const existsLocal = userVocabulary.some(
             v =>
-              v.from_word.trim().toLowerCase() ===
-              trimmedOriginal.toLowerCase()
+              v.from_word.trim().toLowerCase() === trimmedOriginal.toLowerCase()
           );
           if (existsLocal) {
             setErrors(prev => ({
@@ -345,9 +340,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
               id='target_language'
               label={t('vocabulary.form.toLanguage')}
               value={formData.target_language_id}
-              onChange={value =>
-                handleInputChange('target_language_id', value)
-              }
+              onChange={value => handleInputChange('target_language_id', value)}
               error={errors.target_language_id}
               required
             >
@@ -426,9 +419,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
           id='target_word_context'
           label={t('vocabulary.form.translatedContext')}
           value={formData.target_word_context}
-          onChange={value =>
-            handleInputChange('target_word_context', value)
-          }
+          onChange={value => handleInputChange('target_word_context', value)}
           placeholder={t('vocabulary.form.translatedContextPlaceholder')}
           rows={2}
         />

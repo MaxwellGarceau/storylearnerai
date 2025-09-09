@@ -37,10 +37,8 @@ export class VocabularyHighlightService {
     },
     translating: {
       default: 'bg-blue-200 dark:bg-blue-900/30',
-      highContrast:
-        'bg-blue-300 dark:bg-blue-800 border border-blue-400',
-      colorblindFriendly:
-        'bg-sky-200 dark:bg-sky-900/40 border border-sky-300',
+      highContrast: 'bg-blue-300 dark:bg-blue-800 border border-blue-400',
+      colorblindFriendly: 'bg-sky-200 dark:bg-sky-900/40 border border-sky-300',
     },
     active: {
       default: 'bg-purple-200 dark:bg-purple-900/40',
