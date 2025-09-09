@@ -317,16 +317,16 @@ export class SavedTranslationService {
     const sanitizedRequest = validation.sanitizedData;
 
     // Get language and difficulty level IDs from codes
-    const [originalLanguage, translatedLanguage, difficultyLevel] = await Promise.all([
+    const [fromLanguage, targetLanguage, difficultyLevel] = await Promise.all([
       this.getLanguageByCode(sanitizedRequest.from_language_code),
       this.getLanguageByCode(sanitizedRequest.target_language_code),
       this.getDifficultyLevelByCode(sanitizedRequest.difficulty_level_code),
     ]);
 
-    if (!originalLanguage) {
+    if (!fromLanguage) {
       throw new Error(`Language not found: ${sanitizedRequest.from_language_code}`);
     }
-    if (!translatedLanguage) {
+    if (!targetLanguage) {
       throw new Error(`Language not found: ${sanitizedRequest.target_language_code}`);
     }
     if (!difficultyLevel) {
@@ -339,8 +339,8 @@ export class SavedTranslationService {
         user_id: userId,
         from_story: sanitizedRequest.from_story,
         target_story: sanitizedRequest.target_story,
-        from_language_id: originalLanguage.id,
-        target_language_id: translatedLanguage.id,
+        from_language_id: fromLanguage.id,
+        target_language_id: targetLanguage.id,
         difficulty_level_id: difficultyLevel.id,
         title: sanitizedRequest.title,
         notes: sanitizedRequest.notes,
@@ -389,16 +389,16 @@ export class SavedTranslationService {
 
     // Apply filters
     if (filters.from_language_code) {
-      const originalLanguage = await this.getLanguageByCode(filters.from_language_code);
-      if (originalLanguage) {
-        query = query.eq('from_language_id', originalLanguage.id);
+      const fromLanguage = await this.getLanguageByCode(filters.from_language_code);
+      if (fromLanguage) {
+        query = query.eq('from_language_id', fromLanguage.id);
       }
     }
 
     if (filters.target_language_code) {
-      const translatedLanguage = await this.getLanguageByCode(filters.target_language_code);
-      if (translatedLanguage) {
-        query = query.eq('target_language_id', translatedLanguage.id);
+      const targetLanguage = await this.getLanguageByCode(filters.target_language_code);
+      if (targetLanguage) {
+        query = query.eq('target_language_id', targetLanguage.id);
       }
     }
 
@@ -558,16 +558,16 @@ export class SavedTranslationService {
 
     // Apply filters (same logic as getSavedTranslations)
     if (filters.from_language_code) {
-      const originalLanguage = await this.getLanguageByCode(filters.from_language_code);
-      if (originalLanguage) {
-        query = query.eq('from_language_id', originalLanguage.id);
+      const fromLanguage = await this.getLanguageByCode(filters.from_language_code);
+      if (fromLanguage) {
+        query = query.eq('from_language_id', fromLanguage.id);
       }
     }
 
     if (filters.target_language_code) {
-      const translatedLanguage = await this.getLanguageByCode(filters.target_language_code);
-      if (translatedLanguage) {
-        query = query.eq('target_language_id', translatedLanguage.id);
+      const targetLanguage = await this.getLanguageByCode(filters.target_language_code);
+      if (targetLanguage) {
+        query = query.eq('target_language_id', targetLanguage.id);
       }
     }
 

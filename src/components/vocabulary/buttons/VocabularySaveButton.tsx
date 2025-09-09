@@ -14,7 +14,7 @@ interface VocabularySaveButtonProps {
   originalContext?: string;
   translatedContext?: string;
   fromLanguageId: number;
-  translatedLanguageId: number;
+  targetLanguageId: number;
   className?: string;
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
@@ -36,7 +36,7 @@ interface VocabularySaveButtonProps {
     originalWord: string,
     translatedWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ) => Promise<boolean>;
 }
 
@@ -46,7 +46,7 @@ export function VocabularySaveButton({
   originalContext,
   translatedContext,
   fromLanguageId,
-  translatedLanguageId,
+  targetLanguageId,
   className,
   variant = 'outline',
   size = 'sm',
@@ -86,7 +86,7 @@ export function VocabularySaveButton({
           originalWord,
           translatedWord,
           fromLanguageId,
-          translatedLanguageId
+          targetLanguageId
         );
         setIsSaved(exists);
       } catch (error) {
@@ -103,7 +103,7 @@ export function VocabularySaveButton({
     originalWord,
     translatedWord,
     fromLanguageId,
-    translatedLanguageId,
+    targetLanguageId,
     checkVocabularyExists,
     externalIsSaved,
     effectiveCheck,
@@ -119,7 +119,7 @@ export function VocabularySaveButton({
       from_word: originalWord,
       target_word: translatedWord,
       from_language_id: fromLanguageId,
-      target_language_id: translatedLanguageId,
+      target_language_id: targetLanguageId,
       from_word_context: originalContext,
       target_word_context: translatedContext,
       ...(typeof savedTranslationId === 'number'
@@ -189,7 +189,7 @@ export function VocabularySaveButton({
       data-original-word={originalWord}
       data-translated-word={translatedWord}
       data-from-language-id={fromLanguageId}
-      data-translated-language-id={translatedLanguageId}
+      data-target-language-id={targetLanguageId}
     >
       {isChecking || isSaving ? (
         <>

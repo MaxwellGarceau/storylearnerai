@@ -23,8 +23,8 @@ import type { SaveFieldType, TextAreaChangeEvent } from '../../types/common';
 interface SaveTranslationButtonProps {
   translationData: TranslationResponse;
   originalStory: string;
-  originalLanguage: string;
-  translatedLanguage: string;
+  fromLanguage: string;
+  targetLanguage: string;
   difficultyLevel: DifficultyLevel;
   isSavedStory?: boolean;
 }
@@ -32,8 +32,8 @@ interface SaveTranslationButtonProps {
 export default function SaveTranslationButton({
   translationData,
   originalStory,
-  originalLanguage,
-  translatedLanguage,
+  fromLanguage,
+  targetLanguage,
   difficultyLevel,
   isSavedStory = false,
 }: SaveTranslationButtonProps) {
@@ -118,10 +118,10 @@ export default function SaveTranslationButton({
       setIsSaving(true);
       setError(null);
 
-      const originalLanguageCode = getLanguageCode(originalLanguage);
-      const translatedLanguageCode = getLanguageCode(translatedLanguage);
+      const fromLanguageCode = getLanguageCode(fromLanguage);
+      const targetLanguageCode = getLanguageCode(targetLanguage);
 
-      if (!originalLanguageCode || !translatedLanguageCode) {
+      if (!fromLanguageCode || !targetLanguageCode) {
         setError('Unsupported language combination');
         return;
       }
@@ -129,8 +129,8 @@ export default function SaveTranslationButton({
       const result = await createSavedTranslation({
         from_story: originalStory,
         target_story: translationData.translatedText,
-        from_language_code: originalLanguageCode,
-        target_language_code: translatedLanguageCode,
+        from_language_code: fromLanguageCode,
+        target_language_code: targetLanguageCode,
         difficulty_level_code: difficultyLevel,
         title: sanitizedTitle ?? undefined,
         notes: sanitizedNotes ?? undefined,
@@ -252,11 +252,11 @@ export default function SaveTranslationButton({
               <div className='text-sm text-muted-foreground space-y-1'>
                 <div>
                   <span className='font-medium'>Original Language:</span>{' '}
-                  {originalLanguage}
+                  {fromLanguage}
                 </div>
                 <div>
                   <span className='font-medium'>Translated Language:</span>{' '}
-                  {translatedLanguage}
+                  {targetLanguage}
                 </div>
                 <div>
                   <span className='font-medium'>Difficulty Level:</span>{' '}

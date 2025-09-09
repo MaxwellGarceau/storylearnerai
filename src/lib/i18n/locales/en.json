@@ -97,85 +97,6 @@
     }
   },
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back",
-    "recentActivity": "Recent Activity",
-    "quickActions": "Quick Actions",
-    "stats": {
-      "storiesTranslated": "Stories Translated",
-      "wordsLearned": "Words Learned",
-      "timeSpent": "Time Spent"
-    }
-  },
-  "languages": {
-    "en": "English",
-    "es": "Spanish"
-  },
-  "difficultyLevels": {
-    "beginner": "Beginner",
-    "intermediate": "Intermediate",
-    "advanced": "Advanced"
-  },
-  "languageSelector": {
-    "title": "Language",
-    "changeLanguage": "Change Language"
-  },
-  "home": {
-    "hero": {
-      "badge": "AI-Powered Language Learning",
-      "title": "Story Learner AI",
-      "subtitle": "Transform any story into a powerful learning tool. Translate, understand, and master new languages with AI assistance.",
-      "startTranslating": "Start Translating",
-      "restartTutorial": "Restart Tutorial",
-      "signUpFree": "Sign Up Free",
-      "myDashboard": "My Dashboard"
-    },
-    "features": {
-      "title": "Why Choose Story Learner AI?",
-      "subtitle": "Our platform combines cutting-edge AI technology with proven language learning methodologies",
-      "multiLanguage": {
-        "title": "Multi-Language Support",
-        "description": "Translate stories from any language to English with AI-powered accuracy"
-      },
-      "sideBySide": {
-        "title": "Side-by-Side Reading",
-        "description": "Read original and translated text simultaneously for better comprehension"
-      },
-      "learningInsights": {
-        "title": "Learning Insights",
-        "description": "Get detailed explanations and vocabulary help to enhance your learning"
-      },
-      "aiPowered": {
-        "title": "AI-Powered",
-        "description": "Advanced language models provide accurate and contextual translations"
-      }
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "subtitle": "Get started in just three simple steps",
-      "step1": {
-        "title": "Upload Your Story",
-        "description": "Enter a story in any language you want to learn from"
-      },
-      "step2": {
-        "title": "AI Translation",
-        "description": "Our AI translates it to English with detailed explanations"
-      },
-      "step3": {
-        "title": "Learn & Practice",
-        "description": "Read and learn with side-by-side translations and vocabulary help"
-      }
-    },
-    "cta": {
-      "title": "Ready to Start Your Language Learning Journey?",
-      "subtitleUser": "Continue your learning journey with personalized insights and progress tracking",
-      "subtitleGuest": "Join thousands of learners who are already improving their language skills with Story Learner AI",
-      "startTranslating": "Start Translating",
-      "createAccount": "Create Free Account",
-      "viewDashboard": "View Dashboard"
-    }
-  },
-  "dashboard": {
     "loading": "Loading your dashboard...",
     "welcome": "Welcome back, {name}!",
     "subtitle": "Your language learning dashboard",
@@ -431,19 +352,21 @@
     "deleteError": "Failed to delete vocabulary word",
     "alreadyExists": "This word is already saved in your vocabulary",
     "form": {
-      "originalWord": "Original Word",
-      "translatedWord": "Translated Word",
-      "originalContext": "Original Context",
-      "translatedContext": "Translated Context",
+      
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
       "fromLanguage": "From Language",
       "toLanguage": "To Language",
-      "originalWordPlaceholder": "Enter the original word...",
-      "translatedWordPlaceholder": "Enter the translated word...",
-      "originalContextPlaceholder": "Enter the context sentence...",
-      "translatedContextPlaceholder": "Enter the translated context...",
+      "fromWord": "From Word",
+      "targetWord": "Target Word",
+      "fromContext": "From Context",
+      "targetContext": "Target Context",
+      
+      "fromWordPlaceholder": "Enter the from word...",
+      "targetWordPlaceholder": "Enter the target word...",
+      "fromContextPlaceholder": "Enter the context sentence...",
+      "targetContextPlaceholder": "Enter the target context...",
       "definitionPlaceholder": "Enter the definition...",
       "partOfSpeechPlaceholder": "Select part of speech...",
       "frequencyLevelPlaceholder": "Select frequency level...",
@@ -472,13 +395,15 @@
     },
     "details": {
       "title": "Vocabulary Details",
-      "originalWord": "Original Word",
-      "translatedWord": "Translated Word",
+      
+      "fromWord": "From Word",
+      "targetWord": "Target Word",
       "definition": "Definition",
       "partOfSpeech": "Part of Speech",
       "frequencyLevel": "Frequency Level",
-      "originalContext": "Original Context",
-      "translatedContext": "Translated Context",
+      
+      "fromContext": "From Context",
+      "targetContext": "Target Context",
       "fromLanguage": "From Language",
       "toLanguage": "To Language",
       "savedFrom": "Saved from story",
@@ -506,10 +431,10 @@
       "allLanguages": "All Languages"
     },
     "validation": {
-      "originalWordRequired": "Original word is required",
-      "translatedWordRequired": "Translated word is required",
+      "fromWordRequired": "From word is required",
+      "targetWordRequired": "Target word is required",
       "fromLanguageRequired": "From language is required",
-      "translatedLanguageRequired": "To language is required",
+      "targetLanguageRequired": "To language is required",
       "languagesMustDiffer": "From and To languages must be different",
       "alreadyExists": "This word is already saved in your vocabulary"
     },
@@ -542,8 +467,8 @@
       "placeholder": "Search vocabulary..."
     },
     "context": {
-      "original": "Original Context",
-      "translated": "Translated Context"
+      "from": "From Context",
+      "target": "Target Context"
     },
     "noResults": "No words found",
     "checking": "Checking...",

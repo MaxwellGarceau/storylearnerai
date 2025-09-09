@@ -175,44 +175,6 @@
       "viewDashboard": "Ver Panel"
     }
   },
-  "dashboard": {
-    "loading": "Cargando tu panel...",
-    "welcome": "¡Bienvenido de vuelta, {name}!",
-    "subtitle": "Tu panel de aprendizaje de idiomas",
-    "profile": "Perfil",
-    "newTranslation": "Nueva Traducción",
-    "stats": {
-      "totalTranslations": "Total de Traducciones",
-      "storiesTranslated": "Historias traducidas",
-      "languages": "Idiomas",
-      "learningLevel": "Nivel de Aprendizaje",
-      "currentDifficulty": "Nivel de dificultad actual",
-      "beginner": "Principiante"
-    },
-    "quickActions": {
-      "title": "Acciones Rápidas",
-      "newTranslation": {
-        "title": "Nueva Traducción",
-        "description": "Comenzar a traducir una nueva historia"
-      },
-      "viewSaved": {
-        "title": "Ver Guardadas",
-        "description": "Revisar tus traducciones guardadas"
-      },
-      "editProfile": {
-        "title": "Editar Perfil",
-        "description": "Actualizar tus preferencias"
-      }
-    },
-    "recentActivity": {
-      "title": "Actividad Reciente",
-      "noActivity": "Sin actividad reciente",
-      "noActivityDescription": "Comienza a traducir historias para ver tu actividad aquí"
-    },
-    "errors": {
-      "loadFailed": "Error al cargar los datos del panel"
-    }
-  },
   "storyReader": {
     "noStory": {
       "title": "No se Encontró Historia",
@@ -345,24 +307,6 @@
       "description": "Comienza a traducir historias y guárdalas para verlas aquí."
     }
   },
-  "difficultyLevels": {
-    "a1": {
-      "label": "A1 (Principiante)",
-      "description": "Nivel básico - Puede entender y usar expresiones cotidianas familiares"
-    },
-    "a2": {
-      "label": "A2 (Elemental)",
-      "description": "Nivel elemental - Puede comunicarse en tareas simples y rutinarias"
-    },
-    "b1": {
-      "label": "B1 (Intermedio)",
-      "description": "Nivel intermedio - Puede manejar la mayoría de situaciones mientras viaja"
-    },
-    "b2": {
-      "label": "B2 (Intermedio Alto)",
-      "description": "Nivel intermedio alto - Puede interactuar con fluidez y espontaneidad"
-    }
-  },
   "pdfUpload": {
     "title": "Subir PDF",
     "uploadPrompt": "Haz clic para seleccionar un archivo PDF",
@@ -413,19 +357,21 @@
     "deleteError": "Error al eliminar la palabra de vocabulario",
     "alreadyExists": "Esta palabra ya está guardada en tu vocabulario",
     "form": {
-      "originalWord": "Palabra Original",
-      "translatedWord": "Palabra Traducida",
-      "originalContext": "Contexto Original",
-      "translatedContext": "Contexto Traducido",
+      
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
       "fromLanguage": "Desde Idioma",
       "toLanguage": "A Idioma",
-      "originalWordPlaceholder": "Ingresa la palabra original...",
-      "translatedWordPlaceholder": "Ingresa la palabra traducida...",
-      "originalContextPlaceholder": "Ingresa la oración de contexto...",
-      "translatedContextPlaceholder": "Ingresa el contexto traducido...",
+      "fromWord": "Palabra Origen",
+      "targetWord": "Palabra Objetivo",
+      "fromContext": "Contexto Origen",
+      "targetContext": "Contexto Objetivo",
+      
+      "fromWordPlaceholder": "Ingresa la palabra de origen...",
+      "targetWordPlaceholder": "Ingresa la palabra objetivo...",
+      "fromContextPlaceholder": "Ingresa la oración de contexto...",
+      "targetContextPlaceholder": "Ingresa el contexto objetivo...",
       "definitionPlaceholder": "Ingresa la definición...",
       "partOfSpeechPlaceholder": "Selecciona parte de la oración...",
       "frequencyLevelPlaceholder": "Selecciona nivel de frecuencia...",
@@ -454,13 +400,15 @@
     },
     "details": {
       "title": "Detalles del Vocabulario",
-      "originalWord": "Palabra Original",
-      "translatedWord": "Palabra Traducida",
+      
+      "fromWord": "Palabra Origen",
+      "targetWord": "Palabra Objetivo",
       "definition": "Definición",
       "partOfSpeech": "Parte de la Oración",
       "frequencyLevel": "Nivel de Frecuencia",
-      "originalContext": "Contexto Original",
-      "translatedContext": "Contexto Traducido",
+      
+      "fromContext": "Contexto Origen",
+      "targetContext": "Contexto Objetivo",
       "fromLanguage": "Desde Idioma",
       "toLanguage": "A Idioma",
       "savedFrom": "Guardado de la historia",
@@ -488,10 +436,10 @@
       "allLanguages": "Todos los Idiomas"
     },
     "validation": {
-      "originalWordRequired": "La palabra original es requerida",
-      "translatedWordRequired": "La palabra traducida es requerida",
+      "fromWordRequired": "La palabra de origen es requerida",
+      "targetWordRequired": "La palabra objetivo es requerida",
       "fromLanguageRequired": "El idioma de origen es requerido",
-      "translatedLanguageRequired": "El idioma de destino es requerido",
+      "targetLanguageRequired": "El idioma de destino es requerido",
       "languagesMustDiffer": "Los idiomas de origen y destino deben ser diferentes",
       "alreadyExists": "Esta palabra ya está guardada en tu vocabulario"
     },
@@ -524,8 +472,8 @@
       "placeholder": "Buscar vocabulario..."
     },
     "context": {
-      "original": "Contexto Original",
-      "translated": "Contexto Traducido"
+      "from": "Contexto Origen",
+      "target": "Contexto Objetivo"
     },
     "noResults": "No se encontraron palabras",
     "checking": "Verificando...",

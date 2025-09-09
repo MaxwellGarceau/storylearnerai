@@ -33,7 +33,7 @@ describe('VocabularySaveButton', () => {
         originalWord='hola'
         translatedWord='hello'
         fromLanguageId={2}
-        translatedLanguageId={1}
+        targetLanguageId={1}
         savedTranslationId={42}
         isSaved={false}
         t={(k: string) => k}
@@ -79,7 +79,7 @@ describe('VocabularySaveButton', () => {
             originalWord='hola'
             translatedWord={translated}
             fromLanguageId={2}
-            translatedLanguageId={1}
+            targetLanguageId={1}
             savedTranslationId={99}
             isSaved={false}
             onBeforeOpen={async () => {

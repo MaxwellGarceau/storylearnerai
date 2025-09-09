@@ -185,8 +185,8 @@ const StoryReaderPage: React.FC = () => {
         <SaveTranslationButton
           translationData={finalTranslationData}
           originalStory={finalTranslationData.originalText || ''}
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel={finalTranslationData.difficulty}
           isSavedStory={resolvedIsSavedStory}
         />

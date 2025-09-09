@@ -50,8 +50,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -69,8 +69,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />
@@ -88,8 +88,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />
@@ -109,8 +109,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -130,8 +130,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={false}
         />
@@ -162,8 +162,8 @@ describe('SaveTranslationButton Component', () => {
         <SaveTranslationButton
           translationData={mockTranslationData}
           originalStory='Esta es una historia de prueba.'
-          originalLanguage='Spanish'
-          translatedLanguage='English'
+          fromLanguage='Spanish'
+          targetLanguage='English'
           difficultyLevel='a1'
           isSavedStory={true}
         />

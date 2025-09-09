@@ -121,11 +121,11 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     const newErrors: Record<string, string> = {};
 
     if (!formData.from_word.trim()) {
-      newErrors.from_word = t('vocabulary.validation.originalWordRequired');
+      newErrors.from_word = t('vocabulary.validation.fromWordRequired');
     }
 
     if (!formData.target_word.trim()) {
-      newErrors.target_word = t('vocabulary.validation.translatedWordRequired');
+      newErrors.target_word = t('vocabulary.validation.targetWordRequired');
     }
 
     if (isCreateMode) {
@@ -296,20 +296,20 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         <div className='grid grid-cols-2 gap-4 pt-4'>
           <TextField
             id='from_word'
-            label={t('vocabulary.form.originalWord')}
+            label={t('vocabulary.form.fromWord')}
             value={formData.from_word}
             onChange={value => handleInputChange('from_word', value)}
-            placeholder={t('vocabulary.form.originalWordPlaceholder')}
+            placeholder={t('vocabulary.form.fromWordPlaceholder')}
             error={errors.from_word}
             required={isCreateMode}
           />
 
           <TextField
             id='target_word'
-            label={t('vocabulary.form.translatedWord')}
+            label={t('vocabulary.form.targetWord')}
             value={formData.target_word}
             onChange={value => handleInputChange('target_word', value)}
-            placeholder={t('vocabulary.form.translatedWordPlaceholder')}
+            placeholder={t('vocabulary.form.targetWordPlaceholder')}
             error={errors.target_word}
             required={isCreateMode}
           />
@@ -408,19 +408,19 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
         {/* Context Fields */}
         <TextareaField
           id='from_word_context'
-          label={t('vocabulary.form.originalContext')}
+          label={t('vocabulary.form.fromContext')}
           value={formData.from_word_context}
           onChange={value => handleInputChange('from_word_context', value)}
-          placeholder={t('vocabulary.form.originalContextPlaceholder')}
+          placeholder={t('vocabulary.form.fromContextPlaceholder')}
           rows={2}
         />
 
         <TextareaField
           id='target_word_context'
-          label={t('vocabulary.form.translatedContext')}
+          label={t('vocabulary.form.targetContext')}
           value={formData.target_word_context}
           onChange={value => handleInputChange('target_word_context', value)}
-          placeholder={t('vocabulary.form.translatedContextPlaceholder')}
+          placeholder={t('vocabulary.form.targetContextPlaceholder')}
           rows={2}
         />
 

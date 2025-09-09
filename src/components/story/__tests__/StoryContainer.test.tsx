@@ -35,7 +35,7 @@ vi.mock('react-i18next', () => ({
         'difficultyLevels.b2.label': 'B2 (Upper Intermediate)',
         'storySidebar.confirmTranslation': 'Confirm Translation Options',
         'storySidebar.translationOptions': 'Translation Options',
-        'storySidebar.originalLanguage': 'Original Language',
+        'storySidebar.fromLanguage': 'Original Language',
         'storySidebar.targetLanguage': 'Target Language',
         'storySidebar.difficulty': 'Difficulty',
         'storySidebar.confirm': 'Confirm',

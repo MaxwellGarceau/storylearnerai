@@ -223,7 +223,7 @@ export class VocabularyService {
     originalWord: string,
     translatedWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ): Promise<boolean> {
     try {
       const { data, error }: SupabaseResponse<{ id: number }> = await supabase
@@ -233,7 +233,7 @@ export class VocabularyService {
         .eq('from_word', originalWord)
         .eq('target_word', translatedWord)
         .eq('from_language_id', fromLanguageId)
-        .eq('target_language_id', translatedLanguageId)
+        .eq('target_language_id', targetLanguageId)
         .single();
 
       if (error && (error as { code?: string }).code !== 'PGRST116') {

@@ -36,14 +36,14 @@ vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
     originalWord,
     translatedWord,
     fromLanguageId,
-    translatedLanguageId,
+    targetLanguageId,
     onClick,
     children,
   }: {
     originalWord: string;
     translatedWord: string;
     fromLanguageId: number;
-    translatedLanguageId: number;
+    targetLanguageId: number;
     onClick?: () => void;
     children?: React.ReactNode;
   }) => (
@@ -52,7 +52,7 @@ vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
       data-original-word={originalWord}
       data-translated-word={translatedWord}
       data-from-language-id={fromLanguageId}
-      data-translated-language-id={translatedLanguageId}
+      data-target-language-id={targetLanguageId}
       onClick={onClick}
     >
       {children ?? 'Save'}

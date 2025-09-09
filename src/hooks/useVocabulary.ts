@@ -26,7 +26,7 @@ interface UseVocabularyReturn {
     originalWord: string,
     translatedWord: string,
     fromLanguageId: number,
-    translatedLanguageId: number
+    targetLanguageId: number
   ) => BooleanPromise;
 }
 
@@ -212,7 +212,7 @@ export function useVocabulary(): UseVocabularyReturn {
       originalWord: string,
       translatedWord: string,
       fromLanguageId: number,
-      translatedLanguageId: number
+      targetLanguageId: number
     ): BooleanPromise => {
       if (!user?.id) return false;
 
@@ -222,7 +222,7 @@ export function useVocabulary(): UseVocabularyReturn {
           originalWord,
           translatedWord,
           fromLanguageId,
-          translatedLanguageId
+          targetLanguageId
         );
       } catch (err) {
         const errorMessage =
