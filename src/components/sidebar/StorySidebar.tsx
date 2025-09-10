@@ -11,6 +11,7 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
+import { useLanguageFilter } from '../../hooks/useLanguageFilter';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';
@@ -41,6 +42,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { targetLanguage } = useLanguageFilter();
 
   const sampleStories: DatabaseSavedTranslationWithDetails[] =
     savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
@@ -211,7 +213,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
             {activeSection === 'stories' && (
               <StoriesSection
                 savedTranslations={
-                  savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
+                  (savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]).filter(
+                    s => s.target_language.code === targetLanguage
+                  )
                 }
                 isLoadingSavedTranslations={isLoadingSavedTranslations}
                 sampleStories={sampleStories}
