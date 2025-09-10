@@ -6,8 +6,7 @@ import { DashboardPage } from '../DashboardPage';
 import { useAuth } from '../../hooks/useAuth';
 import { UserService } from '../../api/supabase/database/userProfileService';
 import type { RenderResult } from '@testing-library/react';
-import type { DatabaseUserProfile } from '../../types/database';
-import type { UseAuthReturn } from '../../hooks/useAuth';
+import type { DatabaseUserInsert } from '../../types/database';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
@@ -149,18 +148,18 @@ describe('DashboardPage Component', () => {
     bio: 'Test bio',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-  } as DatabaseUserProfile;
+  } as DatabaseUserInsert;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
+    (mockUseAuth as any).mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
       user: mockUser,
       loading: false,
       error: null,
-    } as UseAuthReturn);
+    });
     vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
   });
 
@@ -190,7 +189,7 @@ describe('DashboardPage Component', () => {
     const spanishProfile = {
       ...mockProfile,
       native_language: 'es',
-    } as DatabaseUserProfile;
+    } as DatabaseUserInsert;
     vi.mocked(mockUserService.getUser).mockResolvedValue(spanishProfile);
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
@@ -202,7 +201,7 @@ describe('DashboardPage Component', () => {
     const unknownLanguageProfile = {
       ...mockProfile,
       native_language: 'xx',
-    } as DatabaseUserProfile;
+    } as DatabaseUserInsert;
     vi.mocked(mockUserService.getUser).mockResolvedValue(
       unknownLanguageProfile
     );
