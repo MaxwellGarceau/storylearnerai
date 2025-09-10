@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { UserService } from '../userProfileService'
 import type { CreateUserData, UpdateUserData } from '../userProfileService'
 
+// Mock LanguageService
+vi.mock('../languageService', () => ({
+  LanguageService: vi.fn().mockImplementation(() => ({
+    getValidLanguageCodes: vi.fn().mockResolvedValue(['en', 'es'])
+  }))
+}))
+
 // Mock Supabase client with comprehensive method chaining
 vi.mock('../client', () => ({
   supabase: {
@@ -14,7 +21,7 @@ vi.mock('../client', () => ({
               username: 'testuser',
               display_name: 'Test User',
               avatar_url: 'https://example.com/avatar.jpg',
-              preferred_language: 'en',
+              native_language: 'en',
               created_at: '2023-01-01T00:00:00Z',
               updated_at: '2023-01-01T00:00:00Z'
             },
@@ -30,7 +37,7 @@ vi.mock('../client', () => ({
               username: 'testuser',
               display_name: 'Test User',
               avatar_url: 'https://example.com/avatar.jpg',
-              preferred_language: 'en',
+              native_language: 'en',
               created_at: '2023-01-01T00:00:00Z',
               updated_at: '2023-01-01T00:00:00Z'
             },
@@ -46,7 +53,7 @@ vi.mock('../client', () => ({
                 id: 'test-user-id',
                 username: 'updateduser',
                 display_name: 'Updated User',
-                preferred_language: 'en',
+                native_language: 'en',
                 created_at: '2023-01-01T00:00:00Z',
                 updated_at: '2023-01-01T00:00:00Z'
               },
@@ -120,7 +127,7 @@ describe('UserService Validation', () => {
       id: 'test-user-id',
       username: 'testuser',
       display_name: 'Test User',
-      preferred_language: 'en'
+      native_language: 'en'
     }
 
     it('should reject invalid user ID', async () => {
@@ -136,11 +143,11 @@ describe('UserService Validation', () => {
     it('should reject invalid preferred language', async () => {
       const invalidData = {
         ...validUserData,
-        preferred_language: 'invalid'
+        native_language: 'invalid'
       }
 
       await expect(UserService.createUser(invalidData))
-        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be one of: en, es')
+        .rejects.toThrow('Validation failed: native_language: Native language must be one of: en, es')
     })
 
     it('should reject invalid avatar URL', async () => {
@@ -167,11 +174,11 @@ describe('UserService Validation', () => {
 
     it('should reject invalid preferred language update', async () => {
       const invalidData = {
-        preferred_language: 'invalid'
+        native_language: 'invalid'
       }
 
       await expect(UserService.updateUser('test-user-id', invalidData))
-        .rejects.toThrow('Validation failed: preferred_language: Preferred language must be one of: en, es')
+        .rejects.toThrow('Validation failed: native_language: Native language must be one of: en, es')
     })
   })
 

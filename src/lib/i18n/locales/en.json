@@ -51,7 +51,7 @@
       "signOut": "Sign Out",
       "username": "Username",
       "displayName": "Display Name",
-      "preferredLanguage": "Preferred Language",
+      "nativeLanguage": "Native Language",
       "accountInformation": "Account Information",
       "memberSince": "Member since",
       "lastUpdated": "Last updated",
@@ -272,6 +272,7 @@
     "targetStory": "Translate Story",
     "optionsModal": {
       "title": "Story Options",
+      "fromLanguageLabel": "From Language",
       "languageLabel": "Target Language",
       "difficultyLabel": "Target Difficulty (CEFR)",
       "a1": "A1 (Beginner)",

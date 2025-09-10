@@ -239,6 +239,10 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
       <OptionsModal
         isOpen={showOptions}
         onClose={() => setShowOptions(false)}
+        selectedFromLanguage={formData.fromLanguage}
+        onFromLanguageChange={language =>
+          onFormDataChange('fromLanguage', language)
+        }
         selectedLanguage={formData.language}
         onLanguageChange={language => onFormDataChange('language', language)}
         selectedDifficulty={formData.difficulty}

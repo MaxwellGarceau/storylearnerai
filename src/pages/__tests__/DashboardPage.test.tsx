@@ -128,7 +128,7 @@ const renderWithRouter = (component: React.ReactElement): RenderResult => {
   act(() => {
     result = render(<BrowserRouter>{component}</BrowserRouter>);
   });
-  return result;
+  return result!;
 };
 
 describe('DashboardPage Component', () => {
@@ -143,11 +143,11 @@ describe('DashboardPage Component', () => {
     user_id: 'user-123',
     display_name: 'Test User',
     username: 'testuser',
-    preferred_language: 'en',
+    native_language: 'en',
     bio: 'Test bio',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-  };
+  } as any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -158,8 +158,8 @@ describe('DashboardPage Component', () => {
       user: mockUser,
       loading: false,
       error: null,
-    });
-    mockUserService.getUser.mockResolvedValue(mockProfile);
+    } as any);
+    (mockUserService.getUser as any).mockResolvedValue(mockProfile);
   });
 
   it('renders quick actions section', async () => {
@@ -187,9 +187,9 @@ describe('DashboardPage Component', () => {
   it('displays correct language names in stats', async () => {
     const spanishProfile = {
       ...mockProfile,
-      preferred_language: 'es',
-    };
-    mockUserService.getUser.mockResolvedValue(spanishProfile);
+      native_language: 'es',
+    } as any;
+    (mockUserService.getUser as any).mockResolvedValue(spanishProfile);
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
       expect(screen.getByText('Spanish')).toBeInTheDocument();
@@ -199,9 +199,9 @@ describe('DashboardPage Component', () => {
   it('handles unknown language codes gracefully in stats', async () => {
     const unknownLanguageProfile = {
       ...mockProfile,
-      preferred_language: 'xx',
-    };
-    mockUserService.getUser.mockResolvedValue(unknownLanguageProfile);
+      native_language: 'xx',
+    } as any;
+    (mockUserService.getUser as any).mockResolvedValue(unknownLanguageProfile);
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
       expect(screen.getByText('xx')).toBeInTheDocument();
@@ -238,7 +238,7 @@ describe('DashboardPage Component', () => {
       resolveUserPromise = resolve;
     });
 
-    mockUserService.getUser.mockReturnValue(userPromise);
+    (mockUserService.getUser as any).mockReturnValue(userPromise);
     void renderWithRouter(<DashboardPage />);
     // Check that loading state is shown initially
     expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument();
@@ -255,7 +255,7 @@ describe('DashboardPage Component', () => {
   });
 
   it('displays error alert when there is an error', () => {
-    mockUserService.getUser.mockRejectedValue(new Error('Database error'));
+    (mockUserService.getUser as any).mockRejectedValue(new Error('Database error'));
     void renderWithRouter(<DashboardPage />);
     void waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();

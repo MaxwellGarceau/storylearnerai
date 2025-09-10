@@ -52,7 +52,7 @@
       "signOut": "Cerrar Sesión",
       "username": "Nombre de Usuario",
       "displayName": "Nombre para Mostrar",
-      "preferredLanguage": "Idioma Preferido",
+      "nativeLanguage": "Idioma Nativo",
       "accountInformation": "Información de la Cuenta",
       "memberSince": "Miembro desde",
       "lastUpdated": "Última actualización",
@@ -240,6 +240,7 @@
     "tip": "💡 Consejo: Puedes pegar historias largas, artículos o cualquier texto en español que quieras traducir",
     "optionsModal": {
       "title": "Opciones de Historia",
+      "fromLanguageLabel": "Desde Idioma",
       "languageLabel": "Idioma Objetivo",
       "difficultyLabel": "Dificultad Objetivo (CEFR)",
       "a1": "A1 (Principiante)",

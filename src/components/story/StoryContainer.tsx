@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import {
   translationService,
@@ -11,6 +11,8 @@ import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
 import { useToast } from '../../hooks/useToast';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
+import { UserService } from '../../api/supabase/database/userProfileService';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -32,6 +34,30 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
 
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  // Initialize fromLanguage from user's native language when available
+  useEffect(() => {
+    if (!user) return;
+    const loadUserLanguage = async () => {
+      try {
+        const profile = await UserService.getOrCreateUser(user.id, {
+          username: user.email?.split('@')[0] ?? undefined,
+          display_name: user.email?.split('@')[0] ?? undefined,
+        });
+        const nativeLanguage = (profile as any)?.native_language as LanguageCode | undefined;
+        if (nativeLanguage) {
+          setFormData(prev => ({
+            ...prev,
+            fromLanguage: nativeLanguage,
+          }));
+        }
+      } catch (_) {
+        // Intentionally ignore; default fallback remains in place
+      }
+    };
+    void loadUserLanguage();
+  }, [user]);
 
   const handleFormDataChange = (
     field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',

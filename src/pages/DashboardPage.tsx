@@ -156,7 +156,7 @@ export const DashboardPage: React.FC = () => {
             <CardContent>
               <div className='text-2xl font-bold'>1</div>
               <p className='text-xs text-muted-foreground'>
-                {getLanguageName(profile?.preferred_language ?? 'en')}
+                {getLanguageName((profile as any)?.native_language ?? 'en')}
               </p>
             </CardContent>
           </Card>

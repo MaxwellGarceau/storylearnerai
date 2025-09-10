@@ -95,7 +95,7 @@ describe('UserProfile Component', () => {
     id: 'test-user-id',
     username: 'testuser',
     display_name: 'Test User',
-    preferred_language: 'en' as LanguageCode,
+    native_language: 'en' as LanguageCode,
     created_at: '2023-01-01T00:00:00Z',
     updated_at: '2023-01-01T00:00:00Z',
   };
@@ -131,7 +131,7 @@ describe('UserProfile Component', () => {
       expect(screen.getByText('Test User')).toBeInTheDocument();
     });
     expect(screen.getByText('@testuser')).toBeInTheDocument();
-    expect(screen.getByText('languages.en')).toBeInTheDocument();
+    expect(screen.getByText('English')).toBeInTheDocument();
     expect(
       screen.getAllByRole('button', {
         name: /auth\.userProfile\.editProfile/i,
@@ -191,7 +191,7 @@ describe('UserProfile Component', () => {
       ...mockProfile,
       username: 'newusername',
       display_name: 'New User Name',
-      preferred_language: 'es' as LanguageCode, // Make sure the mock returns the updated language
+      native_language: 'es' as LanguageCode, // Make sure the mock returns the updated language
     };
     vi.mocked(UserService.updateUser).mockResolvedValue(updatedProfile);
 
@@ -224,14 +224,14 @@ describe('UserProfile Component', () => {
       expect(UserService.updateUser).toHaveBeenCalledWith('test-user-id', {
         username: 'newusername',
         display_name: 'New User Name',
-        preferred_language: 'es' as LanguageCode,
+        native_language: 'es' as LanguageCode,
       });
     });
 
     await waitFor(() => {
       expect(screen.getByText('New User Name')).toBeInTheDocument();
       expect(screen.getByText('@newusername')).toBeInTheDocument();
-      expect(screen.getByText('languages.es')).toBeInTheDocument();
+      expect(screen.getByText('Spanish')).toBeInTheDocument();
     });
   });
 
