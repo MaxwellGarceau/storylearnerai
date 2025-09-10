@@ -48,10 +48,19 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
         const nativeLanguage = (profile as { native_language?: LanguageCode })
           ?.native_language;
         if (nativeLanguage) {
-          setFormData(prev => ({
-            ...prev,
-            fromLanguage: nativeLanguage,
-          }));
+          setFormData(prev => {
+            // If the user's native language is the same as the current target language,
+            // we need to change the target language to avoid the same language error
+            const newFromLanguage = nativeLanguage;
+            const newTargetLanguage =
+              nativeLanguage === prev.language ? 'es' : prev.language;
+
+            return {
+              ...prev,
+              fromLanguage: newFromLanguage,
+              language: newTargetLanguage,
+            };
+          });
         }
       } catch {
         // Intentionally ignore; default fallback remains in place
@@ -64,10 +73,26 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
     value: LanguageCode | DifficultyLevel | string[]
   ) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [field]: value,
-    }));
+    setFormData(prevFormData => {
+      const newFormData = {
+        ...prevFormData,
+        [field]: value,
+      };
+
+      // If changing fromLanguage and it would be the same as target language,
+      // automatically change the target language to avoid validation error
+      if (field === 'fromLanguage' && value === prevFormData.language) {
+        newFormData.language = value === 'en' ? 'es' : 'en';
+      }
+
+      // If changing target language and it would be the same as fromLanguage,
+      // automatically change the fromLanguage to avoid validation error
+      if (field === 'language' && value === prevFormData.fromLanguage) {
+        newFormData.fromLanguage = value === 'en' ? 'es' : 'en';
+      }
+
+      return newFormData;
+    });
   };
 
   const handleStoryChange = (story: string) => {
