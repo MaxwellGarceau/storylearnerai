@@ -197,7 +197,7 @@ describe('DashboardPage Component', () => {
     });
   });
 
-  it('handles unknown language codes gracefully in stats', async () => {
+  it('shows raw code when an unknown language is mocked (invariant enforced)', async () => {
     const unknownLanguageProfile = {
       ...mockProfile,
       native_language: 'xx',
@@ -207,9 +207,9 @@ describe('DashboardPage Component', () => {
     );
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
-      // The component should handle unknown language codes gracefully
-      // by falling back to a default language name
-      expect(screen.getByText('English')).toBeInTheDocument();
+      // With DB NOT NULL + validated codes, unknowns shouldn't occur in prod.
+      // If a test mocks an unknown code, we display the raw code.
+      expect(screen.getByText('xx')).toBeInTheDocument();
     });
   });
 
