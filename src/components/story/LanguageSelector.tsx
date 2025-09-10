@@ -22,7 +22,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const { languages } = useLanguages();
 
   return (
-    <div className='space-y-2' data-language-section>
+    <div className='space-y-2' data-language-section data-testid='language-section'>
       <label className='text-sm font-medium'>
         {t(labelKey ?? 'storyInput.optionsModal.languageLabel')}
       </label>
