@@ -152,14 +152,14 @@ describe('DashboardPage Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (mockUseAuth as any).mockReturnValue({
+    vi.mocked(mockUseAuth).mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
       user: mockUser,
       loading: false,
       error: null,
-    });
+    } as ReturnType<typeof useAuth>);
     vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
   });
 

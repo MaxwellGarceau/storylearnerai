@@ -17,7 +17,18 @@ import { Alert } from '../components/ui/Alert';
 import { BookOpen, Plus, User as UserIcon, Globe, Loader2 } from 'lucide-react';
 import type { DatabaseUserInsert } from '../types/database';
 import type { NullableString } from '../types/common';
+import type { LanguageCode } from '../types/common';
 import { useTranslation } from 'react-i18next';
+
+// Type guard function to ensure we have a valid LanguageCode
+const getValidLanguageCode = (
+  lang: string | undefined | null
+): LanguageCode => {
+  if (lang === 'en' || lang === 'es') {
+    return lang as LanguageCode;
+  }
+  return 'en';
+};
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -157,7 +168,7 @@ export const DashboardPage: React.FC = () => {
               <div className='text-2xl font-bold'>1</div>
               <p className='text-xs text-muted-foreground'>
                 {getLanguageName(
-                  (profile?.native_language ?? 'en') as LanguageCode
+                  getValidLanguageCode(profile?.native_language)
                 )}
               </p>
             </CardContent>

@@ -57,6 +57,10 @@ vi.mock('react-i18next', () => ({
           "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
         'storyInput.validation.sameLanguageError':
           'Source and target languages must be different. Please select different languages for translation.',
+        translationError: 'Translation Error:',
+        provider: 'provider',
+        status: 'status',
+        errorCode: 'errorCode',
       };
       return translations[key] || key;
     },
@@ -184,12 +188,13 @@ describe('StoryContainer Component', () => {
       expect(
         within(container).getByText('Translation service error')
       ).toBeInTheDocument();
+      // Check that error details are present in the error message
       expect(
-        within(container).getByText('Provider: gemini')
+        within(container).getByText(/provider.*gemini/i)
       ).toBeInTheDocument();
-      expect(within(container).getByText('Status: 500')).toBeInTheDocument();
+      expect(within(container).getByText(/status.*500/i)).toBeInTheDocument();
       expect(
-        within(container).getByText('Error code: API_ERROR')
+        within(container).getByText(/errorCode.*API_ERROR/i)
       ).toBeInTheDocument();
     });
   });
@@ -232,7 +237,7 @@ describe('StoryContainer Component', () => {
         within(container).getByText('Network connection error')
       ).toBeInTheDocument();
       expect(
-        within(container).getByText('Error code: NETWORK_ERROR')
+        within(container).getByText(/errorCode.*NETWORK_ERROR/i)
       ).toBeInTheDocument();
     });
   });
