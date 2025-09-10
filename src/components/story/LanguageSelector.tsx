@@ -8,6 +8,7 @@ interface LanguageSelectorProps {
   onLanguageChange: (language: LanguageCode) => void;
   getLanguageName: (code: LanguageCode) => string;
   labelKey?: string;
+  excludeLanguage?: LanguageCode; // Language to exclude from options (e.g., source language when selecting target)
 }
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
@@ -15,6 +16,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onLanguageChange,
   getLanguageName,
   labelKey,
+  excludeLanguage,
 }) => {
   const { t } = useTranslation();
   const { languages } = useLanguages();
@@ -29,11 +31,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         onChange={e => onLanguageChange(e.target.value as LanguageCode)}
         className='w-full p-2 border rounded-md bg-background'
       >
-        {languages.map(lang => (
-          <option key={lang.code} value={lang.code}>
-            {getLanguageName(lang.code as LanguageCode)}
-          </option>
-        ))}
+        {languages
+          .filter(lang => !excludeLanguage || lang.code !== excludeLanguage)
+          .map(lang => (
+            <option key={lang.code} value={lang.code}>
+              {getLanguageName(lang.code as LanguageCode)}
+            </option>
+          ))}
       </select>
       <p className='text-xs text-muted-foreground'>
         {t('storyInput.currentlySupported', {

@@ -271,7 +271,8 @@
       "invalidInput": "Entrada inválida detectada",
       "fixInput": "Por favor corrige la entrada antes de traducir",
       "securityWarning": "⚠️ Advertencia de Seguridad",
-      "maliciousContentRemoved": "El contenido malicioso ha sido eliminado automáticamente por tu seguridad."
+      "maliciousContentRemoved": "El contenido malicioso ha sido eliminado automáticamente por tu seguridad.",
+      "sameLanguageError": "Los idiomas de origen y destino deben ser diferentes. Por favor selecciona idiomas diferentes para la traducción."
     }
   },
   "savedTranslations": {

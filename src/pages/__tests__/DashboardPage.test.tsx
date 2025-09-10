@@ -255,7 +255,9 @@ describe('DashboardPage Component', () => {
   });
 
   it('displays error alert when there is an error', () => {
-    (mockUserService.getUser as any).mockRejectedValue(new Error('Database error'));
+    (mockUserService.getUser as any).mockRejectedValue(
+      new Error('Database error')
+    );
     void renderWithRouter(<DashboardPage />);
     void waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();

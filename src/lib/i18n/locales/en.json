@@ -303,7 +303,8 @@
       "invalidInput": "Invalid input detected",
       "fixInput": "Please fix the input before translating",
       "securityWarning": "⚠️ Security Warning",
-      "maliciousContentRemoved": "Malicious content has been automatically removed for your safety."
+      "maliciousContentRemoved": "Malicious content has been automatically removed for your safety.",
+      "sameLanguageError": "Source and target languages must be different. Please select different languages for translation."
     }
   },
   "savedTranslations": {

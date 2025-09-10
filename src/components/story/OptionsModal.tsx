@@ -72,6 +72,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
             onLanguageChange={onLanguageChange}
             getLanguageName={getLanguageName}
             labelKey='storyInput.optionsModal.languageLabel'
+            excludeLanguage={selectedFromLanguage}
           />
 
           <DifficultySelector

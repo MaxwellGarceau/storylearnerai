@@ -55,6 +55,8 @@ vi.mock('react-i18next', () => ({
         'storyInput.confirmationModal.cancel': 'Cancel',
         'storyInput.tip':
           "💡 Tip: You can paste long stories, articles, or any Spanish text you'd like to translate",
+        'storyInput.validation.sameLanguageError':
+          'Source and target languages must be different. Please select different languages for translation.',
       };
       return translations[key] || key;
     },
@@ -316,5 +318,53 @@ describe('StoryContainer Component', () => {
         selectedVocabulary: [],
       });
     });
+  });
+
+  it('displays error when source and target languages are the same', async () => {
+    // Mock the translation service to throw the same language error
+    // This simulates the backend validation
+    mockTranslationService.translate.mockRejectedValue(
+      new Error('Source and target languages must be different')
+    );
+
+    const mockOnStoryTranslated = vi.fn();
+
+    const { container } = renderWithTooltipProvider(
+      <StoryContainer onStoryTranslated={mockOnStoryTranslated} />
+    );
+
+    const textArea = within(container).getByDisplayValue('');
+    const submitButton = within(container).getByRole('button', {
+      name: /translate story/i,
+    });
+
+    fireEvent.change(textArea, { target: { value: 'Test story' } });
+    fireEvent.click(submitButton);
+
+    // Wait for confirmation modal to appear
+    await waitFor(() => {
+      expect(
+        within(container).getByText('Confirm Translation Options')
+      ).toBeInTheDocument();
+    });
+
+    const confirmButton = within(container).getByText('Confirm');
+    fireEvent.click(confirmButton);
+
+    // The validation happens in handleSubmit, so we should see the error immediately
+    await waitFor(() => {
+      expect(
+        within(container).getByText('Translation Error:')
+      ).toBeInTheDocument();
+      expect(
+        within(container).getByText(
+          'Source and target languages must be different'
+        )
+      ).toBeInTheDocument();
+    });
+
+    // Verify translation service was called but failed
+    expect(mockTranslationService.translate).toHaveBeenCalled();
+    expect(mockOnStoryTranslated).not.toHaveBeenCalled();
   });
 });

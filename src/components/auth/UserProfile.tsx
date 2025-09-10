@@ -361,7 +361,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             (profile as any).native_language && (
               <Badge variant='secondary'>
                 {/* @ts-expect-error migrating field name */}
-                {languages.find(lang => lang.code === (profile as any).native_language)?.name ?? (profile as any).native_language}
+                {languages.find(
+                  lang => lang.code === (profile as any).native_language
+                )?.name ?? (profile as any).native_language}
               </Badge>
             )
           )}
@@ -374,10 +376,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
           </Label>
           <div className='text-sm text-muted-foreground space-y-1'>
             <p>
-              {t('auth.userProfile.memberSince')}: {new Date(profile.created_at).toLocaleDateString()}
+              {t('auth.userProfile.memberSince')}:{' '}
+              {new Date(profile.created_at).toLocaleDateString()}
             </p>
             <p>
-              {t('auth.userProfile.lastUpdated')}: {new Date(profile.updated_at).toLocaleDateString()}
+              {t('auth.userProfile.lastUpdated')}:{' '}
+              {new Date(profile.updated_at).toLocaleDateString()}
             </p>
           </div>
         </div>

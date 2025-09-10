@@ -45,7 +45,9 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
           username: user.email?.split('@')[0] ?? undefined,
           display_name: user.email?.split('@')[0] ?? undefined,
         });
-        const nativeLanguage = (profile as any)?.native_language as LanguageCode | undefined;
+        const nativeLanguage = (profile as any)?.native_language as
+          | LanguageCode
+          | undefined;
         if (nativeLanguage) {
           setFormData(prev => ({
             ...prev,
@@ -80,6 +82,15 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     if (!formData.story.trim()) {
       setTranslationError({
         message: 'Please enter a story to translate.',
+        code: 'VALIDATION_ERROR',
+      });
+      return;
+    }
+
+    // Validate that source and target languages are different
+    if (formData.fromLanguage === formData.language) {
+      setTranslationError({
+        message: t('storyInput.validation.sameLanguageError'),
         code: 'VALIDATION_ERROR',
       });
       return;
