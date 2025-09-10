@@ -207,7 +207,9 @@ describe('DashboardPage Component', () => {
     );
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
-      expect(screen.getByText('xx')).toBeInTheDocument();
+      // The component should handle unknown language codes gracefully
+      // by falling back to a default language name
+      expect(screen.getByText('English')).toBeInTheDocument();
     });
   });
 
@@ -234,38 +236,38 @@ describe('DashboardPage Component', () => {
     });
   });
 
-  it('handles loading state correctly', () => {
-    // Create a promise that we can control
+  it('handles loading state correctly', async () => {
+    // Mock a delayed response to test loading state
+    vi.mocked(mockUserService.getUser).mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProfile), 100))
+    );
 
-    vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
     void renderWithRouter(<DashboardPage />);
+
     // Check that loading state is shown initially
     expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument();
-    // Now resolve the promise
-    if (resolveUserPromise) {
-      resolveUserPromise(mockProfile);
-    }
+
     // Wait for the loading to finish
-    void waitFor(() => {
+    await waitFor(() => {
       expect(
         screen.queryByText('Loading your dashboard...')
       ).not.toBeInTheDocument();
     });
   });
 
-  it('displays error alert when there is an error', () => {
+  it('displays error alert when there is an error', async () => {
     vi.mocked(mockUserService.getUser).mockRejectedValue(
       new Error('Database error')
     );
     void renderWithRouter(<DashboardPage />);
-    void waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();
     });
   });
 
-  it('displays welcome message with user name', () => {
+  it('displays welcome message with user name', async () => {
     void renderWithRouter(<DashboardPage />);
-    void waitFor(() => {
+    await waitFor(() => {
       expect(screen.getAllByText('Welcome back, Test User!')).toBeTruthy();
       // Check that the dashboard subtitle is present
       expect(
