@@ -21,9 +21,9 @@ const LanguageFilterContext = createContext<LanguageFilterContextValue | null>(
   null
 );
 
-export const LanguageFilterProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const LanguageFilterProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const { user } = useAuth();
   const { languages, getLanguageName } = useLanguages();
 
@@ -38,7 +38,8 @@ export const LanguageFilterProvider: React.FC<{ children: React.ReactNode }> = (
         username: user.email?.split('@')[0] ?? undefined,
         display_name: user.email?.split('@')[0] ?? undefined,
       });
-      const native = (profile as { native_language?: LanguageCode })?.native_language;
+      const native = (profile as { native_language?: LanguageCode })
+        ?.native_language;
       if (native) {
         setFromLanguage(native);
         // Ensure target is not equal to from; if equal, switch to the other known language when possible
@@ -49,6 +50,30 @@ export const LanguageFilterProvider: React.FC<{ children: React.ReactNode }> = (
     };
     void load();
   }, [user]);
+
+  // React to profile native_language updates at runtime (no page refresh needed)
+  useEffect(() => {
+    const onProfileUpdated = (evt: Event) => {
+      const event = evt as CustomEvent<{ native_language?: LanguageCode }>;
+      const updatedNative = event.detail?.native_language;
+      if (!updatedNative) return;
+      setFromLanguage(updatedNative);
+      setTargetLanguageState(prev =>
+        prev === updatedNative ? (updatedNative === 'en' ? 'es' : 'en') : prev
+      );
+    };
+
+    window.addEventListener(
+      'user:profile-updated',
+      onProfileUpdated as EventListener
+    );
+    return () => {
+      window.removeEventListener(
+        'user:profile-updated',
+        onProfileUpdated as EventListener
+      );
+    };
+  }, []);
 
   const availableTargetLanguages = useMemo(() => {
     return languages
@@ -89,5 +114,3 @@ export const useLanguageFilter = (): LanguageFilterContextValue => {
   }
   return ctx;
 };
-
-

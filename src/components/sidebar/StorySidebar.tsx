@@ -212,11 +212,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
           <div className='flex-1 overflow-y-auto'>
             {activeSection === 'stories' && (
               <StoriesSection
-                savedTranslations={
-                  (savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]).filter(
-                    s => s.target_language.code === targetLanguage
-                  )
-                }
+                savedTranslations={(
+                  savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
+                ).filter(s => s.target_language.code === targetLanguage)}
                 isLoadingSavedTranslations={isLoadingSavedTranslations}
                 sampleStories={sampleStories}
                 isLoadingSampleId={isLoading}

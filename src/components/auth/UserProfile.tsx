@@ -157,6 +157,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       // @ts-expect-error migrating field name
       const updatedProfile = await UserService.updateUser(user.id, formData);
       setProfile(updatedProfile);
+      // Dispatch a global event so listeners (e.g., LanguageFilterProvider) can react immediately
+      try {
+        const native_language = (
+          updatedProfile as { native_language?: LanguageCode }
+        )?.native_language;
+        window.dispatchEvent(
+          new CustomEvent('user:profile-updated', {
+            detail: { native_language },
+          })
+        );
+      } catch {}
       setIsEditing(false);
       setValidationErrors({}); // Clear validation errors on success
     } catch (err) {

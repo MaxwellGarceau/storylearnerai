@@ -3,6 +3,7 @@ import { Button } from '../ui/Button';
 import { X, BookOpen, Settings, BookMarked, Globe } from 'lucide-react';
 import type { TFunction } from 'i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
+import { useLanguages } from '../../hooks/useLanguages';
 import {
   Select,
   SelectContent,
@@ -32,6 +33,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
     setTargetLanguage,
     availableTargetLanguages,
   } = useLanguageFilter();
+  const { getNativeLanguageName } = useLanguages();
   return (
     <div className='p-4 border-b bg-muted/50'>
       <div className='flex items-center justify-between'>
@@ -56,7 +58,9 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
       <div className='mt-3 flex items-center justify-between'>
         <Select
           value={targetLanguage}
-          onValueChange={(val: string) => setTargetLanguage(val as unknown as string)}
+          onValueChange={(val: string) =>
+            setTargetLanguage(val as unknown as string)
+          }
         >
           <SelectTrigger className='w-[160px] h-8'>
             <Globe className='h-4 w-4 mr-2' />
@@ -83,7 +87,9 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         </Select>
         <div className='text-xs text-muted-foreground whitespace-nowrap'>
           {fromLanguage
-            ? t('storySidebar.fromLanguageShort') + ': ' + fromLanguage.toUpperCase()
+            ? t('storySidebar.fromLanguageShort') +
+              ': ' +
+              getNativeLanguageName(fromLanguage)
             : ''}
         </div>
       </div>
