@@ -4,6 +4,15 @@
 
 The translation flow supports selecting both a from language (source) and a to language (target). The UI and services are generalized to use these selections end-to-end.
 
+### Global Language Filter
+
+- A global language filter context (`src/hooks/useLanguageFilter.tsx`) now manages:
+  - `fromLanguage`: defaults to the user's `native_language` from their profile
+  - `targetLanguage`: globally selected target language for the Story Library
+  - `availableTargetLanguages`: excludes the user's native language
+- The provider is mounted in `App.tsx` so all pages/components can access it.
+- Consumers (e.g., Story Library and Vocabulary) read target language from this context instead of duplicating filters.
+
 ### UI Components
 
 - Translate Page (`src/pages/TranslatePage.tsx`) renders `StoryContainer` and the sidebar.
@@ -14,13 +23,14 @@ The translation flow supports selecting both a from language (source) and a to l
   - Target language selector (toLanguage)
   - Difficulty selector
   - Vocabulary selection filtered by the current language pair
-- `LanguageSelector` lists available languages from `useLanguages()` and is used for both from/to via a configurable label.
+- `LanguageSelector` lists available languages from `useLanguages()` and is used for both from/to via a configurable label. The Story Library header includes a target language selector powered by the global filter.
 
 ### Defaults
 
 - `fromLanguage` now defaults to the signed-in user's `native_language` from their profile (via `UserService.getOrCreateUser`).
 - If the user profile is unavailable or not loaded yet, the fallback remains `'es'` (Spanish).
 - `language` (toLanguage) defaults to `'en'` and difficulty defaults to `'a1'`.
+- Global target language defaults to `'en'` and cannot be set equal to the native language.
 
 ### Language Data
 

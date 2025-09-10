@@ -1,7 +1,15 @@
 import React from 'react';
 import { Button } from '../ui/Button';
-import { X, BookOpen, Settings, BookMarked } from 'lucide-react';
+import { X, BookOpen, Settings, BookMarked, Globe } from 'lucide-react';
 import type { TFunction } from 'i18next';
+import { useLanguageFilter } from '../../hooks/useLanguageFilter';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/Select';
 
 type ActiveSection = 'stories' | 'vocabulary' | 'info';
 
@@ -18,6 +26,12 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   onClose,
   t,
 }) => {
+  const {
+    fromLanguage,
+    targetLanguage,
+    setTargetLanguage,
+    availableTargetLanguages,
+  } = useLanguageFilter();
   return (
     <div className='p-4 border-b bg-muted/50'>
       <div className='flex items-center justify-between'>
@@ -38,7 +52,44 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         </Button>
       </div>
 
-      <div className='flex gap-1 mt-3 flex-wrap'>
+      {/* Language selector row */}
+      <div className='mt-3 flex items-center justify-between'>
+        <Select
+          value={targetLanguage}
+          onValueChange={(val: string) => setTargetLanguage(val as unknown as string)}
+        >
+          <SelectTrigger className='w-[160px] h-8'>
+            <Globe className='h-4 w-4 mr-2' />
+            <SelectValue placeholder={t('storySidebar.targetLanguage')} />
+          </SelectTrigger>
+          <SelectContent
+            className='
+              data-[state=closed]:fade-out-0
+              data-[state=open]:fade-in-0
+              data-[state=open]:zoom-in-0
+              data-[state=closed]:zoom-out-0
+              data-[side=bottom]:slide-in-from-top-0
+              data-[side=left]:slide-in-from-right-0
+              data-[side=right]:slide-in-from-left-0
+              data-[side=top]:slide-in-from-bottom-0
+            '
+          >
+            {availableTargetLanguages.map(lang => (
+              <SelectItem key={lang.code} value={lang.code}>
+                {lang.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className='text-xs text-muted-foreground whitespace-nowrap'>
+          {fromLanguage
+            ? t('storySidebar.fromLanguageShort') + ': ' + fromLanguage.toUpperCase()
+            : ''}
+        </div>
+      </div>
+
+      {/* Section buttons row */}
+      <div className='flex gap-1 mt-3 flex-wrap items-center'>
         <Button
           variant={activeSection === 'stories' ? 'default' : 'ghost'}
           size='sm'

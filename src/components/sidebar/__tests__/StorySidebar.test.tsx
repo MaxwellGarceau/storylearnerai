@@ -3,6 +3,14 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StorySidebar from '../StorySidebar';
+vi.mock('../../../hooks/useLanguageFilter', () => ({
+  useLanguageFilter: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    setTargetLanguage: vi.fn(),
+    availableTargetLanguages: [{ code: 'en', name: 'English' }],
+  }),
+}));
 import {
   setupSidebarMocks,
   resetSidebarMocks,

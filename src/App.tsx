@@ -14,13 +14,16 @@ import { WalkthroughDebug } from './components/walkthrough/WalkthroughDebug';
 import { useWalkthrough } from './hooks/useWalkthrough';
 // import { usePopoverSafeguard } from './hooks/usePopoverSafeguard';
 import './lib/i18n';
+import { LanguageFilterProvider } from './hooks/useLanguageFilter';
 
 function App() {
   return (
     <TooltipProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <LanguageFilterProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </LanguageFilterProvider>
     </TooltipProvider>
   );
 }

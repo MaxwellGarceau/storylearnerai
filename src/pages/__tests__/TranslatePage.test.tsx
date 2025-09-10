@@ -4,6 +4,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import TranslatePage from '../TranslatePage';
 import { TranslationResponse } from '../../lib/translationService';
+vi.mock('../../hooks/useLanguageFilter', () => ({
+  useLanguageFilter: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    setTargetLanguage: vi.fn(),
+    availableTargetLanguages: [{ code: 'en', name: 'English' }],
+  }),
+}));
 
 // Mock the LLMServiceManager to prevent initialization issues
 vi.mock('../../lib/llm/LLMServiceManager', () => ({

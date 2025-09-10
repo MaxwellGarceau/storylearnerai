@@ -258,6 +258,16 @@ export const setupSidebarMocks = () => {
     useAuth: mockUseAuth,
   }));
 
+  // Mock global language filter context
+  vi.mock('../../../hooks/useLanguageFilter', () => ({
+    useLanguageFilter: () => ({
+      fromLanguage: 'es',
+      targetLanguage: 'en',
+      setTargetLanguage: vi.fn(),
+      availableTargetLanguages: [{ code: 'en', name: 'English' }],
+    }),
+  }));
+
   vi.mock('react-i18next', () => ({
     useTranslation: mockUseTranslation,
   }));

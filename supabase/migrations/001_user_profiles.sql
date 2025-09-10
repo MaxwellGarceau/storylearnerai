@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     display_name VARCHAR(100) NOT NULL,
     avatar_url TEXT,
-    native_language VARCHAR(10) DEFAULT 'en',
+    native_language VARCHAR(10) DEFAULT 'en' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
