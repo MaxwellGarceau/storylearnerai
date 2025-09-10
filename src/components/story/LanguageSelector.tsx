@@ -22,7 +22,11 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const { languages } = useLanguages();
 
   return (
-    <div className='space-y-2' data-language-section data-testid='language-section'>
+    <div
+      className='space-y-2'
+      data-language-section
+      data-testid='language-section'
+    >
       <label className='text-sm font-medium'>
         {t(labelKey ?? 'storyInput.optionsModal.languageLabel')}
       </label>
@@ -35,7 +39,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           .filter(lang => !excludeLanguage || lang.code !== excludeLanguage)
           .map(lang => (
             <option key={lang.code} value={lang.code}>
-              {getLanguageName(lang.code as LanguageCode)}
+              {getLanguageName(lang.code)}
             </option>
           ))}
       </select>
