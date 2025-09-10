@@ -78,7 +78,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
         username: userProfile.username ?? '',
         display_name: userProfile.display_name ?? '',
         // @ts-expect-error migrating field name
-        native_language: (userProfile as any).native_language ?? 'en',
+        native_language:
+          (userProfile as { native_language?: LanguageCode }).native_language ??
+          'en',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load profile');
@@ -169,7 +171,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
       username: profile?.username ?? '',
       display_name: profile?.display_name ?? '',
       // @ts-expect-error migrating field name
-      native_language: (profile as any)?.native_language ?? 'en',
+      native_language:
+        (profile as { native_language?: LanguageCode })?.native_language ??
+        'en',
     });
     setIsEditing(false);
     setError(null);
@@ -358,12 +362,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             </select>
           ) : (
             // @ts-expect-error migrating field name
-            (profile as any).native_language && (
+            (profile as { native_language?: LanguageCode }).native_language && (
               <Badge variant='secondary'>
                 {/* @ts-expect-error migrating field name */}
                 {languages.find(
-                  lang => lang.code === (profile as any).native_language
-                )?.name ?? (profile as any).native_language}
+                  lang =>
+                    lang.code ===
+                    (profile as { native_language?: LanguageCode })
+                      .native_language
+                )?.name ??
+                  (profile as { native_language?: LanguageCode })
+                    .native_language}
               </Badge>
             )
           )}

@@ -13,11 +13,19 @@ vi.mock('../../hooks/useLanguages', () => ({
     ],
     loading: false,
     error: null,
-    getLanguageName: vi.fn((code: string) => code === 'en' ? 'English' : 'Spanish'),
-    getNativeLanguageName: vi.fn((code: string) => code === 'en' ? 'English' : 'Español'),
-    getLanguageIdByCode: vi.fn((code: string) => code === 'en' ? 1 : 2),
-    getLanguageNameById: vi.fn((id: number) => id === 1 ? 'English' : 'Spanish'),
-    getLanguageCode: vi.fn((name: string) => name.toLowerCase() === 'english' ? 'en' : 'es'),
+    getLanguageName: vi.fn((code: string) =>
+      code === 'en' ? 'English' : 'Spanish'
+    ),
+    getNativeLanguageName: vi.fn((code: string) =>
+      code === 'en' ? 'English' : 'Español'
+    ),
+    getLanguageIdByCode: vi.fn((code: string) => (code === 'en' ? 1 : 2)),
+    getLanguageNameById: vi.fn((id: number) =>
+      id === 1 ? 'English' : 'Spanish'
+    ),
+    getLanguageCode: vi.fn((name: string) =>
+      name.toLowerCase() === 'english' ? 'en' : 'es'
+    ),
   }),
 }));
 

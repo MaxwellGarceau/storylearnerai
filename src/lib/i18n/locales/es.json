@@ -485,7 +485,10 @@
       "description": "Haz clic en cualquier palabra para traducirla automáticamente con contexto",
       "translating": "Traduciendo...",
       "translationComplete": "Traducción completa",
-      "translationError": "Error en la traducción",
+      "translationError": "Error de Traducción:",
+      "provider": "Proveedor",
+      "status": "Estado",
+      "errorCode": "Código de error",
       "sentenceContext": "Contexto de la oración",
       "wordTranslation": "Traducción de la palabra"
     }

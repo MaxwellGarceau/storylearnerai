@@ -45,16 +45,15 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
           username: user.email?.split('@')[0] ?? undefined,
           display_name: user.email?.split('@')[0] ?? undefined,
         });
-        const nativeLanguage = (profile as any)?.native_language as
-          | LanguageCode
-          | undefined;
+        const nativeLanguage = (profile as { native_language?: LanguageCode })
+          ?.native_language;
         if (nativeLanguage) {
           setFormData(prev => ({
             ...prev,
             fromLanguage: nativeLanguage,
           }));
         }
-      } catch (_) {
+      } catch {
         // Intentionally ignore; default fallback remains in place
       }
     };
@@ -156,17 +155,27 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
   const renderErrorMessage = (error: TranslationError) => {
     return (
       <div className='space-y-2'>
-        <div className='font-medium'>Translation Error:</div>
+        <div className='font-medium'>{t('translationError')}</div>
         <div className='text-sm'>{error.message}</div>
 
         {(error.provider ??
           error.statusCode ??
           (error.code && error.code !== 'UNKNOWN_ERROR')) && (
           <div className='text-xs text-muted-foreground space-y-1'>
-            {error.provider && <div>Provider: {error.provider}</div>}
-            {error.statusCode && <div>Status: {error.statusCode}</div>}
+            {error.provider && (
+              <div>
+                {t('provider')}: {error.provider}
+              </div>
+            )}
+            {error.statusCode && (
+              <div>
+                {t('status')}: {error.statusCode}
+              </div>
+            )}
             {error.code && error.code !== 'UNKNOWN_ERROR' && (
-              <div>Error code: {error.code}</div>
+              <div>
+                {t('errorCode')}: {error.code}
+              </div>
             )}
           </div>
         )}

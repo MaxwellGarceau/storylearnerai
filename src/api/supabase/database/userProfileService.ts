@@ -91,7 +91,7 @@ export class UserService {
           } else {
             sanitizedData.native_language = data.native_language
           }
-        } catch (error) {
+        } catch {
           errors.push({ field: 'native_language', message: 'Failed to validate native language' })
         }
       }
@@ -174,7 +174,7 @@ export class UserService {
           } else {
             sanitizedData.native_language = data.native_language
           }
-        } catch (error) {
+        } catch {
           errors.push({ field: 'native_language', message: 'Failed to validate native language' })
         }
       }

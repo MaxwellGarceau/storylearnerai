@@ -535,7 +535,10 @@
       "description": "Click on any word to automatically translate it with context",
       "translating": "Translating...",
       "translationComplete": "Translation complete",
-      "translationError": "Translation failed",
+      "translationError": "Translation Error:",
+      "provider": "Provider",
+      "status": "Status",
+      "errorCode": "Error code",
       "sentenceContext": "Sentence context",
       "wordTranslation": "Word translation"
     }

@@ -6,6 +6,8 @@ import { DashboardPage } from '../DashboardPage';
 import { useAuth } from '../../hooks/useAuth';
 import { UserService } from '../../api/supabase/database/userProfileService';
 import type { RenderResult } from '@testing-library/react';
+import type { DatabaseUserProfile } from '../../types/database';
+import type { UseAuthReturn } from '../../hooks/useAuth';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
@@ -136,7 +138,7 @@ describe('DashboardPage Component', () => {
     id: 'user-123',
     email: 'test@example.com',
     created_at: '2024-01-01T00:00:00Z',
-  };
+  } as const;
 
   const mockProfile = {
     id: 'profile-123',
@@ -147,7 +149,7 @@ describe('DashboardPage Component', () => {
     bio: 'Test bio',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-  } as any;
+  } as DatabaseUserProfile;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -158,8 +160,8 @@ describe('DashboardPage Component', () => {
       user: mockUser,
       loading: false,
       error: null,
-    } as any);
-    (mockUserService.getUser as any).mockResolvedValue(mockProfile);
+    } as UseAuthReturn);
+    vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
   });
 
   it('renders quick actions section', async () => {
@@ -188,8 +190,8 @@ describe('DashboardPage Component', () => {
     const spanishProfile = {
       ...mockProfile,
       native_language: 'es',
-    } as any;
-    (mockUserService.getUser as any).mockResolvedValue(spanishProfile);
+    } as DatabaseUserProfile;
+    vi.mocked(mockUserService.getUser).mockResolvedValue(spanishProfile);
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
       expect(screen.getByText('Spanish')).toBeInTheDocument();
@@ -200,8 +202,10 @@ describe('DashboardPage Component', () => {
     const unknownLanguageProfile = {
       ...mockProfile,
       native_language: 'xx',
-    } as any;
-    (mockUserService.getUser as any).mockResolvedValue(unknownLanguageProfile);
+    } as DatabaseUserProfile;
+    vi.mocked(mockUserService.getUser).mockResolvedValue(
+      unknownLanguageProfile
+    );
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
       expect(screen.getByText('xx')).toBeInTheDocument();
@@ -233,12 +237,8 @@ describe('DashboardPage Component', () => {
 
   it('handles loading state correctly', () => {
     // Create a promise that we can control
-    let resolveUserPromise: ((value: typeof mockProfile) => void) | null = null;
-    const userPromise = new Promise<typeof mockProfile>(resolve => {
-      resolveUserPromise = resolve;
-    });
 
-    (mockUserService.getUser as any).mockReturnValue(userPromise);
+    vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
     void renderWithRouter(<DashboardPage />);
     // Check that loading state is shown initially
     expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument();
@@ -255,7 +255,7 @@ describe('DashboardPage Component', () => {
   });
 
   it('displays error alert when there is an error', () => {
-    (mockUserService.getUser as any).mockRejectedValue(
+    vi.mocked(mockUserService.getUser).mockRejectedValue(
       new Error('Database error')
     );
     void renderWithRouter(<DashboardPage />);
