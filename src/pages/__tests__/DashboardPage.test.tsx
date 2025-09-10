@@ -125,11 +125,14 @@ vi.mock('react-router-dom', async () => {
 });
 
 const renderWithRouter = (component: React.ReactElement): RenderResult => {
-  let result: RenderResult;
+  let result: RenderResult | undefined;
   act(() => {
     result = render(<BrowserRouter>{component}</BrowserRouter>);
   });
-  return result!;
+  if (!result) {
+    throw new Error('Failed to render component');
+  }
+  return result;
 };
 
 describe('DashboardPage Component', () => {
