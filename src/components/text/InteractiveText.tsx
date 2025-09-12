@@ -149,7 +149,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         getTargetSentence={(fromSentence: string) =>
           targetSentences.get(fromSentence)
         }
-        isSaved={(w: string) => savedOriginalWords.has(w)}
+        isSaved={(w: string) => isSavedWord(w)}
         getDisplayTranslation={(w: string) => targetWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
