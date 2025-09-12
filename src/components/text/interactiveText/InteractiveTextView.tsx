@@ -13,9 +13,7 @@ interface InteractiveTextViewProps {
   getDisplaySentence: (segmentIndex: number) => string;
   getOverlaySentence: (displaySentence: string) => string | undefined;
   isSaved: (displayWordNormalized: string) => boolean;
-  getOverlayOppositeWord: (
-    displayWordNormalized: string
-  ) => string | undefined;
+  getOverlayOppositeWord: (displayWordNormalized: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
   onTranslate: (normalizedWord: string, segmentIndex: number) => void;
 }
@@ -62,7 +60,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         };
 
         // When available, treat the translated opposite-language word as the normalized key for WordToken
-        const normalizedWordForProps = overlayTranslatedTargetWord ?? normalizedFromWord;
+        const normalizedWordForProps =
+          overlayTranslatedTargetWord ?? normalizedFromWord;
         // Saved status should be checked against the from-language word when overlay exists
         const saved = isSaved(normalizedWordForProps);
 
@@ -76,10 +75,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               isOpen={open}
               isSaved={saved}
               isTranslating={isTranslating(normalizedFromWord)}
-              // Only show overlay (from-word above target-word) when a translation exists
-              overlayOppositeWord={
-                overlayTranslatedTargetWord ? normalizedFromWord : undefined
-              }
+              // Only show overlay (opposite-language word) when a translation exists
+              overlayOppositeWord={overlayTranslatedTargetWord ?? undefined}
               displaySentenceContext={displaySentence}
               overlaySentenceContext={overlaySentence}
               fromLanguage={fromLanguage}

@@ -11,7 +11,7 @@ vi.mock('../../useInteractiveTextContext', () => ({
     fromLanguage: 'en',
     targetLanguage: 'es',
     isIncludedVocabulary: vi.fn(() => false),
-    getTargetWord: vi.fn(),
+    getOppositeWordFor: vi.fn(),
     isTranslatingWord: vi.fn(() => false),
     isSavedWord: vi.fn(() => false),
     savedOriginalWords: new Set(),
@@ -83,15 +83,16 @@ describe('WordToken', () => {
   });
 
   const commonProps = {
-    normalizedWord: 'hello',
+    actionWordNormalized: 'hello',
+    inclusionCheckWord: 'hello',
     cleanWord: 'Hello',
     punctuation: ',',
     isOpen: false,
     isSaved: true,
     isTranslating: false,
-    targetWord: undefined as string | undefined,
-    fromSentence: 'Hello world.',
-    targetSentence: 'Hola mundo.',
+    overlayOppositeWord: undefined as string | undefined,
+    displaySentenceContext: 'Hello world.',
+    overlaySentenceContext: 'Hola mundo.',
     fromLanguage: 'en' as LanguageCode,
     targetLanguage: 'es' as LanguageCode,
     onOpenChange: vi.fn(),
@@ -103,7 +104,11 @@ describe('WordToken', () => {
 
   it('renders with tooltips disabled using plain highlight and overlay when provided', () => {
     render(
-      <WordToken {...commonProps} enableTooltips={false} targetWord='hola' />
+      <WordToken
+        {...commonProps}
+        enableTooltips={false}
+        overlayOppositeWord='hola'
+      />
     );
 
     // No WordMenu when tooltips disabled

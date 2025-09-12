@@ -77,7 +77,7 @@ describe('VocabularySelector', () => {
     expect(screen.getByText('No vocabulary available')).toBeInTheDocument();
   });
 
-  it('lists vocabulary and toggles selection using from_word as key', () => {
+  it('lists vocabulary and toggles selection using target_word as key', () => {
     const onChange = vi.fn();
     const items = [
       makeVocab(1, 'hola', 'hello'),
@@ -87,24 +87,24 @@ describe('VocabularySelector', () => {
     render(
       <VocabularySelector
         availableVocabulary={items}
-        selectedVocabulary={['hola']}
+        selectedVocabulary={['hello']}
         onVocabularyChange={onChange}
         vocabLoading={false}
       />
     );
 
-    // Buttons display "from → target"
-    const holaBtn = screen.getByRole('button', { name: 'hola → hello' });
-    const adiosBtn = screen.getByRole('button', { name: 'adiós → goodbye' });
+    // Buttons display "target → from"
+    const holaBtn = screen.getByRole('button', { name: 'hello → hola' });
+    const adiosBtn = screen.getByRole('button', { name: 'goodbye → adiós' });
     expect(holaBtn).toBeInTheDocument();
     expect(adiosBtn).toBeInTheDocument();
 
-    // Toggling a selected item removes it
+    // Toggling a selected item removes it (selection uses target_word)
     fireEvent.click(holaBtn);
     expect(onChange).toHaveBeenCalledWith([]);
 
     // Toggling an unselected item adds it
     fireEvent.click(adiosBtn);
-    expect(onChange).toHaveBeenLastCalledWith(['hola', 'adiós']);
+    expect(onChange).toHaveBeenLastCalledWith(['goodbye']);
   });
 });

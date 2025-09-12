@@ -91,5 +91,10 @@ export function useSavedWords(
     [vocabulary, fromLanguageId, targetLanguageId]
   );
 
-  return { savedOriginalWords, findSavedWordData, savedTargetWords, findSavedByTargetWord };
+  return {
+    savedOriginalWords,
+    findSavedWordData,
+    savedTargetWords,
+    findSavedByTargetWord,
+  };
 }

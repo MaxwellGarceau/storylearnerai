@@ -44,10 +44,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     savedTargetWords,
     findSavedWordData,
     findSavedByTargetWord,
-  } = useSavedWords(
-    fromLanguage,
-    targetLanguage
-  );
+  } = useSavedWords(fromLanguage, targetLanguage);
 
   // Translation cache and handler
   const {
@@ -82,7 +79,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   );
 
   const isSavedWord = useCallback(
-    (word: string) => savedOriginalWords.has(word) || savedTargetWords.has(word),
+    (word: string) =>
+      savedOriginalWords.has(word) || savedTargetWords.has(word),
     [savedOriginalWords, savedTargetWords]
   );
 
