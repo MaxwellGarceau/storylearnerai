@@ -78,8 +78,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   ]);
 
   const handleTranslate = () => {
-    // Allow translate if there is no runtime translation yet
-    if (!effectiveTargetWord && !effectiveIsTranslating) {
+    // Always allow translate click unless actively translating
+    if (!effectiveIsTranslating) {
       onTranslate?.(word);
     }
   };
@@ -100,8 +100,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
     ? getLanguageIdByCode(effectiveTargetLanguage)
     : null;
 
-  const translateButtonDisabled =
-    effectiveIsTranslating || Boolean(effectiveTargetWord);
+  const translateButtonDisabled = effectiveIsTranslating;
 
   const translateButtonLabel = effectiveIsTranslating
     ? 'Translating...'

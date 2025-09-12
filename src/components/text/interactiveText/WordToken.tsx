@@ -13,6 +13,8 @@ interface WordTokenProps {
   isSaved: boolean;
   isTranslating: boolean;
   targetWord?: string; // used for overlay only (runtime translation)
+  // Use this word to decide included-vocabulary highlighting (tie to displayed token)
+  inclusionCheckWord: string;
   fromSentence: string;
   targetSentence?: string;
   fromLanguage: LanguageCode;
@@ -32,6 +34,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   isSaved,
   isTranslating,
   targetWord,
+  inclusionCheckWord,
   fromSentence,
   targetSentence,
   fromLanguage,
@@ -44,7 +47,7 @@ const WordToken: React.FC<WordTokenProps> = ({
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =
-    ctx?.isIncludedVocabulary(normalizedWord) ?? false;
+    ctx?.isIncludedVocabulary(inclusionCheckWord) ?? false;
 
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({

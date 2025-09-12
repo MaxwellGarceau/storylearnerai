@@ -67,6 +67,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
           <span key={idx}>
             <WordToken
               normalizedWord={normalizedWordForProps}
+              inclusionCheckWord={normalizedFromWord}
               cleanWord={cleanWord}
               punctuation={punctuation}
               isOpen={open}
