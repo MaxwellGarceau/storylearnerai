@@ -63,7 +63,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   });
 
   // Create callbacks before conditional return (hooks must be called unconditionally)
-  const getTargetWord = useCallback(
+  const getOppositeWordFor = useCallback(
     (word: string) => {
       // Try runtime overlay first
       const runtime = targetWords.get(word);
@@ -130,7 +130,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         translatingWords,
         savedTranslationId,
         includedVocabulary,
-        getTargetWord,
+        getOppositeWordFor,
         isTranslatingWord,
         isSavedWord,
         isIncludedVocabulary,
@@ -143,14 +143,14 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         disabled={disabled}
         fromLanguage={fromLanguage}
         targetLanguage={targetLanguage}
-        getOriginalSentence={(segmentIndex: number) =>
+        getDisplaySentence={(segmentIndex: number) =>
           extractSentenceContext(segmentIndex)
         }
-        getTargetSentence={(fromSentence: string) =>
-          targetSentences.get(fromSentence)
+        getOverlaySentence={(displaySentence: string) =>
+          targetSentences.get(displaySentence)
         }
         isSaved={(w: string) => isSavedWord(w)}
-        getDisplayTranslation={(w: string) => targetWords.get(w)}
+        getOverlayOppositeWord={(w: string) => targetWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
       />

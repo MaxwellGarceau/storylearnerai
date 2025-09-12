@@ -10,10 +10,12 @@ interface InteractiveTextViewProps {
   disabled: boolean;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
-  getOriginalSentence: (segmentIndex: number) => string;
-  getTargetSentence: (fromSentence: string) => string | undefined;
-  isSaved: (normalizedWord: string) => boolean;
-  getDisplayTranslation: (normalizedWord: string) => string | undefined;
+  getDisplaySentence: (segmentIndex: number) => string;
+  getOverlaySentence: (displaySentence: string) => string | undefined;
+  isSaved: (displayWordNormalized: string) => boolean;
+  getOverlayOppositeWord: (
+    displayWordNormalized: string
+  ) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
   onTranslate: (normalizedWord: string, segmentIndex: number) => void;
 }
@@ -25,10 +27,10 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   disabled,
   fromLanguage,
   targetLanguage,
-  getOriginalSentence,
-  getTargetSentence,
+  getDisplaySentence,
+  getOverlaySentence,
   isSaved,
-  getDisplayTranslation,
+  getOverlayOppositeWord,
   isTranslating,
   onTranslate,
 }) => {
@@ -48,9 +50,10 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const normalizedFromWord = t.normalizedWord;
         const cleanWord = t.cleanWord;
         const punctuation = t.punctuation;
-        const overlayTranslatedTargetWord = getDisplayTranslation(normalizedFromWord);
-        const fromSentence = getOriginalSentence(t.segmentIndex);
-        const targetSentence = getTargetSentence(fromSentence);
+        const overlayTranslatedTargetWord =
+          getOverlayOppositeWord(normalizedFromWord);
+        const displaySentence = getDisplaySentence(t.segmentIndex);
+        const overlaySentence = getOverlaySentence(displaySentence);
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = () => {
@@ -66,7 +69,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         return (
           <span key={idx}>
             <WordToken
-              normalizedWord={normalizedWordForProps}
+              actionWordNormalized={normalizedWordForProps}
               inclusionCheckWord={normalizedFromWord}
               cleanWord={cleanWord}
               punctuation={punctuation}
@@ -74,9 +77,11 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               isSaved={saved}
               isTranslating={isTranslating(normalizedFromWord)}
               // Only show overlay (from-word above target-word) when a translation exists
-              targetWord={overlayTranslatedTargetWord ? normalizedFromWord : undefined}
-              fromSentence={fromSentence}
-              targetSentence={targetSentence}
+              overlayOppositeWord={
+                overlayTranslatedTargetWord ? normalizedFromWord : undefined
+              }
+              displaySentenceContext={displaySentence}
+              overlaySentenceContext={overlaySentence}
               fromLanguage={fromLanguage}
               targetLanguage={targetLanguage}
               onOpenChange={isOpen => {

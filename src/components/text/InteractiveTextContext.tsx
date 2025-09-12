@@ -12,7 +12,7 @@ export interface InteractiveTextContextValue {
   savedTranslationId?: number;
   includedVocabulary: string[];
   // Selector helpers
-  getTargetWord: (word: string) => string | undefined;
+  getOppositeWordFor: (word: string) => string | undefined;
   isTranslatingWord: (word: string) => boolean;
   isSavedWord: (word: string) => boolean;
   isIncludedVocabulary: (word: string) => boolean;
