@@ -41,6 +41,22 @@ export function useSavedWords(
     return set;
   }, [vocabulary, fromLanguageId, targetLanguageId]);
 
+  const savedTargetWords = useMemo(() => {
+    if (fromLanguageId == null || targetLanguageId == null)
+      return new Set<string>();
+    const set = new Set<string>();
+    for (const item of vocabulary) {
+      if (
+        item.from_language_id === fromLanguageId &&
+        item.target_language_id === targetLanguageId &&
+        item.target_word
+      ) {
+        set.add(item.target_word.toLowerCase());
+      }
+    }
+    return set;
+  }, [vocabulary, fromLanguageId, targetLanguageId]);
+
   const findSavedWordData = useCallback(
     (word: string) => {
       if (fromLanguageId == null || targetLanguageId == null) return null;
@@ -58,5 +74,22 @@ export function useSavedWords(
     [vocabulary, fromLanguageId, targetLanguageId]
   );
 
-  return { savedOriginalWords, findSavedWordData };
+  const findSavedByTargetWord = useCallback(
+    (word: string) => {
+      if (fromLanguageId == null || targetLanguageId == null) return null;
+
+      const normalizedWord = word.toLowerCase();
+      return (
+        vocabulary.find(
+          item =>
+            item.from_language_id === fromLanguageId &&
+            item.target_language_id === targetLanguageId &&
+            item.target_word?.toLowerCase() === normalizedWord
+        ) ?? null
+      );
+    },
+    [vocabulary, fromLanguageId, targetLanguageId]
+  );
+
+  return { savedOriginalWords, findSavedWordData, savedTargetWords, findSavedByTargetWord };
 }

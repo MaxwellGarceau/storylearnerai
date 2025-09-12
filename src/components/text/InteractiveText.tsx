@@ -39,7 +39,12 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   const { extractSentenceContext } = useSentenceContext(words);
 
   // Saved words and lookup
-  const { savedOriginalWords, findSavedWordData } = useSavedWords(
+  const {
+    savedOriginalWords,
+    savedTargetWords,
+    findSavedWordData,
+    findSavedByTargetWord,
+  } = useSavedWords(
     fromLanguage,
     targetLanguage
   );
@@ -59,8 +64,16 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
 
   // Create callbacks before conditional return (hooks must be called unconditionally)
   const getTargetWord = useCallback(
-    (word: string) => targetWords.get(word),
-    [targetWords]
+    (word: string) => {
+      // Try runtime overlay first
+      const runtime = targetWords.get(word);
+      if (runtime) return runtime;
+      // Then try saved reverse lookup (when viewing target-side word)
+      const saved = findSavedByTargetWord(word);
+      if (saved?.from_word) return saved.from_word;
+      return undefined;
+    },
+    [targetWords, findSavedByTargetWord]
   );
 
   const isTranslatingWord = useCallback(
@@ -69,8 +82,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   );
 
   const isSavedWord = useCallback(
-    (word: string) => savedOriginalWords.has(word),
-    [savedOriginalWords]
+    (word: string) => savedOriginalWords.has(word) || savedTargetWords.has(word),
+    [savedOriginalWords, savedTargetWords]
   );
 
   const isIncludedVocabulary = useCallback(
@@ -79,12 +92,23 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   );
 
   const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
-    const saved = findSavedWordData(w);
     const alreadyRuntime = targetWords.get(w);
-    if (saved?.target_word && !alreadyRuntime) {
-      setWordTranslation(w, saved.target_word);
+    if (alreadyRuntime) return;
+
+    // If w is a from-word saved key, inject its target
+    const savedByFrom = findSavedWordData(w);
+    if (savedByFrom?.target_word) {
+      setWordTranslation(w, savedByFrom.target_word);
       return;
     }
+
+    // If w is a target-word saved key (viewing target side), inject its from word as overlay
+    const savedByTarget = findSavedByTargetWord(w);
+    if (savedByTarget?.from_word) {
+      setWordTranslation(w, savedByTarget.from_word);
+      return;
+    }
+
     void handleTranslate(w, segmentIndex);
   };
 
@@ -99,6 +123,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         fromLanguage,
         targetLanguage,
         savedOriginalWords,
+        // expose only existing finders to keep context stable
         findSavedWordData,
         targetWords,
         targetSentences,

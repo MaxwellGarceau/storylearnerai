@@ -111,6 +111,27 @@ const WordMenu: React.FC<WordMenuProps> = ({
         : 'Translated'
       : 'Translate';
 
+  // Compute canonical contexts: from = user's from-language sentence, target = user's target-language sentence
+  const toLower = (s?: string) => s?.toLowerCase() ?? '';
+  let effectiveFromContext = fromSentence;
+  let effectiveTargetContext = targetSentence;
+
+  if (effectiveTargetWord) {
+    const targetInTargetSentence = toLower(targetSentence).includes(
+      toLower(effectiveTargetWord)
+    );
+    const targetInFromSentence = toLower(fromSentence).includes(
+      toLower(effectiveTargetWord)
+    );
+
+    // If the displayed sentence (fromSentence) actually contains the target-word, we are viewing the target side.
+    // Flip to keep canonical storage orientation (from = from-language, target = target-language)
+    if (targetInFromSentence && !targetInTargetSentence) {
+      effectiveFromContext = targetSentence;
+      effectiveTargetContext = fromSentence;
+    }
+  }
+
   return (
     <Popover
       open={open}
@@ -186,8 +207,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       <VocabularySaveButton
                         fromWord={word}
                         targetWord={effectiveTargetWord ?? ''}
-                        fromContext={fromSentence}
-                        targetContext={targetSentence}
+                        fromContext={effectiveFromContext}
+                        targetContext={effectiveTargetContext}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
                         savedTranslationId={effectiveSavedTranslationId}
@@ -216,8 +237,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     <VocabularySaveButton
                       fromWord={word}
                       targetWord={effectiveTargetWord ?? ''}
-                      fromContext={fromSentence}
-                      targetContext={targetSentence}
+                      fromContext={effectiveFromContext}
+                      targetContext={effectiveTargetContext}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       savedTranslationId={effectiveSavedTranslationId}
