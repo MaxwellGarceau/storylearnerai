@@ -28,6 +28,8 @@ const StoryContent: React.FC<StoryContentProps> = ({
           text={displayText}
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
+          isDisplayingFromSide={showFrom}
+          // Provide display-side flag via context: true when showing from-language text
           savedTranslationId={savedTranslationId}
           includedVocabulary={translationData.includedVocabulary}
         />

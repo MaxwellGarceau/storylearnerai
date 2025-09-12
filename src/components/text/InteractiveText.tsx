@@ -12,6 +12,8 @@ interface InteractiveTextProps {
   className?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
+  // Whether the currently displayed text is the from-language side
+  isDisplayingFromSide?: boolean;
   enableTooltips?: boolean;
   disabled?: boolean;
   savedTranslationId?: number;
@@ -23,6 +25,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   className,
   fromLanguage,
   targetLanguage,
+  isDisplayingFromSide = true,
   enableTooltips = true,
   disabled = false,
   savedTranslationId,
@@ -120,6 +123,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
       value={{
         fromLanguage,
         targetLanguage,
+        isDisplayingFromSide,
         savedOriginalWords,
         // expose only existing finders to keep context stable
         findSavedWordData,

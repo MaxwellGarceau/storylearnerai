@@ -97,7 +97,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   return (
     <span>
       <WordMenu
-        word={actionWordNormalized}
+        word={inclusionCheckWord}
         open={isOpen}
         onOpenChange={onOpenChange}
         onTranslate={() => {

@@ -103,8 +103,8 @@ describe('VocabularySelector', () => {
     fireEvent.click(holaBtn);
     expect(onChange).toHaveBeenCalledWith([]);
 
-    // Toggling an unselected item adds it
+    // Toggling an unselected item adds it; component preserves existing selections
     fireEvent.click(adiosBtn);
-    expect(onChange).toHaveBeenLastCalledWith(['goodbye']);
+    expect(onChange).toHaveBeenLastCalledWith(['hello', 'goodbye']);
   });
 });

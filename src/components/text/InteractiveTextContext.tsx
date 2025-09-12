@@ -4,6 +4,8 @@ import type { LanguageCode } from '../../types/llm/prompts';
 export interface InteractiveTextContextValue {
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
+  // Whether the currently displayed text is the from-language side
+  isDisplayingFromSide: boolean;
   savedOriginalWords: Set<string>;
   findSavedWordData: (word: string) => { target_word?: string | null } | null;
   targetWords: Map<string, string>;
