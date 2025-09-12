@@ -50,14 +50,16 @@ const VocabularySelector: React.FC<VocabularySelectorProps> = ({
         ) : (
           <div className='flex flex-wrap gap-2'>
             {availableVocabulary.map(v => {
-              const display = `${v.from_word} → ${v.target_word}`;
-              const key = `${v.id}-${v.from_word}`;
-              const selected = isSelected(v.from_word);
+              // Display as target → from
+              const display = `${v.target_word} → ${v.from_word}`;
+              // Select by target_word because translation service expects target-language words
+              const key = `${v.id}-${v.target_word}`;
+              const selected = isSelected(v.target_word);
               return (
                 <button
                   key={key}
                   type='button'
-                  onClick={() => toggleSelected(v.from_word)}
+                  onClick={() => toggleSelected(v.target_word)}
                   className={`text-sm px-2 py-1 rounded-md border transition-colors ${
                     selected
                       ? 'bg-primary text-primary-foreground border-primary'
