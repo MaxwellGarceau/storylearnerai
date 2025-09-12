@@ -45,30 +45,35 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
           return <span key={idx}>{t.text}</span>;
         }
 
-        const normalizedWord = t.normalizedWord;
+        const normalizedFromWord = t.normalizedWord;
         const cleanWord = t.cleanWord;
         const punctuation = t.punctuation;
-        const saved = isSaved(normalizedWord);
-        const overlayTranslatedWord = getDisplayTranslation(normalizedWord);
+        const overlayTranslatedTargetWord = getDisplayTranslation(normalizedFromWord);
         const fromSentence = getOriginalSentence(t.segmentIndex);
         const targetSentence = getTargetSentence(fromSentence);
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = () => {
           // Always delegate to parent: it will inject saved or call API
-          onTranslate(normalizedWord, t.segmentIndex);
+          onTranslate(normalizedFromWord, t.segmentIndex);
         };
+
+        // When available, treat the translated opposite-language word as the normalized key for WordToken
+        const normalizedWordForProps = overlayTranslatedTargetWord ?? normalizedFromWord;
+        // Saved status should be checked against the from-language word when overlay exists
+        const saved = isSaved(normalizedWordForProps);
 
         return (
           <span key={idx}>
             <WordToken
-              normalizedWord={normalizedWord}
+              normalizedWord={normalizedWordForProps}
               cleanWord={cleanWord}
               punctuation={punctuation}
               isOpen={open}
               isSaved={saved}
-              isTranslating={isTranslating(normalizedWord)}
-              targetWord={overlayTranslatedWord}
+              isTranslating={isTranslating(normalizedFromWord)}
+              // Only show overlay (from-word above target-word) when a translation exists
+              targetWord={overlayTranslatedTargetWord ? normalizedFromWord : undefined}
               fromSentence={fromSentence}
               targetSentence={targetSentence}
               fromLanguage={fromLanguage}
