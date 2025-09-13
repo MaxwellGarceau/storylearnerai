@@ -278,7 +278,10 @@ export const setupSidebarMocks = () => {
   }));
 
   // Mock saved stories data
-  vi.mock('../../../data/savedStories.json', () => ({
+  vi.mock('../../../data/savedStoriesEsToEn.json', () => ({
+    default: { stories: mockSampleStories },
+  }));
+  vi.mock('../../../data/savedStoriesEnToEs.json', () => ({
     default: { stories: mockSampleStories },
   }));
 };

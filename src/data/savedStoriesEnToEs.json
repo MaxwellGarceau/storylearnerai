@@ -1,0 +1,106 @@
+{
+  "stories": [
+    {
+      "id": 101,
+      "user_id": "sample-user-id",
+      "from_story": "Once upon a time, three little pigs lived with their mother. One day, their mother told them they were old enough to build their own houses. The first pig built a house of straw. The second pig built a house of wood. The third pig built a house of bricks. One day, a big bad wolf came. He huffed and puffed and blew down the straw house. The first pig ran to the wooden house. The wolf huffed and puffed and blew down the wooden house. The two pigs ran to the brick house. The wolf huffed and puffed, but he could not blow down the brick house. The three little pigs lived happily in the brick house.",
+      "target_story": "",
+      "from_language_id": 2,
+      "target_language_id": 1,
+      "difficulty_level_id": 1,
+      "title": "The Three Little Pigs",
+      "notes": "A classic tale about three pigs who build different houses and learn the value of hard work.",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "from_language": {
+        "id": 2,
+        "code": "en",
+        "name": "English",
+        "native_name": "English",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "target_language": {
+        "id": 1,
+        "code": "es",
+        "name": "Spanish",
+        "native_name": "Español",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "difficulty_level": {
+        "id": 1,
+        "code": "a1",
+        "name": "A1 (Beginner)",
+        "description": "Beginner level",
+        "created_at": "2020-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": 102,
+      "user_id": "sample-user-id",
+      "from_story": "There was once a girl who always wore a red hood. Her grandmother had made it for her, and she wore it so often that everyone called her Little Red Riding Hood. One day, her mother asked her to take a basket of food to her grandmother who lived in the forest. 'Do not leave the path,' her mother said. Little Red Riding Hood promised to obey. In the forest, she met a wolf. The wolf asked where she was going, and the girl told him she was visiting her grandmother. The wolf ran along the shortest path and arrived at the grandmother's house first. He ate the grandmother and put on her nightgown. When Little Red Riding Hood arrived, the wolf tricked her and ate her, too. A hunter passing by heard the wolf's snores, went inside, cut open the wolf's belly, and saved the grandmother and the girl. They filled the wolf's belly with stones, and the wolf died.",
+      "target_story": "",
+      "from_language_id": 2,
+      "target_language_id": 1,
+      "difficulty_level_id": 2,
+      "title": "Little Red Riding Hood",
+      "notes": "The story of a little girl who visits her grandmother and encounters a cunning wolf.",
+      "created_at": "2024-01-02T00:00:00Z",
+      "updated_at": "2024-01-02T00:00:00Z",
+      "from_language": {
+        "id": 2,
+        "code": "en",
+        "name": "English",
+        "native_name": "English",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "target_language": {
+        "id": 1,
+        "code": "es",
+        "name": "Spanish",
+        "native_name": "Español",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "difficulty_level": {
+        "id": 2,
+        "code": "a2",
+        "name": "A2 (Elementary)",
+        "description": "Elementary level",
+        "created_at": "2020-01-01T00:00:00Z"
+      }
+    },
+    {
+      "id": 103,
+      "user_id": "sample-user-id",
+      "from_story": "On a farm, a duck was hatching her eggs. When the eggs opened, all the ducklings were yellow and cute, except one that was big, gray, and awkward. The other ducklings made fun of him and called him the 'ugly duckling.' Even his mother seemed to keep her distance. Feeling very sad, the ugly duckling left the farm. He suffered through a cold winter and hunger. When spring arrived, he saw his reflection in the water and realized he was no longer an ugly duckling but a beautiful white swan. The other swans accepted him, and he finally found his place in the world.",
+      "target_story": "",
+      "from_language_id": 2,
+      "target_language_id": 1,
+      "difficulty_level_id": 3,
+      "title": "The Ugly Duckling",
+      "notes": "A touching story about a duckling who grows up to become a beautiful swan.",
+      "created_at": "2024-01-03T00:00:00Z",
+      "updated_at": "2024-01-03T00:00:00Z",
+      "from_language": {
+        "id": 2,
+        "code": "en",
+        "name": "English",
+        "native_name": "English",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "target_language": {
+        "id": 1,
+        "code": "es",
+        "name": "Spanish",
+        "native_name": "Español",
+        "created_at": "2020-01-01T00:00:00Z"
+      },
+      "difficulty_level": {
+        "id": 3,
+        "code": "b1",
+        "name": "B1 (Intermediate)",
+        "description": "Intermediate level",
+        "created_at": "2020-01-01T00:00:00Z"
+      }
+    }
+  ]
+}

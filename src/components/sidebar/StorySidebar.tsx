@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '../../lib/utils';
-import savedStoriesData from '../../data/savedStories.json';
+import savedStoriesData from '../../data/savedStoriesEsToEn.json';
+import savedStoriesEnToEsData from '../../data/savedStoriesEnToEs.json';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
@@ -42,10 +43,13 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { targetLanguage } = useLanguageFilter();
+  const { targetLanguage, fromLanguage } = useLanguageFilter();
 
-  const sampleStories: DatabaseSavedTranslationWithDetails[] =
-    savedStoriesData.stories as DatabaseSavedTranslationWithDetails[];
+  const sampleStories: DatabaseSavedTranslationWithDetails[] = (
+    fromLanguage === 'en'
+      ? savedStoriesEnToEsData.stories
+      : savedStoriesData.stories
+  ) as DatabaseSavedTranslationWithDetails[];
 
   const getInitialSidebarState = (): boolean => {
     try {
