@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLanguages } from './useLanguages';
 import { LanguageCode } from '../types/llm/prompts';
 
@@ -37,6 +37,29 @@ export const useLocalization = () => {
     },
     [i18n]
   );
+
+  // When the user's native language changes in their profile, switch UI localization
+  // to the target language (the non-native one) automatically.
+  useEffect(() => {
+    const onProfileUpdated = (evt: Event) => {
+      const updatedNative = (
+        evt as CustomEvent<{ native_language?: LanguageCode }>
+      ).detail?.native_language;
+      if (!updatedNative) return;
+      const uiLanguage: LanguageCode = updatedNative;
+      void i18n.changeLanguage(uiLanguage);
+      try {
+        localStorage.setItem('i18nextLng', uiLanguage);
+      } catch {
+        // ignore storage errors
+      }
+    };
+
+    window.addEventListener('user:profile-updated', onProfileUpdated);
+    return () => {
+      window.removeEventListener('user:profile-updated', onProfileUpdated);
+    };
+  }, [i18n]);
 
   const getCurrentLocalization = useCallback((): LocalizationInfo => {
     const name = getLanguageName(effectiveLanguage);

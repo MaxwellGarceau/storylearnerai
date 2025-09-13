@@ -61,3 +61,9 @@ The translation flow supports selecting both a from language (source) and a to l
 
 - Current supported codes: `en`, `es` (see `src/types/llm/prompts.ts`).
 - Copy in i18n resources that explicitly mentions English is preserved; UI labels and data flow use the dynamic from/to selections.
+
+### Sample Stories
+
+- Spanish → English (default): `src/data/savedStoriesEsToEn.json`.
+- English → Spanish: `src/data/savedStoriesEnToEs.json`.
+- Selection logic lives in `src/components/sidebar/StorySidebar.tsx` and chooses the dataset based on `fromLanguage` from `useLanguageFilter`. If `fromLanguage === 'en'`, it uses English→Spanish; otherwise, Spanish→English.

@@ -8,8 +8,8 @@
       "from_language_id": 1,
       "target_language_id": 2,
       "difficulty_level_id": 1,
-      "title": "The Three Little Pigs",
-      "notes": "A classic tale about three pigs who build different houses and learn the value of hard work.",
+      "title": "Los tres cerditos",
+      "notes": "Un cuento clásico sobre tres cerditos que construyen diferentes casas y aprenden el valor del trabajo duro.",
       "created_at": "2024-01-01T00:00:00Z",
       "updated_at": "2024-01-01T00:00:00Z",
       "from_language": {
@@ -42,8 +42,8 @@
       "from_language_id": 1,
       "target_language_id": 2,
       "difficulty_level_id": 2,
-      "title": "Little Red Riding Hood",
-      "notes": "The story of a little girl who visits her grandmother and encounters a cunning wolf.",
+      "title": "Caperucita Roja",
+      "notes": "La historia de una niña que visita a su abuela y se encuentra con un lobo astuto.",
       "created_at": "2024-01-02T00:00:00Z",
       "updated_at": "2024-01-02T00:00:00Z",
       "from_language": {
@@ -76,8 +76,8 @@
       "from_language_id": 1,
       "target_language_id": 2,
       "difficulty_level_id": 3,
-      "title": "The Ugly Duckling",
-      "notes": "A touching story about a duckling who grows up to become a beautiful swan.",
+      "title": "El patito feo",
+      "notes": "Una historia conmovedora sobre un patito que crece hasta convertirse en un hermoso cisne.",
       "created_at": "2024-01-03T00:00:00Z",
       "updated_at": "2024-01-03T00:00:00Z",
       "from_language": {

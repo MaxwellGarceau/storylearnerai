@@ -172,8 +172,8 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    expect(screen.getByText('The Three Little Pigs')).toBeInTheDocument();
-    expect(screen.getByText('Little Red Riding Hood')).toBeInTheDocument();
+    expect(screen.getByText('Los tres cerditos')).toBeInTheDocument();
+    expect(screen.getByText('Caperucita Roja')).toBeInTheDocument();
   });
 
   it('shows vocabulary section when vocabulary button is clicked', () => {
