@@ -106,10 +106,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const translateButtonLabel = effectiveIsTranslating
     ? 'Translating...'
-    : effectiveOppositeWord
-      ? effectiveIsSaved
-        ? 'Already Saved'
-        : 'Translated'
+    : effectiveOppositeWord && !effectiveIsSaved
+      ? 'Translated'
       : 'Translate';
 
   // Compute canonical contexts: from = user's from-language sentence, target = user's target-language sentence

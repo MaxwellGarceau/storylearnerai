@@ -436,7 +436,7 @@ describe('WordMenu Component', () => {
     expect(translateButton).not.toBeDisabled();
   });
 
-  it('shows "Already Saved" label and keeps translate clickable when saved', () => {
+  it('shows "Translate" label when saved (still clickable)', () => {
     mockLoggedIn();
     renderWithRouter(
       <WordMenu
@@ -454,8 +454,8 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     const translateButton = buttons[0];
 
-    // Shows "Already Saved" label but remains clickable (enabled)
-    expect(translateButton).toHaveTextContent('Already Saved');
+    // Shows "Translate" label even when saved
+    expect(translateButton).toHaveTextContent('Translate');
     expect(translateButton).not.toBeDisabled();
   });
 
