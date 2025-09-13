@@ -64,6 +64,11 @@ export interface TranslationError {
 class TranslationService {
   async targetStory(request: TranslationRequest): TranslationResponsePromise {
     try {
+      // Validate that source and target languages are different
+      if (request.fromLanguage === request.toLanguage) {
+        throw new Error('Source and target languages must be different');
+      }
+
       const context = {
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
@@ -158,6 +163,11 @@ class TranslationService {
     request: WordTranslationRequest
   ): Promise<WordTranslationResponse> {
     try {
+      // Validate that source and target languages are different
+      if (request.fromLanguage === request.toLanguage) {
+        throw new Error('Source and target languages must be different');
+      }
+
       const context = {
         sentence: request.sentence,
         focusWord: request.focusWord,

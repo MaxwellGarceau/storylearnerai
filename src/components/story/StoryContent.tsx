@@ -17,15 +17,9 @@ const StoryContent: React.FC<StoryContentProps> = ({
     ? translationData.fromText
     : translationData.targetText;
 
-  // Default from and target language
-  let fromLanguage = translationData.fromLanguage;
-  let targetLanguage = translationData.toLanguage;
-
-  // If showFrom is toggled then swap from and target language
-  if (showFrom) {
-    fromLanguage = translationData.toLanguage;
-    targetLanguage = translationData.fromLanguage;
-  }
+  // Keep canonical language orientation for saving/lookups
+  const fromLanguage = translationData.fromLanguage;
+  const targetLanguage = translationData.toLanguage;
 
   return (
     <div className='relative overflow-hidden'>
@@ -34,6 +28,8 @@ const StoryContent: React.FC<StoryContentProps> = ({
           text={displayText}
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
+          isDisplayingFromSide={showFrom}
+          // Provide display-side flag via context: true when showing from-language text
           savedTranslationId={savedTranslationId}
           includedVocabulary={translationData.includedVocabulary}
         />

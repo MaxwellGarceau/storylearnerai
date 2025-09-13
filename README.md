@@ -146,7 +146,7 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE,
     display_name VARCHAR(100),
     avatar_url TEXT,
-    preferred_language VARCHAR(10) DEFAULT 'en',
+    native_language VARCHAR(10) DEFAULT 'en',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

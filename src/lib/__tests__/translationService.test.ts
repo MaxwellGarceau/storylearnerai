@@ -130,6 +130,19 @@ describe('translationService', () => {
         'Translation failed'
       );
     });
+
+    it('should reject translation when source and target languages are the same', async () => {
+      const request = {
+        text: 'Hello world',
+        fromLanguage: 'en' as const,
+        toLanguage: 'en' as const,
+        difficulty: 'a1' as const,
+      };
+
+      await expect(translationService.translate(request)).rejects.toThrow(
+        'Source and target languages must be different'
+      );
+    });
   });
 
   // Availability checks removed in service; tests updated accordingly
@@ -159,6 +172,53 @@ describe('translationService', () => {
         false
       );
       expect(translationService.isMockTranslationEnabled()).toBe(false);
+    });
+  });
+
+  describe('targetWordWithContext', () => {
+    it('should reject word translation when source and target languages are the same', async () => {
+      const request = {
+        sentence: 'Hello world',
+        focusWord: 'hello',
+        fromLanguage: 'en' as const,
+        toLanguage: 'en' as const,
+        difficulty: 'a1' as const,
+      };
+
+      await expect(
+        translationService.targetWordWithContext(request)
+      ).rejects.toThrow('Source and target languages must be different');
+    });
+
+    it('should successfully translate word when languages are different', async () => {
+      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content: 'hola',
+        provider: 'gemini',
+        model: 'gemini-1.5-flash',
+      } as unknown as Awaited<
+        ReturnType<typeof llmServiceManager.generateCompletion>
+      >);
+
+      const request = {
+        sentence: 'Hello world',
+        focusWord: 'hello',
+        fromLanguage: 'en' as const,
+        toLanguage: 'es' as const,
+        difficulty: 'a1' as const,
+      };
+
+      const result = await translationService.targetWordWithContext(request);
+
+      expect(result).toEqual({
+        fromWord: 'hello',
+        targetWord: 'hola',
+        sentence: 'Hello world',
+        fromLanguage: 'en',
+        toLanguage: 'es',
+        difficulty: 'a1',
+        provider: 'gemini',
+        model: 'gemini-1.5-flash',
+      });
     });
   });
 });

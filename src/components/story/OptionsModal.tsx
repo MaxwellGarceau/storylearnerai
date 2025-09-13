@@ -11,6 +11,8 @@ import VocabularySelector from './VocabularySelector';
 interface OptionsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedFromLanguage: LanguageCode;
+  onFromLanguageChange: (language: LanguageCode) => void;
   selectedLanguage: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   selectedDifficulty: DifficultyLevel;
@@ -25,6 +27,8 @@ interface OptionsModalProps {
 const OptionsModal: React.FC<OptionsModalProps> = ({
   isOpen,
   onClose,
+  selectedFromLanguage,
+  onFromLanguageChange,
   selectedLanguage,
   onLanguageChange,
   selectedDifficulty,
@@ -58,9 +62,17 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
         <div className='space-y-4'>
           <LanguageSelector
+            selectedLanguage={selectedFromLanguage}
+            onLanguageChange={onFromLanguageChange}
+            getLanguageName={getLanguageName}
+            labelKey='storyInput.optionsModal.fromLanguageLabel'
+          />
+          <LanguageSelector
             selectedLanguage={selectedLanguage}
             onLanguageChange={onLanguageChange}
             getLanguageName={getLanguageName}
+            labelKey='storyInput.optionsModal.languageLabel'
+            excludeLanguage={selectedFromLanguage}
           />
 
           <DifficultySelector

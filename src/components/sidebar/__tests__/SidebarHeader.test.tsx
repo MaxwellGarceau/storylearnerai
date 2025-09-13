@@ -4,6 +4,16 @@ import { vi } from 'vitest';
 import SidebarHeader from '../SidebarHeader';
 import { setupSidebarMocks, resetSidebarMocks, mockT } from './sidebarMocks';
 
+// Mock global language filter used by SidebarHeader
+vi.mock('../../../hooks/useLanguageFilter', () => ({
+  useLanguageFilter: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    setTargetLanguage: vi.fn(),
+    availableTargetLanguages: [{ code: 'en', name: 'English' }],
+  }),
+}));
+
 type ActiveSection = 'stories' | 'vocabulary' | 'info';
 
 // Setup mocks before tests
@@ -294,8 +304,9 @@ describe('SidebarHeader Component', () => {
       .closest('.flex');
     const buttons = buttonContainer?.querySelectorAll('button');
 
-    expect(buttons).toHaveLength(3);
-    // Check that buttons contain the correct text content
+    // Now includes three section buttons plus the close button and a Select trigger
+    expect((buttons?.length ?? 0) >= 3).toBe(true);
+    // Check that buttons contain the correct text content for the first three
     expect(buttons?.[0]).toHaveTextContent('storySidebar.stories');
     expect(buttons?.[1]).toHaveTextContent('storySidebar.vocabulary');
     expect(buttons?.[2]).toHaveTextContent('storySidebar.info');

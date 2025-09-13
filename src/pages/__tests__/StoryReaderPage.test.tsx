@@ -5,6 +5,14 @@ import { vi } from 'vitest';
 import StoryReaderPage from '../StoryReaderPage';
 import { TranslationResponse } from '../../lib/translationService';
 import { TooltipProvider } from '../../components/ui/Tooltip';
+vi.mock('../../hooks/useLanguageFilter', () => ({
+  useLanguageFilter: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    setTargetLanguage: vi.fn(),
+    availableTargetLanguages: [{ code: 'en', name: 'English' }],
+  }),
+}));
 
 // Mock auth hook to match component behavior
 vi.mock('../../hooks/useAuth', () => ({

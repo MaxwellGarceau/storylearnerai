@@ -6,15 +6,17 @@ import { getVocabularyHighlightClass } from '../../../lib/vocabularyHighlightSer
 import type { LanguageCode } from '../../../types/llm/prompts';
 
 interface WordTokenProps {
-  normalizedWord: string;
+  actionWordNormalized: string;
   cleanWord: string;
   punctuation: string;
   isOpen: boolean;
   isSaved: boolean;
   isTranslating: boolean;
-  targetWord?: string; // used for overlay only (runtime translation)
-  fromSentence: string;
-  targetSentence?: string;
+  overlayOppositeWord?: string; // used for overlay only (runtime translation)
+  // Use this word to decide included-vocabulary highlighting (tie to displayed token)
+  inclusionCheckWord: string;
+  displaySentenceContext: string;
+  overlaySentenceContext?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   onOpenChange: (open: boolean) => void;
@@ -25,15 +27,16 @@ interface WordTokenProps {
 }
 
 const WordToken: React.FC<WordTokenProps> = ({
-  normalizedWord,
+  actionWordNormalized,
   cleanWord,
   punctuation,
   isOpen,
   isSaved,
   isTranslating,
-  targetWord,
-  fromSentence,
-  targetSentence,
+  overlayOppositeWord,
+  inclusionCheckWord,
+  displaySentenceContext,
+  overlaySentenceContext,
   fromLanguage,
   targetLanguage,
   onOpenChange,
@@ -44,7 +47,7 @@ const WordToken: React.FC<WordTokenProps> = ({
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =
-    ctx?.isIncludedVocabulary(normalizedWord) ?? false;
+    ctx?.isIncludedVocabulary(inclusionCheckWord) ?? false;
 
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({
@@ -64,13 +67,13 @@ const WordToken: React.FC<WordTokenProps> = ({
   if (!enableTooltips || disabled) {
     return (
       <span>
-        {targetWord ? (
+        {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-              {targetWord}
+              {overlayOppositeWord}
             </span>
             <WordHighlight
-              word={normalizedWord}
+              word={actionWordNormalized}
               disabled={disabled}
               className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
             >
@@ -79,7 +82,7 @@ const WordToken: React.FC<WordTokenProps> = ({
           </span>
         ) : (
           <WordHighlight
-            word={normalizedWord}
+            word={actionWordNormalized}
             disabled={disabled}
             className={vocabularyHighlightClass}
           >
@@ -94,7 +97,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   return (
     <span>
       <WordMenu
-        word={normalizedWord}
+        word={inclusionCheckWord}
         open={isOpen}
         onOpenChange={onOpenChange}
         onTranslate={() => {
@@ -102,19 +105,19 @@ const WordToken: React.FC<WordTokenProps> = ({
         }}
         fromLanguage={fromLanguage}
         targetLanguage={targetLanguage}
-        targetWord={targetWord}
-        fromSentence={fromSentence}
-        targetSentence={targetSentence}
+        targetWord={overlayOppositeWord}
+        fromSentence={displaySentenceContext}
+        targetSentence={overlaySentenceContext}
         isSaved={isSaved}
         isTranslating={isTranslating}
       >
-        {targetWord ? (
+        {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
-              {targetWord}
+              {overlayOppositeWord}
             </span>
             <WordHighlight
-              word={normalizedWord}
+              word={actionWordNormalized}
               disabled={disabled}
               active={isOpen}
               className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
@@ -125,7 +128,7 @@ const WordToken: React.FC<WordTokenProps> = ({
           </span>
         ) : (
           <WordHighlight
-            word={normalizedWord}
+            word={actionWordNormalized}
             disabled={disabled}
             active={isOpen}
             className={vocabularyHighlightClass}

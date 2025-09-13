@@ -52,7 +52,7 @@
       "signOut": "Cerrar Sesión",
       "username": "Nombre de Usuario",
       "displayName": "Nombre para Mostrar",
-      "preferredLanguage": "Idioma Preferido",
+      "nativeLanguage": "Idioma Nativo",
       "accountInformation": "Información de la Cuenta",
       "memberSince": "Miembro desde",
       "lastUpdated": "Última actualización",
@@ -220,6 +220,7 @@
     "demoStories": "Historias de demostración • Español a Inglés",
     "vocabularySettings": "Configuración de vocabulario",
     "translationSettings": "Configuración de traducción",
+    "fromLanguageShort": "Desde",
     "untitledStory": "Historia Sin Título",
     "untitled": "Sin Título",
     "noDescriptionAvailable": "No hay descripción disponible.",
@@ -240,6 +241,7 @@
     "tip": "💡 Consejo: Puedes pegar historias largas, artículos o cualquier texto en español que quieras traducir",
     "optionsModal": {
       "title": "Opciones de Historia",
+      "fromLanguageLabel": "Desde Idioma",
       "languageLabel": "Idioma Objetivo",
       "difficultyLabel": "Dificultad Objetivo (CEFR)",
       "a1": "A1 (Principiante)",
@@ -270,7 +272,8 @@
       "invalidInput": "Entrada inválida detectada",
       "fixInput": "Por favor corrige la entrada antes de traducir",
       "securityWarning": "⚠️ Advertencia de Seguridad",
-      "maliciousContentRemoved": "El contenido malicioso ha sido eliminado automáticamente por tu seguridad."
+      "maliciousContentRemoved": "El contenido malicioso ha sido eliminado automáticamente por tu seguridad.",
+      "sameLanguageError": "Los idiomas de origen y destino deben ser diferentes. Por favor selecciona idiomas diferentes para la traducción."
     }
   },
   "savedTranslations": {
@@ -483,7 +486,10 @@
       "description": "Haz clic en cualquier palabra para traducirla automáticamente con contexto",
       "translating": "Traduciendo...",
       "translationComplete": "Traducción completa",
-      "translationError": "Error en la traducción",
+      "translationError": "Error de Traducción:",
+      "provider": "Proveedor",
+      "status": "Estado",
+      "errorCode": "Código de error",
       "sentenceContext": "Contexto de la oración",
       "wordTranslation": "Traducción de la palabra"
     }

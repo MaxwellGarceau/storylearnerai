@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullPageStoryInput from './FullPageStoryInput';
 import {
   translationService,
@@ -11,6 +11,8 @@ import { StoryFormData } from '../types/story';
 import { logger } from '../../lib/logger';
 import { useToast } from '../../hooks/useToast';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
+import { UserService } from '../../api/supabase/database/userProfileService';
 
 interface StoryContainerProps {
   onStoryTranslated: (data: TranslationResponse) => void;
@@ -32,15 +34,65 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
 
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  // Initialize fromLanguage from user's native language when available
+  useEffect(() => {
+    if (!user) return;
+    const loadUserLanguage = async () => {
+      try {
+        const profile = await UserService.getOrCreateUser(user.id, {
+          username: user.email?.split('@')[0] ?? undefined,
+          display_name: user.email?.split('@')[0] ?? undefined,
+        });
+        const nativeLanguage = (profile as { native_language?: LanguageCode })
+          ?.native_language;
+        if (nativeLanguage) {
+          setFormData(prev => {
+            // If the user's native language is the same as the current target language,
+            // we need to change the target language to avoid the same language error
+            const newFromLanguage = nativeLanguage;
+            const newTargetLanguage =
+              nativeLanguage === prev.language ? 'es' : prev.language;
+
+            return {
+              ...prev,
+              fromLanguage: newFromLanguage,
+              language: newTargetLanguage,
+            };
+          });
+        }
+      } catch {
+        // Intentionally ignore; default fallback remains in place
+      }
+    };
+    void loadUserLanguage();
+  }, [user]);
 
   const handleFormDataChange = (
     field: 'fromLanguage' | 'language' | 'difficulty' | 'selectedVocabulary',
     value: LanguageCode | DifficultyLevel | string[]
   ) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [field]: value,
-    }));
+    setFormData(prevFormData => {
+      const newFormData = {
+        ...prevFormData,
+        [field]: value,
+      };
+
+      // If changing fromLanguage and it would be the same as target language,
+      // automatically change the target language to avoid validation error
+      if (field === 'fromLanguage' && value === prevFormData.language) {
+        newFormData.language = value === 'en' ? 'es' : 'en';
+      }
+
+      // If changing target language and it would be the same as fromLanguage,
+      // automatically change the fromLanguage to avoid validation error
+      if (field === 'language' && value === prevFormData.fromLanguage) {
+        newFormData.fromLanguage = value === 'en' ? 'es' : 'en';
+      }
+
+      return newFormData;
+    });
   };
 
   const handleStoryChange = (story: string) => {
@@ -54,6 +106,15 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
     if (!formData.story.trim()) {
       setTranslationError({
         message: 'Please enter a story to translate.',
+        code: 'VALIDATION_ERROR',
+      });
+      return;
+    }
+
+    // Validate that source and target languages are different
+    if (formData.fromLanguage === formData.language) {
+      setTranslationError({
+        message: t('storyInput.validation.sameLanguageError'),
         code: 'VALIDATION_ERROR',
       });
       return;
@@ -119,17 +180,27 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
   const renderErrorMessage = (error: TranslationError) => {
     return (
       <div className='space-y-2'>
-        <div className='font-medium'>Translation Error:</div>
+        <div className='font-medium'>{t('translationError')}</div>
         <div className='text-sm'>{error.message}</div>
 
         {(error.provider ??
           error.statusCode ??
           (error.code && error.code !== 'UNKNOWN_ERROR')) && (
           <div className='text-xs text-muted-foreground space-y-1'>
-            {error.provider && <div>Provider: {error.provider}</div>}
-            {error.statusCode && <div>Status: {error.statusCode}</div>}
+            {error.provider && (
+              <div>
+                {t('provider')}: {error.provider}
+              </div>
+            )}
+            {error.statusCode && (
+              <div>
+                {t('status')}: {error.statusCode}
+              </div>
+            )}
             {error.code && error.code !== 'UNKNOWN_ERROR' && (
-              <div>Error code: {error.code}</div>
+              <div>
+                {t('errorCode')}: {error.code}
+              </div>
             )}
           </div>
         )}

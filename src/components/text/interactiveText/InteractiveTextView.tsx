@@ -10,10 +10,10 @@ interface InteractiveTextViewProps {
   disabled: boolean;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
-  getOriginalSentence: (segmentIndex: number) => string;
-  getTargetSentence: (fromSentence: string) => string | undefined;
-  isSaved: (normalizedWord: string) => boolean;
-  getDisplayTranslation: (normalizedWord: string) => string | undefined;
+  getDisplaySentence: (segmentIndex: number) => string;
+  getOverlaySentence: (displaySentence: string) => string | undefined;
+  isSaved: (displayWordNormalized: string) => boolean;
+  getOverlayOppositeWord: (displayWordNormalized: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
   onTranslate: (normalizedWord: string, segmentIndex: number) => void;
 }
@@ -25,10 +25,10 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   disabled,
   fromLanguage,
   targetLanguage,
-  getOriginalSentence,
-  getTargetSentence,
+  getDisplaySentence,
+  getOverlaySentence,
   isSaved,
-  getDisplayTranslation,
+  getOverlayOppositeWord,
   isTranslating,
   onTranslate,
 }) => {
@@ -45,32 +45,40 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
           return <span key={idx}>{t.text}</span>;
         }
 
-        const normalizedWord = t.normalizedWord;
+        const normalizedFromWord = t.normalizedWord;
         const cleanWord = t.cleanWord;
         const punctuation = t.punctuation;
-        const saved = isSaved(normalizedWord);
-        const overlayTranslatedWord = getDisplayTranslation(normalizedWord);
-        const fromSentence = getOriginalSentence(t.segmentIndex);
-        const targetSentence = getTargetSentence(fromSentence);
+        const overlayTranslatedTargetWord =
+          getOverlayOppositeWord(normalizedFromWord);
+        const displaySentence = getDisplaySentence(t.segmentIndex);
+        const overlaySentence = getOverlaySentence(displaySentence);
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = () => {
           // Always delegate to parent: it will inject saved or call API
-          onTranslate(normalizedWord, t.segmentIndex);
+          onTranslate(normalizedFromWord, t.segmentIndex);
         };
+
+        // When available, treat the translated opposite-language word as the normalized key for WordToken
+        const normalizedWordForProps =
+          overlayTranslatedTargetWord ?? normalizedFromWord;
+        // Saved status should be checked against the from-language word when overlay exists
+        const saved = isSaved(normalizedWordForProps);
 
         return (
           <span key={idx}>
             <WordToken
-              normalizedWord={normalizedWord}
+              actionWordNormalized={normalizedWordForProps}
+              inclusionCheckWord={normalizedFromWord}
               cleanWord={cleanWord}
               punctuation={punctuation}
               isOpen={open}
               isSaved={saved}
-              isTranslating={isTranslating(normalizedWord)}
-              targetWord={overlayTranslatedWord}
-              fromSentence={fromSentence}
-              targetSentence={targetSentence}
+              isTranslating={isTranslating(normalizedFromWord)}
+              // Only show overlay (opposite-language word) when a translation exists
+              overlayOppositeWord={overlayTranslatedTargetWord ?? undefined}
+              displaySentenceContext={displaySentence}
+              overlaySentenceContext={overlaySentence}
               fromLanguage={fromLanguage}
               targetLanguage={targetLanguage}
               onOpenChange={isOpen => {

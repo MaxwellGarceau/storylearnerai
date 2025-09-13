@@ -63,7 +63,7 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     display_name VARCHAR(100) NOT NULL,
     avatar_url TEXT,
-    preferred_language VARCHAR(10) DEFAULT 'en',
+    native_language VARCHAR(10) NOT NULL DEFAULT 'en',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -75,7 +75,7 @@ CREATE TABLE users (
 - `username`: Unique username for the user
 - `display_name`: User's display name
 - `avatar_url`: URL to user's avatar image
-- `preferred_language`: User's preferred language for translations
+- `native_language`: User's native language
 - `created_at`: Creation timestamp
 - `updated_at`: Last modification timestamp
 
@@ -193,13 +193,13 @@ const user = await UserService.createUser({
   id: 'user-uuid',
   username: 'john_doe',
   display_name: 'John Doe',
-  preferred_language: 'en',
+  native_language: 'en',
 });
 
 // Update user profile
 const updatedUser = await UserService.updateUser('user-uuid', {
   display_name: 'John Smith',
-  preferred_language: 'es',
+  native_language: 'es',
 });
 
 // Check username availability
@@ -299,7 +299,7 @@ import { UserService } from '@/api/supabase';
 const updateProfile = async (userId: string, updates: any) => {
   const updatedUser = await UserService.updateUser(userId, {
     display_name: 'New Name',
-    preferred_language: 'es',
+    native_language: 'es',
   });
 };
 

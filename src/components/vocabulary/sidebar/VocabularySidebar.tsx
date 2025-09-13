@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useVocabulary } from '../../../hooks/useVocabulary';
 import { useLanguages } from '../../../hooks/useLanguages';
+import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { useAuth } from '../../../hooks/useAuth';
 import { AuthPrompt } from '../../ui/AuthPrompt';
@@ -9,7 +10,7 @@ import { VocabularyDetailModal } from '../modals/VocabularyDetailModal';
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { VocabularySidebarHeader } from './VocabularySidebarHeader';
 import { VocabularySearchInput } from './VocabularySearchInput';
-import { VocabularyLanguageFilter } from './VocabularyLanguageFilter';
+// Removed local language filter; global Story Sidebar filter controls language
 import { VocabularyEmptyState } from './VocabularyEmptyState';
 import { VocabularyList } from './VocabularyList';
 
@@ -26,28 +27,33 @@ export function VocabularySidebar({
 }: VocabularySidebarProps) {
   const { t } = useLocalization();
   const { vocabulary, loading } = useVocabulary();
-  const { languages } = useLanguages();
+  const { languages, getLanguageIdByCode } = useLanguages();
   const { user } = useAuth();
+  const { targetLanguage } = useLanguageFilter();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedLanguageFilter, setSelectedLanguageFilter] = useState<
-    number | null
-  >(null);
+  // Local language filter removed; filtering is controlled by the Story Sidebar's global filter
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [selectedVocabulary, setSelectedVocabulary] =
     useState<VocabularyWithLanguages | null>(null);
 
   // Filter vocabulary based on search term and language filters
+  const effectiveTargetLanguageId =
+    currentLanguageId ??
+    (targetLanguage ? getLanguageIdByCode(targetLanguage) : undefined);
+
   const filteredVocabulary = vocabulary.filter(item => {
     const matchesSearch =
       !searchTerm ||
       item.from_word.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.target_word.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesLanguage =
-      !selectedLanguageFilter ||
-      item.target_language_id === selectedLanguageFilter;
+    const matchesLanguage = (() => {
+      if (effectiveTargetLanguageId) {
+        return item.target_language_id === effectiveTargetLanguageId;
+      }
+      return true;
+    })();
 
     return matchesSearch && matchesLanguage;
   });
@@ -69,17 +75,10 @@ export function VocabularySidebar({
         showAddButton={Boolean(user)}
       />
 
-      {/* Search and Filters - Only show when user is logged in */}
+      {/* Search - Only show when user is logged in */}
       {user && (
         <div className='space-y-2'>
           <VocabularySearchInput value={searchTerm} onChange={setSearchTerm} />
-          <VocabularyLanguageFilter
-            show={showFilters}
-            onToggle={() => setShowFilters(!showFilters)}
-            selectedLanguageId={selectedLanguageFilter}
-            onChange={setSelectedLanguageFilter}
-            languages={languages}
-          />
         </div>
       )}
 
@@ -93,9 +92,7 @@ export function VocabularySidebar({
             <span className='ml-2 text-sm'>{t('loading')}</span>
           </div>
         ) : filteredVocabulary.length === 0 ? (
-          <VocabularyEmptyState
-            showNoResults={Boolean(searchTerm || selectedLanguageFilter)}
-          />
+          <VocabularyEmptyState showNoResults={Boolean(searchTerm)} />
         ) : (
           <VocabularyList
             items={filteredVocabulary}

@@ -75,4 +75,21 @@ export class LanguageService {
       return code === 'en' ? 'English' : 'Spanish'; // Fallback to appropriate English name
     }
   }
+
+  /**
+   * Get all valid language codes
+   */
+  async getValidLanguageCodes(): Promise<string[]> {
+    const result = await supabase
+      .from('languages')
+      .select('code')
+      .order('code');
+
+    if (result.error) {
+      throw new Error(`Failed to fetch language codes: ${result.error.message}`);
+    }
+
+    const rows = (result.data as { code: string }[]) || [];
+    return rows.map(row => row.code);
+  }
 }

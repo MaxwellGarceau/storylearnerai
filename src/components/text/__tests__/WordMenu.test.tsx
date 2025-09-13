@@ -414,7 +414,7 @@ describe('WordMenu Component', () => {
     expect(handleTranslate).not.toHaveBeenCalled();
   });
 
-  it('shows "Translated" button when word has been translated but not saved', () => {
+  it('shows "Translated" label and keeps translate clickable when translated', () => {
     mockLoggedIn();
     renderWithRouter(
       <WordMenu
@@ -431,14 +431,12 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     const translateButton = buttons[0];
 
-    // Should show "Translated" text
+    // Shows "Translated" label but remains clickable (enabled)
     expect(translateButton).toHaveTextContent('Translated');
-
-    // Should be disabled
-    expect(translateButton).toBeDisabled();
+    expect(translateButton).not.toBeDisabled();
   });
 
-  it('shows "Already Saved" button when word has saved translation', () => {
+  it('shows "Translate" label when saved (still clickable)', () => {
     mockLoggedIn();
     renderWithRouter(
       <WordMenu
@@ -456,11 +454,9 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     const translateButton = buttons[0];
 
-    // Should show "Already Saved" text
-    expect(translateButton).toHaveTextContent('Already Saved');
-
-    // Should be disabled
-    expect(translateButton).toBeDisabled();
+    // Shows "Translate" label even when saved
+    expect(translateButton).toHaveTextContent('Translate');
+    expect(translateButton).not.toBeDisabled();
   });
 
   it('enables translate button for saved words without translation', () => {

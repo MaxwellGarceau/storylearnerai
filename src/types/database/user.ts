@@ -7,7 +7,7 @@ export interface DatabaseUser {
   username: string;
   display_name: string;
   avatar_url: NullableString;
-  preferred_language: LanguageCode;
+  native_language: LanguageCode;
   created_at: string;
   updated_at: string;
 }
@@ -17,7 +17,7 @@ export interface DatabaseUserInsert {
   username?: string;
   display_name?: string;
   avatar_url?: NullableString;
-  preferred_language?: LanguageCode;
+  native_language?: LanguageCode;
   created_at: string;
   updated_at: string;
 }
@@ -27,7 +27,7 @@ export interface DatabaseUserUpdate {
   username?: string;
   display_name?: string;
   avatar_url?: NullableString;
-  preferred_language?: LanguageCode;
+  native_language?: LanguageCode;
   created_at?: string;
   updated_at?: string;
 }

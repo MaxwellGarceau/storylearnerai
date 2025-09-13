@@ -58,7 +58,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
   const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
-  const effectiveTargetWord = targetWord ?? ctx?.getTargetWord?.(word);
+  const isDisplayingFromSide = ctx?.isDisplayingFromSide ?? true;
+  // Opposite-language word for the current token (may be undefined until translated/saved)
+  const effectiveOppositeWord = targetWord ?? ctx?.getOppositeWordFor?.(word);
   const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(word) ?? false;
   const effectiveIsTranslating =
     isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
@@ -78,8 +80,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   ]);
 
   const handleTranslate = () => {
-    // Allow translate if there is no runtime translation yet
-    if (!effectiveTargetWord && !effectiveIsTranslating) {
+    // Always allow translate click unless actively translating
+    if (!effectiveIsTranslating) {
       onTranslate?.(word);
     }
   };
@@ -100,16 +102,30 @@ const WordMenu: React.FC<WordMenuProps> = ({
     ? getLanguageIdByCode(effectiveTargetLanguage)
     : null;
 
-  const translateButtonDisabled =
-    effectiveIsTranslating || Boolean(effectiveTargetWord);
+  const translateButtonDisabled = effectiveIsTranslating;
 
   const translateButtonLabel = effectiveIsTranslating
     ? 'Translating...'
-    : effectiveTargetWord
-      ? effectiveIsSaved
-        ? 'Already Saved'
-        : 'Translated'
+    : effectiveOppositeWord && !effectiveIsSaved
+      ? 'Translated'
       : 'Translate';
+
+  // Compute canonical contexts: from = user's from-language sentence, target = user's target-language sentence
+  let effectiveFromContext = fromSentence;
+  let effectiveTargetContext = targetSentence;
+  // Trust the display-side flag for orientation instead of string checks
+  if (!isDisplayingFromSide) {
+    effectiveFromContext = targetSentence;
+    effectiveTargetContext = fromSentence;
+  }
+
+  // Compute canonical words (from = user's from-language, target = user's target-language)
+  const canonicalFromWord = isDisplayingFromSide
+    ? word
+    : (effectiveOppositeWord ?? '');
+  const canonicalTargetWord = isDisplayingFromSide
+    ? (effectiveOppositeWord ?? '')
+    : word;
 
   return (
     <Popover
@@ -152,9 +168,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
             <>
               <div className='text-center mb-3'>
                 <div className='text-sm font-medium mb-1'>{word}</div>
-                {effectiveTargetWord && (
+                {effectiveOppositeWord && (
                   <div className='text-sm text-muted-foreground'>
-                    {effectiveTargetWord}
+                    {effectiveOppositeWord}
                   </div>
                 )}
               </div>
@@ -184,10 +200,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     </Button>
                     {fromLanguageId && targetLanguageId && (
                       <VocabularySaveButton
-                        fromWord={word}
-                        targetWord={effectiveTargetWord ?? ''}
-                        fromContext={fromSentence}
-                        targetContext={targetSentence}
+                        fromWord={canonicalFromWord}
+                        targetWord={canonicalTargetWord}
+                        fromContext={effectiveFromContext}
+                        targetContext={effectiveTargetContext}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
                         savedTranslationId={effectiveSavedTranslationId}
@@ -195,7 +211,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         variant='outline'
                         isSaved={effectiveIsSaved}
                         onBeforeOpen={() => {
-                          if (!effectiveTargetWord) {
+                          if (!effectiveOppositeWord) {
                             onTranslate?.(word);
                           }
                         }}
@@ -214,10 +230,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 <div className='flex items-center gap-2'>
                   {user && fromLanguageId && targetLanguageId && (
                     <VocabularySaveButton
-                      fromWord={word}
-                      targetWord={effectiveTargetWord ?? ''}
-                      fromContext={fromSentence}
-                      targetContext={targetSentence}
+                      fromWord={canonicalFromWord}
+                      targetWord={canonicalTargetWord}
+                      fromContext={effectiveFromContext}
+                      targetContext={effectiveTargetContext}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       savedTranslationId={effectiveSavedTranslationId}
@@ -227,7 +243,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       showTextOnly={true}
                       isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
-                        if (!effectiveTargetWord) {
+                        if (!effectiveOppositeWord) {
                           onTranslate?.(word);
                         }
                       }}

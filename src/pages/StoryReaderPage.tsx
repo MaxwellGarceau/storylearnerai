@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
+import { useLanguages } from '../hooks/useLanguages';
 import StorySidebar from '../components/sidebar/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ const StoryReaderPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { getLanguageName } = useLanguages();
   const [searchParams] = useSearchParams();
   const state = location.state as {
     translationData?: TranslationResponse;
@@ -185,8 +187,8 @@ const StoryReaderPage: React.FC = () => {
         <SaveTranslationButton
           translationData={finalTranslationData}
           fromStory={finalTranslationData.fromText || ''}
-          fromLanguage='Spanish'
-          targetLanguage='English'
+          fromLanguage={getLanguageName(finalTranslationData.fromLanguage)}
+          targetLanguage={getLanguageName(finalTranslationData.toLanguage)}
           difficultyLevel={finalTranslationData.difficulty}
           isSavedStory={resolvedIsSavedStory}
         />

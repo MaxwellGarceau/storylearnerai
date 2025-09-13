@@ -47,7 +47,7 @@ describe('UserService', () => {
           username: 'testuser',
           display_name: 'Test User',
           avatar_url: 'https://example.com/avatar.jpg',
-          preferred_language: 'en',
+          native_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         }
@@ -83,7 +83,7 @@ describe('UserService', () => {
           username: 'testuser',
           display_name: 'Test User',
           avatar_url: 'https://example.com/avatar.jpg',
-          preferred_language: 'en'
+          native_language: 'en'
         }
 
         const result = await UserService.createUser(userData)
@@ -140,10 +140,10 @@ describe('UserService', () => {
       it('should reject invalid language code', async () => {
         const userData: CreateUserData = {
           id: 'user123',
-          preferred_language: 'invalid'
+          native_language: 'invalid'
         }
 
-        await expect(UserService.createUser(userData)).rejects.toThrow('Validation failed: preferred_language: Invalid language code format (use ISO 639-1)')
+        await expect(UserService.createUser(userData)).rejects.toThrow('Validation failed: native_language: Invalid language code format (use ISO 639-1)')
       })
 
       it('should handle empty optional fields', async () => {
@@ -152,7 +152,7 @@ describe('UserService', () => {
           username: 'testuser',
           display_name: 'Test User',
           avatar_url: null,
-          preferred_language: 'en',
+          native_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         }
@@ -197,7 +197,7 @@ describe('UserService', () => {
           username: 'updateduser',
           display_name: 'Updated User',
           avatar_url: 'https://example.com/new-avatar.jpg',
-          preferred_language: 'es',
+          native_language: 'es',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-02T00:00:00Z'
         }
@@ -228,7 +228,7 @@ describe('UserService', () => {
           username: 'updateduser',
           display_name: 'Updated User',
           avatar_url: 'https://example.com/new-avatar.jpg',
-          preferred_language: 'es'
+          native_language: 'es'
         }
 
         const result = await UserService.updateUser('user123', updateData)
@@ -258,7 +258,7 @@ describe('UserService', () => {
           username: 'testuser',
           display_name: 'Test User',
           avatar_url: null,
-          preferred_language: 'en',
+          native_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-02T00:00:00Z'
         }
@@ -366,7 +366,7 @@ describe('UserService', () => {
           username: 'testuser',
           display_name: 'Test User',
           avatar_url: null,
-          preferred_language: 'en',
+          native_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
         }

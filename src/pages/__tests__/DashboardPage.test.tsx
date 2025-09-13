@@ -6,6 +6,7 @@ import { DashboardPage } from '../DashboardPage';
 import { useAuth } from '../../hooks/useAuth';
 import { UserService } from '../../api/supabase/database/userProfileService';
 import type { RenderResult } from '@testing-library/react';
+import type { DatabaseUserInsert } from '../../types/database';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
@@ -124,10 +125,13 @@ vi.mock('react-router-dom', async () => {
 });
 
 const renderWithRouter = (component: React.ReactElement): RenderResult => {
-  let result: RenderResult;
+  let result: RenderResult | undefined;
   act(() => {
     result = render(<BrowserRouter>{component}</BrowserRouter>);
   });
+  if (!result) {
+    throw new Error('Failed to render component');
+  }
   return result;
 };
 
@@ -136,30 +140,30 @@ describe('DashboardPage Component', () => {
     id: 'user-123',
     email: 'test@example.com',
     created_at: '2024-01-01T00:00:00Z',
-  };
+  } as const;
 
   const mockProfile = {
     id: 'profile-123',
     user_id: 'user-123',
     display_name: 'Test User',
     username: 'testuser',
-    preferred_language: 'en',
+    native_language: 'en',
     bio: 'Test bio',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-  };
+  } as DatabaseUserInsert;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
+    vi.mocked(mockUseAuth).mockReturnValue({
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
       user: mockUser,
       loading: false,
       error: null,
-    });
-    mockUserService.getUser.mockResolvedValue(mockProfile);
+    } as ReturnType<typeof useAuth>);
+    vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
   });
 
   it('renders quick actions section', async () => {
@@ -187,23 +191,27 @@ describe('DashboardPage Component', () => {
   it('displays correct language names in stats', async () => {
     const spanishProfile = {
       ...mockProfile,
-      preferred_language: 'es',
-    };
-    mockUserService.getUser.mockResolvedValue(spanishProfile);
+      native_language: 'es',
+    } as DatabaseUserInsert;
+    vi.mocked(mockUserService.getUser).mockResolvedValue(spanishProfile);
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
       expect(screen.getByText('Spanish')).toBeInTheDocument();
     });
   });
 
-  it('handles unknown language codes gracefully in stats', async () => {
+  it('shows raw code when an unknown language is mocked (invariant enforced)', async () => {
     const unknownLanguageProfile = {
       ...mockProfile,
-      preferred_language: 'xx',
-    };
-    mockUserService.getUser.mockResolvedValue(unknownLanguageProfile);
+      native_language: 'xx',
+    } as DatabaseUserInsert;
+    vi.mocked(mockUserService.getUser).mockResolvedValue(
+      unknownLanguageProfile
+    );
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
+      // With DB NOT NULL + validated codes, unknowns shouldn't occur in prod.
+      // If a test mocks an unknown code, we display the raw code.
       expect(screen.getByText('xx')).toBeInTheDocument();
     });
   });
@@ -231,40 +239,38 @@ describe('DashboardPage Component', () => {
     });
   });
 
-  it('handles loading state correctly', () => {
-    // Create a promise that we can control
-    let resolveUserPromise: ((value: typeof mockProfile) => void) | null = null;
-    const userPromise = new Promise<typeof mockProfile>(resolve => {
-      resolveUserPromise = resolve;
-    });
+  it('handles loading state correctly', async () => {
+    // Mock a delayed response to test loading state
+    vi.mocked(mockUserService.getUser).mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProfile), 100))
+    );
 
-    mockUserService.getUser.mockReturnValue(userPromise);
     void renderWithRouter(<DashboardPage />);
+
     // Check that loading state is shown initially
     expect(screen.getByText('Loading your dashboard...')).toBeInTheDocument();
-    // Now resolve the promise
-    if (resolveUserPromise) {
-      resolveUserPromise(mockProfile);
-    }
+
     // Wait for the loading to finish
-    void waitFor(() => {
+    await waitFor(() => {
       expect(
         screen.queryByText('Loading your dashboard...')
       ).not.toBeInTheDocument();
     });
   });
 
-  it('displays error alert when there is an error', () => {
-    mockUserService.getUser.mockRejectedValue(new Error('Database error'));
+  it('displays error alert when there is an error', async () => {
+    vi.mocked(mockUserService.getUser).mockRejectedValue(
+      new Error('Database error')
+    );
     void renderWithRouter(<DashboardPage />);
-    void waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();
     });
   });
 
-  it('displays welcome message with user name', () => {
+  it('displays welcome message with user name', async () => {
     void renderWithRouter(<DashboardPage />);
-    void waitFor(() => {
+    await waitFor(() => {
       expect(screen.getAllByText('Welcome back, Test User!')).toBeTruthy();
       // Check that the dashboard subtitle is present
       expect(

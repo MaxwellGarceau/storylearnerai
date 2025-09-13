@@ -7,6 +7,16 @@ vi.mock('../../../../hooks/useLocalization', () => ({
   useLocalization: () => ({ t: (k: string) => k }),
 }));
 
+// New: mock global language filter
+vi.mock('../../../../hooks/useLanguageFilter', () => ({
+  useLanguageFilter: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    setTargetLanguage: vi.fn(),
+    availableTargetLanguages: [{ code: 'en', name: 'English' }],
+  }),
+}));
+
 const mockVocabulary = [
   {
     id: 1,

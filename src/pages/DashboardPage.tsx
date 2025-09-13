@@ -15,9 +15,11 @@ import {
 import { Badge } from '../components/ui/Badge';
 import { Alert } from '../components/ui/Alert';
 import { BookOpen, Plus, User as UserIcon, Globe, Loader2 } from 'lucide-react';
-import type { DatabaseUserInsert } from '../types/database';
+import type { DatabaseUser } from '../types/database/user';
 import type { NullableString } from '../types/common';
 import { useTranslation } from 'react-i18next';
+
+// Removed fallback guard; native_language is enforced as NOT NULL in DB
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -27,7 +29,7 @@ export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<NullableString>(null);
-  const [profile, setProfile] = useState<DatabaseUserInsert | null>(null);
+  const [profile, setProfile] = useState<DatabaseUser | null>(null);
   const { t } = useTranslation();
 
   const loadDashboardData = useCallback(async () => {
@@ -45,7 +47,7 @@ export const DashboardPage: React.FC = () => {
           display_name: user.email?.split('@')[0] ?? 'User',
           username: user.email?.split('@')[0] ?? 'user',
         }));
-      setProfile(userProfile);
+      setProfile(userProfile as unknown as DatabaseUser);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t('dashboard.errors.loadFailed')
@@ -156,7 +158,7 @@ export const DashboardPage: React.FC = () => {
             <CardContent>
               <div className='text-2xl font-bold'>1</div>
               <p className='text-xs text-muted-foreground'>
-                {getLanguageName(profile?.preferred_language ?? 'en')}
+                {profile ? getLanguageName(profile.native_language) : ''}
               </p>
             </CardContent>
           </Card>

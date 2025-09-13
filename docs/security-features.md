@@ -151,7 +151,7 @@ static async createUser(data: CreateUserData): Promise<DatabaseUserInsert> {
       username: sanitizedData.username,
       display_name: sanitizedData.display_name,
       avatar_url: sanitizedData.avatar_url,
-      preferred_language: sanitizedData.preferred_language || 'en',
+      native_language: sanitizedData.native_language || 'en',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     })

@@ -3,7 +3,8 @@ import type { DatabaseUserInsert, DatabaseUserUpdate } from '../../../types/data
 import type { DatabaseUserInsertPromise, DatabaseUserInsertOrNullPromise } from '../../../types/database/promise'
 import { validateUsername, validateDisplayName, sanitizeText } from '../../../lib/utils/sanitization'
 import type { LanguageCode } from '../../../types/llm/prompts'
-import type { VoidPromise } from '../../../types/common';
+import type { VoidPromise } from '../../../types/common'
+import { LanguageService } from './languageService'
 
 // Use existing database types for consistency
 export type CreateUserData = Omit<DatabaseUserInsert, 'created_at' | 'updated_at'>
@@ -18,7 +19,7 @@ export class UserService {
   /**
    * Validate and sanitize user data for creation
    */
-  private static validateCreateUserData(data: CreateUserData): { isValid: boolean; errors: ValidationError[]; sanitizedData: CreateUserData } {
+  private static async validateCreateUserData(data: CreateUserData): Promise<{ isValid: boolean; errors: ValidationError[]; sanitizedData: CreateUserData }> {
     const errors: ValidationError[] = []
     const sanitizedData: CreateUserData = { ...data }
 
@@ -77,14 +78,22 @@ export class UserService {
       }
     }
 
-    // Validate preferred language (optional)
-    if (data.preferred_language !== undefined && data.preferred_language !== null) {
-      if (typeof data.preferred_language !== 'string') {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!['en', 'es'].includes(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
+    // Validate native language (optional)
+    if (data.native_language !== undefined && data.native_language !== null) {
+      if (typeof data.native_language !== 'string') {
+        errors.push({ field: 'native_language', message: 'Native language must be a string' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language
+        try {
+          const languageService = new LanguageService()
+          const validLanguageCodes = await languageService.getValidLanguageCodes()
+          if (!validLanguageCodes.includes(data.native_language)) {
+            errors.push({ field: 'native_language', message: `Native language must be one of: ${validLanguageCodes.join(', ')}` })
+          } else {
+            sanitizedData.native_language = data.native_language
+          }
+        } catch {
+          errors.push({ field: 'native_language', message: 'Failed to validate native language' })
+        }
       }
     }
 
@@ -98,7 +107,7 @@ export class UserService {
   /**
    * Validate and sanitize user data for updates
    */
-  private static validateUpdateUserData(data: UpdateUserData): { isValid: boolean; errors: ValidationError[]; sanitizedData: UpdateUserData } {
+  private static async validateUpdateUserData(data: UpdateUserData): Promise<{ isValid: boolean; errors: ValidationError[]; sanitizedData: UpdateUserData }> {
     const errors: ValidationError[] = []
     const sanitizedData: UpdateUserData = { ...data }
 
@@ -152,14 +161,22 @@ export class UserService {
       }
     }
 
-    // Validate preferred language (optional)
-    if (data.preferred_language !== undefined && data.preferred_language !== null) {
-      if (typeof data.preferred_language !== 'string') {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be a string' })
-      } else if (!['en', 'es'].includes(data.preferred_language)) {
-        errors.push({ field: 'preferred_language', message: 'Preferred language must be one of: en, es' })
+    // Validate native language (optional)
+    if (data.native_language !== undefined && data.native_language !== null) {
+      if (typeof data.native_language !== 'string') {
+        errors.push({ field: 'native_language', message: 'Native language must be a string' })
       } else {
-        sanitizedData.preferred_language = data.preferred_language
+        try {
+          const languageService = new LanguageService()
+          const validLanguageCodes = await languageService.getValidLanguageCodes()
+          if (!validLanguageCodes.includes(data.native_language)) {
+            errors.push({ field: 'native_language', message: `Native language must be one of: ${validLanguageCodes.join(', ')}` })
+          } else {
+            sanitizedData.native_language = data.native_language
+          }
+        } catch {
+          errors.push({ field: 'native_language', message: 'Failed to validate native language' })
+        }
       }
     }
 
@@ -195,7 +212,7 @@ export class UserService {
    */
   static async createUser(data: CreateUserData): DatabaseUserInsertPromise {
     // Validate and sanitize input data
-    const validation = UserService.validateCreateUserData(data)
+    const validation = await UserService.validateCreateUserData(data)
     if (!validation.isValid) {
       const errorMessage = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ')
       throw new Error(`Validation failed: ${errorMessage}`)
@@ -218,7 +235,7 @@ export class UserService {
         username: sanitizedData.username,
         display_name: sanitizedData.display_name,
         avatar_url: sanitizedData.avatar_url,
-        preferred_language: sanitizedData.preferred_language ?? 'en',
+        native_language: sanitizedData.native_language ?? 'en',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
@@ -242,7 +259,7 @@ export class UserService {
     }
 
     // Validate and sanitize update data
-    const validation = UserService.validateUpdateUserData(data)
+    const validation = await UserService.validateUpdateUserData(data)
     if (!validation.isValid) {
       const errorMessage = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ')
       throw new Error(`Validation failed: ${errorMessage}`)
@@ -362,11 +379,22 @@ export class UserService {
     if (!language || typeof language !== 'string' || language.trim().length === 0) {
       throw new Error('Valid language is required')
     }
-    if (!['en', 'es'].includes(language)) {
-      throw new Error('Language must be one of: en, es')
+
+    // Validate language against database
+    try {
+      const languageService = new LanguageService()
+      const validLanguageCodes = await languageService.getValidLanguageCodes()
+      if (!validLanguageCodes.includes(language)) {
+        throw new Error(`Language must be one of: ${validLanguageCodes.join(', ')}`)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error('Failed to validate language')
     }
 
-    return this.updateUser(userId, { preferred_language: language as LanguageCode })
+    return this.updateUser(userId, { native_language: language as LanguageCode })
   }
 
   /**
@@ -407,7 +435,7 @@ export class UserService {
       username: userData?.username,
       display_name: userData?.display_name,
       avatar_url: userData?.avatar_url,
-      preferred_language: userData?.preferred_language
+      native_language: (userData as { native_language?: LanguageCode })?.native_language
     });
 
     return user;
