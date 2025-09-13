@@ -167,7 +167,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
             detail: { native_language },
           })
         );
-      } catch {}
+      } catch {
+        // noop
+      }
       setIsEditing(false);
       setValidationErrors({}); // Clear validation errors on success
     } catch (err) {

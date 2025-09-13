@@ -122,10 +122,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
   }
 
   // Compute canonical words (from = user's from-language, target = user's target-language)
-  let canonicalFromWord = isDisplayingFromSide
+  const canonicalFromWord = isDisplayingFromSide
     ? word
     : (effectiveOppositeWord ?? '');
-  let canonicalTargetWord = isDisplayingFromSide
+  const canonicalTargetWord = isDisplayingFromSide
     ? (effectiveOppositeWord ?? '')
     : word;
 

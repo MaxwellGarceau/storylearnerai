@@ -54,26 +54,34 @@ beforeEach(() => {
 // Mock VocabularySaveButton to expose what WordMenu passes into it
 vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   __esModule: true,
-  VocabularySaveButton: ({
-    fromWord,
-    targetWord,
-    fromContext,
-    targetContext,
-    fromLanguageId,
-    targetLanguageId,
-    ...rest
-  }: any) => (
-    <div
-      data-testid='mock-save-button'
-      data-from-word={fromWord}
-      data-target-word={targetWord}
-      data-from-context={fromContext ?? ''}
-      data-target-context={targetContext ?? ''}
-      data-from-lang-id={fromLanguageId}
-      data-target-lang-id={targetLanguageId}
-      data-props={JSON.stringify(Object.keys(rest))}
-    />
-  ),
+  VocabularySaveButton: (props: {
+    fromWord: string;
+    targetWord: string;
+    fromContext?: string;
+    targetContext?: string;
+    fromLanguageId: number;
+    targetLanguageId: number;
+  }) => {
+    const {
+      fromWord,
+      targetWord,
+      fromContext,
+      targetContext,
+      fromLanguageId,
+      targetLanguageId,
+    } = props;
+    return (
+      <div
+        data-testid='mock-save-button'
+        data-from-word={fromWord}
+        data-target-word={targetWord}
+        data-from-context={fromContext ?? ''}
+        data-target-context={targetContext ?? ''}
+        data-from-lang-id={fromLanguageId}
+        data-target-lang-id={targetLanguageId}
+      />
+    );
+  },
 }));
 
 describe('Canonical save mapping (from → target) passed to save button', () => {

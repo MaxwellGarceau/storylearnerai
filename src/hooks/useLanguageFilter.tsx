@@ -53,9 +53,10 @@ export const LanguageFilterProvider: React.FC<{
 
   // React to profile native_language updates at runtime (no page refresh needed)
   useEffect(() => {
-    const onProfileUpdated = (evt: Event) => {
-      const event = evt as CustomEvent<{ native_language?: LanguageCode }>;
-      const updatedNative = event.detail?.native_language;
+    const onProfileUpdated: EventListener = (evt: Event) => {
+      const updatedNative = (
+        evt as CustomEvent<{ native_language?: LanguageCode }>
+      ).detail?.native_language;
       if (!updatedNative) return;
       setFromLanguage(updatedNative);
       setTargetLanguageState(prev =>
@@ -63,15 +64,9 @@ export const LanguageFilterProvider: React.FC<{
       );
     };
 
-    window.addEventListener(
-      'user:profile-updated',
-      onProfileUpdated as EventListener
-    );
+    window.addEventListener('user:profile-updated', onProfileUpdated);
     return () => {
-      window.removeEventListener(
-        'user:profile-updated',
-        onProfileUpdated as EventListener
-      );
+      window.removeEventListener('user:profile-updated', onProfileUpdated);
     };
   }, []);
 
@@ -79,8 +74,8 @@ export const LanguageFilterProvider: React.FC<{
     return languages
       .filter(l => (fromLanguage ? l.code !== fromLanguage : true))
       .map(l => ({
-        code: l.code as LanguageCode,
-        name: getLanguageName(l.code as LanguageCode),
+        code: l.code,
+        name: getLanguageName(l.code),
       }));
   }, [languages, fromLanguage, getLanguageName]);
 

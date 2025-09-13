@@ -26,7 +26,7 @@ vi.mock('../WordToken', () => ({
   __esModule: true,
   default: ({
     actionWordNormalized,
-    inclusionCheckWord,
+    inclusionCheckWord: _inclusionCheckWord,
     cleanWord,
     punctuation,
     isOpen,
