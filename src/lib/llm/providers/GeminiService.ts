@@ -26,8 +26,11 @@ export class GeminiService extends LLMService {
         config: {
           temperature: request.temperature ?? geminiConfig.temperature,
           maxOutputTokens: request.maxTokens ?? geminiConfig.maxTokens,
+          responseMimeType: request.responseMimeType,
         },
       });
+
+      console.log('response', response);
 
       const content = response.text ?? '';
       const usage = response.usageMetadata;

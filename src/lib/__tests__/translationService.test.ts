@@ -221,5 +221,38 @@ describe('translationService', () => {
         model: 'gemini-1.5-flash',
       });
     });
+
+    it('should parse fenced JSON output', async () => {
+      vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
+        content:
+          '```json\n{\n  "targetWord": "hola",\n  "lemma": "hola"\n}\n```',
+        provider: 'gemini',
+        model: 'gemini-1.5-flash',
+      } as unknown as Awaited<
+        ReturnType<typeof llmServiceManager.generateCompletion>
+      >);
+
+      const request = {
+        sentence: 'Hello world',
+        focusWord: 'hello',
+        fromLanguage: 'en' as const,
+        toLanguage: 'es' as const,
+        difficulty: 'a1' as const,
+      };
+
+      const result = await translationService.targetWordWithContext(request);
+
+      expect(result).toEqual({
+        fromWord: 'hello',
+        targetWord: 'hola',
+        lemma: 'hola',
+        sentence: 'Hello world',
+        fromLanguage: 'en',
+        toLanguage: 'es',
+        difficulty: 'a1',
+        provider: 'gemini',
+        model: 'gemini-1.5-flash',
+      });
+    });
   });
 });

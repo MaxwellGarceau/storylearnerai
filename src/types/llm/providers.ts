@@ -14,6 +14,7 @@ export interface LLMRequest {
   maxTokens?: number;
   temperature?: number;
   model?: string;
+  responseMimeType?: string;
 }
 
 export interface LLMResponse {

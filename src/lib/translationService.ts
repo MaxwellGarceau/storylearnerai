@@ -83,8 +83,6 @@ class TranslationService {
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
-        maxTokens: 2000,
-        temperature: 0.7,
       });
 
       // Track vocabulary inclusion - IMPORTANT: We analyze target language words in target language text
@@ -181,25 +179,37 @@ class TranslationService {
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
-        maxTokens: 8,
-        temperature: 0.2,
+        responseMimeType: 'application/json',
       });
 
-      // Expect strict JSON: {"targetWord":"...","lemma":"..."}
+      // Prefer JSON when present, otherwise fallback to first token cleaned
       const raw = (llmResponse.content ?? '').trim();
       let targetWord = '';
       let lemma: string | undefined = undefined;
 
-      try {
-        const parsed = JSON.parse(raw) as {
-          targetWord: string;
-          lemma?: string;
-        };
-        targetWord = (parsed.targetWord ?? '').toString();
-        lemma = parsed.lemma ? parsed.lemma.toString() : undefined;
-      } catch (_e) {
-        // Backward compatibility: fall back to first token when JSON not returned
-        targetWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
+      const start = raw.indexOf('{');
+      const end = raw.lastIndexOf('}');
+      if (start !== -1 && end > start) {
+        try {
+          const json = raw.slice(start, end + 1);
+          const parsed = JSON.parse(json) as {
+            targetWord?: unknown;
+            lemma?: unknown;
+          };
+          targetWord = String(parsed.targetWord ?? '').trim();
+          lemma =
+            parsed.lemma !== undefined
+              ? String(parsed.lemma).trim()
+              : undefined;
+        } catch {
+          // ignore and fallback
+        }
+      }
+
+      if (!targetWord) {
+        const first = raw.split(/\s+/)[0] ?? '';
+        // Remove only wrapping quotes/backticks/brackets, not braces
+        targetWord = first.replace(/^[`"'\(\[]+|[`"'\)\]]+$/g, '');
       }
 
       return {

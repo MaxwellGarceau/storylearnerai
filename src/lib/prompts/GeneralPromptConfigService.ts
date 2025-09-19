@@ -427,6 +427,7 @@ Output format:
 
 Rules:
 - No explanations or extra text. Return JSON only.
+- Do NOT wrap the JSON in markdown code fences. Do not include backticks of any kind.
 - If multiple translations exist, choose the most likely given the sentence.
 - If the word is a proper noun that should remain unchanged, set both fields to the unchanged word.
 - If no single-word translation exists, pick the closest single-word equivalent.
