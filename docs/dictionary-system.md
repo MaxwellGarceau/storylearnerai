@@ -75,6 +75,7 @@ interface DictionaryWord {
   word: string;
   phonetic?: string;
   definitions: WordDefinition[];
+  // Supports structured parts of speech; add tags for simple string lists
   partsOfSpeech?: PartOfSpeech[];
   partsOfSpeechTags?: string[];
   etymology?: string;
@@ -88,7 +89,7 @@ interface DictionaryWord {
   lastUpdated?: string; // legacy; prefer translation_meta.lastUpdated
   translation_meta?: {
     lastUpdated?: string; // ISO 8601
-    position?: number; // Ordering/index from provider result lists
+    index?: number; // Ordering/index from provider result lists
   };
 }
 ```
@@ -97,15 +98,7 @@ interface DictionaryWord {
 
 ```typescript
 type DictionarySource =
-  | 'Lexicala API'
-  | 'oxford_english_dictionary'
-  | 'dictionaryapi_dev'
-  | 'wordnik'
-  | 'cambridge'
-  | 'merriam_webster'
-  | 'collins'
-  | 'glosbe'
-  | 'other';
+  | 'Lexicala API';
 ```
 
 ### WordDefinition Interface

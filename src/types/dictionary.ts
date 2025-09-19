@@ -20,11 +20,9 @@ export interface DictionaryWord {
   difficulty?: DifficultyLevel;
   audioUrl?: string;
   source?: DictionarySource;
-  // Kept for backward compatibility; prefer translation_meta.lastUpdated
-  lastUpdated?: string;
   translation_meta?: {
     lastUpdated?: string; // ISO 8601
-    position?: number; // Ordering/index from provider result lists
+    index?: number; // Ordering/index from provider result lists
   };
 }
 
