@@ -97,8 +97,7 @@ interface DictionaryWord {
 #### DictionarySource
 
 ```typescript
-type DictionarySource =
-  | 'Lexicala API';
+type DictionarySource = 'Lexicala API';
 ```
 
 ### WordDefinition Interface

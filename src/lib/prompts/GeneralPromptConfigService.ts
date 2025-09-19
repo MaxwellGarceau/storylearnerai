@@ -419,20 +419,24 @@ class GeneralPromptConfigService {
 
 Task: Translate ONLY the specified focus word from {fromLanguage} to {toLanguage}, using the full sentence for context.
 
+Output format:
+- Return STRICT JSON with EXACTLY these keys and nothing else:
+  {"targetWord":"<translation>","lemma":"<base_form>"}
+- targetWord: the most natural single-word translation in {toLanguage}
+- lemma: the base/dictionary form of targetWord in {toLanguage} (e.g., run for running)
+
 Rules:
-- Output ONLY the single translated word.
-- No explanations, punctuation, quotes, or extra words.
-- Choose the most common, natural everyday term in {toLanguage}.
-- If multiple translations exist, pick the most likely given the sentence.
-- If the word is a proper noun that should remain unchanged, return it unchanged.
-- If no single-word translation exists, return the closest single-word equivalent.
+- No explanations or extra text. Return JSON only.
+- If multiple translations exist, choose the most likely given the sentence.
+- If the word is a proper noun that should remain unchanged, set both fields to the unchanged word.
+- If no single-word translation exists, pick the closest single-word equivalent.
 
 Context sentence ({fromLanguage}):
 "{sentence}"
 
 Focus word: {focusWord}
 
-Return: ONLY the translation of the focus word in {toLanguage}.`
+Return ONLY the JSON object.`
       .replace(/{fromLanguage}/g, context.fromLanguage)
       .replace(/{toLanguage}/g, context.toLanguage)
       .replace(/{sentence}/g, context.sentence)

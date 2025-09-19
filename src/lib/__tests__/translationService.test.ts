@@ -190,9 +190,9 @@ describe('translationService', () => {
       ).rejects.toThrow('Source and target languages must be different');
     });
 
-    it('should successfully translate word when languages are different', async () => {
+    it('should successfully translate word when languages are different and parse lemma JSON', async () => {
       vi.mocked(llmServiceManager.generateCompletion).mockResolvedValue({
-        content: 'hola',
+        content: '{"targetWord":"hola","lemma":"hola"}',
         provider: 'gemini',
         model: 'gemini-1.5-flash',
       } as unknown as Awaited<
@@ -212,6 +212,7 @@ describe('translationService', () => {
       expect(result).toEqual({
         fromWord: 'hello',
         targetWord: 'hola',
+        lemma: 'hola',
         sentence: 'Hello world',
         fromLanguage: 'en',
         toLanguage: 'es',

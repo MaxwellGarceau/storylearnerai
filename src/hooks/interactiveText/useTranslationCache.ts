@@ -48,14 +48,16 @@ export function useTranslationCache(args: {
           }
         }
 
-        const targetText = await targetWordInSentence(
+        const result = await targetWordInSentence(
           normalizedWord,
           sentenceContext,
           targetLanguage,
           fromLanguage
         );
-        if (targetText) {
-          setTargetWords(prev => new Map(prev).set(normalizedWord, targetText));
+        if (result?.targetWord) {
+          setTargetWords(prev =>
+            new Map(prev).set(normalizedWord, result.targetWord)
+          );
         }
       } finally {
         setTranslatingWords(prev => {

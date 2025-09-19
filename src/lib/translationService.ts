@@ -43,6 +43,7 @@ export interface WordTranslationRequest {
 export interface WordTranslationResponse {
   fromWord: string;
   targetWord: string;
+  lemma?: string;
   sentence: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
@@ -184,13 +185,27 @@ class TranslationService {
         temperature: 0.2,
       });
 
-      // Ensure we only keep the first line/token as the word
+      // Expect strict JSON: {"targetWord":"...","lemma":"..."}
       const raw = (llmResponse.content ?? '').trim();
-      const singleWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
+      let targetWord = '';
+      let lemma: string | undefined = undefined;
+
+      try {
+        const parsed = JSON.parse(raw) as {
+          targetWord: string;
+          lemma?: string;
+        };
+        targetWord = (parsed.targetWord ?? '').toString();
+        lemma = parsed.lemma ? parsed.lemma.toString() : undefined;
+      } catch (_e) {
+        // Backward compatibility: fall back to first token when JSON not returned
+        targetWord = raw.split(/\s+/)[0]?.replace(/[\s\p{P}]+$/u, '') ?? '';
+      }
 
       return {
         fromWord: request.focusWord,
-        targetWord: singleWord,
+        targetWord,
+        lemma,
         sentence: request.sentence,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,

@@ -47,10 +47,25 @@ The translation flow supports selecting both a from language (source) and a to l
   - Language and difficulty settings for target-language guidance
   - Native-to-target (from→to) guidance when available
 
+#### Word Translation JSON Output
+
+The word-in-sentence translation prompt now requests strict JSON from the LLM with both the translated word and its lemma (base form):
+
+```json
+{ "targetWord": "<translation>", "lemma": "<base_form>" }
+```
+
+`translationService.targetWordWithContext` parses this JSON. If the model returns plain text (legacy behavior), it falls back to the first token and leaves `lemma` undefined.
+
 ### Vocabulary Handling
 
 - Vocabulary selection is filtered for the current language pair (`fromLanguage` → `toLanguage`).
 - The service validates inclusion of selected target-language words in the target-language translation.
+
+### Word Lemma Support
+
+- `useWordTranslation()` now exposes `targetWordWithLemmaInSentence(...)` which returns `{ targetWord, lemma }`.
+- This uses the strict JSON output from the LLM (see above). If JSON parsing fails, the service falls back to the translated word only.
 
 ### Story Reader
 

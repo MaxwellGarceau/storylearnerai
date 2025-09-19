@@ -6,7 +6,7 @@ vi.mock('../../useWordTranslation', () => ({
   useWordTranslation: () => ({
     targetWordInSentence: vi.fn(
       (_word: string, _sentence: string, _from: string, _to: string) =>
-        Promise.resolve('hola')
+        Promise.resolve({ targetWord: 'hola', lemma: 'hola' })
     ),
     translateSentence: vi.fn((_s: string) => Promise.resolve('hola mundo')),
   }),

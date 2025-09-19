@@ -17,7 +17,7 @@ interface UseWordTranslationReturn {
     sentence: string,
     fromLanguage: LanguageCode,
     toLanguage: LanguageCode
-  ) => NullableStringPromise;
+  ) => Promise<{ targetWord: string; lemma?: string } | null>;
   translateSentence: (
     sentence: string,
     fromLanguage: LanguageCode,
@@ -98,7 +98,7 @@ export function useWordTranslation(): UseWordTranslationReturn {
       sentence: string,
       fromLanguage: LanguageCode,
       toLanguage: LanguageCode
-    ): NullableStringPromise => {
+    ): Promise<{ targetWord: string; lemma?: string } | null> => {
       setIsTranslating(true);
       setError(null);
 
@@ -119,9 +119,10 @@ export function useWordTranslation(): UseWordTranslationReturn {
           fromLanguage,
           toLanguage,
           targetWord: response.targetWord,
+          lemma: response.lemma,
         });
 
-        return response.targetWord;
+        return { targetWord: response.targetWord, lemma: response.lemma };
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to translate word';
