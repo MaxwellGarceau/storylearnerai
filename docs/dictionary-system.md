@@ -71,10 +71,12 @@ Interactive word actions (Translate, Dictionary, Save) are provided by `WordMenu
 
 ```typescript
 interface DictionaryWord {
+  id?: string; // UUID for provider result or internal cache key
   word: string;
   phonetic?: string;
   definitions: WordDefinition[];
   partsOfSpeech?: PartOfSpeech[];
+  partsOfSpeechTags?: string[];
   etymology?: string;
   examples?: string[];
   synonyms?: string[];
@@ -82,9 +84,28 @@ interface DictionaryWord {
   frequency?: WordFrequency;
   difficulty?: DifficultyLevel;
   audioUrl?: string;
-  source?: string;
-  lastUpdated?: string;
+  source?: DictionarySource; // stricter union type
+  lastUpdated?: string; // legacy; prefer translation_meta.lastUpdated
+  translation_meta?: {
+    lastUpdated?: string; // ISO 8601
+    position?: number; // Ordering/index from provider result lists
+  };
 }
+```
+
+#### DictionarySource
+
+```typescript
+type DictionarySource =
+  | 'Lexicala API'
+  | 'oxford_english_dictionary'
+  | 'dictionaryapi_dev'
+  | 'wordnik'
+  | 'cambridge'
+  | 'merriam_webster'
+  | 'collins'
+  | 'glosbe'
+  | 'other';
 ```
 
 ### WordDefinition Interface
@@ -97,6 +118,27 @@ interface WordDefinition {
   synonyms?: string[];
   antonyms?: string[];
   context?: string;
+}
+```
+
+### PartOfSpeech Interface
+
+```typescript
+interface PartOfSpeech {
+  type: string;
+  confidence?: number;
+  definitions: WordDefinition[];
+}
+```
+
+### WordFrequency Interface
+
+```typescript
+interface WordFrequency {
+  level: 'common' | 'uncommon' | 'rare' | 'very-rare';
+  frequency?: number; // 0-1 scale
+  perMillion?: number; // occurrences per million words
+  rank?: number; // Word frequency rank
 }
 ```
 

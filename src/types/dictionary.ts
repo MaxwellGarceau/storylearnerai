@@ -1,11 +1,17 @@
 import { DifficultyLevel, LanguageCode } from './llm/prompts';
 
 // Dictionary system types
+export type DictionarySource =
+  | 'Lexicala API';
+
 export interface DictionaryWord {
+  id?: string; // UUID for provider result or internal cache key
   word: string;
   phonetic?: string;
   definitions: WordDefinition[];
+  // Supports structured parts of speech; add tags for simple string lists
   partsOfSpeech?: PartOfSpeech[];
+  partsOfSpeechTags?: string[];
   etymology?: string;
   examples?: string[];
   synonyms?: string[];
@@ -13,8 +19,13 @@ export interface DictionaryWord {
   frequency?: WordFrequency;
   difficulty?: DifficultyLevel;
   audioUrl?: string;
-  source?: string;
+  source?: DictionarySource;
+  // Kept for backward compatibility; prefer translation_meta.lastUpdated
   lastUpdated?: string;
+  translation_meta?: {
+    lastUpdated?: string; // ISO 8601
+    position?: number; // Ordering/index from provider result lists
+  };
 }
 
 export interface WordDefinition {
@@ -35,6 +46,7 @@ export interface PartOfSpeech {
 export interface WordFrequency {
   level: 'common' | 'uncommon' | 'rare' | 'very-rare';
   frequency?: number; // 0-1 scale
+  perMillion?: number; // occurrences per million words (if available)
   rank?: number; // Word frequency rank
 }
 
