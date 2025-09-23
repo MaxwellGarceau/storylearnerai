@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '../../../lib/utils';
 import { useDictionaryEntryContext } from './Context';
+import { logger } from '../../../lib/logger';
 
 // Loading Message component
 export interface DictionaryEntryLoadingMessageProps {
@@ -14,6 +15,10 @@ const DictionaryEntryLoadingMessage: React.FC<
   const { isLoading, word } = useDictionaryEntryContext();
 
   if (!isLoading) return null;
+
+  try {
+    logger.debug('dictionary', 'LoadingMessage shown', { word });
+  } catch {}
 
   return (
     <>

@@ -102,6 +102,13 @@ const WordMenu: React.FC<WordMenuProps> = ({
   };
 
   const handleDictionary = () => {
+    // Log click + inputs for debugging
+    console.debug('[dictionary-ui] open', {
+      word,
+      canonicalFromWord,
+      effectiveFromLanguage,
+      effectiveTargetLanguage,
+    });
     setShowDictionary(true);
   };
 

@@ -29,6 +29,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
    * Search for a word in the dictionary
    */
   async searchWord(params: DictionarySearchParams): DictionaryResponsePromise {
+    console.log('searchWord lexicalaApiClient');
     const { word, targetLanguage = 'en' } = params;
 
     if (!this.isOnline) {

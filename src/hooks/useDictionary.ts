@@ -40,50 +40,63 @@ export function useDictionary(): UseDictionaryReturn {
         return;
       }
 
+       logger.debug('dictionary', 'Lexical collections', {
+          lexical
+        });
+      
       // Sanitize clicked token: strip leading/trailing punctuation/symbols, preserve diacritics
       const sanitized = word
-        .normalize('NFC')
-        .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
-        .trim();
+      .normalize('NFC')
+      .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
+      .trim();
       const normalizedWord = sanitized.toLowerCase();
-
+      
       // Cancel any ongoing request
       if (currentRequestRef.current) {
         currentRequestRef.current.abort();
       }
-
+      
       // Create new abort controller for this request
       const abortController = new AbortController();
       currentRequestRef.current = abortController;
-
+      
       setIsLoading(true);
       setError(null);
       setWordInfo(null);
-
+      
       try {
-        logger.debug('dictionary-hook', 'Searching for word (provider first)', {
+        logger.debug('dictionary', 'Searching for word (provider first)', {
           word: normalizedWord,
           fromLanguage,
           targetLanguage,
         });
-        // Provider-first lookup: fromWord -> lemma -> dictionaryByLemma
-        // Try exact key first (by from word)
-        let translation = lexical.translationByFromWord.get(normalizedWord);
-        // If not found, try the raw casing (some providers may preserve case)
-        if (!translation) {
-          translation = lexical.translationByFromWord.get(
-            sanitized.normalize('NFC')
-          );
-        }
-        if (translation) {
-          const lemmaKey = translation.lemma.normalize('NFC').toLowerCase();
-          const dictWord = lexical.dictionaryByLemma.get(lemmaKey) ?? null;
+        // 1) Target-side lookup (most UIs click target token): targetWord -> lemma -> dictionary
+        const byTargetLemma = lexical.lemmaByTargetWord.get(normalizedWord)
+          ?? lexical.lemmaByTargetWord.get(sanitized.normalize('NFC').toLowerCase());
+        if (byTargetLemma) {
+          const dictWord = lexical.dictionaryByLemma.get(byTargetLemma) ?? null;
           if (dictWord) {
             if (abortController.signal.aborted) return;
             setWordInfo(dictWord);
-            logger.debug('dictionary-hook', 'Found word in provider state', {
+            logger.debug('dictionary', 'Found word via lemmaByTargetWord', {
               word: normalizedWord,
-              lemma: lemmaKey,
+              lemma: byTargetLemma,
+            });
+            return;
+          }
+        }
+
+        // 2) From-side lookup: fromWord -> lemma -> dictionaryByLemma
+        const byFromLemma = lexical.lemmaByFromWord.get(normalizedWord)
+          ?? lexical.lemmaByFromWord.get(sanitized.normalize('NFC').toLowerCase());
+        if (byFromLemma) {
+          const dictWord = lexical.dictionaryByLemma.get(byFromLemma) ?? null;
+          if (dictWord) {
+            if (abortController.signal.aborted) return;
+            setWordInfo(dictWord);
+            logger.debug('dictionary', 'Found word via lemmaByFromWord', {
+              word: normalizedWord,
+              lemma: byFromLemma,
             });
             return;
           }
@@ -94,13 +107,13 @@ export function useDictionary(): UseDictionaryReturn {
         if (directDict) {
           if (abortController.signal.aborted) return;
           setWordInfo(directDict);
-          logger.debug('dictionary-hook', 'Found word via direct lemma lookup', {
+          logger.debug('dictionary', 'Found word via direct lemma lookup', {
             word: normalizedWord,
           });
           return;
         }
 
-        // Last resort: scan translations to find a matching fromWord (handles rare normalization mismatches)
+        // 3) Last resort: scan translations to find a matching fromWord (handles rare normalization mismatches)
         for (const [lemmaKey, arr] of lexical.translationByLemma.entries()) {
           const hit = arr.find(t => {
             const fw = t.fromWord
@@ -114,7 +127,7 @@ export function useDictionary(): UseDictionaryReturn {
             if (dictWord) {
               if (abortController.signal.aborted) return;
               setWordInfo(dictWord);
-              logger.debug('dictionary-hook', 'Found via scan of by-lemma translations', {
+              logger.debug('dictionary', 'Found via scan of by-lemma translations', {
                 word: normalizedWord,
                 lemma: lemmaKey,
               });
@@ -134,13 +147,13 @@ export function useDictionary(): UseDictionaryReturn {
       } catch (err) {
         // Check if this request was cancelled
         if (abortController.signal.aborted) {
-          logger.debug('dictionary-hook', 'Request was cancelled', {
+          logger.debug('dictionary', 'Request was cancelled', {
             word: normalizedWord,
           });
           return;
         }
 
-        logger.error('dictionary-hook', 'Failed to search word', {
+        logger.error('dictionary', 'Failed to search word', {
           word: normalizedWord,
           error: err instanceof Error ? err.message : 'Unknown error',
         });
