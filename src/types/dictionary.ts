@@ -1,7 +1,7 @@
 import { DifficultyLevel, LanguageCode } from './llm/prompts';
 
 // Dictionary system types
-export type DictionarySource = 'Lexicala API' | 'Gemini';
+export type DictionarySource = 'Lexicala API' | 'Gemini' | 'Mock';
 
 export interface DictionaryWord {
   // Backward-compat: some legacy code/tests refer to `word`

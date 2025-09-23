@@ -84,6 +84,10 @@ class TranslationService {
     if (request.fromLanguage === request.toLanguage) {
       throw new Error('Source and target languages must be different');
     }
+    logger.debug('translation', 'Lexical: language validation passed', {
+      fromLanguage: request.fromLanguage,
+      toLanguage: request.toLanguage,
+    });
 
     // Enforce 1500-word limit
     const inputWordCount = this.countWords(request.text);
@@ -92,6 +96,10 @@ class TranslationService {
         `The input is too long (${inputWordCount} words). Max is 1500 words. Please try 3–5 paragraphs.`
       );
     }
+    logger.debug('translation', 'Lexical: word limit validation passed', {
+      inputWordCount,
+      limit: 1500,
+    });
 
     const context = {
       fromLanguage: request.fromLanguage,
@@ -119,6 +127,15 @@ class TranslationService {
     });
 
     const raw = (llmResponse.content ?? '').trim();
+    
+    // Log the raw response from Gemini for debugging
+    logger.info('translation', 'Received raw response from Gemini for lexical collections', {
+      provider: llmResponse.provider,
+      model: llmResponse.model,
+      responseLength: raw.length,
+      rawResponse: raw,
+    });
+
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
@@ -148,6 +165,10 @@ class TranslationService {
     ) {
       throw new Error('Invalid lexical collections format from provider');
     }
+    logger.debug('translation', 'Lexical: parsed object structure OK', {
+      translationsType: Array.isArray(obj.translations) ? 'array' : typeof obj.translations,
+      dictionaryType: Array.isArray(obj.dictionary) ? 'array' : typeof obj.dictionary,
+    });
 
     try {
       const tArr = obj.translations as unknown[];
@@ -188,12 +209,36 @@ class TranslationService {
     const translationTransformer = new GeminiTranslationTransformer();
     const dictionaryTransformer = new GeminiDictionaryTransformer();
 
-    const validatedTranslations = translationTransformer.validateAndNormalize(
-      obj.translations as unknown[]
-    );
-    const validatedDictionary = dictionaryTransformer.validateAndNormalize(
-      obj.dictionary as unknown[]
-    );
+    const preTranslations = obj.translations as unknown[];
+    const preDictionary = obj.dictionary as unknown[];
+    let validatedTranslations: TranslationWord[] = [];
+    let validatedDictionary: DictionaryWord[] = [];
+
+    try {
+      validatedTranslations = translationTransformer.validateAndNormalize(
+        preTranslations
+      );
+    } catch (e) {
+      logger.error('translation', 'Lexical: translation validation failed', {
+        error: e instanceof Error ? e.message : 'unknown',
+        preTranslationsCount: preTranslations.length,
+        preTranslationsSample: preTranslations.slice(0, 3),
+      });
+      throw e;
+    }
+
+    try {
+      validatedDictionary = dictionaryTransformer.validateAndNormalize(
+        preDictionary
+      );
+    } catch (e) {
+      logger.error('translation', 'Lexical: dictionary validation failed', {
+        error: e instanceof Error ? e.message : 'unknown',
+        preDictionaryCount: preDictionary.length,
+        preDictionarySample: preDictionary.slice(0, 3),
+      });
+      throw e;
+    }
 
     try {
       const translationLemmaCount = new Set(
@@ -208,18 +253,38 @@ class TranslationService {
         translationLemmaCount,
         dictionaryLemmaCount,
       });
+      logger.debug('translation', 'Validated samples', {
+        translationsSample: validatedTranslations
+          .slice(0, 3)
+          .map(t => ({
+            fromWord: t.fromWord,
+            targetWord: t.targetWord,
+            lemma: t.lemma,
+            confidence: t.confidence,
+          })),
+        dictionarySample: validatedDictionary
+          .slice(0, 3)
+          .map(d => ({ lemma: d.lemma, defs: d.definitions.length })),
+      });
     } catch (e) {
       logger.warn('translation', 'Failed to log validated lexical collection stats', {
         error: e instanceof Error ? e.message : 'unknown',
       });
     }
 
-    return {
+    const result = {
       translations: validatedTranslations,
       dictionary: validatedDictionary,
       provider: llmResponse.provider,
       model: llmResponse.model,
     };
+    logger.info('translation', 'Lexical: returning collections', {
+      translationsCount: result.translations.length,
+      dictionaryCount: result.dictionary.length,
+      provider: result.provider,
+      model: result.model,
+    });
+    return result;
   }
 
   /**

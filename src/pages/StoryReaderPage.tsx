@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import StoryRender from '../components/story/StoryRender';
 import { Button } from '../components/ui/Button';
@@ -28,6 +28,7 @@ function StoryReaderContent(): JSX.Element {
     translationData?: TranslationResponse;
     isSavedStory?: boolean;
     savedTranslationId?: number;
+    lexicalData?: { translations: import('../types/dictionary').TranslationWord[]; dictionary: import('../types/dictionary').DictionaryWord[] };
   } | null;
   const translationData = state?.translationData;
   const isSavedStoryFromState = state?.isSavedStory;
@@ -97,32 +98,37 @@ function StoryReaderContent(): JSX.Element {
 
   const lexical = useLexicalCollectionsContext();
 
+  const hasHydrated = useRef(false);
+
   useEffect(() => {
-    // Hydrate lexical collections when translation data is available
+    if (hasHydrated.current) return;
+    if (!finalTranslationData) return;
+
+    // Prefer lexical data passed from TranslatePage to avoid duplicate requests
+    if (state?.lexicalData) {
+      lexical.hydrate(state.lexicalData.translations, state.lexicalData.dictionary);
+      hasHydrated.current = true;
+      return;
+    }
+
     const run = async () => {
-      if (!finalTranslationData) return;
       try {
-        const collections = await translationService.generateLexicalCollections(
-          {
-            text: finalTranslationData.fromText,
-            fromLanguage: finalTranslationData.fromLanguage,
-            toLanguage: finalTranslationData.toLanguage,
-            difficulty: finalTranslationData.difficulty,
-          }
-        );
+        const collections = await translationService.generateLexicalCollections({
+          text: finalTranslationData.fromText,
+          fromLanguage: finalTranslationData.fromLanguage,
+          toLanguage: finalTranslationData.toLanguage,
+          difficulty: finalTranslationData.difficulty,
+        });
         lexical.hydrate(collections.translations, collections.dictionary);
-      } catch (_) {
-        // Non-blocking for page render; dictionary features may be limited
+      } catch {
+        // Non-blocking
+      } finally {
+        hasHydrated.current = true;
       }
     };
     void run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    finalTranslationData?.fromText,
-    finalTranslationData?.fromLanguage,
-    finalTranslationData?.toLanguage,
-    finalTranslationData?.difficulty,
-  ]);
+  }, [finalTranslationData?.fromText, finalTranslationData?.fromLanguage, finalTranslationData?.toLanguage, finalTranslationData?.difficulty]);
 
   const handleTranslateAnother = () => {
     void navigate('/translate');
