@@ -31,7 +31,7 @@ export class EnvironmentConfig {
     );
 
     const maxTokens = parseInt(
-      (import.meta.env.VITE_LLM_MAX_TOKENS as string | undefined) ?? '2000',
+      (import.meta.env.VITE_LLM_MAX_TOKENS as string | undefined) ?? '20000',
       10
     );
     const temperature = parseFloat(

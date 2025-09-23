@@ -126,30 +126,56 @@ class TranslationService {
       responseMimeType: 'application/json',
     });
 
+    this.logIfTokenLimitReached('lexical_collections', llmResponse.tokenUsage);
+
     const raw = (llmResponse.content ?? '').trim();
-    
+
     // Log the raw response from Gemini for debugging
-    logger.info('translation', 'Received raw response from Gemini for lexical collections', {
-      provider: llmResponse.provider,
-      model: llmResponse.model,
-      responseLength: raw.length,
-      rawResponse: raw,
-    });
+    logger.info(
+      'translation',
+      'Received raw response from Gemini for lexical collections',
+      {
+        provider: llmResponse.provider,
+        model: llmResponse.model,
+        responseLength: raw.length,
+        rawResponse: raw,
+      }
+    );
 
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
     } catch (e) {
-      // Try to salvage JSON object from mixed output
-      const start = raw.indexOf('{');
-      const end = raw.lastIndexOf('}');
-      if (start !== -1 && end > start) {
-        parsed = JSON.parse(raw.slice(start, end + 1));
+      // Attempt to repair common JSON issues before giving up
+      const repaired = this.tryRepairJson(raw);
+      if (repaired) {
+        try {
+          parsed = JSON.parse(repaired);
+          logger.warn('translation', 'Repaired malformed JSON from provider');
+        } catch (e2) {
+          // Try to salvage JSON object from mixed output
+          const start = raw.indexOf('{');
+          const end = raw.lastIndexOf('}');
+          if (start !== -1 && end > start) {
+            parsed = JSON.parse(raw.slice(start, end + 1));
+          } else {
+            logger.error('translation', 'Failed to parse Gemini lexical JSON', {
+              error: e instanceof Error ? e.message : 'Unknown parse error',
+            });
+            throw new Error('Failed to parse lexical collections response');
+          }
+        }
       } else {
-        logger.error('translation', 'Failed to parse Gemini lexical JSON', {
-          error: e instanceof Error ? e.message : 'Unknown parse error',
-        });
-        throw new Error('Failed to parse lexical collections response');
+        const start = raw.indexOf('{');
+        const end = raw.lastIndexOf('}');
+        if (start !== -1 && end > start) {
+          parsed = JSON.parse(raw.slice(start, end + 1));
+        } else {
+          logger.error('translation', 'Failed to parse Gemini lexical JSON', {
+            error: e instanceof Error ? e.message : 'Unknown parse error',
+          });
+          throw new Error('Failed to parse lexical collections response');
+        }
       }
     }
 
@@ -166,8 +192,12 @@ class TranslationService {
       throw new Error('Invalid lexical collections format from provider');
     }
     logger.debug('translation', 'Lexical: parsed object structure OK', {
-      translationsType: Array.isArray(obj.translations) ? 'array' : typeof obj.translations,
-      dictionaryType: Array.isArray(obj.dictionary) ? 'array' : typeof obj.dictionary,
+      translationsType: Array.isArray(obj.translations)
+        ? 'array'
+        : typeof obj.translations,
+      dictionaryType: Array.isArray(obj.dictionary)
+        ? 'array'
+        : typeof obj.dictionary,
     });
 
     try {
@@ -201,9 +231,13 @@ class TranslationService {
         sampleDictionary,
       });
     } catch (e) {
-      logger.warn('translation', 'Failed to log raw lexical collection samples', {
-        error: e instanceof Error ? e.message : 'unknown',
-      });
+      logger.warn(
+        'translation',
+        'Failed to log raw lexical collection samples',
+        {
+          error: e instanceof Error ? e.message : 'unknown',
+        }
+      );
     }
 
     const translationTransformer = new GeminiTranslationTransformer();
@@ -215,9 +249,8 @@ class TranslationService {
     let validatedDictionary: DictionaryWord[] = [];
 
     try {
-      validatedTranslations = translationTransformer.validateAndNormalize(
-        preTranslations
-      );
+      validatedTranslations =
+        translationTransformer.validateAndNormalize(preTranslations);
     } catch (e) {
       logger.error('translation', 'Lexical: translation validation failed', {
         error: e instanceof Error ? e.message : 'unknown',
@@ -228,9 +261,8 @@ class TranslationService {
     }
 
     try {
-      validatedDictionary = dictionaryTransformer.validateAndNormalize(
-        preDictionary
-      );
+      validatedDictionary =
+        dictionaryTransformer.validateAndNormalize(preDictionary);
     } catch (e) {
       logger.error('translation', 'Lexical: dictionary validation failed', {
         error: e instanceof Error ? e.message : 'unknown',
@@ -254,22 +286,24 @@ class TranslationService {
         dictionaryLemmaCount,
       });
       logger.debug('translation', 'Validated samples', {
-        translationsSample: validatedTranslations
-          .slice(0, 3)
-          .map(t => ({
-            fromWord: t.fromWord,
-            targetWord: t.targetWord,
-            lemma: t.lemma,
-            confidence: t.confidence,
-          })),
+        translationsSample: validatedTranslations.slice(0, 3).map(t => ({
+          fromWord: t.fromWord,
+          targetWord: t.targetWord,
+          lemma: t.lemma,
+          confidence: t.confidence,
+        })),
         dictionarySample: validatedDictionary
           .slice(0, 3)
           .map(d => ({ lemma: d.lemma, defs: d.definitions.length })),
       });
     } catch (e) {
-      logger.warn('translation', 'Failed to log validated lexical collection stats', {
-        error: e instanceof Error ? e.message : 'unknown',
-      });
+      logger.warn(
+        'translation',
+        'Failed to log validated lexical collection stats',
+        {
+          error: e instanceof Error ? e.message : 'unknown',
+        }
+      );
     }
 
     const result = {
@@ -288,9 +322,37 @@ class TranslationService {
   }
 
   /**
+   * Best-effort JSON repair for common LLM issues:
+   * - Dangling trailing commas before ] or }
+   * - Unquoted property names are NOT fixed (unsafe), we only handle commas
+   * - Truncated arrays/objects are not attempted beyond trimming to last bracket
+   */
+  private tryRepairJson(input: string): string | null {
+    try {
+      let s = input.trim();
+      // Keep only up to last closing brace to remove trailing junk
+      const end = s.lastIndexOf('}');
+      if (end > 0) {
+        s = s.slice(0, end + 1);
+      }
+      // Remove trailing commas before array/object closers
+      s = s.replace(/,\s*([\]\}])/g, '$1');
+      // Compact weird line-end commas
+      s = s.replace(/,\s*\n\s*([\]\}])/g, '$1');
+      // Validate quickly
+      JSON.parse(s);
+      return s;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Mock generator for lexical collections (dev/testing)
    */
-  private async mockGenerateLexicalCollections(request: TranslationRequest): Promise<{
+  private async mockGenerateLexicalCollections(
+    request: TranslationRequest
+  ): Promise<{
     translations: TranslationWord[];
     dictionary: DictionaryWord[];
     provider: string;
@@ -306,18 +368,23 @@ class TranslationService {
       .filter(w => !/^[\p{P}\p{S}]+$/u.test(w));
 
     const uniqueByLemma = new Map<string, string>();
-    const translations: TranslationWord[] = words.slice(0, 2000).map((w, idx) => {
-      const lemma = w.toLowerCase();
-      if (!uniqueByLemma.has(lemma)) uniqueByLemma.set(lemma, w);
-      return {
-        id: `${idx + 1}`,
-        fromWord: w,
-        targetWord: w,
-        lemma,
-        confidence: 0.9,
-        translation_meta: { index: idx, lastUpdated: new Date().toISOString() },
-      };
-    });
+    const translations: TranslationWord[] = words
+      .slice(0, 2000)
+      .map((w, idx) => {
+        const lemma = w.toLowerCase();
+        if (!uniqueByLemma.has(lemma)) uniqueByLemma.set(lemma, w);
+        return {
+          id: `${idx + 1}`,
+          fromWord: w,
+          targetWord: w,
+          lemma,
+          confidence: 0.9,
+          translation_meta: {
+            index: idx,
+            lastUpdated: new Date().toISOString(),
+          },
+        };
+      });
 
     const dictionary: DictionaryWord[] = Array.from(uniqueByLemma.keys()).map(
       lemma => ({
@@ -369,6 +436,8 @@ class TranslationService {
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
       });
+
+      this.logIfTokenLimitReached('story_translation', llmResponse.tokenUsage);
 
       // Track vocabulary inclusion - IMPORTANT: We analyze target language words in target language text
       const selectedVocabulary = request.selectedVocabulary ?? [];
@@ -466,6 +535,8 @@ class TranslationService {
         prompt,
         responseMimeType: 'application/json',
       });
+
+      this.logIfTokenLimitReached('word_translation', llmResponse.tokenUsage);
 
       // Prefer JSON when present, otherwise fallback to first token cleaned
       const raw = (llmResponse.content ?? '').trim();
@@ -725,6 +796,43 @@ class TranslationService {
       return 0;
     }
     return trimmed.split(/\s+/).length;
+  }
+
+  /**
+   * Log when the provider's completion appears to hit the configured max tokens
+   */
+  private logIfTokenLimitReached(
+    context: string,
+    tokenUsage?: {
+      promptTokens?: number;
+      completionTokens?: number;
+      totalTokens?: number;
+    }
+  ): void {
+    try {
+      if (!tokenUsage || tokenUsage.completionTokens == null) return;
+      const maxTokens = EnvironmentConfig.getLLMConfig().maxTokens;
+      const completion = tokenUsage.completionTokens ?? 0;
+      if (completion >= maxTokens) {
+        logger.warn('translation', 'LLM completion reached max output tokens', {
+          context,
+          completionTokens: completion,
+          promptTokens: tokenUsage.promptTokens ?? 0,
+          totalTokens: tokenUsage.totalTokens ?? completion,
+          maxTokens,
+        });
+      } else if (completion >= Math.max(0, maxTokens - 50)) {
+        logger.info('translation', 'LLM completion is near max output tokens', {
+          context,
+          completionTokens: completion,
+          promptTokens: tokenUsage.promptTokens ?? 0,
+          totalTokens: tokenUsage.totalTokens ?? completion,
+          maxTokens,
+        });
+      }
+    } catch (e) {
+      // Do not throw from logging
+    }
   }
 }
 

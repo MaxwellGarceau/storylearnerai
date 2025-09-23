@@ -10,7 +10,10 @@ function TranslatePageContent(): JSX.Element {
 
   const handleStoryTranslated = (
     data: TranslationResponse,
-    lexicalData?: { translations: import('../types/dictionary').TranslationWord[]; dictionary: import('../types/dictionary').DictionaryWord[] }
+    lexicalData?: {
+      translations: import('../types/dictionary').TranslationWord[];
+      dictionary: import('../types/dictionary').DictionaryWord[];
+    }
   ) => {
     void navigate('/story', { state: { translationData: data, lexicalData } });
   };

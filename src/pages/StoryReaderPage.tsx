@@ -29,7 +29,10 @@ function StoryReaderContent(): JSX.Element {
     translationData?: TranslationResponse;
     isSavedStory?: boolean;
     savedTranslationId?: number;
-    lexicalData?: { translations: import('../types/dictionary').TranslationWord[]; dictionary: import('../types/dictionary').DictionaryWord[] };
+    lexicalData?: {
+      translations: import('../types/dictionary').TranslationWord[];
+      dictionary: import('../types/dictionary').DictionaryWord[];
+    };
   } | null;
   const translationData = state?.translationData;
   const isSavedStoryFromState = state?.isSavedStory;
@@ -100,53 +103,93 @@ function StoryReaderContent(): JSX.Element {
   const lexical = useLexicalCollectionsContext();
 
   const hasHydrated = useRef(false);
+  const hydrationInFlight = useRef(false);
 
   useEffect(() => {
-    if (hasHydrated.current) return;
+    if (hasHydrated.current || hydrationInFlight.current) {
+      logger.debug(
+        'translation',
+        'Skipping hydration (already done or in-flight)'
+      );
+      return;
+    }
     if (!finalTranslationData) return;
 
     // Prefer lexical data passed from TranslatePage to avoid duplicate requests
     if (state?.lexicalData) {
-      logger.info('translation', 'Hydrating lexical collections from navigation state', {
-        translationsCount: state.lexicalData.translations.length,
-        dictionaryCount: state.lexicalData.dictionary.length,
-      });
-      lexical.hydrate(state.lexicalData.translations, state.lexicalData.dictionary);
+      logger.info(
+        'translation',
+        'Hydrating lexical collections from navigation state',
+        {
+          translationsCount: state.lexicalData.translations.length,
+          dictionaryCount: state.lexicalData.dictionary.length,
+        }
+      );
+      hydrationInFlight.current = true;
+      lexical.hydrate(
+        state.lexicalData.translations,
+        state.lexicalData.dictionary
+      );
       hasHydrated.current = true;
+      hydrationInFlight.current = false;
       return;
     }
 
     const run = async () => {
-      logger.info('translation', 'Fetching lexical collections for StoryReader', {
-        fromLanguage: finalTranslationData.fromLanguage,
-        toLanguage: finalTranslationData.toLanguage,
-        difficulty: finalTranslationData.difficulty,
-        fromTextLength: finalTranslationData.fromText.length,
-      });
-      try {
-        const collections = await translationService.generateLexicalCollections({
-          text: finalTranslationData.fromText,
+      logger.info(
+        'translation',
+        'Fetching lexical collections for StoryReader',
+        {
           fromLanguage: finalTranslationData.fromLanguage,
           toLanguage: finalTranslationData.toLanguage,
           difficulty: finalTranslationData.difficulty,
-        });
+          fromTextLength: finalTranslationData.fromText.length,
+        }
+      );
+      hydrationInFlight.current = true;
+      try {
+        const collections = await translationService.generateLexicalCollections(
+          {
+            text: finalTranslationData.fromText,
+            fromLanguage: finalTranslationData.fromLanguage,
+            toLanguage: finalTranslationData.toLanguage,
+            difficulty: finalTranslationData.difficulty,
+          }
+        );
         lexical.hydrate(collections.translations, collections.dictionary);
-        logger.info('translation', 'Hydrated lexical collections in StoryReader', {
-          translationsCount: collections.translations.length,
-          dictionaryCount: collections.dictionary.length,
-        });
+        logger.info(
+          'translation',
+          'Hydrated lexical collections in StoryReader',
+          {
+            translationsCount: collections.translations.length,
+            dictionaryCount: collections.dictionary.length,
+          }
+        );
       } catch (error) {
-        logger.error('translation', 'Failed to hydrate lexical collections in StoryReader', {
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.error(
+          'translation',
+          'Failed to hydrate lexical collections in StoryReader',
+          {
+            error: error instanceof Error ? error.message : String(error),
+          }
+        );
       } finally {
         hasHydrated.current = true;
-        logger.debug('translation', 'StoryReader lexical hydration flow finished');
+        hydrationInFlight.current = false;
+        logger.debug(
+          'translation',
+          'StoryReader lexical hydration flow finished'
+        );
       }
     };
     void run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalTranslationData?.fromText, finalTranslationData?.fromLanguage, finalTranslationData?.toLanguage, finalTranslationData?.difficulty]);
+  }, [
+    finalTranslationData?.fromText,
+    finalTranslationData?.fromLanguage,
+    finalTranslationData?.toLanguage,
+    finalTranslationData?.difficulty,
+  ]);
 
   const handleTranslateAnother = () => {
     void navigate('/translate');
