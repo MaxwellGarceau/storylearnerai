@@ -4,6 +4,9 @@ import { generalPromptConfigService } from './prompts';
 import { LanguageCode, DifficultyLevel } from '../types/llm/prompts';
 import { LLMError } from '../types/llm/providers';
 import { logger } from './logger';
+import { DictionaryWord, TranslationWord } from '../types/dictionary';
+import { GeminiTranslationTransformer } from './translation/transformers/geminiTransformer';
+import { GeminiDictionaryTransformer } from './dictionary/transformers/geminiTransformer';
 
 export interface TranslationRequest {
   text: string;
@@ -63,11 +66,106 @@ export interface TranslationError {
 }
 
 class TranslationService {
+  /**
+   * Generate both translation and dictionary collections via Gemini in a single request
+   */
+  async generateLexicalCollections(request: TranslationRequest): Promise<{
+    translations: TranslationWord[];
+    dictionary: DictionaryWord[];
+    provider?: string;
+    model?: string;
+  }> {
+    // Validate language pair
+    if (request.fromLanguage === request.toLanguage) {
+      throw new Error('Source and target languages must be different');
+    }
+
+    // Enforce 1500-word limit
+    const inputWordCount = this.countWords(request.text);
+    if (inputWordCount > 1500) {
+      throw new Error(
+        `The input is too long (${inputWordCount} words). Max is 1500 words. Please try 3–5 paragraphs.`
+      );
+    }
+
+    const context = {
+      fromLanguage: request.fromLanguage,
+      toLanguage: request.toLanguage,
+      difficulty: request.difficulty,
+      text: request.text,
+      nativeLanguage: request.nativeLanguage,
+      selectedVocabulary: request.selectedVocabulary,
+    };
+
+    const prompt =
+      await generalPromptConfigService.buildLexicalCollectionsPrompt(context);
+
+    const llmResponse = await llmServiceManager.generateCompletion({
+      prompt,
+      responseMimeType: 'application/json',
+    });
+
+    const raw = (llmResponse.content ?? '').trim();
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      // Try to salvage JSON object from mixed output
+      const start = raw.indexOf('{');
+      const end = raw.lastIndexOf('}');
+      if (start !== -1 && end > start) {
+        parsed = JSON.parse(raw.slice(start, end + 1));
+      } else {
+        logger.error('translation', 'Failed to parse Gemini lexical JSON', {
+          error: e instanceof Error ? e.message : 'Unknown parse error',
+        });
+        throw new Error('Failed to parse lexical collections response');
+      }
+    }
+
+    const obj = parsed as {
+      translations?: unknown;
+      dictionary?: unknown;
+    };
+
+    if (
+      !obj ||
+      !Array.isArray(obj.translations) ||
+      !Array.isArray(obj.dictionary)
+    ) {
+      throw new Error('Invalid lexical collections format from provider');
+    }
+
+    const translationTransformer = new GeminiTranslationTransformer();
+    const dictionaryTransformer = new GeminiDictionaryTransformer();
+
+    const validatedTranslations = translationTransformer.validateAndNormalize(
+      obj.translations as unknown[]
+    );
+    const validatedDictionary = dictionaryTransformer.validateAndNormalize(
+      obj.dictionary as unknown[]
+    );
+
+    return {
+      translations: validatedTranslations,
+      dictionary: validatedDictionary,
+      provider: llmResponse.provider,
+      model: llmResponse.model,
+    };
+  }
   async targetStory(request: TranslationRequest): TranslationResponsePromise {
     try {
       // Validate that source and target languages are different
       if (request.fromLanguage === request.toLanguage) {
         throw new Error('Source and target languages must be different');
+      }
+
+      // Enforce max input size (1500-word hard limit)
+      const inputWordCount = this.countWords(request.text);
+      if (inputWordCount > 1500) {
+        throw new Error(
+          `The input is too long (${inputWordCount} words). Max is 1500 words. Please try 3–5 paragraphs.`
+        );
       }
 
       const context = {
@@ -305,6 +403,14 @@ class TranslationService {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
 
+    // Enforce max input size (1500-word hard limit) in mock path as well
+    const inputWordCount = this.countWords(request.text);
+    if (inputWordCount > 1500) {
+      throw new Error(
+        `The input is too long (${inputWordCount} words). Max is 1500 words. Please try 3–5 paragraphs.`
+      );
+    }
+
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
 
@@ -421,6 +527,17 @@ class TranslationService {
    */
   private escapeRegExp(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /**
+   * Count words in a string. Words are sequences of non-whitespace characters.
+   */
+  private countWords(text: string): number {
+    const trimmed = text.trim();
+    if (trimmed.length === 0) {
+      return 0;
+    }
+    return trimmed.split(/\s+/).length;
   }
 }
 

@@ -8,11 +8,16 @@ import SaveTranslationButton from '../components/story/SaveTranslationButton';
 import { useLanguages } from '../hooks/useLanguages';
 import StorySidebar from '../components/sidebar/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
+import {
+  LexicalCollectionsProvider,
+  useLexicalCollectionsContext,
+} from '../components/providers/LexicalCollectionsProvider';
+import { translationService } from '../lib/translationService';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
 
-const StoryReaderPage: React.FC = () => {
+function StoryReaderContent(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -89,6 +94,35 @@ const StoryReaderPage: React.FC = () => {
     isSavedStoryFromState ?? Boolean(urlSavedTranslationId);
   const resolvedSavedTranslationId =
     savedTranslationIdFromState ?? urlSavedTranslationId;
+
+  const lexical = useLexicalCollectionsContext();
+
+  useEffect(() => {
+    // Hydrate lexical collections when translation data is available
+    const run = async () => {
+      if (!finalTranslationData) return;
+      try {
+        const collections = await translationService.generateLexicalCollections(
+          {
+            text: finalTranslationData.fromText,
+            fromLanguage: finalTranslationData.fromLanguage,
+            toLanguage: finalTranslationData.toLanguage,
+            difficulty: finalTranslationData.difficulty,
+          }
+        );
+        lexical.hydrate(collections.translations, collections.dictionary);
+      } catch (_) {
+        // Non-blocking for page render; dictionary features may be limited
+      }
+    };
+    void run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    finalTranslationData?.fromText,
+    finalTranslationData?.fromLanguage,
+    finalTranslationData?.toLanguage,
+    finalTranslationData?.difficulty,
+  ]);
 
   const handleTranslateAnother = () => {
     void navigate('/translate');
@@ -203,6 +237,14 @@ const StoryReaderPage: React.FC = () => {
       {/* Combined Sidebar */}
       <StorySidebar translationData={finalTranslationData} />
     </div>
+  );
+}
+
+const StoryReaderPage: React.FC = () => {
+  return (
+    <LexicalCollectionsProvider>
+      <StoryReaderContent />
+    </LexicalCollectionsProvider>
   );
 };
 

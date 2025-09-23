@@ -4,11 +4,10 @@ import {
   DictionaryWord,
   DictionaryError,
 } from '../types/dictionary';
-import { dictionaryService } from '../lib/dictionary/dictionaryService';
 import { createDictionaryError } from '../lib/dictionary/utils';
 import { logger } from '../lib/logger';
 import { LanguageCode } from '../types/llm/prompts';
-import { EnvironmentConfig } from '../lib/config/env';
+import { useLexicalCollectionsContext } from '../components/providers/LexicalCollectionsProvider';
 
 /**
  * React hook for dictionary functionality
@@ -18,6 +17,7 @@ export function useDictionary(): UseDictionaryReturn {
   const [wordInfo, setWordInfo] = useState<DictionaryWord | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<DictionaryError | null>(null);
+  const lexical = useLexicalCollectionsContext();
 
   // Use ref to prevent race conditions with multiple rapid requests
   const currentRequestRef = useRef<AbortController | null>(null);
@@ -31,23 +31,6 @@ export function useDictionary(): UseDictionaryReturn {
       fromLanguage?: LanguageCode,
       targetLanguage: LanguageCode = 'en'
     ) => {
-      // Check if dictionary is disabled
-      if (EnvironmentConfig.isDictionaryDisabled()) {
-        logger.debug(
-          'dictionary-hook',
-          'Dictionary is disabled, skipping search',
-          {
-            word,
-          }
-        );
-        setError(
-          createDictionaryError('API_ERROR', 'Dictionary service is disabled', {
-            word,
-          })
-        );
-        return;
-      }
-
       if (!word || word.trim() === '') {
         setError(
           createDictionaryError('INVALID_REQUEST', 'Word cannot be empty', {
@@ -73,31 +56,37 @@ export function useDictionary(): UseDictionaryReturn {
       setWordInfo(null);
 
       try {
-        logger.debug('dictionary-hook', 'Searching for word', {
+        logger.debug('dictionary-hook', 'Searching for word (provider first)', {
           word: normalizedWord,
           fromLanguage,
           targetLanguage,
         });
-
-        const result = await dictionaryService.getWordInfo(
-          normalizedWord,
-          fromLanguage,
-          targetLanguage
+        // Provider-first lookup: fromWord -> lemma -> dictionaryByLemma
+        const translation = lexical.translationByFromWord.get(
+          normalizedWord.normalize('NFC')
         );
-
-        // Check if this request was cancelled
-        if (abortController.signal.aborted) {
-          logger.debug('dictionary-hook', 'Request was cancelled', {
-            word: normalizedWord,
-          });
-          return;
+        if (translation) {
+          const lemmaKey = translation.lemma.normalize('NFC').toLowerCase();
+          const dictWord = lexical.dictionaryByLemma.get(lemmaKey) ?? null;
+          if (dictWord) {
+            if (abortController.signal.aborted) return;
+            setWordInfo(dictWord);
+            logger.debug('dictionary-hook', 'Found word in provider state', {
+              word: normalizedWord,
+              lemma: lemmaKey,
+            });
+            return;
+          }
         }
 
-        setWordInfo(result);
-        logger.debug('dictionary-hook', 'Successfully retrieved word info', {
-          word: normalizedWord,
-          definitionsCount: result.definitions.length,
-        });
+        // If not found in provider, return not found (no external API in new design)
+        setError(
+          createDictionaryError('WORD_NOT_FOUND', 'Word not found', {
+            word: normalizedWord,
+            fromLanguage,
+            targetLanguage,
+          })
+        );
       } catch (err) {
         // Check if this request was cancelled
         if (abortController.signal.aborted) {
@@ -134,7 +123,7 @@ export function useDictionary(): UseDictionaryReturn {
         }
       }
     },
-    []
+    [lexical]
   );
 
   /**
@@ -158,5 +147,6 @@ export function useDictionary(): UseDictionaryReturn {
  * Useful for components that need direct access to service methods
  */
 export function useDictionaryService() {
-  return dictionaryService;
+  // No external service in the new flow; this function remains for compatibility.
+  return null;
 }

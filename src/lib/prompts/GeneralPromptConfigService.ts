@@ -445,6 +445,28 @@ Return ONLY the JSON object.`
   }
 
   /**
+   * Build a prompt that requests BOTH collections in one response:
+   * - translations: TranslationWord[]
+   * - dictionary: DictionaryWord[]
+   * The model must return STRICT JSON with named keys and nothing else.
+   */
+  async buildLexicalCollectionsPrompt(
+    context: PromptBuildContext
+  ): Promise<string> {
+    const basePrompt =
+      await this.buildDifficultyLevelAndLanguagePrompt(context);
+
+    const schemaInstruction = `\n\nYou are an expert translator and lexicographer.\n\nTask: Translate the text to {toLanguage} and produce two collections:\n1) translations: array of objects with keys: id (uuid), fromWord (string), targetWord (string), lemma (string), confidence (number 0..1), translation_meta (object with optional index:number, lastUpdated:ISO8601).\n   - fromWord is from the original text in {fromLanguage}.\n   - targetWord is the translated surface form in {toLanguage}.\n   - lemma is the base/dictionary form in {toLanguage}. Keep diacritics.\n   - confidence is a probability-like score in [0,1].\n2) dictionary: array of objects with keys: lemma (string), phonetic? (string), definitions (array of { definition:string, partOfSpeech?:string, examples?:string[] }), partsOfSpeech? (array), partsOfSpeechTags? (string[]), etymology? (string), examples? (string[]), synonyms? (string[]), antonyms? (string[]), frequency? (object), difficulty? (string CEFR), audioUrl? (string), source? (string).\n   - Each dictionary item’s lemma must match lemmas present in translations when applicable.\n\nImportant rules:\n- Return STRICT JSON with EXACTLY these top-level keys: {"translations": [...], "dictionary": [...]}\n- No markdown, no backticks, no explanations.\n- Preserve diacritics; use consistent NFC normalization.\n- Ensure the arrays align with the input text; skip punctuation-only tokens.\n`;
+
+    return basePrompt
+      .replace(/{toLanguage}/g, context.toLanguage)
+      .replace(/{fromLanguage}/g, context.fromLanguage)
+      .concat(schemaInstruction)
+      .replace(/{toLanguage}/g, context.toLanguage)
+      .replace(/{fromLanguage}/g, context.fromLanguage);
+  }
+
+  /**
    * Build a fallback prompt when language-specific instructions are not available
    */
   private buildFallbackPrompt(context: PromptBuildContext): string {

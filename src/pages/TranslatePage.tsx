@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryContainer from '../components/story/StoryContainer';
+import { LexicalCollectionsProvider } from '../components/providers/LexicalCollectionsProvider';
 import StorySidebar from '../components/sidebar/StorySidebar';
 import { TranslationResponse } from '../lib/translationService';
 
@@ -15,10 +16,12 @@ const TranslatePage: React.FC = () => {
   };
 
   return (
-    <div className='relative'>
-      <StoryContainer onStoryTranslated={handleStoryTranslated} />
-      <StorySidebar />
-    </div>
+    <LexicalCollectionsProvider>
+      <div className='relative'>
+        <StoryContainer onStoryTranslated={handleStoryTranslated} />
+        <StorySidebar />
+      </div>
+    </LexicalCollectionsProvider>
   );
 };
 

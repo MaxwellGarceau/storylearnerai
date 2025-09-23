@@ -1,9 +1,11 @@
 import { DifficultyLevel, LanguageCode } from './llm/prompts';
 
 // Dictionary system types
-export type DictionarySource = 'Lexicala API';
+export type DictionarySource = 'Lexicala API' | 'Gemini';
 
 export interface DictionaryWord {
+  // Backward-compat: some legacy code/tests refer to `word`
+  word?: string;
   lemma: string; // The base form of the word, used as the unique ID
   phonetic?: string;
   definitions: WordDefinition[];
@@ -24,6 +26,7 @@ export interface TranslationWord {
   targetWord: string; // The word as it appears in the translated text (e.g., "running")
   fromWord: string; // The original word from the source text
   lemma: string; // The reference key to link to the DictionaryWord entry (e.g., "run")
+  confidence?: number; // 0..1 confidence score from Gemini
   translation_meta?: {
     lastUpdated?: string; // ISO 8601
     index?: number; // Position of the word in the story or list
