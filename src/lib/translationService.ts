@@ -75,6 +75,11 @@ class TranslationService {
     provider?: string;
     model?: string;
   }> {
+    // Support mock mode for local/dev so provider hydrates without a real API key
+    if (EnvironmentConfig.isMockTranslationEnabled()) {
+      const mock = await this.mockGenerateLexicalCollections(request);
+      return mock;
+    }
     // Validate language pair
     if (request.fromLanguage === request.toLanguage) {
       throw new Error('Source and target languages must be different');
@@ -96,6 +101,14 @@ class TranslationService {
       nativeLanguage: request.nativeLanguage,
       selectedVocabulary: request.selectedVocabulary,
     };
+
+    logger.info('translation', 'Preparing lexical collections request', {
+      fromLanguage: request.fromLanguage,
+      toLanguage: request.toLanguage,
+      difficulty: request.difficulty,
+      textLength: request.text.length,
+      selectedVocabularyCount: (request.selectedVocabulary ?? []).length,
+    });
 
     const prompt =
       await generalPromptConfigService.buildLexicalCollectionsPrompt(context);
@@ -136,6 +149,42 @@ class TranslationService {
       throw new Error('Invalid lexical collections format from provider');
     }
 
+    try {
+      const tArr = obj.translations as unknown[];
+      const dArr = obj.dictionary as unknown[];
+      const sampleTranslations = tArr.slice(0, 3).map(item => {
+        const rec = (item ?? {}) as Record<string, unknown>;
+        return {
+          fromWord: typeof rec.fromWord === 'string' ? rec.fromWord : undefined,
+          targetWord:
+            typeof rec.targetWord === 'string' ? rec.targetWord : undefined,
+          lemma: typeof rec.lemma === 'string' ? rec.lemma : undefined,
+          confidence:
+            typeof rec.confidence === 'number' ? rec.confidence : undefined,
+        };
+      });
+      const sampleDictionary = dArr.slice(0, 3).map(item => {
+        const rec = (item ?? {}) as Record<string, unknown>;
+        return {
+          lemma: typeof rec.lemma === 'string' ? rec.lemma : undefined,
+          phonetic: typeof rec.phonetic === 'string' ? rec.phonetic : undefined,
+          definitionsCount: Array.isArray(rec.definitions)
+            ? rec.definitions.length
+            : undefined,
+        };
+      });
+      logger.debug('translation', 'Received lexical collections (raw)', {
+        translationsCount: tArr.length,
+        dictionaryCount: dArr.length,
+        sampleTranslations,
+        sampleDictionary,
+      });
+    } catch (e) {
+      logger.warn('translation', 'Failed to log raw lexical collection samples', {
+        error: e instanceof Error ? e.message : 'unknown',
+      });
+    }
+
     const translationTransformer = new GeminiTranslationTransformer();
     const dictionaryTransformer = new GeminiDictionaryTransformer();
 
@@ -146,11 +195,84 @@ class TranslationService {
       obj.dictionary as unknown[]
     );
 
+    try {
+      const translationLemmaCount = new Set(
+        validatedTranslations.map(t => t.lemma.toLowerCase())
+      ).size;
+      const dictionaryLemmaCount = new Set(
+        validatedDictionary.map(d => d.lemma.toLowerCase())
+      ).size;
+      logger.info('translation', 'Validated lexical collections', {
+        translationsCount: validatedTranslations.length,
+        dictionaryCount: validatedDictionary.length,
+        translationLemmaCount,
+        dictionaryLemmaCount,
+      });
+    } catch (e) {
+      logger.warn('translation', 'Failed to log validated lexical collection stats', {
+        error: e instanceof Error ? e.message : 'unknown',
+      });
+    }
+
     return {
       translations: validatedTranslations,
       dictionary: validatedDictionary,
       provider: llmResponse.provider,
       model: llmResponse.model,
+    };
+  }
+
+  /**
+   * Mock generator for lexical collections (dev/testing)
+   */
+  private async mockGenerateLexicalCollections(request: TranslationRequest): Promise<{
+    translations: TranslationWord[];
+    dictionary: DictionaryWord[];
+    provider: string;
+    model: string;
+  }> {
+    // lightweight delay to simulate network
+    await new Promise(r => setTimeout(r, 200));
+
+    const words = request.text
+      .split(/\s+/)
+      .map(w => w.normalize('NFC').trim())
+      .filter(Boolean)
+      .filter(w => !/^[\p{P}\p{S}]+$/u.test(w));
+
+    const uniqueByLemma = new Map<string, string>();
+    const translations: TranslationWord[] = words.slice(0, 2000).map((w, idx) => {
+      const lemma = w.toLowerCase();
+      if (!uniqueByLemma.has(lemma)) uniqueByLemma.set(lemma, w);
+      return {
+        id: `${idx + 1}`,
+        fromWord: w,
+        targetWord: w,
+        lemma,
+        confidence: 0.9,
+        translation_meta: { index: idx, lastUpdated: new Date().toISOString() },
+      };
+    });
+
+    const dictionary: DictionaryWord[] = Array.from(uniqueByLemma.keys()).map(
+      lemma => ({
+        lemma,
+        phonetic: undefined,
+        definitions: [{ definition: `Word: ${lemma}` }],
+        source: 'Mock',
+      })
+    );
+
+    logger.info('translation', 'Generated mock lexical collections', {
+      translationsCount: translations.length,
+      dictionaryCount: dictionary.length,
+    });
+
+    return {
+      translations,
+      dictionary,
+      provider: 'mock',
+      model: 'mock-lexical',
     };
   }
   async targetStory(request: TranslationRequest): TranslationResponsePromise {

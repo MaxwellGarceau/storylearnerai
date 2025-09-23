@@ -1,26 +1,36 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryContainer from '../components/story/StoryContainer';
-import { LexicalCollectionsProvider } from '../components/providers/LexicalCollectionsProvider';
+import { LexicalCollectionsProvider, useLexicalCollectionsContext } from '../components/providers/LexicalCollectionsProvider';
 import StorySidebar from '../components/sidebar/StorySidebar';
 import { TranslationResponse } from '../lib/translationService';
 
-const TranslatePage: React.FC = () => {
+function TranslatePageContent(): JSX.Element {
   const navigate = useNavigate();
+  const lexical = useLexicalCollectionsContext();
 
-  const handleStoryTranslated = (data: TranslationResponse) => {
-    // Navigate to the story page with the translation data
-    // For now, we'll pass the data through state, but in the future
-    // we'll save it and pass an ID
+  const handleStoryTranslated = (
+    data: TranslationResponse,
+    lexicalData?: { translations: import('../types/dictionary').TranslationWord[]; dictionary: import('../types/dictionary').DictionaryWord[] }
+  ) => {
+    if (lexicalData) {
+      lexical.hydrate(lexicalData.translations, lexicalData.dictionary);
+    }
     void navigate('/story', { state: { translationData: data } });
   };
 
   return (
+    <div className='relative'>
+      <StoryContainer onStoryTranslated={handleStoryTranslated} />
+      <StorySidebar />
+    </div>
+  );
+}
+
+const TranslatePage: React.FC = () => {
+  return (
     <LexicalCollectionsProvider>
-      <div className='relative'>
-        <StoryContainer onStoryTranslated={handleStoryTranslated} />
-        <StorySidebar />
-      </div>
+      <TranslatePageContent />
     </LexicalCollectionsProvider>
   );
 };

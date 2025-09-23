@@ -15,7 +15,10 @@ import { useAuth } from '../../hooks/useAuth';
 import { UserService } from '../../api/supabase/database/userProfileService';
 
 interface StoryContainerProps {
-  onStoryTranslated: (data: TranslationResponse) => void;
+  onStoryTranslated: (
+    data: TranslationResponse,
+    lexical?: { translations: import('../../types/dictionary').TranslationWord[]; dictionary: import('../../types/dictionary').DictionaryWord[] }
+  ) => void;
 }
 
 const StoryContainer: React.FC<StoryContainerProps> = ({
@@ -128,16 +131,33 @@ const StoryContainer: React.FC<StoryContainerProps> = ({
         new Set((formData.selectedVocabulary ?? []).map(w => w.trim()))
       );
 
-      const response = await translationService.translate({
+      const request = {
         text: formData.story,
         fromLanguage: formData.fromLanguage,
         toLanguage: formData.language,
         difficulty: formData.difficulty,
         selectedVocabulary,
-      });
+      } as const;
+
+      const response = await translationService.translate(request);
+
+      // Pre-generate lexical collections so the next page can hydrate immediately
+      let lexical: { translations: import('../../types/dictionary').TranslationWord[]; dictionary: import('../../types/dictionary').DictionaryWord[] } | undefined;
+      try {
+        const collections = await translationService.generateLexicalCollections({
+          text: request.text,
+          fromLanguage: request.fromLanguage,
+          toLanguage: request.toLanguage,
+          difficulty: request.difficulty,
+          selectedVocabulary: request.selectedVocabulary,
+        });
+        lexical = { translations: collections.translations, dictionary: collections.dictionary };
+      } catch (e) {
+        // Non-blocking; proceed without lexical collections
+      }
 
       // Trigger the view switch to story reader page
-      onStoryTranslated(response);
+      onStoryTranslated(response, lexical);
 
       // Show toast notification if some vocabulary words weren't included
       if (response.missingVocabulary && response.missingVocabulary.length > 0) {
