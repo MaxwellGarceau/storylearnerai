@@ -40,7 +40,12 @@ export function useDictionary(): UseDictionaryReturn {
         return;
       }
 
-      const normalizedWord = word.toLowerCase().trim();
+      // Sanitize clicked token: strip leading/trailing punctuation/symbols, preserve diacritics
+      const sanitized = word
+        .normalize('NFC')
+        .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
+        .trim();
+      const normalizedWord = sanitized.toLowerCase();
 
       // Cancel any ongoing request
       if (currentRequestRef.current) {
@@ -62,9 +67,14 @@ export function useDictionary(): UseDictionaryReturn {
           targetLanguage,
         });
         // Provider-first lookup: fromWord -> lemma -> dictionaryByLemma
-        const translation = lexical.translationByFromWord.get(
-          normalizedWord.normalize('NFC')
-        );
+        // Try exact key first (by from word)
+        let translation = lexical.translationByFromWord.get(normalizedWord);
+        // If not found, try the raw casing (some providers may preserve case)
+        if (!translation) {
+          translation = lexical.translationByFromWord.get(
+            sanitized.normalize('NFC')
+          );
+        }
         if (translation) {
           const lemmaKey = translation.lemma.normalize('NFC').toLowerCase();
           const dictWord = lexical.dictionaryByLemma.get(lemmaKey) ?? null;
@@ -79,10 +89,44 @@ export function useDictionary(): UseDictionaryReturn {
           }
         }
 
+        // Fallback: try direct dictionary lookup assuming the clicked word is already a lemma
+        const directDict = lexical.dictionaryByLemma.get(normalizedWord) ?? null;
+        if (directDict) {
+          if (abortController.signal.aborted) return;
+          setWordInfo(directDict);
+          logger.debug('dictionary-hook', 'Found word via direct lemma lookup', {
+            word: normalizedWord,
+          });
+          return;
+        }
+
+        // Last resort: scan translations to find a matching fromWord (handles rare normalization mismatches)
+        for (const [lemmaKey, arr] of lexical.translationByLemma.entries()) {
+          const hit = arr.find(t => {
+            const fw = t.fromWord
+              .normalize('NFC')
+              .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
+              .toLowerCase();
+            return fw === normalizedWord;
+          });
+          if (hit) {
+            const dictWord = lexical.dictionaryByLemma.get(lemmaKey);
+            if (dictWord) {
+              if (abortController.signal.aborted) return;
+              setWordInfo(dictWord);
+              logger.debug('dictionary-hook', 'Found via scan of by-lemma translations', {
+                word: normalizedWord,
+                lemma: lemmaKey,
+              });
+              return;
+            }
+          }
+        }
+
         // If not found in provider, return not found (no external API in new design)
         setError(
           createDictionaryError('WORD_NOT_FOUND', 'Word not found', {
-            word: normalizedWord,
+            word: word,
             fromLanguage,
             targetLanguage,
           })

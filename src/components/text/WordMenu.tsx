@@ -65,14 +65,29 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const effectiveIsTranslating =
     isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
 
+  // Compute canonical words (from = user's from-language, target = user's target-language)
+  const canonicalFromWord = isDisplayingFromSide
+    ? word
+    : (effectiveOppositeWord ?? '');
+  const canonicalTargetWord = isDisplayingFromSide
+    ? (effectiveOppositeWord ?? '')
+    : word;
+
   // Search for word info when dictionary is shown
   useEffect(() => {
     if (showDictionary && open) {
-      void searchWord(word, effectiveFromLanguage, effectiveTargetLanguage);
+      const queryWord = (canonicalFromWord && canonicalFromWord.length > 0)
+        ? canonicalFromWord
+        : word;
+      const fromKey = queryWord.normalize('NFC');
+      if (fromKey && fromKey.length > 0) {
+        void searchWord(fromKey, effectiveFromLanguage, effectiveTargetLanguage);
+      }
     }
   }, [
     showDictionary,
     open,
+    canonicalFromWord,
     word,
     effectiveFromLanguage,
     effectiveTargetLanguage,
@@ -119,13 +134,6 @@ const WordMenu: React.FC<WordMenuProps> = ({
     effectiveTargetContext = fromSentence;
   }
 
-  // Compute canonical words (from = user's from-language, target = user's target-language)
-  const canonicalFromWord = isDisplayingFromSide
-    ? word
-    : (effectiveOppositeWord ?? '');
-  const canonicalTargetWord = isDisplayingFromSide
-    ? (effectiveOppositeWord ?? '')
-    : word;
 
   return (
     <Popover
@@ -260,7 +268,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 </div>
               </div>
               <DictionaryEntry.Root
-                word={word}
+                word={(canonicalFromWord && canonicalFromWord.length > 0) ? canonicalFromWord : word}
                 wordInfo={wordInfo}
                 isLoading={isLoading}
                 error={error}
