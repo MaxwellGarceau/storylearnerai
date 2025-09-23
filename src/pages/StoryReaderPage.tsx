@@ -16,6 +16,7 @@ import { translationService } from '../lib/translationService';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
+import { logger } from '../lib/logger';
 
 function StoryReaderContent(): JSX.Element {
   const location = useLocation();
@@ -106,12 +107,22 @@ function StoryReaderContent(): JSX.Element {
 
     // Prefer lexical data passed from TranslatePage to avoid duplicate requests
     if (state?.lexicalData) {
+      logger.info('translation', 'Hydrating lexical collections from navigation state', {
+        translationsCount: state.lexicalData.translations.length,
+        dictionaryCount: state.lexicalData.dictionary.length,
+      });
       lexical.hydrate(state.lexicalData.translations, state.lexicalData.dictionary);
       hasHydrated.current = true;
       return;
     }
 
     const run = async () => {
+      logger.info('translation', 'Fetching lexical collections for StoryReader', {
+        fromLanguage: finalTranslationData.fromLanguage,
+        toLanguage: finalTranslationData.toLanguage,
+        difficulty: finalTranslationData.difficulty,
+        fromTextLength: finalTranslationData.fromText.length,
+      });
       try {
         const collections = await translationService.generateLexicalCollections({
           text: finalTranslationData.fromText,
@@ -120,10 +131,17 @@ function StoryReaderContent(): JSX.Element {
           difficulty: finalTranslationData.difficulty,
         });
         lexical.hydrate(collections.translations, collections.dictionary);
-      } catch {
-        // Non-blocking
+        logger.info('translation', 'Hydrated lexical collections in StoryReader', {
+          translationsCount: collections.translations.length,
+          dictionaryCount: collections.dictionary.length,
+        });
+      } catch (error) {
+        logger.error('translation', 'Failed to hydrate lexical collections in StoryReader', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         hasHydrated.current = true;
+        logger.debug('translation', 'StoryReader lexical hydration flow finished');
       }
     };
     void run();
