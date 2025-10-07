@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
 import type {
   DatabaseSavedTranslationWithDetails,
-  CreateSavedTranslationRequest,
 } from '../types/database/translation';
 import type { VoidPromise } from '../types/common';
 import type { TranslationResponse } from '../lib/translationService';
@@ -96,9 +95,9 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
               to_lemma: token.to_lemma,
               from_word: token.from_word,
               from_lemma: token.from_lemma,
-              pos: token.pos,
-              difficulty: token.difficulty,
-              from_definition: token.from_definition,
+              pos: token.pos ?? undefined,
+              difficulty: token.difficulty ?? undefined,
+              from_definition: token.from_definition ?? undefined,
             };
           } else {
             return {
