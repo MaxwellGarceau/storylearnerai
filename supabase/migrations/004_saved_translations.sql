@@ -3,6 +3,9 @@ CREATE TABLE IF NOT EXISTS translations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     from_language VARCHAR(10) NOT NULL,  -- en, es, etc.
     to_language VARCHAR(10) NOT NULL,
+    -- Foreign key references to languages lookup (keep codes above for convenience)
+    from_language_id INTEGER NOT NULL REFERENCES languages(id),
+    to_language_id INTEGER NOT NULL REFERENCES languages(id),
     original_text TEXT NOT NULL,
     translated_text TEXT NOT NULL,
     difficulty_level VARCHAR(10),  -- A1, A2, etc.
@@ -14,6 +17,8 @@ CREATE TABLE IF NOT EXISTS translations (
 CREATE INDEX IF NOT EXISTS idx_translations_created_at ON translations(created_at);
 CREATE INDEX IF NOT EXISTS idx_translations_from_language ON translations(from_language);
 CREATE INDEX IF NOT EXISTS idx_translations_to_language ON translations(to_language);
+CREATE INDEX IF NOT EXISTS idx_translations_from_language_id ON translations(from_language_id);
+CREATE INDEX IF NOT EXISTS idx_translations_to_language_id ON translations(to_language_id);
 CREATE INDEX IF NOT EXISTS idx_translations_difficulty ON translations(difficulty_level);
 
 -- Trigger for updated_at on translations

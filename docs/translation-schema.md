@@ -6,6 +6,8 @@ This document describes the new normalized schema for storing full-text translat
 - **id**: UUID primary key (`gen_random_uuid()`)
 - **from_language**: VARCHAR(10) – source language code (e.g., `en`)
 - **to_language**: VARCHAR(10) – target language code (e.g., `es`)
+- **from_language_id**: INTEGER – FK → `languages(id)`
+- **to_language_id**: INTEGER – FK → `languages(id)`
 - **original_text**: TEXT – full original text
 - **translated_text**: TEXT – full translated text
 - **difficulty_level**: VARCHAR(10) – CEFR-like level (e.g., `A1`, `B2`)
