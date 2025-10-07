@@ -11,6 +11,7 @@ import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
+import { FallbackTokenGenerator } from '../lib/llm/fallbackTokenGenerator';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
@@ -54,14 +55,21 @@ const StoryReaderPage: React.FC = () => {
             user.id
           );
           if (saved) {
+            // Generate tokens from saved translation using fallback tokenizer
+            const tokens = FallbackTokenGenerator.generateTokens(
+              saved.target_story
+            );
+
             const response: TranslationResponse = {
               fromText: saved.from_story,
               targetText: saved.target_story,
+              tokens,
               fromLanguage: saved.from_language.code,
               toLanguage: saved.target_language.code,
               difficulty: saved.difficulty_level.code,
               provider: 'saved',
               model: 'saved-translation',
+              usedFallbackTokens: true, // Saved translations always use fallback
             };
             setFetchedTranslationData(response);
           } else {

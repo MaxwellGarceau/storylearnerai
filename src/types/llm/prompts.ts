@@ -6,7 +6,7 @@ export type NativeLanguageName = 'English' | 'Español';
 
 export type NullableLanguageCode = LanguageCode | null;
 
-export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2';
+export type DifficultyLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2'; // Extended to support all CEFR levels
 export type DifficultyLevelDisplay =
   | 'A1 (Beginner)'
   | 'A2 (Elementary)'

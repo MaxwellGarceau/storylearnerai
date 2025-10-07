@@ -3,7 +3,18 @@ import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
 import { useInteractiveTextContext } from '../useInteractiveTextContext';
 import { getVocabularyHighlightClass } from '../../../lib/vocabularyHighlightService';
-import type { LanguageCode } from '../../../types/llm/prompts';
+import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
+import type { PartOfSpeech } from '../../../types/llm/tokens';
+
+export interface WordMetadata {
+  from_word: string;
+  from_lemma: string;
+  to_word: string;
+  to_lemma: string;
+  pos: PartOfSpeech | null;
+  difficulty: DifficultyLevel | null;
+  from_definition: string | null;
+}
 
 interface WordTokenProps {
   actionWordNormalized: string;
@@ -24,6 +35,8 @@ interface WordTokenProps {
   onTranslate: () => void;
   enableTooltips: boolean;
   disabled: boolean;
+  // Optional: Rich metadata from LLM
+  wordMetadata?: WordMetadata;
 }
 
 const WordToken: React.FC<WordTokenProps> = ({
@@ -44,6 +57,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   onTranslate,
   enableTooltips,
   disabled,
+  wordMetadata,
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =

@@ -3,6 +3,9 @@ import { EnvironmentConfig } from './config/env';
 import { generalPromptConfigService } from './prompts';
 import { LanguageCode, DifficultyLevel } from '../types/llm/prompts';
 import { LLMError } from '../types/llm/providers';
+import { TranslationToken } from '../types/llm/tokens';
+import { TranslationServiceIntegration } from './llm/translationServiceIntegration';
+import { FallbackTokenGenerator } from './llm/fallbackTokenGenerator';
 import { logger } from './logger';
 
 export interface TranslationRequest {
@@ -21,6 +24,7 @@ export interface TranslationRequest {
 export interface TranslationResponse {
   fromText: string;
   targetText: string;
+  tokens: TranslationToken[]; // Structured tokens with metadata
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
   difficulty: DifficultyLevel;
@@ -30,6 +34,9 @@ export interface TranslationResponse {
   selectedVocabulary?: string[];
   includedVocabulary?: string[];
   missingVocabulary?: string[];
+  // Metadata about token quality
+  hasMetadataWarnings?: boolean; // True if some metadata fields were null
+  usedFallbackTokens?: boolean; // True if LLM didn't return proper JSON
 }
 
 export interface WordTranslationRequest {
@@ -80,50 +87,66 @@ class TranslationService {
       const prompt =
         await generalPromptConfigService.buildTranslationPrompt(context);
 
-      const llmResponse = await llmServiceManager.generateCompletion({
-        prompt,
-        maxTokens: 100000, // High limit to support detailed JSON responses with word metadata
-        temperature: 0.7,
-      });
+      // Use new integration layer that handles validation and fallback
+      const translationWithTokens =
+        await TranslationServiceIntegration.generateTranslationWithTokens(
+          prompt,
+          100000, // High limit to support detailed JSON responses with word metadata
+          0.7
+        );
+
+      // Extract metadata from response
+      const metadata = (translationWithTokens as unknown as Record<string, unknown>)
+        ._metadata as
+        | { hasWarnings: boolean; warnings: string[]; usedFallback: boolean }
+        | undefined;
 
       // Track vocabulary inclusion - IMPORTANT: We analyze target language words in target language text
       const selectedVocabulary = request.selectedVocabulary ?? [];
 
       // Validate that we have target language text and target language vocabulary
-      if (llmResponse.content && selectedVocabulary.length > 0) {
+      if (
+        translationWithTokens.translation &&
+        selectedVocabulary.length > 0
+      ) {
         const { includedVocabulary, missingVocabulary } =
           this.analyzeVocabularyInclusionInTargetLanguage(
-            llmResponse.content, // Target language translated text
+            translationWithTokens.translation, // Target language translated text
             selectedVocabulary, // Target language vocabulary words
             request.toLanguage // Target language code for validation
           );
 
         return {
           fromText: request.text,
-          targetText: llmResponse.content,
+          targetText: translationWithTokens.translation,
+          tokens: translationWithTokens.tokens,
           fromLanguage: request.fromLanguage,
           toLanguage: request.toLanguage,
           difficulty: request.difficulty,
-          provider: llmResponse.provider,
-          model: llmResponse.model,
+          provider: 'gemini', // TODO: Get from metadata
+          model: undefined, // TODO: Get from metadata
           selectedVocabulary,
           includedVocabulary,
           missingVocabulary,
-          // Echo original selection for UI; inclusion mapping handled by caller
+          hasMetadataWarnings: metadata?.hasWarnings ?? false,
+          usedFallbackTokens: metadata?.usedFallback ?? false,
         };
       }
 
       return {
         fromText: request.text,
-        targetText: llmResponse.content,
+        targetText: translationWithTokens.translation,
+        tokens: translationWithTokens.tokens,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
         difficulty: request.difficulty,
-        provider: llmResponse.provider,
-        model: llmResponse.model,
+        provider: 'gemini', // TODO: Get from metadata
+        model: undefined, // TODO: Get from metadata
         selectedVocabulary,
         includedVocabulary: [],
         missingVocabulary: [],
+        hasMetadataWarnings: metadata?.hasWarnings ?? false,
+        usedFallbackTokens: metadata?.usedFallback ?? false,
       };
     } catch (error) {
       logger.error('translation', 'Translation service error', { error });
@@ -283,6 +306,9 @@ class TranslationService {
     // Mock translation result
     const mockTranslation = `[TRANSLATED FROM SPANISH - ${request.difficulty} LEVEL]\n\n${request.text}\n\n[This is a mock translation for development purposes]`;
 
+    // Generate fallback tokens from mock translation
+    const tokens = FallbackTokenGenerator.generateTokens(mockTranslation);
+
     // Mock vocabulary inclusion detection for development - using target language logic
     const selectedVocabulary = request.selectedVocabulary ?? [];
     let includedVocabulary: string[] = [];
@@ -297,6 +323,7 @@ class TranslationService {
     return {
       fromText: request.text,
       targetText: mockTranslation,
+      tokens,
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
       difficulty: request.difficulty,
@@ -305,6 +332,8 @@ class TranslationService {
       selectedVocabulary,
       includedVocabulary,
       missingVocabulary,
+      hasMetadataWarnings: false,
+      usedFallbackTokens: true, // Mock always uses fallback tokens
     };
   }
 

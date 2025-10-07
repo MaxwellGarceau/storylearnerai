@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { LanguageCode } from '../../types/llm/prompts';
+import { TranslationToken } from '../../types/llm/tokens';
 import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
 import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
 import { useTranslationCache } from '../../hooks/interactiveText/useTranslationCache';
@@ -9,6 +10,8 @@ import InteractiveTextView from './interactiveText/InteractiveTextView';
 
 interface InteractiveTextProps {
   text: string | undefined;
+  // Optional: Pre-tokenized content with rich metadata from LLM
+  tokens?: TranslationToken[];
   className?: string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
@@ -22,6 +25,7 @@ interface InteractiveTextProps {
 
 const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   text,
+  tokens: translationTokens,
   className,
   fromLanguage,
   targetLanguage,
@@ -32,8 +36,9 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   includedVocabulary = [],
 }) => {
   // Always call hooks first, regardless of text content
-  // Tokenize for rendering
-  const tokens = useTokenizedText(text);
+  // Tokenize for rendering - use provided tokens or fallback to legacy tokenization
+  const fallbackTokens = useTokenizedText(text);
+  const tokens = translationTokens ?? fallbackTokens;
 
   // Split text into segments for sentence extraction (keeps indices aligned with token.segmentIndex)
   const words = useMemo(() => text?.split(/(\s+)/) ?? [], [text]);
@@ -141,6 +146,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
       <InteractiveTextView
         className={className}
         tokens={tokens}
+        isUsingTranslationTokens={!!translationTokens}
         enableTooltips={enableTooltips}
         disabled={disabled}
         fromLanguage={fromLanguage}

@@ -21,11 +21,15 @@ const StoryContent: React.FC<StoryContentProps> = ({
   const fromLanguage = translationData.fromLanguage;
   const targetLanguage = translationData.toLanguage;
 
+  // Only pass tokens when displaying target text (tokens correspond to translated text)
+  const tokens = !showFrom ? translationData.tokens : undefined;
+
   return (
     <div className='relative overflow-hidden'>
       <div className='text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed'>
         <InteractiveText
           text={displayText}
+          tokens={tokens}
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
           isDisplayingFromSide={showFrom}
