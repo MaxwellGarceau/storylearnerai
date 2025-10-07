@@ -33,7 +33,7 @@ export class GeminiService extends LLMService {
         config: {
           temperature: request.temperature ?? geminiConfig.temperature,
           maxOutputTokens: request.maxTokens ?? geminiConfig.maxTokens,
-          responseMimeType: 'application/json',
+          responseMimeType: request.responseMimeType ?? 'application/json',
         },
       });
 

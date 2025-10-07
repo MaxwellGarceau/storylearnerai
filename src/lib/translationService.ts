@@ -209,6 +209,7 @@ class TranslationService {
         prompt,
         maxTokens: 100, // There is no situation where a single word response will be longer than 100 tokens
         temperature: 0.2,
+        responseMimeType: 'text/plain', // We just want the word, not JSON
       });
 
       logger.debug('translation', 'LLM response', {
