@@ -28,9 +28,9 @@ interface ValidationError {
  * Type for saved translation filters with optional language codes
  * Makes from_language_code and target_language_code optional while keeping other filters required
  */
-type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters, 'from_language_code' | 'target_language_code'> & {
+type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters, 'from_language_code' | 'to_language_code'> & {
   from_language_code?: LanguageCode;
-  target_language_code?: LanguageCode;
+  to_language_code?: LanguageCode;
 };
 
 // New translation/token types for the translations + translation_tokens schema
@@ -290,27 +290,27 @@ export class SavedTranslationService {
       errors.push({ field: 'user_id', message: 'Valid user ID is required' });
     }
 
-    // Validate and sanitize original story
-    if (!request.from_story || typeof request.from_story !== 'string') {
-      errors.push({ field: 'from_story', message: 'Original story is required' });
+    // Validate and sanitize original text
+    if (!request.original_text || typeof request.original_text !== 'string') {
+      errors.push({ field: 'original_text', message: 'Original text is required' });
     } else {
-      const storyValidation = validateStoryText(request.from_story);
+      const storyValidation = validateStoryText(request.original_text);
       if (!storyValidation.isValid) {
-        errors.push({ field: 'from_story', message: storyValidation.errors[0] || 'Invalid original story content' });
+        errors.push({ field: 'original_text', message: storyValidation.errors[0] || 'Invalid original text content' });
       } else {
-        sanitizedData.from_story = storyValidation.sanitizedText;
+        sanitizedData.original_text = storyValidation.sanitizedText;
       }
     }
 
-    // Validate and sanitize translated story
-    if (!request.target_story || typeof request.target_story !== 'string') {
-      errors.push({ field: 'target_story', message: 'Translated story is required' });
+    // Validate and sanitize translated text
+    if (!request.translated_text || typeof request.translated_text !== 'string') {
+      errors.push({ field: 'translated_text', message: 'Translated text is required' });
     } else {
-      const storyValidation = validateStoryText(request.target_story);
+      const storyValidation = validateStoryText(request.translated_text);
       if (!storyValidation.isValid) {
-        errors.push({ field: 'target_story', message: storyValidation.errors[0] || 'Invalid translated story content' });
+        errors.push({ field: 'translated_text', message: storyValidation.errors[0] || 'Invalid translated text content' });
       } else {
-        sanitizedData.target_story = storyValidation.sanitizedText;
+        sanitizedData.translated_text = storyValidation.sanitizedText;
       }
     }
 
@@ -321,10 +321,10 @@ export class SavedTranslationService {
       errors.push({ field: 'from_language_code', message: 'Original language code must be a valid ISO 639-1 code' });
     }
 
-    if (!request.target_language_code || typeof request.target_language_code !== 'string') {
-      errors.push({ field: 'target_language_code', message: 'Translated language code is required' });
-    } else if (!/^[a-z]{2}$/.test(request.target_language_code)) {
-      errors.push({ field: 'target_language_code', message: 'Translated language code must be a valid ISO 639-1 code' });
+    if (!request.to_language_code || typeof request.to_language_code !== 'string') {
+      errors.push({ field: 'to_language_code', message: 'Target language code is required' });
+    } else if (!/^[a-z]{2}$/.test(request.to_language_code)) {
+      errors.push({ field: 'to_language_code', message: 'Target language code must be a valid ISO 639-1 code' });
     }
 
     // Validate difficulty level code
@@ -558,17 +558,17 @@ export class SavedTranslationService {
     const sanitizedRequest = validation.sanitizedData;
 
     // Get language and difficulty level IDs from codes
-    const [fromLanguage, targetLanguage, difficultyLevel] = await Promise.all([
+    const [fromLanguage, toLanguage, difficultyLevel] = await Promise.all([
       this.getLanguageByCode(sanitizedRequest.from_language_code),
-      this.getLanguageByCode(sanitizedRequest.target_language_code),
+      this.getLanguageByCode(sanitizedRequest.to_language_code),
       this.getDifficultyLevelByCode(sanitizedRequest.difficulty_level_code),
     ]);
 
     if (!fromLanguage) {
       throw new Error(`Language not found: ${sanitizedRequest.from_language_code}`);
     }
-    if (!targetLanguage) {
-      throw new Error(`Language not found: ${sanitizedRequest.target_language_code}`);
+    if (!toLanguage) {
+      throw new Error(`Language not found: ${sanitizedRequest.to_language_code}`);
     }
     if (!difficultyLevel) {
       throw new Error(`Difficulty level not found: ${sanitizedRequest.difficulty_level_code}`);
@@ -578,10 +578,10 @@ export class SavedTranslationService {
       .from('saved_translations')
       .insert({
         user_id: userId,
-        from_story: sanitizedRequest.from_story,
-        target_story: sanitizedRequest.target_story,
+        original_text: sanitizedRequest.original_text,
+        translated_text: sanitizedRequest.translated_text,
         from_language_id: fromLanguage.id,
-        target_language_id: targetLanguage.id,
+        to_language_id: toLanguage.id,
         difficulty_level_id: difficultyLevel.id,
         title: sanitizedRequest.title,
         notes: sanitizedRequest.notes,
@@ -589,7 +589,7 @@ export class SavedTranslationService {
       .select(`
         *,
         from_language:languages!saved_translations_from_language_id_fkey(*),
-        target_language:languages!saved_translations_target_language_id_fkey(*),
+        to_language:languages!saved_translations_to_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .single();
@@ -622,7 +622,7 @@ export class SavedTranslationService {
       .select(`
         *,
         from_language:languages!saved_translations_from_language_id_fkey(*),
-        target_language:languages!saved_translations_target_language_id_fkey(*),
+        to_language:languages!saved_translations_to_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .eq('user_id', userId)
@@ -636,10 +636,10 @@ export class SavedTranslationService {
       }
     }
 
-    if (filters.target_language_code) {
-      const targetLanguage = await this.getLanguageByCode(filters.target_language_code);
-      if (targetLanguage) {
-        query = query.eq('target_language_id', targetLanguage.id);
+    if (filters.to_language_code) {
+      const toLanguage = await this.getLanguageByCode(filters.to_language_code);
+      if (toLanguage) {
+        query = query.eq('to_language_id', toLanguage.id);
       }
     }
 
@@ -652,7 +652,7 @@ export class SavedTranslationService {
 
     if (filters.search) {
       query = query.or(
-        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,from_story.ilike.%${filters.search}%,target_story.ilike.%${filters.search}%`
+        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,original_text.ilike.%${filters.search}%,translated_text.ilike.%${filters.search}%`
       );
     }
 
@@ -692,7 +692,7 @@ export class SavedTranslationService {
       .select(`
         *,
         from_language:languages!saved_translations_from_language_id_fkey(*),
-        target_language:languages!saved_translations_target_language_id_fkey(*),
+        to_language:languages!saved_translations_to_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .eq('id', translationId)
@@ -742,7 +742,7 @@ export class SavedTranslationService {
       .select(`
         *,
         from_language:languages!saved_translations_from_language_id_fkey(*),
-        target_language:languages!saved_translations_target_language_id_fkey(*),
+        to_language:languages!saved_translations_to_language_id_fkey(*),
         difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
       `)
       .single();
@@ -805,10 +805,10 @@ export class SavedTranslationService {
       }
     }
 
-    if (filters.target_language_code) {
-      const targetLanguage = await this.getLanguageByCode(filters.target_language_code);
-      if (targetLanguage) {
-        query = query.eq('target_language_id', targetLanguage.id);
+    if (filters.to_language_code) {
+      const toLanguage = await this.getLanguageByCode(filters.to_language_code);
+      if (toLanguage) {
+        query = query.eq('to_language_id', toLanguage.id);
       }
     }
 
@@ -821,7 +821,7 @@ export class SavedTranslationService {
 
     if (filters.search) {
       query = query.or(
-        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,from_story.ilike.%${filters.search}%,target_story.ilike.%${filters.search}%`
+        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,original_text.ilike.%${filters.search}%,translated_text.ilike.%${filters.search}%`
       );
     }
 

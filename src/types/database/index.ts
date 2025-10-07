@@ -144,10 +144,10 @@ export interface Database {
         Row: {
           id: number;
           user_id: string; // Foreign key reference to users.id (UUID)
-          from_story: string;
-          target_story: string;
+          original_text: string;
+          translated_text: string;
           from_language_id: number; // Foreign key reference to languages.id
-          target_language_id: number; // Foreign key reference to languages.id
+          to_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title: NullableString;
           notes: NullableString;
@@ -157,10 +157,10 @@ export interface Database {
         Insert: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-          from_story: string;
-          target_story: string;
+          original_text: string;
+          translated_text: string;
           from_language_id: number; // Foreign key reference to languages.id
-          target_language_id: number; // Foreign key reference to languages.id
+          to_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title?: NullableString;
           notes?: NullableString;
@@ -170,10 +170,10 @@ export interface Database {
         Update: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID)
-          from_story?: string;
-          target_story?: string;
+          original_text?: string;
+          translated_text?: string;
           from_language_id?: number; // Foreign key reference to languages.id
-          target_language_id?: number; // Foreign key reference to languages.id
+          to_language_id?: number; // Foreign key reference to languages.id
           difficulty_level_id?: number;
           title?: NullableString;
           notes?: NullableString;
