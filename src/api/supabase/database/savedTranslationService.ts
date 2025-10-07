@@ -97,6 +97,9 @@ export interface LoadedTranslation {
   created_at: string;
   updated_at: string;
   tokens: LoadedTranslationToken[];
+  from_language: DatabaseLanguage;
+  to_language: DatabaseLanguage;
+  difficulty_level: DatabaseDifficultyLevel;
 }
 
 export class SavedTranslationService {
@@ -202,10 +205,15 @@ export class SavedTranslationService {
    * Load a translation and its ordered token stream and rehydrate token objects
    */
   async loadTranslationWithTokens(translationId: number): Promise<LoadedTranslation | null> {
-    // 1) Load main translation
+    // 1) Load main translation with language and difficulty data
     const translationResult = await supabase
       .from('saved_translations')
-      .select('*')
+      .select(`
+        *,
+        from_language:languages!saved_translations_from_language_id_fkey(*),
+        to_language:languages!saved_translations_to_language_id_fkey(*),
+        difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
+      `)
       .eq('id', translationId)
       .single();
 
@@ -228,6 +236,9 @@ export class SavedTranslationService {
       notes?: string | null;
       created_at: string;
       updated_at: string;
+      from_language: DatabaseLanguage;
+      to_language: DatabaseLanguage;
+      difficulty_level: DatabaseDifficultyLevel;
     };
 
     // 2) Load ordered tokens
@@ -273,6 +284,9 @@ export class SavedTranslationService {
       created_at: translationRow.created_at,
       updated_at: translationRow.updated_at,
       tokens: reconstructedTokens,
+      from_language: translationRow.from_language,
+      to_language: translationRow.to_language,
+      difficulty_level: translationRow.difficulty_level,
     };
   }
   /**

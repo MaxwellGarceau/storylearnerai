@@ -11,7 +11,6 @@ import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import { FallbackTokenGenerator } from '../lib/llm/fallbackTokenGenerator';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
@@ -50,15 +49,28 @@ const StoryReaderPage: React.FC = () => {
         setErrorById(null);
         try {
           const service = new SavedTranslationService();
-          const saved = await service.getSavedTranslation(
-            String(urlSavedTranslationId),
-            user.id
-          );
+          const saved = await service.loadTranslationWithTokens(urlSavedTranslationId);
           if (saved) {
-            // Generate tokens from saved translation using fallback tokenizer
-            const tokens = FallbackTokenGenerator.generateTokens(
-              saved.to_text
-            );
+            // Convert loaded tokens to TranslationToken format
+            const tokens = saved.tokens.map(token => {
+              if (token.type === 'word') {
+                return {
+                  type: 'word' as const,
+                  to_word: token.to_word,
+                  to_lemma: token.to_lemma,
+                  from_word: token.from_word,
+                  from_lemma: token.from_lemma,
+                  pos: (token.pos as any) ?? null,
+                  difficulty: (token.difficulty as any) ?? null,
+                  from_definition: token.from_definition ?? null,
+                };
+              } else {
+                return {
+                  type: token.type,
+                  value: token.value,
+                };
+              }
+            });
 
             const response: TranslationResponse = {
               fromText: saved.from_text,
@@ -69,7 +81,7 @@ const StoryReaderPage: React.FC = () => {
               difficulty: saved.difficulty_level.code,
               provider: 'saved',
               model: 'saved-translation',
-              usedFallbackTokens: true, // Saved translations always use fallback
+              usedFallbackTokens: false, // Using real tokens from database
             };
             setFetchedTranslationData(response);
           } else {
