@@ -52,10 +52,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
     to_word: toWord,
     from_word: fromWord,
     from_lemma: fromLemma,
-    // to_lemma: toLemma,
-    // pos: pos,
-    // difficulty: difficulty,
-    // from_definition: fromDefinition,
+    pos: pos,
+    difficulty: difficulty,
+    from_definition: fromDefinition,
   },
 }) => {
   const ctx = useInteractiveTextContext();
@@ -230,6 +229,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         targetContext={effectiveTargetContext}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
+                        partOfSpeech={pos ?? undefined}
+                        definition={fromDefinition ?? undefined}
+                        frequencyLevel={difficulty ?? undefined}
+                        // frequencyLevel can be added when token includes frequency info
                         savedTranslationId={effectiveSavedTranslationId}
                         size='sm'
                         variant='outline'
@@ -260,6 +263,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       targetContext={effectiveTargetContext}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
+                      partOfSpeech={undefined}
+                      definition={undefined}
+                      // frequencyLevel can be added when token includes frequency info
                       savedTranslationId={effectiveSavedTranslationId}
                       size='sm'
                       variant='outline'

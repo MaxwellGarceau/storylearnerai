@@ -125,8 +125,8 @@ export function VocabularyDetailModal({
           <BadgeSection
             partOfSpeech={vocabulary.part_of_speech}
             frequencyLevel={vocabulary.frequency_level}
-            partOfSpeechKey={pos => t(`vocabulary.pos.${pos}`)}
-            frequencyKey={freq => t(`vocabulary.frequency.${freq}`)}
+            partOfSpeechKey={pos => t(`vocabulary.partsOfSpeech.${pos}`)}
+            frequencyKey={freq => t(`vocabulary.frequencyLevels.${freq}`)}
           />
 
           {/* Context */}
