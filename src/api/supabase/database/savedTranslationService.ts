@@ -33,7 +33,216 @@ type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters
   target_language_code?: LanguageCode;
 };
 
+// New translation/token types for the translations + translation_tokens schema
+export type WordTokenInput = {
+  type: 'word';
+  to_word: string;
+  to_lemma: string;
+  from_word: string;
+  from_lemma: string;
+  pos?: string;
+  difficulty?: string;
+  from_definition?: string;
+};
+
+export type PunctuationOrWhitespaceTokenInput = {
+  type: 'punctuation' | 'whitespace';
+  value: string;
+};
+
+export type TranslationTokenInput =
+  | WordTokenInput
+  | PunctuationOrWhitespaceTokenInput;
+
+export interface SaveTranslationParams {
+  fromLanguage: LanguageCode;
+  toLanguage: LanguageCode;
+  originalText: string;
+  translatedText: string;
+  difficultyLevel?: string; // e.g., a1, a2, b1, b2 (optional in schema)
+  tokens: TranslationTokenInput[];
+}
+
+export type LoadedWordToken = {
+  type: 'word';
+  to_word: string;
+  to_lemma: string;
+  from_word: string;
+  from_lemma: string;
+  pos?: string;
+  difficulty?: string;
+  from_definition?: string;
+};
+
+export type LoadedNonWordToken = {
+  type: 'punctuation' | 'whitespace';
+  value: string;
+};
+
+export type LoadedTranslationToken = LoadedWordToken | LoadedNonWordToken;
+
+export interface LoadedTranslation {
+  id: string;
+  from_language: LanguageCode;
+  to_language: LanguageCode;
+  original_text: string;
+  translated_text: string;
+  difficulty_level?: string | null;
+  created_at: string;
+  updated_at: string;
+  tokens: LoadedTranslationToken[];
+}
+
 export class SavedTranslationService {
+
+  /**
+   * Save a translation and its token stream using the new schema:
+   * - Insert into translations
+   * - Insert ordered tokens into translation_tokens
+   * Returns the created translation id
+   */
+  async saveTranslationWithTokens(params: SaveTranslationParams): Promise<string> {
+    const { fromLanguage, toLanguage, originalText, translatedText, difficultyLevel, tokens } = params;
+
+    // 1) Insert main translation
+    const insertResult = await supabase
+      .from('translations')
+      .insert({
+        from_language: fromLanguage,
+        to_language: toLanguage,
+        original_text: originalText,
+        translated_text: translatedText,
+        difficulty_level: difficultyLevel,
+      })
+      .select('id')
+      .single();
+
+    if (insertResult.error || !insertResult.data) {
+      throw new Error(`Failed to create translation: ${insertResult.error?.message ?? 'unknown error'}`);
+    }
+
+    const translationId = insertResult.data.id as string;
+
+    if (!Array.isArray(tokens) || tokens.length === 0) {
+      return translationId; // no tokens to insert
+    }
+
+    // 2) Insert tokens in order
+    const tokenInserts = tokens.map((token, index) => {
+      if (token.type === 'word') {
+        const word = token as WordTokenInput;
+        return {
+          translation_id: translationId,
+          token_index: index,
+          token_type: 'word',
+          to_word: word.to_word,
+          to_lemma: word.to_lemma,
+          from_word: word.from_word,
+          from_lemma: word.from_lemma,
+          pos: word.pos ?? null,
+          difficulty: word.difficulty ?? null,
+          from_definition: word.from_definition ?? null,
+          token_value: null,
+        };
+      }
+      const generic = token as PunctuationOrWhitespaceTokenInput;
+      return {
+        translation_id: translationId,
+        token_index: index,
+        token_type: generic.type,
+        to_word: null,
+        to_lemma: null,
+        from_word: null,
+        from_lemma: null,
+        pos: null,
+        difficulty: null,
+        from_definition: null,
+        token_value: generic.value,
+      };
+    });
+
+    const tokensResult = await supabase
+      .from('translation_tokens')
+      .insert(tokenInserts);
+
+    if (tokensResult.error) {
+      throw new Error(`Failed to insert translation tokens: ${tokensResult.error.message}`);
+    }
+
+    return translationId;
+  }
+
+  /**
+   * Load a translation and its ordered token stream and rehydrate token objects
+   */
+  async loadTranslationWithTokens(translationId: string): Promise<LoadedTranslation | null> {
+    // 1) Load main translation
+    const translationResult = await supabase
+      .from('translations')
+      .select('*')
+      .eq('id', translationId)
+      .single();
+
+    if (translationResult.error) {
+      if (translationResult.error.code === 'PGRST116') {
+        return null; // not found
+      }
+      throw new Error(`Failed to load translation: ${translationResult.error.message}`);
+    }
+
+    const translationRow = translationResult.data as unknown as {
+      id: string;
+      from_language: LanguageCode;
+      to_language: LanguageCode;
+      original_text: string;
+      translated_text: string;
+      difficulty_level?: string | null;
+      created_at: string;
+      updated_at: string;
+    };
+
+    // 2) Load ordered tokens
+    const tokensResult = await supabase
+      .from('translation_tokens')
+      .select('*')
+      .eq('translation_id', translationId)
+      .order('token_index', { ascending: true });
+
+    if (tokensResult.error) {
+      throw new Error(`Failed to load translation tokens: ${tokensResult.error.message}`);
+    }
+
+    const reconstructedTokens: LoadedTranslationToken[] = (tokensResult.data ?? []).map(row => {
+      if (row.token_type === 'word') {
+        return {
+          type: 'word',
+          to_word: row.to_word as string,
+          to_lemma: row.to_lemma as string,
+          from_word: row.from_word as string,
+          from_lemma: row.from_lemma as string,
+          pos: (row.pos ?? undefined) as string | undefined,
+          difficulty: (row.difficulty ?? undefined) as string | undefined,
+          from_definition: (row.from_definition ?? undefined) as string | undefined,
+        };
+      }
+      return {
+        type: row.token_type as 'punctuation' | 'whitespace',
+        value: row.token_value as string,
+      };
+    });
+
+    return {
+      id: translationRow.id,
+      from_language: translationRow.from_language,
+      to_language: translationRow.to_language,
+      original_text: translationRow.original_text,
+      translated_text: translationRow.translated_text,
+      difficulty_level: translationRow.difficulty_level ?? null,
+      created_at: translationRow.created_at,
+      updated_at: translationRow.updated_at,
+      tokens: reconstructedTokens,
+    };
+  }
   /**
    * Validate and sanitize saved translation data
    */
@@ -216,7 +425,7 @@ export class SavedTranslationService {
     }
 
     const rows = (data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? []
-    const displayMap: Record<DifficultyLevelCode, DifficultyLevelDisplay> = {
+    const displayMap: Partial<Record<DifficultyLevelCode, DifficultyLevelDisplay>> = {
       a1: 'A1 (Beginner)',
       a2: 'A2 (Elementary)',
       b1: 'B1 (Intermediate)',
@@ -283,7 +492,7 @@ export class SavedTranslationService {
 
     if (!result.data) return null
     const r = result.data as Database['public']['Tables']['difficulty_levels']['Row']
-    const displayMap: Record<DifficultyLevelCode, DifficultyLevelDisplay> = {
+    const displayMap: Partial<Record<DifficultyLevelCode, DifficultyLevelDisplay>> = {
       a1: 'A1 (Beginner)',
       a2: 'A2 (Elementary)',
       b1: 'B1 (Intermediate)',
