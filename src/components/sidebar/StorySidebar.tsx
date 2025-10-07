@@ -13,6 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
+import { FallbackTokenGenerator } from '../../lib/llm/fallbackTokenGenerator';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';
@@ -141,14 +142,20 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   };
 
   const openSavedTranslation = (saved: DatabaseSavedTranslationWithDetails) => {
+    // Generate fallback tokens for saved translations
+    const tokens = FallbackTokenGenerator.generateTokens(saved.to_text);
+    
     void navigate(`/story?id=${saved.id}`, {
       state: {
         translationData: {
           fromText: saved.from_text,
           toText: saved.to_text,
-          difficulty: saved.difficulty_level.code,
+          tokens,
           fromLanguage: saved.from_language.code,
           toLanguage: saved.to_language.code,
+          difficulty: saved.difficulty_level.code,
+          provider: 'saved',
+          model: 'saved-translation',
         },
         isSavedStory: true,
         savedTranslationId: saved.id,

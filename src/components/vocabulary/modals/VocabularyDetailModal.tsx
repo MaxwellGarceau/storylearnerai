@@ -17,6 +17,7 @@ import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
 import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
+import { FallbackTokenGenerator } from '../../../lib/llm/fallbackTokenGenerator';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -42,6 +43,9 @@ export function VocabularyDetailModal({
         );
 
         if (savedTranslation) {
+          // Generate fallback tokens for saved translations
+          const tokens = FallbackTokenGenerator.generateTokens(savedTranslation.to_text);
+
           // Prefer URL param navigation for deep linking and refresh safety
           void navigate(`/story?id=${savedTranslation.id}`, {
             state: {
@@ -49,6 +53,7 @@ export function VocabularyDetailModal({
               translationData: {
                 fromText: savedTranslation.from_text,
                 toText: savedTranslation.to_text,
+                tokens,
                 difficulty: savedTranslation.difficulty_level.code,
                 fromLanguage: savedTranslation.from_language.code,
                 toLanguage: savedTranslation.to_language.code,
