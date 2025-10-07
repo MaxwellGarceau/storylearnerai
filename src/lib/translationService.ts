@@ -199,10 +199,20 @@ class TranslationService {
       const prompt =
         generalPromptConfigService.buildWordTranslationPrompt(context);
 
+      logger.debug('translation', 'Prompt, context, and request before llm call', {
+        prompt,
+        context,
+        request,
+      });
+
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
-        maxTokens: 8,
+        maxTokens: 100,
         temperature: 0.2,
+      });
+
+      logger.debug('translation', 'LLM response', {
+        llmResponse,
       });
 
       // Ensure we only keep the first line/token as the word
