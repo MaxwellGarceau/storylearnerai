@@ -77,7 +77,7 @@ export default function SavedTranslationsList() {
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
     logger.info('ui', 'Filtering not yet implemented', {
-      target_language_code: selectedLanguage || undefined,
+      to_language_code: selectedLanguage || undefined,
       difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
@@ -103,15 +103,15 @@ export default function SavedTranslationsList() {
   ): TranslationResponse => {
     // Generate fallback tokens for saved translations
     const tokens = FallbackTokenGenerator.generateTokens(
-      savedTranslation.target_story
+      savedTranslation.translated_text
     );
 
     return {
-      fromText: savedTranslation.from_story,
-      targetText: savedTranslation.target_story,
+      fromText: savedTranslation.original_text,
+      targetText: savedTranslation.translated_text,
       tokens,
       fromLanguage: savedTranslation.from_language.code,
-      toLanguage: savedTranslation.target_language.code,
+      toLanguage: savedTranslation.to_language.code,
       difficulty: savedTranslation.difficulty_level.code,
       provider: 'saved',
       model: 'saved-translation',
@@ -305,7 +305,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.fromStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.from_story}
+                    {translation.original_text}
                   </div>
                 </div>
                 <div>
@@ -313,7 +313,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.translatedStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.target_story}
+                    {translation.translated_text}
                   </div>
                 </div>
               </div>

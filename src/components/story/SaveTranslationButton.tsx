@@ -127,10 +127,10 @@ export default function SaveTranslationButton({
       }
 
       const result = await createSavedTranslation({
-        from_story: fromStory,
-        target_story: translationData.targetText,
+        original_text: fromStory,
+        translated_text: translationData.targetText,
         from_language_code: fromLanguageCode,
-        target_language_code: targetLanguageCode,
+        to_language_code: targetLanguageCode,
         difficulty_level_code: difficultyLevel,
         title: sanitizedTitle ?? undefined,
         notes: sanitizedNotes ?? undefined,

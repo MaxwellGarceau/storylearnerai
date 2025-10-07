@@ -47,11 +47,11 @@ export function VocabularyDetailModal({
             state: {
               // Keep fast-path state for instant render when available
               translationData: {
-                fromText: savedTranslation.from_story,
-                targetText: savedTranslation.target_story,
+                fromText: savedTranslation.original_text,
+                targetText: savedTranslation.translated_text,
                 difficulty: savedTranslation.difficulty_level.code,
                 fromLanguage: savedTranslation.from_language.code,
-                toLanguage: savedTranslation.target_language.code,
+                toLanguage: savedTranslation.to_language.code,
                 provider: 'saved',
                 model: 'saved-translation',
               },
