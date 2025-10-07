@@ -82,7 +82,7 @@ class TranslationService {
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
-        maxTokens: 2000,
+        maxTokens: 100000, // High limit to support detailed JSON responses with word metadata
         temperature: 0.7,
       });
 
