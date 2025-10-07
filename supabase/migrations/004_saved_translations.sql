@@ -1,14 +1,14 @@
 -- Main translations table
-CREATE TABLE IF NOT EXISTS translations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    from_language VARCHAR(10) NOT NULL,  -- en, es, etc.
-    to_language VARCHAR(10) NOT NULL,
-    -- Foreign key references to languages lookup (keep codes above for convenience)
+CREATE TABLE IF NOT EXISTS saved_translations (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     from_language_id INTEGER NOT NULL REFERENCES languages(id),
     to_language_id INTEGER NOT NULL REFERENCES languages(id),
     original_text TEXT NOT NULL,
     translated_text TEXT NOT NULL,
-    difficulty_level VARCHAR(10),  -- A1, A2, etc.
+    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id),
+    title VARCHAR(255), -- Optional title for the saved translation
+    notes TEXT, -- Optional user notes
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
