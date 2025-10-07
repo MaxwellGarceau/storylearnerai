@@ -13,7 +13,8 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
-import { FallbackTokenGenerator } from '../../lib/llm/fallbackTokenGenerator';
+import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
+import { TokenConverter } from '../../lib/llm/tokenConverter';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import {
@@ -98,37 +99,47 @@ export default function SavedTranslationsList() {
     }
   };
 
-  const convertToTranslationResponse = (
-    savedTranslation: DatabaseSavedTranslationWithDetails
-  ): TranslationResponse => {
-    // Generate fallback tokens for saved translations
-    const tokens = FallbackTokenGenerator.generateTokens(
-      savedTranslation.to_text
-    );
 
-    return {
-      fromText: savedTranslation.from_text,
-      toText: savedTranslation.to_text,
-      tokens,
-      fromLanguage: savedTranslation.from_language.code,
-      toLanguage: savedTranslation.to_language.code,
-      difficulty: savedTranslation.difficulty_level.code,
-      provider: 'saved',
-      model: 'saved-translation',
-    };
-  };
-
-  const handleViewStory = (
+  const handleViewStory = async (
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
-    const translationData = convertToTranslationResponse(savedTranslation);
-    void navigate(`/story?id=${savedTranslation.id}`, {
-      state: {
-        translationData,
-        isSavedStory: true,
-        savedTranslationId: savedTranslation.id,
-      },
-    });
+    try {
+      // Load the full translation with tokens from the database
+      const service = new SavedTranslationService();
+      const savedTranslationWithTokens = await service.loadTranslationWithTokens(savedTranslation.id);
+      
+      if (savedTranslationWithTokens) {
+        // Convert loaded tokens to TranslationToken format
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslationWithTokens.tokens);
+        
+        const translationData: TranslationResponse = {
+          fromText: savedTranslationWithTokens.from_text,
+          toText: savedTranslationWithTokens.to_text,
+          tokens,
+          fromLanguage: savedTranslationWithTokens.from_language.code,
+          toLanguage: savedTranslationWithTokens.to_language.code,
+          difficulty: savedTranslationWithTokens.difficulty_level.code,
+          provider: 'saved',
+          model: 'saved-translation',
+        };
+        
+        void navigate(`/story?id=${savedTranslation.id}`, {
+          state: {
+            translationData,
+            isSavedStory: true,
+            savedTranslationId: savedTranslation.id,
+          },
+        });
+      } else {
+        logger.error('ui', 'Failed to load saved translation with tokens', { translationId: savedTranslation.id });
+        // Fallback to basic navigation without tokens
+        void navigate(`/story?id=${savedTranslation.id}`);
+      }
+    } catch (error) {
+      logger.error('ui', 'Error loading saved translation with tokens', { error, translationId: savedTranslation.id });
+      // Fallback to basic navigation without tokens
+      void navigate(`/story?id=${savedTranslation.id}`);
+    }
   };
 
   if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
