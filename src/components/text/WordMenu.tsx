@@ -13,6 +13,7 @@ import { useInteractiveTextContext } from './useInteractiveTextContext';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
+import type { WordMetadata } from './interactiveText/WordToken';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ interface WordMenuProps {
   targetSentence?: string;
   isSaved?: boolean;
   isTranslating?: boolean;
+  wordMetadata?: WordMetadata;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -42,6 +44,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   targetSentence,
   isSaved,
   isTranslating,
+  wordMetadata,
 }) => {
   const ctx = useInteractiveTextContext();
   const location = useLocation();
@@ -82,7 +85,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const handleTranslate = () => {
     // Always allow translate click unless actively translating
     if (!effectiveIsTranslating) {
-      onTranslate?.(word);
+      // Use metadata if available, otherwise fall back to word
+      const translationWord = wordMetadata?.from_word ?? word;
+      onTranslate?.(translationWord);
     }
   };
 
@@ -212,7 +217,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         isSaved={effectiveIsSaved}
                         onBeforeOpen={() => {
                           if (!effectiveOppositeWord) {
-                            onTranslate?.(word);
+                            // Use metadata if available, otherwise fall back to word
+                            const translationWord =
+                              wordMetadata?.from_word ?? word;
+                            onTranslate?.(translationWord);
                           }
                         }}
                       />
@@ -244,7 +252,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
                         if (!effectiveOppositeWord) {
-                          onTranslate?.(word);
+                          // Use metadata if available, otherwise fall back to word
+                          const translationWord =
+                            wordMetadata?.from_word ?? word;
+                          onTranslate?.(translationWord);
                         }
                       }}
                     />

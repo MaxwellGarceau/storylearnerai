@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import { FallbackTokenGenerator } from '../../lib/llm/fallbackTokenGenerator';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import {
@@ -100,9 +101,15 @@ export default function SavedTranslationsList() {
   const convertToTranslationResponse = (
     savedTranslation: DatabaseSavedTranslationWithDetails
   ): TranslationResponse => {
+    // Generate fallback tokens for saved translations
+    const tokens = FallbackTokenGenerator.generateTokens(
+      savedTranslation.target_story
+    );
+
     return {
       fromText: savedTranslation.from_story,
       targetText: savedTranslation.target_story,
+      tokens,
       fromLanguage: savedTranslation.from_language.code,
       toLanguage: savedTranslation.target_language.code,
       difficulty: savedTranslation.difficulty_level.code,

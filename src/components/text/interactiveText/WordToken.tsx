@@ -57,7 +57,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   onTranslate,
   enableTooltips,
   disabled,
-  wordMetadata: _wordMetadata,
+  wordMetadata,
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =
@@ -124,6 +124,7 @@ const WordToken: React.FC<WordTokenProps> = ({
         targetSentence={overlaySentenceContext}
         isSaved={isSaved}
         isTranslating={isTranslating}
+        wordMetadata={wordMetadata}
       >
         {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>

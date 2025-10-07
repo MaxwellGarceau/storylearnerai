@@ -207,7 +207,7 @@ class TranslationService {
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,
-        maxTokens: 100,
+        maxTokens: 100, // There is no situation where a single word response will be longer than 100 tokens
         temperature: 0.2,
       });
 
