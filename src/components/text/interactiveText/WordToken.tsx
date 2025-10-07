@@ -68,6 +68,7 @@ const WordToken: React.FC<WordTokenProps> = ({
     isIncludedVocabulary,
     isSaved,
     isTranslating,
+    isTranslated: !!overlayOppositeWord, // Word has been translated and shows overlay
     isActive: isOpen,
     isDisabled: disabled,
   });
@@ -83,7 +84,7 @@ const WordToken: React.FC<WordTokenProps> = ({
       <span>
         {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>
-            <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+            <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
               {overlayOppositeWord}
             </span>
             <WordHighlight
@@ -128,7 +129,7 @@ const WordToken: React.FC<WordTokenProps> = ({
       >
         {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>
-            <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1'>
+            <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
               {overlayOppositeWord}
             </span>
             <WordHighlight
