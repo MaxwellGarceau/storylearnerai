@@ -7,16 +7,11 @@ import type {
   DatabaseDifficultyLevel,
 } from '../../../types/database';
 import type { DatabaseSavedTranslationWithDetailsPromise } from '../../../types/database/promise';
-import type { Database } from '../../../types/database';
-import type { LanguageCode } from '../../../types/llm/prompts';
-import type {
-  EnglishLanguageName,
-  NativeLanguageName,
-  DifficultyLevelDisplay,
-  DifficultyLevel as DifficultyLevelCode,
-} from '../../../types/llm/prompts';
+import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
 import type { VoidPromise } from '../../../types/common';
+import { LanguageService } from './languageService';
+import { DifficultyLevelService } from './difficultyLevelService';
 
 interface ValidationError {
   field: string;
@@ -59,7 +54,7 @@ export interface SaveTranslationParams {
   toLanguage: LanguageCode;
   fromText: string;
   toText: string;
-  difficultyLevel: string; // e.g., a1, a2, b1, b2 (required in new schema)
+  difficultyLevel: DifficultyLevel; // e.g., a1, a2, b1, b2 (required in new schema)
   title?: string;
   notes?: string;
   tokens: TranslationTokenInput[];
@@ -102,6 +97,8 @@ export interface LoadedTranslation {
 }
 
 export class SavedTranslationService {
+  private languageService = new LanguageService();
+  private difficultyLevelService = new DifficultyLevelService();
 
   /**
    * Save a translation and its token stream using the new schema:
@@ -114,9 +111,9 @@ export class SavedTranslationService {
 
     // Get language and difficulty level IDs from codes
     const [fromLanguageData, toLanguageData, difficultyLevelData] = await Promise.all([
-      this.getLanguageByCode(fromLanguage),
-      this.getLanguageByCode(toLanguage),
-      this.getDifficultyLevelByCode(difficultyLevel),
+      this.languageService.getLanguageByCode(fromLanguage),
+      this.languageService.getLanguageByCode(toLanguage),
+      this.difficultyLevelService.getDifficultyLevelByCode(difficultyLevel),
     ]);
 
     if (!fromLanguageData) {
@@ -336,70 +333,6 @@ export class SavedTranslationService {
   }
 
 
-  /**
-   * Get a language by its code
-   */
-  async getLanguageByCode(code: LanguageCode): Promise<DatabaseLanguage | null> {
-    const result = await supabase
-      .from('languages')
-      .select('*')
-      .eq('code', code)
-      .single();
-
-    if (result.error) {
-      if (result.error.code === 'PGRST116') {
-        return null; // No rows returned
-      }
-      throw new Error(`Failed to fetch language: ${result.error.message}`);
-    }
-
-    if (!result.data) return null
-    const r = result.data as Database['public']['Tables']['languages']['Row']
-    const native: NativeLanguageName = (r.native_name ?? (r.code === 'en' ? 'English' : 'Español')) as NativeLanguageName
-    return {
-      id: r.id,
-      code: r.code,
-      name: r.name as EnglishLanguageName,
-      native_name: native,
-      created_at: r.created_at,
-    }
-  }
-
-  /**
-   * Get a difficulty level by its code
-   */
-  async getDifficultyLevelByCode(code: string): Promise<DatabaseDifficultyLevel | null> {
-    const result = await supabase
-      .from('difficulty_levels')
-      .select('*')
-      .eq('code', code)
-      .single();
-
-    if (result.error) {
-      if (result.error.code === 'PGRST116') {
-        return null; // No rows returned
-      }
-      throw new Error(`Failed to fetch difficulty level: ${result.error.message}`);
-    }
-
-    if (!result.data) return null
-    const r = result.data as Database['public']['Tables']['difficulty_levels']['Row']
-    const displayMap: Partial<Record<DifficultyLevelCode, DifficultyLevelDisplay>> = {
-      a1: 'A1 (Beginner)',
-      a2: 'A2 (Elementary)',
-      b1: 'B1 (Intermediate)',
-      b2: 'B2 (Upper Intermediate)',
-    }
-    const display: DifficultyLevelDisplay =
-      (r.name as DifficultyLevelDisplay) ?? displayMap[r.code]
-    return {
-      id: r.id,
-      code: r.code,
-      name: display,
-      description: r.description,
-      created_at: r.created_at,
-    }
-  }
 
 
   /**
@@ -431,21 +364,21 @@ export class SavedTranslationService {
 
     // Apply filters
     if (filters.from_language_code) {
-      const fromLanguage = await this.getLanguageByCode(filters.from_language_code);
+      const fromLanguage = await this.languageService.getLanguageByCode(filters.from_language_code);
       if (fromLanguage) {
         query = query.eq('from_language_id', fromLanguage.id);
       }
     }
 
     if (filters.to_language_code) {
-      const toLanguage = await this.getLanguageByCode(filters.to_language_code);
+      const toLanguage = await this.languageService.getLanguageByCode(filters.to_language_code);
       if (toLanguage) {
         query = query.eq('to_language_id', toLanguage.id);
       }
     }
 
     if (filters.difficulty_level_code) {
-      const difficultyLevel = await this.getDifficultyLevelByCode(filters.difficulty_level_code);
+      const difficultyLevel = await this.difficultyLevelService.getDifficultyLevelByCode(filters.difficulty_level_code);
       if (difficultyLevel) {
         query = query.eq('difficulty_level_id', difficultyLevel.id);
       }
@@ -565,21 +498,21 @@ export class SavedTranslationService {
 
     // Apply filters (same logic as getSavedTranslations)
     if (filters.from_language_code) {
-      const fromLanguage = await this.getLanguageByCode(filters.from_language_code);
+      const fromLanguage = await this.languageService.getLanguageByCode(filters.from_language_code);
       if (fromLanguage) {
         query = query.eq('from_language_id', fromLanguage.id);
       }
     }
 
     if (filters.to_language_code) {
-      const toLanguage = await this.getLanguageByCode(filters.to_language_code);
+      const toLanguage = await this.languageService.getLanguageByCode(filters.to_language_code);
       if (toLanguage) {
         query = query.eq('to_language_id', toLanguage.id);
       }
     }
 
     if (filters.difficulty_level_code) {
-      const difficultyLevel = await this.getDifficultyLevelByCode(filters.difficulty_level_code);
+      const difficultyLevel = await this.difficultyLevelService.getDifficultyLevelByCode(filters.difficulty_level_code);
       if (difficultyLevel) {
         query = query.eq('difficulty_level_id', difficultyLevel.id);
       }
