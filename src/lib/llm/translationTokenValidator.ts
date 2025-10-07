@@ -1,5 +1,4 @@
 import {
-  TranslationWithTokens,
   TranslationToken,
   WordToken,
   PunctuationToken,

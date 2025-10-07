@@ -17,6 +17,7 @@ import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
 import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
+import { TokenConverter } from '../../../lib/llm/tokenConverter';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -42,25 +43,7 @@ export function VocabularyDetailModal({
 
         if (savedTranslation) {
           // Convert loaded tokens to TranslationToken format
-          const tokens = savedTranslation.tokens.map(token => {
-            if (token.type === 'word') {
-              return {
-                type: 'word' as const,
-                to_word: token.to_word,
-                to_lemma: token.to_lemma,
-                from_word: token.from_word,
-                from_lemma: token.from_lemma,
-                pos: (token.pos as any) ?? null,
-                difficulty: (token.difficulty as any) ?? null,
-                from_definition: token.from_definition ?? null,
-              };
-            } else {
-              return {
-                type: token.type,
-                value: token.value,
-              };
-            }
-          });
+          const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslation.tokens);
 
           // Prefer URL param navigation for deep linking and refresh safety
           void navigate(`/story?id=${savedTranslation.id}`, {

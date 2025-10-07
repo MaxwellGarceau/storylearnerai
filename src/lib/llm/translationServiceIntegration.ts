@@ -3,6 +3,7 @@ import { TranslationTokenValidator } from './translationTokenValidator';
 import { FallbackTokenGenerator } from './fallbackTokenGenerator';
 import { TranslationWithTokens } from '../../types/llm/tokens';
 import { logger } from '../logger';
+import { TokenConverter } from './tokenConverter';
 
 /**
  * Integration layer between LLM Service and Translation Service

@@ -12,6 +12,7 @@ import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization
 import type { VoidPromise } from '../../../types/common';
 import { LanguageService } from './languageService';
 import { DifficultyLevelService } from './difficultyLevelService';
+import { logger } from '@/lib/logger';
 
 interface ValidationError {
   field: string;
@@ -243,6 +244,8 @@ export class SavedTranslationService {
       .select('*')
       .eq('translation_id', translationId)
       .order('token_index', { ascending: true });
+
+    logger.debug('database', 'translation tokensResult', tokensResult);
 
     if (tokensResult.error) {
       throw new Error(`Failed to load translation tokens: ${tokensResult.error.message}`);

@@ -7,6 +7,7 @@ import type { VoidPromise } from '../types/common';
 import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
+import { TokenConverter } from '../lib/llm/tokenConverter';
 
 // Type alias to avoid duplicate type definition
 type LoadTranslationsFunction = () => VoidPromise;
@@ -87,25 +88,8 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
 
       try {
         // Convert TranslationToken[] to the format expected by saveTranslationWithTokens
-        const tokens = translationData.tokens.map(token => {
-          if (token.type === 'word') {
-            return {
-              type: 'word' as const,
-              to_word: token.to_word,
-              to_lemma: token.to_lemma,
-              from_word: token.from_word,
-              from_lemma: token.from_lemma,
-              pos: token.pos ?? undefined,
-              difficulty: token.difficulty ?? undefined,
-              from_definition: token.from_definition ?? undefined,
-            };
-          } else {
-            return {
-              type: token.type,
-              value: token.value,
-            };
-          }
-        });
+        const convertedTokens = TokenConverter.convertUITokensToDatabaseTokens(translationData.tokens);
+        const tokens = [...convertedTokens.word, ...convertedTokens.punctuation, ...convertedTokens.whitespace];
 
         const translationId = await savedTranslationService.saveTranslationWithTokens({
           userId: user.id,
