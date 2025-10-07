@@ -58,8 +58,8 @@ export interface SaveTranslationParams {
   userId: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
-  originalText: string;
-  translatedText: string;
+  fromText: string;
+  toText: string;
   difficultyLevel: string; // e.g., a1, a2, b1, b2 (required in new schema)
   title?: string;
   notes?: string;
@@ -89,8 +89,8 @@ export interface LoadedTranslation {
   user_id: string;
   from_language_id: number;
   to_language_id: number;
-  original_text: string;
-  translated_text: string;
+  from_text: string;
+  to_text: string;
   difficulty_level_id: number;
   title?: string | null;
   notes?: string | null;
@@ -108,7 +108,7 @@ export class SavedTranslationService {
    * Returns the created translation id
    */
   async saveTranslationWithTokens(params: SaveTranslationParams): Promise<number> {
-    const { userId, fromLanguage, toLanguage, originalText, translatedText, difficultyLevel, title, notes, tokens } = params;
+    const { userId, fromLanguage, toLanguage, fromText, toText, difficultyLevel, title, notes, tokens } = params;
 
     // Get language and difficulty level IDs from codes
     const [fromLanguageData, toLanguageData, difficultyLevelData] = await Promise.all([
@@ -134,8 +134,8 @@ export class SavedTranslationService {
         user_id: userId,
         from_language_id: fromLanguageData.id,
         to_language_id: toLanguageData.id,
-        original_text: originalText,
-        translated_text: translatedText,
+        from_text: fromText,
+        to_text: toText,
         difficulty_level_id: difficultyLevelData.id,
         title: title,
         notes: notes,
@@ -221,8 +221,8 @@ export class SavedTranslationService {
       user_id: string;
       from_language_id: number;
       to_language_id: number;
-      original_text: string;
-      translated_text: string;
+      from_text: string;
+      to_text: string;
       difficulty_level_id: number;
       title?: string | null;
       notes?: string | null;
@@ -265,8 +265,8 @@ export class SavedTranslationService {
       user_id: translationRow.user_id,
       from_language_id: translationRow.from_language_id,
       to_language_id: translationRow.to_language_id,
-      original_text: translationRow.original_text,
-      translated_text: translationRow.translated_text,
+      from_text: translationRow.from_text,
+      to_text: translationRow.to_text,
       difficulty_level_id: translationRow.difficulty_level_id,
       title: translationRow.title ?? null,
       notes: translationRow.notes ?? null,
@@ -290,27 +290,27 @@ export class SavedTranslationService {
       errors.push({ field: 'user_id', message: 'Valid user ID is required' });
     }
 
-    // Validate and sanitize original text
-    if (!request.original_text || typeof request.original_text !== 'string') {
-      errors.push({ field: 'original_text', message: 'Original text is required' });
+    // Validate and sanitize from text
+    if (!request.from_text || typeof request.from_text !== 'string') {
+      errors.push({ field: 'from_text', message: 'From text is required' });
     } else {
-      const storyValidation = validateStoryText(request.original_text);
+      const storyValidation = validateStoryText(request.from_text);
       if (!storyValidation.isValid) {
-        errors.push({ field: 'original_text', message: storyValidation.errors[0] || 'Invalid original text content' });
+        errors.push({ field: 'from_text', message: storyValidation.errors[0] || 'Invalid from text content' });
       } else {
-        sanitizedData.original_text = storyValidation.sanitizedText;
+        sanitizedData.from_text = storyValidation.sanitizedText;
       }
     }
 
-    // Validate and sanitize translated text
-    if (!request.translated_text || typeof request.translated_text !== 'string') {
-      errors.push({ field: 'translated_text', message: 'Translated text is required' });
+    // Validate and sanitize to text
+    if (!request.to_text || typeof request.to_text !== 'string') {
+      errors.push({ field: 'to_text', message: 'To text is required' });
     } else {
-      const storyValidation = validateStoryText(request.translated_text);
+      const storyValidation = validateStoryText(request.to_text);
       if (!storyValidation.isValid) {
-        errors.push({ field: 'translated_text', message: storyValidation.errors[0] || 'Invalid translated text content' });
+        errors.push({ field: 'to_text', message: storyValidation.errors[0] || 'Invalid to text content' });
       } else {
-        sanitizedData.translated_text = storyValidation.sanitizedText;
+        sanitizedData.to_text = storyValidation.sanitizedText;
       }
     }
 
@@ -578,8 +578,8 @@ export class SavedTranslationService {
       .from('saved_translations')
       .insert({
         user_id: userId,
-        original_text: sanitizedRequest.original_text,
-        translated_text: sanitizedRequest.translated_text,
+        from_text: sanitizedRequest.from_text,
+        to_text: sanitizedRequest.to_text,
         from_language_id: fromLanguage.id,
         to_language_id: toLanguage.id,
         difficulty_level_id: difficultyLevel.id,
@@ -652,7 +652,7 @@ export class SavedTranslationService {
 
     if (filters.search) {
       query = query.or(
-        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,original_text.ilike.%${filters.search}%,translated_text.ilike.%${filters.search}%`
+        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,from_text.ilike.%${filters.search}%,to_text.ilike.%${filters.search}%`
       );
     }
 
@@ -821,7 +821,7 @@ export class SavedTranslationService {
 
     if (filters.search) {
       query = query.or(
-        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,original_text.ilike.%${filters.search}%,translated_text.ilike.%${filters.search}%`
+        `title.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,from_text.ilike.%${filters.search}%,to_text.ilike.%${filters.search}%`
       );
     }
 

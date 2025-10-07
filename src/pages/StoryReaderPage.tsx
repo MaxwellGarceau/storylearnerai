@@ -57,12 +57,12 @@ const StoryReaderPage: React.FC = () => {
           if (saved) {
             // Generate tokens from saved translation using fallback tokenizer
             const tokens = FallbackTokenGenerator.generateTokens(
-              saved.translated_text
+              saved.to_text
             );
 
             const response: TranslationResponse = {
-              fromText: saved.original_text,
-              toText: saved.translated_text,
+              fromText: saved.from_text,
+              toText: saved.to_text,
               tokens,
               fromLanguage: saved.from_language.code,
               toLanguage: saved.to_language.code,

@@ -77,7 +77,7 @@ const StoriesSection: React.FC<StoriesSectionProps> = ({
               </CardHeader>
               <CardContent className='pt-0'>
                 <p className='text-sm text-muted-foreground line-clamp-2'>
-                  {savedTranslation.original_text.substring(0, 100)}...
+                  {savedTranslation.from_text.substring(0, 100)}...
                 </p>
               </CardContent>
             </Card>

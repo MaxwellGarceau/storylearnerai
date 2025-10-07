@@ -103,12 +103,12 @@ export default function SavedTranslationsList() {
   ): TranslationResponse => {
     // Generate fallback tokens for saved translations
     const tokens = FallbackTokenGenerator.generateTokens(
-      savedTranslation.translated_text
+      savedTranslation.to_text
     );
 
     return {
-      fromText: savedTranslation.original_text,
-      toText: savedTranslation.translated_text,
+      fromText: savedTranslation.from_text,
+      toText: savedTranslation.to_text,
       tokens,
       fromLanguage: savedTranslation.from_language.code,
       toLanguage: savedTranslation.to_language.code,
@@ -305,7 +305,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.fromStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.original_text}
+                    {translation.from_text}
                   </div>
                 </div>
                 <div>
@@ -313,7 +313,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.translatedStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.translated_text}
+                    {translation.to_text}
                   </div>
                 </div>
               </div>

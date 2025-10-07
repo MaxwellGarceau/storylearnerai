@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS saved_translations (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     from_language_id INTEGER NOT NULL,
     to_language_id INTEGER NOT NULL,
-    original_text TEXT NOT NULL,
-    translated_text TEXT NOT NULL,
+    from_text TEXT NOT NULL,
+    to_text TEXT NOT NULL,
     difficulty_level_id INTEGER NOT NULL,
     title VARCHAR(255), -- Optional title for the saved translation
     notes TEXT, -- Optional user notes

@@ -50,8 +50,8 @@ export interface DatabaseDifficultyLevel {
 export interface DatabaseSavedTranslationWithDetails {
   id: number;
   user_id: string;
-  original_text: string;
-  translated_text: string;
+  from_text: string;
+  to_text: string;
   from_language_id: number;
   to_language_id: number;
   difficulty_level_id: number;
@@ -66,8 +66,8 @@ export interface DatabaseSavedTranslationWithDetails {
 
 // API request types for easier service usage
 export interface CreateSavedTranslationRequest {
-  original_text: string;
-  translated_text: string;
+  from_text: string;
+  to_text: string;
   from_language_code: LanguageCode;
   to_language_code: LanguageCode;
   difficulty_level_code: DifficultyLevel;
