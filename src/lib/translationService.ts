@@ -96,8 +96,9 @@ class TranslationService {
         );
 
       // Extract metadata from response
-      const metadata = (translationWithTokens as unknown as Record<string, unknown>)
-        ._metadata as
+      const metadata = (
+        translationWithTokens as unknown as Record<string, unknown>
+      )._metadata as
         | { hasWarnings: boolean; warnings: string[]; usedFallback: boolean }
         | undefined;
 
@@ -105,10 +106,7 @@ class TranslationService {
       const selectedVocabulary = request.selectedVocabulary ?? [];
 
       // Validate that we have target language text and target language vocabulary
-      if (
-        translationWithTokens.translation &&
-        selectedVocabulary.length > 0
-      ) {
+      if (translationWithTokens.translation && selectedVocabulary.length > 0) {
         const { includedVocabulary, missingVocabulary } =
           this.analyzeVocabularyInclusionInTargetLanguage(
             translationWithTokens.translation, // Target language translated text

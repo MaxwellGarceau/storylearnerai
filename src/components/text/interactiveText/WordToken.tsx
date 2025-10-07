@@ -57,7 +57,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   onTranslate,
   enableTooltips,
   disabled,
-  wordMetadata,
+  wordMetadata: _wordMetadata,
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =

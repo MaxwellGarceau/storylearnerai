@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveTextView from '../InteractiveTextView';
-import type { Token } from '../../../../hooks/interactiveText/useTokenizedText';
+import type { TranslationToken } from '../../../../types/llm/tokens';
 
 interface WordTokenProps {
   actionWordNormalized: string;
@@ -109,36 +109,42 @@ describe('InteractiveTextView', () => {
     onTranslate: vi.fn(),
   };
 
-  const tokens: Token[] = [
+  const tokens: TranslationToken[] = [
     {
-      kind: 'word',
-      segmentIndex: 0,
-      raw: 'Hello',
-      cleanWord: 'Hello',
-      normalizedWord: 'hello',
-      punctuation: ',',
+      type: 'word',
+      to_word: 'Hello',
+      to_lemma: 'hello',
+      from_word: 'Hola',
+      from_lemma: 'hola',
+      pos: 'interjection',
+      difficulty: 'a1',
+      from_definition: 'A greeting',
     },
-    { kind: 'whitespace', segmentIndex: 1, text: ' ' },
+    { type: 'punctuation', value: ',' },
+    { type: 'whitespace', value: ' ' },
     {
-      kind: 'word',
-      segmentIndex: 2,
-      raw: 'world!',
-      cleanWord: 'world',
-      normalizedWord: 'world',
-      punctuation: '!',
+      type: 'word',
+      to_word: 'world',
+      to_lemma: 'world',
+      from_word: 'mundo',
+      from_lemma: 'mundo',
+      pos: 'noun',
+      difficulty: 'a2',
+      from_definition: 'The earth',
     },
+    { type: 'punctuation', value: '!' },
   ];
 
   it('renders non-word tokens directly and word tokens via WordToken', () => {
     render(<InteractiveTextView {...baseProps} tokens={tokens} />);
 
     expect(screen.getByTestId('word-token-hello')).toBeInTheDocument();
-    // Second token acquires overlay (mundo), so action id is mundo
+    // Second word token acquires overlay (mundo), so action id is mundo
     expect(screen.getByTestId('word-token-mundo')).toBeInTheDocument();
-    // whitespace should render as-is (no token testid created)
-    // punctuation forwarded into token component
-    expect(screen.getByTestId('punctuation-hello')).toHaveTextContent(',');
-    expect(screen.getByTestId('punctuation-mundo')).toHaveTextContent('!');
+    // whitespace and punctuation should render directly
+    // Note: punctuation is now separate, not embedded in word token
+    expect(screen.getByTestId('punctuation-hello')).toHaveTextContent('');
+    expect(screen.getByTestId('punctuation-mundo')).toHaveTextContent('');
   });
 
   it('passes saved, translation overlay, and sentences correctly', () => {
@@ -185,7 +191,7 @@ describe('InteractiveTextView', () => {
     );
   });
 
-  it('delegates translate click to onTranslate with normalized word and segment', () => {
+  it('delegates translate click to onTranslate with normalized word and index', () => {
     const onTranslate = vi.fn();
     render(
       <InteractiveTextView
@@ -196,6 +202,7 @@ describe('InteractiveTextView', () => {
     );
 
     fireEvent.click(screen.getByTestId('translate-hello'));
+    // Note: index is now the token array index (0), not segmentIndex
     expect(onTranslate).toHaveBeenCalledWith('hello', 0);
   });
 
