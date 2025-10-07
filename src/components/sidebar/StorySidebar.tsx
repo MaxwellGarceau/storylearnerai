@@ -218,7 +218,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
               <StoriesSection
                 savedTranslations={(
                   savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
-                ).filter(s => s.target_language.code === targetLanguage)}
+                ).filter(s => s.to_language.code === targetLanguage)}
                 isLoadingSavedTranslations={isLoadingSavedTranslations}
                 sampleStories={sampleStories}
                 isLoadingSampleId={isLoading}
