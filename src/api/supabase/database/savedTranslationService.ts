@@ -532,41 +532,6 @@ export class SavedTranslationService {
     return (result.data ?? []) as DatabaseSavedTranslationWithDetails[];
   }
 
-  /**
-   * Get a specific saved translation by ID
-   */
-  async getSavedTranslation(
-    translationId: string,
-    userId: string
-  ): Promise<DatabaseSavedTranslationWithDetails | null> {
-    // Validate input parameters
-    if (!translationId || typeof translationId !== 'string' || translationId.trim().length === 0) {
-      throw new Error('Valid translation ID is required');
-    }
-    if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
-      throw new Error('Valid user ID is required');
-    }
-    const result = await supabase
-      .from('saved_translations')
-      .select(`
-        *,
-        from_language:languages!saved_translations_from_language_id_fkey(*),
-        to_language:languages!saved_translations_to_language_id_fkey(*),
-        difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
-      `)
-      .eq('id', translationId)
-      .eq('user_id', userId)
-      .single();
-
-    if (result.error) {
-      if (result.error.code === 'PGRST116') {
-        return null; // No rows returned
-      }
-      throw new Error(`Failed to fetch saved translation: ${result.error.message}`);
-    }
-
-    return result.data as unknown as DatabaseSavedTranslationWithDetails;
-  }
 
   /**
    * Update a saved translation
