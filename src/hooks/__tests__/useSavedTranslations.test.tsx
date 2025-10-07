@@ -18,10 +18,10 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
           id: 1,
           user_id: 'u1',
           created_at: 'now',
-          source_text: 'Hello',
-          target_text: 'Hola',
+          from_text: 'Hello',
+          to_text: 'Hola',
           from_language_id: 1,
-          target_language_id: 2,
+          to_language_id: 2,
           difficulty_level_id: 1,
           from_language: {
             id: 1,
@@ -29,7 +29,7 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
             name: 'English',
             native_name: 'English',
           },
-          target_language: {
+          to_language: {
             id: 2,
             code: 'es',
             name: 'Spanish',
@@ -39,30 +39,8 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
         },
       ]);
     }
-    createSavedTranslation() {
-      return Promise.resolve({
-        id: 2,
-        user_id: 'u1',
-        created_at: 'now',
-        source_text: 'Bye',
-        target_text: 'Adiós',
-        from_language_id: 1,
-        target_language_id: 2,
-        difficulty_level_id: 1,
-        from_language: {
-          id: 1,
-          code: 'en',
-          name: 'English',
-          native_name: 'English',
-        },
-        target_language: {
-          id: 2,
-          code: 'es',
-          name: 'Spanish',
-          native_name: 'Español',
-        },
-        difficulty_level: { id: 1, code: 'a1', name: 'Beginner' },
-      });
+    saveTranslationWithTokens() {
+      return Promise.resolve(2);
     }
   },
 }));
@@ -80,13 +58,22 @@ describe.skip('useSavedTranslations', () => {
     );
 
     await act(async () => {
-      const created = await result.current.createSavedTranslation({
-        source_text: 'Bye',
-        target_text: 'Adiós',
-        from_language_id: 1,
-        target_language_id: 2,
-        difficulty_level_id: 1,
-      });
+      const mockTranslationData = {
+        fromText: 'Bye',
+        toText: 'Adiós',
+        tokens: [],
+        fromLanguage: 'en' as const,
+        toLanguage: 'es' as const,
+        difficulty: 'a1' as const,
+        provider: 'test' as const,
+        model: 'test' as const,
+      };
+      const created = await result.current.saveTranslationWithTokens(
+        mockTranslationData,
+        'Bye',
+        'Test Title',
+        'Test Notes'
+      );
       expect(created).not.toBeNull();
     });
   });

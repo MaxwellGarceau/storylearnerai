@@ -5,6 +5,7 @@ import type {
   CreateSavedTranslationRequest,
 } from '../types/database/translation';
 import type { VoidPromise } from '../types/common';
+import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
 
@@ -17,9 +18,12 @@ interface UseSavedTranslationsReturn {
   error: string | null;
   loadTranslations: LoadTranslationsFunction;
   refreshTranslations: LoadTranslationsFunction;
-  createSavedTranslation: (
-    data: CreateSavedTranslationRequest
-  ) => Promise<DatabaseSavedTranslationWithDetails | null>;
+  saveTranslationWithTokens: (
+    translationData: TranslationResponse,
+    fromText: string,
+    title?: string,
+    notes?: string
+  ) => Promise<number | null>;
 }
 
 // Create a singleton instance of the service
@@ -63,10 +67,13 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     await loadTranslations();
   }, [loadTranslations]);
 
-  const createSavedTranslation = useCallback(
+  const saveTranslationWithTokens = useCallback(
     async (
-      data: CreateSavedTranslationRequest
-    ): Promise<DatabaseSavedTranslationWithDetails | null> => {
+      translationData: TranslationResponse,
+      fromText: string,
+      title?: string,
+      notes?: string
+    ): Promise<number | null> => {
       if (!user?.id) {
         toast({
           title: 'Error',
@@ -80,8 +87,38 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       setError(null);
 
       try {
-        const savedTranslation =
-          await savedTranslationService.createSavedTranslation(data, user.id);
+        // Convert TranslationToken[] to the format expected by saveTranslationWithTokens
+        const tokens = translationData.tokens.map(token => {
+          if (token.type === 'word') {
+            return {
+              type: 'word' as const,
+              to_word: token.to_word,
+              to_lemma: token.to_lemma,
+              from_word: token.from_word,
+              from_lemma: token.from_lemma,
+              pos: token.pos,
+              difficulty: token.difficulty,
+              from_definition: token.from_definition,
+            };
+          } else {
+            return {
+              type: token.type,
+              value: token.value,
+            };
+          }
+        });
+
+        const translationId = await savedTranslationService.saveTranslationWithTokens({
+          userId: user.id,
+          fromLanguage: translationData.fromLanguage,
+          toLanguage: translationData.toLanguage,
+          fromText,
+          toText: translationData.toText,
+          difficultyLevel: translationData.difficulty,
+          title,
+          notes,
+          tokens,
+        });
 
         // Refresh the translations list
         await loadTranslations();
@@ -98,7 +135,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
           description: 'Translation saved successfully',
         });
 
-        return savedTranslation;
+        return translationId;
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Failed to save translation';
@@ -126,6 +163,6 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     error,
     loadTranslations,
     refreshTranslations,
-    createSavedTranslation,
+    saveTranslationWithTokens,
   };
 }

@@ -17,7 +17,6 @@ import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
 import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
-import { FallbackTokenGenerator } from '../../../lib/llm/fallbackTokenGenerator';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -37,14 +36,31 @@ export function VocabularyDetailModal({
     if (vocabulary.saved_translation_id && user) {
       try {
         const service = new SavedTranslationService();
-        const savedTranslation = await service.getSavedTranslation(
-          String(vocabulary.saved_translation_id),
-          user.id
+        const savedTranslation = await service.loadTranslationWithTokens(
+          vocabulary.saved_translation_id
         );
 
         if (savedTranslation) {
-          // Generate fallback tokens for saved translations
-          const tokens = FallbackTokenGenerator.generateTokens(savedTranslation.to_text);
+          // Convert loaded tokens to TranslationToken format
+          const tokens = savedTranslation.tokens.map(token => {
+            if (token.type === 'word') {
+              return {
+                type: 'word' as const,
+                to_word: token.to_word,
+                to_lemma: token.to_lemma,
+                from_word: token.from_word,
+                from_lemma: token.from_lemma,
+                pos: (token.pos as any) ?? null,
+                difficulty: (token.difficulty as any) ?? null,
+                from_definition: token.from_definition ?? null,
+              };
+            } else {
+              return {
+                type: token.type,
+                value: token.value,
+              };
+            }
+          });
 
           // Prefer URL param navigation for deep linking and refresh safety
           void navigate(`/story?id=${savedTranslation.id}`, {
