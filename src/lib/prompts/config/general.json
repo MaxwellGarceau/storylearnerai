@@ -5,6 +5,7 @@
     "Keep the story engaging and readable",
     "Return a valid JSON object with 'translation' and 'words' fields",
     "The 'words' array must include metadata for every meaningful word",
-    "Ensure all JSON is properly formatted with no markdown code blocks or extra text"
+    "Ensure all JSON is properly formatted with no markdown code blocks or extra text",
+    "Treat the translated token ('to_word') as the source of truth: align 'from_word', 'from_lemma', and 'from_definition' to the meaning/tense/aspect/number actually expressed by 'to_word' in the translated sentence"
   ]
 }

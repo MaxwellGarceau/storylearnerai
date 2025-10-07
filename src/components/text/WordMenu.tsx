@@ -29,24 +29,29 @@ interface WordMenuProps {
   targetSentence?: string;
   isSaved?: boolean;
   isTranslating?: boolean;
-  wordMetadata?: WordMetadata;
+  wordMetadata: WordMetadata;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
   children,
-  word,
-  dictionaryWord,
   open,
   onOpenChange,
   onTranslate,
   fromLanguage,
   targetLanguage,
-  targetWord,
   fromSentence,
   targetSentence,
   isSaved,
   isTranslating,
-  wordMetadata: _wordMetadata, // Reserved for future use (tooltips, etc.)
+  wordMetadata: {
+    to_word: toWord,
+    from_word: fromWord,
+    from_lemma: fromLemma,
+    // to_lemma: toLemma,
+    // pos: pos,
+    // difficulty: difficulty,
+    // from_definition: fromDefinition,
+  },
 }) => {
   const ctx = useInteractiveTextContext();
   const location = useLocation();
@@ -64,15 +69,14 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
   const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
   const isDisplayingFromSide = ctx?.isDisplayingFromSide ?? true;
-  // Opposite-language word for the current token (may be undefined until translated/saved)
-  const effectiveOppositeWord = targetWord ?? ctx?.getOppositeWordFor?.(word);
-  const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(word) ?? false;
+  const effectiveOppositeWord = fromWord; // Conditionally displays if translation is clicked
+  const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(toWord) ?? false;
   const effectiveIsTranslating =
-    isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
+    isTranslating ?? ctx?.isTranslatingWord?.(toWord) ?? false;
 
   // Search for word info when dictionary is shown
   // Use dictionaryWord (from_lemma) if available, otherwise fall back to word
-  const wordForDictionary = dictionaryWord ?? word;
+  const wordForDictionary = fromLemma ?? fromWord;
   
   useEffect(() => {
     if (showDictionary && open) {
@@ -96,7 +100,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
     // The parent component (InteractiveText) will check metadata and decide
     // whether to use it directly or make an API call
     if (!effectiveIsTranslating) {
-      onTranslate?.(word);
+      onTranslate?.(toWord);
     }
   };
 
@@ -135,11 +139,11 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   // Compute canonical words (from = user's from-language, target = user's target-language)
   const canonicalFromWord = isDisplayingFromSide
-    ? word
+    ? toWord
     : (effectiveOppositeWord ?? '');
   const canonicalTargetWord = isDisplayingFromSide
     ? (effectiveOppositeWord ?? '')
-    : word;
+    : toWord;
 
   return (
     <Popover
@@ -181,7 +185,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
           {!showDictionary ? (
             <>
               <div className='text-center mb-3'>
-                <div className='text-sm font-medium mb-1'>{word}</div>
+                <div className='text-sm font-medium mb-1'>{toWord}</div>
                 {effectiveOppositeWord && (
                   <div className='text-sm text-muted-foreground'>
                     {effectiveOppositeWord}
@@ -226,7 +230,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         isSaved={effectiveIsSaved}
                         onBeforeOpen={() => {
                           if (!effectiveOppositeWord) {
-                            onTranslate?.(word);
+                            onTranslate?.(toWord);
                           }
                         }}
                       />
@@ -258,7 +262,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
                         if (!effectiveOppositeWord) {
-                          onTranslate?.(word);
+                          onTranslate?.(toWord);
                         }
                       }}
                     />
@@ -274,7 +278,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 </div>
               </div>
               <DictionaryEntry.Root
-                word={wordForDictionary}
+                word={wordForDictionary} // from_lemma
                 wordInfo={wordInfo}
                 isLoading={isLoading}
                 error={error}
