@@ -14,13 +14,11 @@ CREATE TABLE IF NOT EXISTS saved_translations (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_translations_created_at ON translations(created_at);
-CREATE INDEX IF NOT EXISTS idx_translations_from_language ON translations(from_language);
-CREATE INDEX IF NOT EXISTS idx_translations_to_language ON translations(to_language);
-CREATE INDEX IF NOT EXISTS idx_translations_from_language_id ON translations(from_language_id);
-CREATE INDEX IF NOT EXISTS idx_translations_to_language_id ON translations(to_language_id);
-CREATE INDEX IF NOT EXISTS idx_translations_difficulty ON translations(difficulty_level);
+CREATE INDEX IF NOT EXISTS idx_translations_created_at ON saved_translations(created_at);
+CREATE INDEX IF NOT EXISTS idx_translations_from_language_id ON saved_translations(from_language_id);
+CREATE INDEX IF NOT EXISTS idx_translations_to_language_id ON saved_translations(to_language_id);
+CREATE INDEX IF NOT EXISTS idx_translations_difficulty_level_id ON saved_translations(difficulty_level_id);
 
 -- Trigger for updated_at on translations
-CREATE TRIGGER update_translations_updated_at BEFORE UPDATE ON translations
+CREATE TRIGGER update_translations_updated_at BEFORE UPDATE ON saved_translations
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

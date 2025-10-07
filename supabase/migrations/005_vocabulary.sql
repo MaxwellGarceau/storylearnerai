@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS vocabulary (
     definition TEXT, -- Definition of the word
     part_of_speech VARCHAR(50), -- Part of speech (noun, verb, adjective, etc.)
     frequency_level VARCHAR(50), -- Frequency/level (common, rare, etc.)
-    translation_id UUID REFERENCES translations(id) ON DELETE SET NULL, -- Optional link to the translation where this word was found
+    translation_id INTEGER REFERENCES saved_translations(id) ON DELETE SET NULL, -- Optional link to the translation where this word was found
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
