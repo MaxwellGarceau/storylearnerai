@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { LanguageCode } from '../../types/llm/prompts';
 import { TranslationToken } from '../../types/llm/tokens';
+import type { WordMetadata } from './interactiveText/WordToken';
 import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
 import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
 import { useTranslationCache } from '../../hooks/interactiveText/useTranslationCache';
@@ -95,9 +96,19 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     [includedVocabulary]
   );
 
-  const handleTranslateWithSavedCheck = (w: string, segmentIndex: number) => {
+  const handleTranslateWithSavedCheck = (
+    w: string,
+    segmentIndex: number,
+    metadata?: WordMetadata
+  ) => {
     const alreadyRuntime = targetWords.get(w);
     if (alreadyRuntime) return;
+
+    // If we have metadata with from_word, use it directly without API call
+    if (metadata?.from_word) {
+      setWordTranslation(w, metadata.from_word);
+      return;
+    }
 
     // If w is a from-word saved key, inject its target
     const savedByFrom = findSavedWordData(w);
@@ -113,6 +124,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
       return;
     }
 
+    // Fallback: call API to translate
     void handleTranslate(w, segmentIndex);
   };
 

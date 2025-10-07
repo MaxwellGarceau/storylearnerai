@@ -44,7 +44,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   targetSentence,
   isSaved,
   isTranslating,
-  wordMetadata,
+  wordMetadata: _wordMetadata, // Reserved for future use (tooltips, etc.)
 }) => {
   const ctx = useInteractiveTextContext();
   const location = useLocation();
@@ -84,10 +84,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   const handleTranslate = () => {
     // Always allow translate click unless actively translating
+    // The parent component (InteractiveText) will check metadata and decide
+    // whether to use it directly or make an API call
     if (!effectiveIsTranslating) {
-      // Use metadata if available, otherwise fall back to word
-      const translationWord = wordMetadata?.from_word ?? word;
-      onTranslate?.(translationWord);
+      onTranslate?.(word);
     }
   };
 
@@ -217,10 +217,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                         isSaved={effectiveIsSaved}
                         onBeforeOpen={() => {
                           if (!effectiveOppositeWord) {
-                            // Use metadata if available, otherwise fall back to word
-                            const translationWord =
-                              wordMetadata?.from_word ?? word;
-                            onTranslate?.(translationWord);
+                            onTranslate?.(word);
                           }
                         }}
                       />
@@ -252,10 +249,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       isSaved={effectiveIsSaved}
                       onBeforeOpen={() => {
                         if (!effectiveOppositeWord) {
-                          // Use metadata if available, otherwise fall back to word
-                          const translationWord =
-                            wordMetadata?.from_word ?? word;
-                          onTranslate?.(translationWord);
+                          onTranslate?.(word);
                         }
                       }}
                     />

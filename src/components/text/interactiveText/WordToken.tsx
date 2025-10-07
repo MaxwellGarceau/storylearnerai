@@ -32,7 +32,7 @@ interface WordTokenProps {
   targetLanguage: LanguageCode;
   onOpenChange: (open: boolean) => void;
   onWordClick: () => void;
-  onTranslate: () => void;
+  onTranslate: (metadata?: WordMetadata) => void;
   enableTooltips: boolean;
   disabled: boolean;
   // Optional: Rich metadata from LLM
@@ -115,7 +115,7 @@ const WordToken: React.FC<WordTokenProps> = ({
         open={isOpen}
         onOpenChange={onOpenChange}
         onTranslate={() => {
-          onTranslate();
+          onTranslate(wordMetadata);
         }}
         fromLanguage={fromLanguage}
         targetLanguage={targetLanguage}

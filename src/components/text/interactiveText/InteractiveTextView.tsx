@@ -5,6 +5,8 @@ import WordToken from './WordToken';
 import PunctuationToken from './PunctuationToken';
 import WhitespaceToken from './WhitespaceToken';
 
+import type { WordMetadata } from './WordToken';
+
 interface InteractiveTextViewProps {
   className?: string;
   tokens: TranslationToken[];
@@ -17,7 +19,11 @@ interface InteractiveTextViewProps {
   isSaved: (displayWordNormalized: string) => boolean;
   getOverlayOppositeWord: (displayWordNormalized: string) => string | undefined;
   isTranslating: (normalizedWord: string) => boolean;
-  onTranslate: (normalizedWord: string, segmentIndex: number) => void;
+  onTranslate: (
+    normalizedWord: string,
+    segmentIndex: number,
+    metadata?: WordMetadata
+  ) => void;
 }
 
 const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
@@ -63,8 +69,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const overlaySentence = getOverlaySentence(displaySentence);
         const open = openMenuIndex === idx;
 
-        const handleTranslateClick = () => {
-          onTranslate(normalizedFromWord, idx);
+        const handleTranslateClick = (metadata?: WordMetadata) => {
+          onTranslate(normalizedFromWord, idx, metadata);
         };
 
         const normalizedWordForProps =
