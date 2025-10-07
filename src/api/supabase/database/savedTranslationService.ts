@@ -1,7 +1,6 @@
 import { supabase } from '../client';
 import type {
   DatabaseSavedTranslationWithDetails,
-  CreateSavedTranslationRequest,
   UpdateSavedTranslationRequest,
   SavedTranslationFilters,
   DatabaseLanguage,
@@ -289,101 +288,6 @@ export class SavedTranslationService {
       difficulty_level: translationRow.difficulty_level,
     };
   }
-  /**
-   * Validate and sanitize saved translation data
-   */
-  private static validateCreateSavedTranslationData(
-    request: CreateSavedTranslationRequest,
-    userId: string
-  ): { isValid: boolean; errors: ValidationError[]; sanitizedData: CreateSavedTranslationRequest } {
-    const errors: ValidationError[] = [];
-    const sanitizedData: CreateSavedTranslationRequest = { ...request };
-
-    // Validate user ID
-    if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
-      errors.push({ field: 'user_id', message: 'Valid user ID is required' });
-    }
-
-    // Validate and sanitize from text
-    if (!request.from_text || typeof request.from_text !== 'string') {
-      errors.push({ field: 'from_text', message: 'From text is required' });
-    } else {
-      const storyValidation = validateStoryText(request.from_text);
-      if (!storyValidation.isValid) {
-        errors.push({ field: 'from_text', message: storyValidation.errors[0] || 'Invalid from text content' });
-      } else {
-        sanitizedData.from_text = storyValidation.sanitizedText;
-      }
-    }
-
-    // Validate and sanitize to text
-    if (!request.to_text || typeof request.to_text !== 'string') {
-      errors.push({ field: 'to_text', message: 'To text is required' });
-    } else {
-      const storyValidation = validateStoryText(request.to_text);
-      if (!storyValidation.isValid) {
-        errors.push({ field: 'to_text', message: storyValidation.errors[0] || 'Invalid to text content' });
-      } else {
-        sanitizedData.to_text = storyValidation.sanitizedText;
-      }
-    }
-
-    // Validate language codes
-    if (!request.from_language_code || typeof request.from_language_code !== 'string') {
-      errors.push({ field: 'from_language_code', message: 'Original language code is required' });
-    } else if (!/^[a-z]{2}$/.test(request.from_language_code)) {
-      errors.push({ field: 'from_language_code', message: 'Original language code must be a valid ISO 639-1 code' });
-    }
-
-    if (!request.to_language_code || typeof request.to_language_code !== 'string') {
-      errors.push({ field: 'to_language_code', message: 'Target language code is required' });
-    } else if (!/^[a-z]{2}$/.test(request.to_language_code)) {
-      errors.push({ field: 'to_language_code', message: 'Target language code must be a valid ISO 639-1 code' });
-    }
-
-    // Validate difficulty level code
-    if (!request.difficulty_level_code || typeof request.difficulty_level_code !== 'string') {
-      errors.push({ field: 'difficulty_level_code', message: 'Difficulty level code is required' });
-    } else if (!/^[a-z][1-2]$/.test(request.difficulty_level_code)) {
-      errors.push({ field: 'difficulty_level_code', message: 'Difficulty level code must be a valid CEFR level (a1, a2, b1, b2)' });
-    }
-
-    // Validate and sanitize title (optional)
-    if (request.title !== undefined && request.title !== null) {
-      if (typeof request.title !== 'string') {
-        errors.push({ field: 'title', message: 'Title must be a string' });
-      } else {
-        const sanitizedTitle = sanitizeText(request.title, { maxLength: 200 });
-        const titleValidation = validateStoryText(sanitizedTitle);
-        if (!titleValidation.isValid) {
-          errors.push({ field: 'title', message: titleValidation.errors[0] || 'Invalid title content' });
-        } else {
-          sanitizedData.title = titleValidation.sanitizedText || undefined;
-        }
-      }
-    }
-
-    // Validate and sanitize notes (optional)
-    if (request.notes !== undefined && request.notes !== null) {
-      if (typeof request.notes !== 'string') {
-        errors.push({ field: 'notes', message: 'Notes must be a string' });
-      } else {
-        const sanitizedNotes = sanitizeText(request.notes, { maxLength: 1000 });
-        const notesValidation = validateStoryText(sanitizedNotes);
-        if (!notesValidation.isValid) {
-          errors.push({ field: 'notes', message: notesValidation.errors[0] || 'Invalid notes content' });
-        } else {
-          sanitizedData.notes = notesValidation.sanitizedText || undefined;
-        }
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-      sanitizedData
-    };
-  }
 
   /**
    * Validate and sanitize update data
@@ -555,65 +459,6 @@ export class SavedTranslationService {
     }
   }
 
-  /**
-   * Create a new saved translation
-   */
-  async createSavedTranslation(
-    request: CreateSavedTranslationRequest,
-    userId: string
-  ): DatabaseSavedTranslationWithDetailsPromise {
-    // Validate and sanitize input data
-    const validation = SavedTranslationService.validateCreateSavedTranslationData(request, userId);
-    if (!validation.isValid) {
-      const errorMessage = validation.errors.map(e => `${e.field}: ${e.message}`).join(', ');
-      throw new Error(`Validation failed: ${errorMessage}`);
-    }
-
-    const sanitizedRequest = validation.sanitizedData;
-
-    // Get language and difficulty level IDs from codes
-    const [fromLanguage, toLanguage, difficultyLevel] = await Promise.all([
-      this.getLanguageByCode(sanitizedRequest.from_language_code),
-      this.getLanguageByCode(sanitizedRequest.to_language_code),
-      this.getDifficultyLevelByCode(sanitizedRequest.difficulty_level_code),
-    ]);
-
-    if (!fromLanguage) {
-      throw new Error(`Language not found: ${sanitizedRequest.from_language_code}`);
-    }
-    if (!toLanguage) {
-      throw new Error(`Language not found: ${sanitizedRequest.to_language_code}`);
-    }
-    if (!difficultyLevel) {
-      throw new Error(`Difficulty level not found: ${sanitizedRequest.difficulty_level_code}`);
-    }
-
-    const result = await supabase
-      .from('saved_translations')
-      .insert({
-        user_id: userId,
-        from_text: sanitizedRequest.from_text,
-        to_text: sanitizedRequest.to_text,
-        from_language_id: fromLanguage.id,
-        to_language_id: toLanguage.id,
-        difficulty_level_id: difficultyLevel.id,
-        title: sanitizedRequest.title,
-        notes: sanitizedRequest.notes,
-      })
-      .select(`
-        *,
-        from_language:languages!saved_translations_from_language_id_fkey(*),
-        to_language:languages!saved_translations_to_language_id_fkey(*),
-        difficulty_level:difficulty_levels!saved_translations_difficulty_level_id_fkey(*)
-      `)
-      .single();
-
-    if (result.error) {
-      throw new Error(`Failed to create saved translation: ${result.error.message}`);
-    }
-
-    return result.data as DatabaseSavedTranslationWithDetails;
-  }
 
   /**
    * Get all saved translations for a user with optional filters
