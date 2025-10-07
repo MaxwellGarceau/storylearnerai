@@ -35,6 +35,7 @@ interface WordMenuProps {
 const WordMenu: React.FC<WordMenuProps> = ({
   children,
   open,
+  targetWord,
   onOpenChange,
   onTranslate,
   fromLanguage,
@@ -69,7 +70,8 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
   const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
   const isDisplayingFromSide = ctx?.isDisplayingFromSide ?? true;
-  const effectiveOppositeWord = fromWord; // Conditionally displays if translation is clicked
+  // Show overlay only when this token has been translated (parent passes targetWord when translated)
+  const effectiveOppositeWord = targetWord;
   const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(toWord) ?? false;
   const effectiveIsTranslating =
     isTranslating ?? ctx?.isTranslatingWord?.(toWord) ?? false;
