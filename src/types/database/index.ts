@@ -181,6 +181,51 @@ export interface Database {
           updated_at?: string;
         };
       };
+      // Translation tokens
+      translation_tokens: {
+        Row: {
+          id: number;
+          translation_id: number; // Foreign key reference to saved_translations.id
+          token_index: number;
+          token_type: string; // 'word', 'punctuation', 'whitespace'
+          to_word: NullableString;
+          to_lemma: NullableString;
+          from_word: NullableString;
+          from_lemma: NullableString;
+          pos: NullableString; // part of speech
+          difficulty: NullableString;
+          from_definition: NullableString;
+          token_value: NullableString;
+        };
+        Insert: {
+          id?: number;
+          translation_id: number; // Foreign key reference to saved_translations.id
+          token_index: number;
+          token_type: string; // 'word', 'punctuation', 'whitespace'
+          to_word?: NullableString;
+          to_lemma?: NullableString;
+          from_word?: NullableString;
+          from_lemma?: NullableString;
+          pos?: NullableString; // part of speech
+          difficulty?: NullableString;
+          from_definition?: NullableString;
+          token_value?: NullableString;
+        };
+        Update: {
+          id?: number;
+          translation_id?: number; // Foreign key reference to saved_translations.id
+          token_index?: number;
+          token_type?: string; // 'word', 'punctuation', 'whitespace'
+          to_word?: NullableString;
+          to_lemma?: NullableString;
+          from_word?: NullableString;
+          from_lemma?: NullableString;
+          pos?: NullableString; // part of speech
+          difficulty?: NullableString;
+          from_definition?: NullableString;
+          token_value?: NullableString;
+        };
+      };
     };
     Views: {
       [_ in never]: never;

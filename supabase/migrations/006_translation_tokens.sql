@@ -1,7 +1,7 @@
 -- Token sequence table (preserves order)
 CREATE TABLE IF NOT EXISTS translation_tokens (
     id SERIAL PRIMARY KEY,
-    translation_id INTEGER NOT NULL REFERENCES translations(id) ON DELETE CASCADE,
+    translation_id INTEGER NOT NULL REFERENCES saved_translations(id) ON DELETE CASCADE,
     token_index INTEGER NOT NULL,  -- Critical for order preservation
     token_type VARCHAR(20) NOT NULL,  -- 'word', 'punctuation', 'whitespace'
     

@@ -55,11 +55,14 @@ export type TranslationTokenInput =
   | PunctuationOrWhitespaceTokenInput;
 
 export interface SaveTranslationParams {
+  userId: string;
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
   originalText: string;
   translatedText: string;
-  difficultyLevel?: string; // e.g., a1, a2, b1, b2 (optional in schema)
+  difficultyLevel: string; // e.g., a1, a2, b1, b2 (required in new schema)
+  title?: string;
+  notes?: string;
   tokens: TranslationTokenInput[];
 }
 
@@ -82,12 +85,15 @@ export type LoadedNonWordToken = {
 export type LoadedTranslationToken = LoadedWordToken | LoadedNonWordToken;
 
 export interface LoadedTranslation {
-  id: string;
-  from_language: LanguageCode;
-  to_language: LanguageCode;
+  id: number;
+  user_id: string;
+  from_language_id: number;
+  to_language_id: number;
   original_text: string;
   translated_text: string;
-  difficulty_level?: string | null;
+  difficulty_level_id: number;
+  title?: string | null;
+  notes?: string | null;
   created_at: string;
   updated_at: string;
   tokens: LoadedTranslationToken[];
@@ -97,22 +103,42 @@ export class SavedTranslationService {
 
   /**
    * Save a translation and its token stream using the new schema:
-   * - Insert into translations
+   * - Insert into saved_translations
    * - Insert ordered tokens into translation_tokens
    * Returns the created translation id
    */
-  async saveTranslationWithTokens(params: SaveTranslationParams): Promise<string> {
-    const { fromLanguage, toLanguage, originalText, translatedText, difficultyLevel, tokens } = params;
+  async saveTranslationWithTokens(params: SaveTranslationParams): Promise<number> {
+    const { userId, fromLanguage, toLanguage, originalText, translatedText, difficultyLevel, title, notes, tokens } = params;
+
+    // Get language and difficulty level IDs from codes
+    const [fromLanguageData, toLanguageData, difficultyLevelData] = await Promise.all([
+      this.getLanguageByCode(fromLanguage),
+      this.getLanguageByCode(toLanguage),
+      this.getDifficultyLevelByCode(difficultyLevel),
+    ]);
+
+    if (!fromLanguageData) {
+      throw new Error(`Language not found: ${fromLanguage}`);
+    }
+    if (!toLanguageData) {
+      throw new Error(`Language not found: ${toLanguage}`);
+    }
+    if (!difficultyLevelData) {
+      throw new Error(`Difficulty level not found: ${difficultyLevel}`);
+    }
 
     // 1) Insert main translation
     const insertResult = await supabase
-      .from('translations')
+      .from('saved_translations')
       .insert({
-        from_language: fromLanguage,
-        to_language: toLanguage,
+        user_id: userId,
+        from_language_id: fromLanguageData.id,
+        to_language_id: toLanguageData.id,
         original_text: originalText,
         translated_text: translatedText,
-        difficulty_level: difficultyLevel,
+        difficulty_level_id: difficultyLevelData.id,
+        title: title,
+        notes: notes,
       })
       .select('id')
       .single();
@@ -121,7 +147,7 @@ export class SavedTranslationService {
       throw new Error(`Failed to create translation: ${insertResult.error?.message ?? 'unknown error'}`);
     }
 
-    const translationId = insertResult.data.id as string;
+    const translationId = insertResult.data.id as number;
 
     if (!Array.isArray(tokens) || tokens.length === 0) {
       return translationId; // no tokens to insert
@@ -175,10 +201,10 @@ export class SavedTranslationService {
   /**
    * Load a translation and its ordered token stream and rehydrate token objects
    */
-  async loadTranslationWithTokens(translationId: string): Promise<LoadedTranslation | null> {
+  async loadTranslationWithTokens(translationId: number): Promise<LoadedTranslation | null> {
     // 1) Load main translation
     const translationResult = await supabase
-      .from('translations')
+      .from('saved_translations')
       .select('*')
       .eq('id', translationId)
       .single();
@@ -191,12 +217,15 @@ export class SavedTranslationService {
     }
 
     const translationRow = translationResult.data as unknown as {
-      id: string;
-      from_language: LanguageCode;
-      to_language: LanguageCode;
+      id: number;
+      user_id: string;
+      from_language_id: number;
+      to_language_id: number;
       original_text: string;
       translated_text: string;
-      difficulty_level?: string | null;
+      difficulty_level_id: number;
+      title?: string | null;
+      notes?: string | null;
       created_at: string;
       updated_at: string;
     };
@@ -233,11 +262,14 @@ export class SavedTranslationService {
 
     return {
       id: translationRow.id,
-      from_language: translationRow.from_language,
-      to_language: translationRow.to_language,
+      user_id: translationRow.user_id,
+      from_language_id: translationRow.from_language_id,
+      to_language_id: translationRow.to_language_id,
       original_text: translationRow.original_text,
       translated_text: translationRow.translated_text,
-      difficulty_level: translationRow.difficulty_level ?? null,
+      difficulty_level_id: translationRow.difficulty_level_id,
+      title: translationRow.title ?? null,
+      notes: translationRow.notes ?? null,
       created_at: translationRow.created_at,
       updated_at: translationRow.updated_at,
       tokens: reconstructedTokens,
