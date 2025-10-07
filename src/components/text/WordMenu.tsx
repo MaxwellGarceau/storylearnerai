@@ -17,7 +17,8 @@ import type { WordMetadata } from './interactiveText/WordToken';
 
 interface WordMenuProps {
   children: React.ReactNode;
-  word: string;
+  word: string; // Word to display in menu
+  dictionaryWord?: string; // Word to use for dictionary lookup (from_lemma)
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onTranslate?: (word: string) => void;
@@ -34,6 +35,7 @@ interface WordMenuProps {
 const WordMenu: React.FC<WordMenuProps> = ({
   children,
   word,
+  dictionaryWord,
   open,
   onOpenChange,
   onTranslate,
@@ -69,14 +71,21 @@ const WordMenu: React.FC<WordMenuProps> = ({
     isTranslating ?? ctx?.isTranslatingWord?.(word) ?? false;
 
   // Search for word info when dictionary is shown
+  // Use dictionaryWord (from_lemma) if available, otherwise fall back to word
+  const wordForDictionary = dictionaryWord ?? word;
+  
   useEffect(() => {
     if (showDictionary && open) {
-      void searchWord(word, effectiveFromLanguage, effectiveTargetLanguage);
+      void searchWord(
+        wordForDictionary,
+        effectiveFromLanguage,
+        effectiveTargetLanguage
+      );
     }
   }, [
     showDictionary,
     open,
-    word,
+    wordForDictionary,
     effectiveFromLanguage,
     effectiveTargetLanguage,
     searchWord,
@@ -265,7 +274,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 </div>
               </div>
               <DictionaryEntry.Root
-                word={word}
+                word={wordForDictionary}
                 wordInfo={wordInfo}
                 isLoading={isLoading}
                 error={error}

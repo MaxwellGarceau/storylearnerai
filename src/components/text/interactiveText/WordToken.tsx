@@ -19,6 +19,7 @@ export interface WordMetadata {
 interface WordTokenProps {
   actionWordNormalized: string;
   cleanWord: string;
+  displayWord?: string; // Word to display in menu (to_word)
   punctuation: string;
   isOpen: boolean;
   isSaved: boolean;
@@ -42,6 +43,7 @@ interface WordTokenProps {
 const WordToken: React.FC<WordTokenProps> = ({
   actionWordNormalized,
   cleanWord,
+  displayWord,
   punctuation,
   isOpen,
   isSaved,
@@ -112,7 +114,8 @@ const WordToken: React.FC<WordTokenProps> = ({
   return (
     <span>
       <WordMenu
-        word={inclusionCheckWord}
+        word={displayWord ?? cleanWord}
+        dictionaryWord={wordMetadata?.from_lemma ?? inclusionCheckWord}
         open={isOpen}
         onOpenChange={onOpenChange}
         onTranslate={() => {

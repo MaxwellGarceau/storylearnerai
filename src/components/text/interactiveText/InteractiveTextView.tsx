@@ -59,7 +59,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
 
         // Word token with rich metadata
         const wordToken = token;
-        const normalizedFromWord = wordToken.to_lemma; // Use lemma for normalization
+        const normalizedFromWord = wordToken.to_lemma; // Use lemma for normalization/lookups
+        const displayWord = wordToken.to_word; // Use actual word for display
         const cleanWord = wordToken.to_word;
         const overlayTranslatedTargetWord =
           getOverlayOppositeWord(normalizedFromWord);
@@ -82,6 +83,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
             <WordToken
               actionWordNormalized={normalizedWordForProps}
               inclusionCheckWord={normalizedFromWord}
+              displayWord={displayWord} // Display to_word in menu
               cleanWord={cleanWord}
               punctuation='' // No trailing punctuation in new structure
               isOpen={open}
