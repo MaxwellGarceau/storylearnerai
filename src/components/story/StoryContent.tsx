@@ -15,7 +15,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
 }) => {
   const displayText = showFrom
     ? translationData.fromText
-    : translationData.targetText;
+    : translationData.toText;
 
   // Keep canonical language orientation for saving/lookups
   const fromLanguage = translationData.fromLanguage;

@@ -62,7 +62,7 @@ const StoryReaderPage: React.FC = () => {
 
             const response: TranslationResponse = {
               fromText: saved.original_text,
-              targetText: saved.translated_text,
+              toText: saved.translated_text,
               tokens,
               fromLanguage: saved.from_language.code,
               toLanguage: saved.to_language.code,

@@ -57,7 +57,7 @@ vi.mock('../../components/story/StoryContainer', () => ({
         onClick={() =>
           onStoryTranslated({
             fromText: 'Test story',
-            targetText: 'Translated test story',
+            toText: 'Translated test story',
             fromLanguage: 'Spanish',
             toLanguage: 'en',
             difficulty: 'Intermediate',
@@ -116,7 +116,7 @@ describe('TranslatePage', () => {
         state: {
           translationData: {
             fromText: 'Test story',
-            targetText: 'Translated test story',
+            toText: 'Translated test story',
             fromLanguage: 'Spanish',
             toLanguage: 'en',
             difficulty: 'Intermediate',

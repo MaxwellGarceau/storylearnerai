@@ -4,7 +4,7 @@ import { FallbackTokenGenerator } from '../../lib/llm/fallbackTokenGenerator';
 // Test translation data for walkthrough testing
 export const testWalkthroughTranslationData: TranslationResponse = {
   fromText: 'Esta es una historia de prueba para el walkthrough.',
-  targetText: 'This is a test story for the walkthrough.',
+  toText: 'This is a test story for the walkthrough.',
   tokens: FallbackTokenGenerator.generateTokens(
     'This is a test story for the walkthrough.'
   ),

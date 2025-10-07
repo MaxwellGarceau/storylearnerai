@@ -91,7 +91,7 @@ describe('StoryContainer Component', () => {
   it('renders StoryRender with translation data when a story is submitted', async () => {
     const mockTranslationResponse: TranslationResponse = {
       fromText: 'Esta es una historia de prueba.',
-      targetText: 'This is a test story.',
+      toText: 'This is a test story.',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a1',
@@ -283,7 +283,7 @@ describe('StoryContainer Component', () => {
   it('calls translation service with correct parameters', async () => {
     const mockTranslationResponse: TranslationResponse = {
       fromText: 'Test story',
-      targetText: 'Translated story',
+      toText: 'Translated story',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'b1',

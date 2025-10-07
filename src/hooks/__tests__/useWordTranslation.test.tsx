@@ -6,7 +6,7 @@ vi.mock('../useToast', () => ({ useToast: () => ({ toast: vi.fn() }) }));
 
 vi.mock('../../lib/translationService', () => ({
   translationService: {
-    translate: vi.fn(() => Promise.resolve({ targetText: 'hola' })),
+    translate: vi.fn(() => Promise.resolve({ toText: 'hola' })),
     targetWordWithContext: vi.fn(() => Promise.resolve({ targetWord: 'hola' })),
   },
 }));

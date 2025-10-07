@@ -21,8 +21,8 @@ export function useTranslationCache(args: {
   );
 
   const setWordTranslation = useCallback(
-    (normalizedWord: string, targetText: string) => {
-      setTargetWords(prev => new Map(prev).set(normalizedWord, targetText));
+    (normalizedWord: string, toText: string) => {
+      setTargetWords(prev => new Map(prev).set(normalizedWord, toText));
     },
     []
   );
@@ -48,14 +48,14 @@ export function useTranslationCache(args: {
           }
         }
 
-        const targetText = await targetWordInSentence(
+        const toText = await targetWordInSentence(
           normalizedWord,
           sentenceContext,
           targetLanguage,
           fromLanguage
         );
-        if (targetText) {
-          setTargetWords(prev => new Map(prev).set(normalizedWord, targetText));
+        if (toText) {
+          setTargetWords(prev => new Map(prev).set(normalizedWord, toText));
         }
       } finally {
         setTranslatingWords(prev => {

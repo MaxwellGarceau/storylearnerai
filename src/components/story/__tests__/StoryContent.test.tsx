@@ -28,7 +28,7 @@ vi.mock('../../../lib/config/env', () => ({
 describe('StoryContent Component', () => {
   const mockTranslationData: TranslationResponse = {
     fromText: 'Hola mundo',
-    targetText: 'Hello world',
+    toText: 'Hello world',
     fromLanguage: 'es',
     toLanguage: 'en',
     difficulty: 'a1',
@@ -79,7 +79,7 @@ describe('StoryContent Component', () => {
     const multilineTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: 'Primera línea.\n\nSegunda línea.',
-      targetText: 'First line.\n\nSecond line.',
+      toText: 'First line.\n\nSecond line.',
     };
 
     const { container } = renderWithRouter(
@@ -98,7 +98,7 @@ describe('StoryContent Component', () => {
     const emptyTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: '',
-      targetText: '',
+      toText: '',
     };
 
     const { container: targetContainer } = renderWithRouter(
@@ -122,7 +122,7 @@ describe('StoryContent Component', () => {
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      targetText: longText,
+      toText: longText,
     };
 
     const { container } = renderWithRouter(
@@ -138,7 +138,7 @@ describe('StoryContent Component', () => {
       ...mockTranslationData,
       fromText:
         'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
-      targetText:
+      toText:
         'Once upon a time there was a boy who lived in Spain... What an exciting story!',
     };
 
@@ -199,14 +199,14 @@ describe('StoryContent Component', () => {
     const shortTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: 'Corto.',
-      targetText: 'Short.',
+      toText: 'Short.',
     };
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText:
         'Esta es una historia muy larga que contiene múltiples párrafos y líneas de texto para probar el comportamiento del componente.',
-      targetText:
+      toText:
         'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
     };
 

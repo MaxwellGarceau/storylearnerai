@@ -99,7 +99,7 @@ export default function SaveTranslationButton({
   };
 
   const handleSave = async () => {
-    if (!translationData.targetText) {
+    if (!translationData.toText) {
       setError('No translated text available to save');
       return;
     }
@@ -128,7 +128,7 @@ export default function SaveTranslationButton({
 
       const result = await createSavedTranslation({
         original_text: fromStory,
-        translated_text: translationData.targetText,
+        translated_text: translationData.toText,
         from_language_code: fromLanguageCode,
         to_language_code: targetLanguageCode,
         difficulty_level_code: difficultyLevel,

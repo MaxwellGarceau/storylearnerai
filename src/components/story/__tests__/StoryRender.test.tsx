@@ -31,7 +31,7 @@ vi.mock('../StoryContent', () => ({
     <div data-testid='story-content'>
       <div>Content - showFrom: {showFrom.toString()}</div>
       <div>
-        {showFrom ? translationData.fromText : translationData.targetText}
+        {showFrom ? translationData.fromText : translationData.toText}
       </div>
     </div>
   ),
@@ -39,7 +39,7 @@ vi.mock('../StoryContent', () => ({
 
 const mockTranslationData: TranslationResponse = {
   fromText: 'Esta es una historia de prueba.',
-  targetText: 'This is a test story.',
+  toText: 'This is a test story.',
   fromLanguage: 'Spanish',
   toLanguage: 'en',
   difficulty: 'a1',
@@ -226,7 +226,7 @@ describe('StoryRender Component', () => {
   it('handles empty translation data gracefully', () => {
     const emptyTranslationData: TranslationResponse = {
       fromText: '',
-      targetText: '',
+      toText: '',
       fromLanguage: 'Spanish',
       toLanguage: 'en',
       difficulty: 'a1',

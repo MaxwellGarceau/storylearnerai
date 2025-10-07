@@ -42,7 +42,7 @@ vi.mock('../../../hooks/useDifficultyLevels', () => ({
 
 const mockTranslationData: TranslationResponse = {
   fromText: 'Esta es una historia de prueba.',
-  targetText: 'This is a test story.',
+  toText: 'This is a test story.',
   fromLanguage: 'es',
   toLanguage: 'en',
   difficulty: 'a1',

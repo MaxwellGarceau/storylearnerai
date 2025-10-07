@@ -108,7 +108,7 @@ export default function SavedTranslationsList() {
 
     return {
       fromText: savedTranslation.original_text,
-      targetText: savedTranslation.translated_text,
+      toText: savedTranslation.translated_text,
       tokens,
       fromLanguage: savedTranslation.from_language.code,
       toLanguage: savedTranslation.to_language.code,

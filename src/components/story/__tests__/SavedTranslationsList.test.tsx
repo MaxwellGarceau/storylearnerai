@@ -215,7 +215,7 @@ describe('SavedTranslationsList', () => {
         state: expect.objectContaining({
           translationData: expect.objectContaining({
             fromText: 'Hola mundo',
-            targetText: 'Hello world',
+            toText: 'Hello world',
             fromLanguage: 'es',
             toLanguage: 'en',
             difficulty: 'a1',

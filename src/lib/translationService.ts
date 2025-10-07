@@ -23,7 +23,7 @@ export interface TranslationRequest {
 
 export interface TranslationResponse {
   fromText: string;
-  targetText: string;
+  toText: string;
   tokens: TranslationToken[]; // Structured tokens with metadata
   fromLanguage: LanguageCode;
   toLanguage: LanguageCode;
@@ -116,7 +116,7 @@ class TranslationService {
 
         return {
           fromText: request.text,
-          targetText: translationWithTokens.translation,
+          toText: translationWithTokens.translation,
           tokens: translationWithTokens.tokens,
           fromLanguage: request.fromLanguage,
           toLanguage: request.toLanguage,
@@ -133,7 +133,7 @@ class TranslationService {
 
       return {
         fromText: request.text,
-        targetText: translationWithTokens.translation,
+        toText: translationWithTokens.translation,
         tokens: translationWithTokens.tokens,
         fromLanguage: request.fromLanguage,
         toLanguage: request.toLanguage,
@@ -330,7 +330,7 @@ class TranslationService {
 
     return {
       fromText: request.text,
-      targetText: mockTranslation,
+      toText: mockTranslation,
       tokens,
       fromLanguage: request.fromLanguage,
       toLanguage: request.toLanguage,
@@ -378,7 +378,7 @@ class TranslationService {
   ): { includedVocabulary: string[]; missingVocabulary: string[] } {
     logger.info('translation', 'Analyzing vocabulary inclusion', {
       vocabularyWords: targetLanguageVocabularyWords,
-      targetTextLength: targetLanguageTranslatedText.length,
+      toTextLength: targetLanguageTranslatedText.length,
     });
     if (
       !targetLanguageVocabularyWords ||

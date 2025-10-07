@@ -145,7 +145,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       state: {
         translationData: {
           fromText: saved.original_text,
-          targetText: saved.translated_text,
+          toText: saved.translated_text,
           difficulty: saved.difficulty_level.code,
           fromLanguage: saved.from_language.code,
           toLanguage: saved.to_language.code,
