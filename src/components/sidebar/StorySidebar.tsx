@@ -13,7 +13,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
-import { FallbackTokenGenerator } from '../../lib/llm/fallbackTokenGenerator';
+import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
+import { TokenConverter } from '../../lib/llm/tokenConverter';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';
@@ -141,26 +142,42 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   };
 
-  const openSavedTranslation = (saved: DatabaseSavedTranslationWithDetails) => {
-    // Generate fallback tokens for saved translations
-    const tokens = FallbackTokenGenerator.generateTokens(saved.to_text);
-    
-    void navigate(`/story?id=${saved.id}`, {
-      state: {
-        translationData: {
-          fromText: saved.from_text,
-          toText: saved.to_text,
-          tokens,
-          fromLanguage: saved.from_language.code,
-          toLanguage: saved.to_language.code,
-          difficulty: saved.difficulty_level.code,
-          provider: 'saved',
-          model: 'saved-translation',
-        },
-        isSavedStory: true,
-        savedTranslationId: saved.id,
-      },
-    });
+  const openSavedTranslation = async (saved: DatabaseSavedTranslationWithDetails) => {
+    try {
+      // Load the full translation with tokens from the database
+      const service = new SavedTranslationService();
+      const savedTranslation = await service.loadTranslationWithTokens(saved.id);
+      
+      if (savedTranslation) {
+        // Convert loaded tokens to TranslationToken format
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslation.tokens);
+        
+        void navigate(`/story?id=${saved.id}`, {
+          state: {
+            translationData: {
+              fromText: savedTranslation.from_text,
+              toText: savedTranslation.to_text,
+              tokens,
+              fromLanguage: savedTranslation.from_language.code,
+              toLanguage: savedTranslation.to_language.code,
+              difficulty: savedTranslation.difficulty_level.code,
+              provider: 'saved',
+              model: 'saved-translation',
+            },
+            isSavedStory: true,
+            savedTranslationId: saved.id,
+          },
+        });
+      } else {
+        logger.error('ui', 'Failed to load saved translation with tokens', { translationId: saved.id });
+        // Fallback to basic navigation without tokens
+        void navigate(`/story?id=${saved.id}`);
+      }
+    } catch (error) {
+      logger.error('ui', 'Error loading saved translation with tokens', { error, translationId: saved.id });
+      // Fallback to basic navigation without tokens
+      void navigate(`/story?id=${saved.id}`);
+    }
   };
 
   const getDifficultyColor = (difficulty: DifficultyLevel) => {
