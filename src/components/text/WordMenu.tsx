@@ -15,6 +15,10 @@ import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
 import type { WordMetadata } from './interactiveText/WordToken';
 
+// TODO: mgarceau 2025-10-07
+// Refactor WordMenu to eliminate redundant props (e.g., targetWord. wordMetaData is the source of truth).
+// Currently, saved target words are tracked via useTranslationCache (see src/hooks/interactiveText/useTranslationCache.ts).
+// Consider centralizing state management, possibly using a story-level context for cleaner data flow.
 interface WordMenuProps {
   children: React.ReactNode;
   word: string; // Word to display in menu
