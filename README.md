@@ -1,6 +1,10 @@
 # StoryLearnerAI
 
-An AI-powered language learning application that helps users learn new languages through interactive stories and translations.
+An AI-powered language learning application that helps users learn new languages by adapting target learning material to their level of comprehensible input.
+
+_Under construction, but get a sneak peak of the alpha verison =)_
+
+https://github.com/user-attachments/assets/98020bd1-0614-49dd-9f30-d9dbd2070ecd
 
 ## Features
 
