@@ -335,64 +335,6 @@ export class SavedTranslationService {
     };
   }
 
-  /**
-   * Get all languages
-   */
-  async getLanguages(): Promise<DatabaseLanguage[]> {
-    const { data, error } = await supabase
-      .from('languages')
-      .select('*')
-      .order('name');
-
-    if (error) {
-      throw new Error(`Failed to fetch languages: ${error.message}`);
-    }
-
-    const rows = (data as Database['public']['Tables']['languages']['Row'][]) ?? []
-    return rows.map(r => {
-      const native: NativeLanguageName = (r.native_name ?? (r.code === 'en' ? 'English' : 'Español')) as NativeLanguageName
-      return {
-        id: r.id,
-        code: r.code,
-        name: r.name as EnglishLanguageName,
-        native_name: native,
-        created_at: r.created_at,
-      }
-    })
-  }
-
-  /**
-   * Get all difficulty levels
-   */
-  async getDifficultyLevels(): Promise<DatabaseDifficultyLevel[]> {
-    const { data, error } = await supabase
-      .from('difficulty_levels')
-      .select('*')
-      .order('name');
-
-    if (error) {
-      throw new Error(`Failed to fetch difficulty levels: ${error.message}`);
-    }
-
-    const rows = (data as Database['public']['Tables']['difficulty_levels']['Row'][]) ?? []
-    const displayMap: Partial<Record<DifficultyLevelCode, DifficultyLevelDisplay>> = {
-      a1: 'A1 (Beginner)',
-      a2: 'A2 (Elementary)',
-      b1: 'B1 (Intermediate)',
-      b2: 'B2 (Upper Intermediate)',
-    }
-    return rows.map(r => {
-      const display: DifficultyLevelDisplay =
-        (r.name as DifficultyLevelDisplay) ?? displayMap[r.code]
-      return {
-        id: r.id,
-        code: r.code,
-        name: display,
-        description: r.description,
-        created_at: r.created_at,
-      }
-    })
-  }
 
   /**
    * Get a language by its code
