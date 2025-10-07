@@ -2,15 +2,23 @@
 CREATE TABLE IF NOT EXISTS saved_translations (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    from_language_id INTEGER NOT NULL REFERENCES languages(id),
-    to_language_id INTEGER NOT NULL REFERENCES languages(id),
+    from_language_id INTEGER NOT NULL,
+    to_language_id INTEGER NOT NULL,
     original_text TEXT NOT NULL,
     translated_text TEXT NOT NULL,
-    difficulty_level_id INTEGER NOT NULL REFERENCES difficulty_levels(id),
+    difficulty_level_id INTEGER NOT NULL,
     title VARCHAR(255), -- Optional title for the saved translation
     notes TEXT, -- Optional user notes
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    -- Foreign key constraints with explicit names
+    CONSTRAINT saved_translations_from_language_id_fkey 
+        FOREIGN KEY (from_language_id) REFERENCES languages(id),
+    CONSTRAINT saved_translations_to_language_id_fkey 
+        FOREIGN KEY (to_language_id) REFERENCES languages(id),
+    CONSTRAINT saved_translations_difficulty_level_id_fkey 
+        FOREIGN KEY (difficulty_level_id) REFERENCES difficulty_levels(id)
 );
 
 -- Indexes for performance
