@@ -14,22 +14,26 @@ import {
 } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Alert } from '../components/ui/Alert';
-import { BookOpen, Plus, User as UserIcon, Globe, Loader2 } from 'lucide-react';
+import { BookOpen, Plus, User as UserIcon, Globe, Loader2, Trash2 } from 'lucide-react';
 import type { DatabaseUser } from '../types/database/user';
 import type { NullableString } from '../types/common';
 import { useTranslation } from 'react-i18next';
+import { DeleteTranslationModal } from '../components/story/DeleteTranslationModal';
+import type { DatabaseSavedTranslationWithDetails } from '../types/database';
 
 // Removed fallback guard; native_language is enforced as NOT NULL in DB
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const { getLanguageName } = useLanguages();
-  const { savedTranslations, loading: isLoadingSavedTranslations } =
+  const { savedTranslations, loading: isLoadingSavedTranslations, deleteSavedTranslation } =
     useSavedTranslations();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<NullableString>(null);
   const [profile, setProfile] = useState<DatabaseUser | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [translationToDelete, setTranslationToDelete] = useState<DatabaseSavedTranslationWithDetails | null>(null);
   const { t } = useTranslation();
 
   const loadDashboardData = useCallback(async () => {
@@ -64,6 +68,28 @@ export const DashboardPage: React.FC = () => {
       setLoading(false);
     }
   }, [user, loadDashboardData]);
+
+  const handleDeleteClick = (translation: DatabaseSavedTranslationWithDetails) => {
+    setTranslationToDelete(translation);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (): Promise<boolean> => {
+    if (!translationToDelete) return false;
+    
+    try {
+      const success = await deleteSavedTranslation(translationToDelete.id);
+      return success;
+    } catch (err) {
+      console.error('Failed to delete translation:', err);
+      return false;
+    }
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+    setTranslationToDelete(null);
+  };
 
   if (loading) {
     return (
@@ -253,20 +279,40 @@ export const DashboardPage: React.FC = () => {
               {savedTranslations.slice(0, 3).map((translation) => (
                 <Card
                   key={translation.id}
-                  className='hover:shadow-md transition-shadow cursor-pointer'
-                  onClick={() => navigate(`/story?id=${translation.id}`)}
+                  className='hover:shadow-md transition-shadow'
                 >
                   <CardHeader className='pb-2'>
                     <div className='flex items-start justify-between'>
-                      <CardTitle className='text-base leading-tight'>
-                        {translation.title ?? t('dashboard.recentActivity.untitledStory')}
-                      </CardTitle>
-                      <Badge variant='secondary' className='text-xs'>
-                        {getLanguageName(translation.from_language.code)} → {getLanguageName(translation.to_language.code)}
-                      </Badge>
+                      <div 
+                        className='flex-1 cursor-pointer'
+                        onClick={() => navigate(`/story?id=${translation.id}`)}
+                      >
+                        <CardTitle className='text-base leading-tight'>
+                          {translation.title ?? t('dashboard.recentActivity.untitledStory')}
+                        </CardTitle>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <Badge variant='secondary' className='text-xs'>
+                          {getLanguageName(translation.from_language.code)} → {getLanguageName(translation.to_language.code)}
+                        </Badge>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(translation);
+                          }}
+                          className='h-6 w-6 p-0'
+                        >
+                          <Trash2 className='h-3 w-3' />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent className='pt-0'>
+                  <CardContent 
+                    className='pt-0 cursor-pointer'
+                    onClick={() => navigate(`/story?id=${translation.id}`)}
+                  >
                     <p className='text-sm text-muted-foreground line-clamp-2'>
                       {translation.from_text.substring(0, 100)}...
                     </p>
@@ -300,6 +346,14 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteTranslationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        translation={translationToDelete}
+      />
     </div>
   );
 };
