@@ -56,7 +56,6 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   // Translation cache and handler
   const {
     targetWords,
-    targetSentences,
     translatingWords,
     setWordTranslation,
     handleTranslate,
@@ -66,8 +65,6 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     translateAllLemmaInstances,
   } = useTranslationCache({
     extractSentenceContext,
-    fromLanguage,
-    targetLanguage,
     tokens,
   });
 
@@ -128,7 +125,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     if (metadata?.from_word) {
       setWordTranslation(w, metadata.from_word, segmentIndex);
       // Also translate all other instances of this lemma
-      void translateAllLemmaInstances(w);
+      translateAllLemmaInstances(w);
       return;
     }
 
@@ -137,7 +134,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     if (savedByFrom?.target_word) {
       setWordTranslation(w, savedByFrom.target_word, segmentIndex);
       // Also translate all other instances of this lemma
-      void translateAllLemmaInstances(w);
+      translateAllLemmaInstances(w);
       return;
     }
 
@@ -146,7 +143,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     if (savedByTarget?.from_word) {
       setWordTranslation(w, savedByTarget.from_word, segmentIndex);
       // Also translate all other instances of this lemma
-      void translateAllLemmaInstances(w);
+      translateAllLemmaInstances(w);
       return;
     }
 
@@ -169,7 +166,6 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         // expose only existing finders to keep context stable
         findSavedWordData,
         targetWords,
-        targetSentences,
         translatingWords,
         savedTranslationId,
         includedVocabulary,
@@ -193,9 +189,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         getDisplaySentence={(segmentIndex: number) =>
           extractSentenceContext(segmentIndex)
         }
-        getOverlaySentence={(displaySentence: string) =>
-          targetSentences.get(displaySentence)
-        }
+        getOverlaySentence={() => undefined}
         isSaved={(w: string) => isSavedWord(w)}
         getOverlayOppositeWord={(w: string, position?: number) => getOppositeWordFor(w, position)}
         isTranslating={(w: string, position?: number) => isTranslatingWord(w, position)}

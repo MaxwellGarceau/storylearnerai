@@ -9,7 +9,6 @@ export interface InteractiveTextContextValue {
   savedOriginalWords: Set<string>;
   findSavedWordData: (word: string) => { target_word?: string | null } | null;
   targetWords: Map<string, string>;
-  targetSentences: Map<string, string>;
   translatingWords: Set<string>;
   savedTranslationId?: number;
   includedVocabulary: string[];
@@ -22,7 +21,7 @@ export interface InteractiveTextContextValue {
   getTranslationByPosition: (lemma: string, position: number) => string | undefined;
   createPositionKey: (lemma: string, position: number) => string;
   findAllLemmaPositions: (lemma: string) => number[];
-  translateAllLemmaInstances: (lemma: string) => Promise<void>;
+  translateAllLemmaInstances: (lemma: string) => void;
 }
 
 export const InteractiveTextContext =

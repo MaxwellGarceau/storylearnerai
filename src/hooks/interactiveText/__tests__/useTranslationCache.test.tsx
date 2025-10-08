@@ -18,15 +18,13 @@ describe('useTranslationCache', () => {
   it('caches word translations and tracks translating state', async () => {
     const extractSentenceContext = vi.fn(() => 'Hello world.');
     const mockTokens = [
-      { type: 'word', to_lemma: 'hello', from_lemma: 'hello' },
+      { type: 'word', to_lemma: 'hello', from_lemma: 'hello', from_word: 'hola' },
       { type: 'whitespace', value: ' ' },
-      { type: 'word', to_lemma: 'world', from_lemma: 'world' },
+      { type: 'word', to_lemma: 'world', from_lemma: 'world', from_word: 'mundo' },
     ];
     const { result } = renderHook(() =>
       useTranslationCache({
         extractSentenceContext,
-        fromLanguage: 'en',
-        targetLanguage: 'es',
         tokens: mockTokens,
       })
     );
