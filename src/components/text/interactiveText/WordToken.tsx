@@ -38,6 +38,8 @@ interface WordTokenProps {
   disabled: boolean;
   // Optional: Rich metadata from LLM
   wordMetadata?: WordMetadata;
+  // Position in the text for position-based translations
+  position?: number;
 }
 
 const WordToken: React.FC<WordTokenProps> = ({
@@ -60,6 +62,7 @@ const WordToken: React.FC<WordTokenProps> = ({
   enableTooltips,
   disabled,
   wordMetadata,
+  position,
 }) => {
   const ctx = useInteractiveTextContext();
   const isIncludedVocabulary =
@@ -128,7 +131,16 @@ const WordToken: React.FC<WordTokenProps> = ({
         targetSentence={overlaySentenceContext}
         isSaved={isSaved}
         isTranslating={isTranslating}
-        wordMetadata={wordMetadata}
+        wordMetadata={wordMetadata ?? {
+          from_word: '',
+          from_lemma: '',
+          to_word: '',
+          to_lemma: '',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+        }}
+        position={position}
       >
         {overlayOppositeWord ? (
           <span className='relative inline-block align-baseline'>

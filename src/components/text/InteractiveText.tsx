@@ -60,6 +60,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     translatingWords,
     setWordTranslation,
     handleTranslate,
+    getTranslationByPosition,
+    createPositionKey,
   } = useTranslationCache({
     extractSentenceContext,
     fromLanguage,
@@ -68,21 +70,34 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
 
   // Create callbacks before conditional return (hooks must be called unconditionally)
   const getOppositeWordFor = useCallback(
-    (word: string) => {
-      // Try runtime overlay first
+    (word: string, position?: number) => {
+      // Try position-based runtime overlay first if position is provided
+      if (position !== undefined) {
+        const positionBased = getTranslationByPosition(word, position);
+        if (positionBased) return positionBased;
+      }
+      
+      // Try runtime overlay (lemma-based)
       const runtime = targetWords.get(word);
       if (runtime) return runtime;
+      
       // Then try saved reverse lookup (when viewing target-side word)
       const saved = findSavedByTargetWord(word);
       if (saved?.from_word) return saved.from_word;
       return undefined;
     },
-    [targetWords, findSavedByTargetWord]
+    [targetWords, findSavedByTargetWord, getTranslationByPosition]
   );
 
   const isTranslatingWord = useCallback(
-    (word: string) => translatingWords.has(word),
-    [translatingWords]
+    (word: string, position?: number) => {
+      if (position !== undefined) {
+        const positionKey = createPositionKey(word, position);
+        return translatingWords.has(positionKey);
+      }
+      return translatingWords.has(word);
+    },
+    [translatingWords, createPositionKey]
   );
 
   const isSavedWord = useCallback(
@@ -101,26 +116,28 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     segmentIndex: number,
     metadata?: WordMetadata
   ) => {
-    const alreadyRuntime = targetWords.get(w);
+    // Check if we already have a position-based translation
+    const positionKey = createPositionKey(w, segmentIndex);
+    const alreadyRuntime = targetWords.get(positionKey) ?? targetWords.get(w);
     if (alreadyRuntime) return;
 
     // If we have metadata with from_word, use it directly without API call
     if (metadata?.from_word) {
-      setWordTranslation(w, metadata.from_word);
+      setWordTranslation(w, metadata.from_word, segmentIndex);
       return;
     }
 
     // If w is a from-word saved key, inject its target
     const savedByFrom = findSavedWordData(w);
     if (savedByFrom?.target_word) {
-      setWordTranslation(w, savedByFrom.target_word);
+      setWordTranslation(w, savedByFrom.target_word, segmentIndex);
       return;
     }
 
     // If w is a target-word saved key (viewing target side), inject its from word as overlay
     const savedByTarget = findSavedByTargetWord(w);
     if (savedByTarget?.from_word) {
-      setWordTranslation(w, savedByTarget.from_word);
+      setWordTranslation(w, savedByTarget.from_word, segmentIndex);
       return;
     }
 
@@ -151,6 +168,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         isTranslatingWord,
         isSavedWord,
         isIncludedVocabulary,
+        getTranslationByPosition,
+        createPositionKey,
       }}
     >
       <InteractiveTextView
@@ -167,8 +186,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
           targetSentences.get(displaySentence)
         }
         isSaved={(w: string) => isSavedWord(w)}
-        getOverlayOppositeWord={(w: string) => targetWords.get(w)}
-        isTranslating={(w: string) => translatingWords.has(w)}
+        getOverlayOppositeWord={(w: string, position?: number) => getOppositeWordFor(w, position)}
+        isTranslating={(w: string, position?: number) => isTranslatingWord(w, position)}
         onTranslate={handleTranslateWithSavedCheck}
         isDisplayingFromSide={isDisplayingFromSide}
       />

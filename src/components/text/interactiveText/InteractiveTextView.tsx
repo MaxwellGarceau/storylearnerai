@@ -17,8 +17,8 @@ interface InteractiveTextViewProps {
   getDisplaySentence: (segmentIndex: number) => string;
   getOverlaySentence: (displaySentence: string) => string | undefined;
   isSaved: (displayWordNormalized: string) => boolean;
-  getOverlayOppositeWord: (displayWordNormalized: string) => string | undefined;
-  isTranslating: (normalizedWord: string) => boolean;
+  getOverlayOppositeWord: (displayWordNormalized: string, position?: number) => string | undefined;
+  isTranslating: (normalizedWord: string, position?: number) => boolean;
   onTranslate: (
     normalizedWord: string,
     segmentIndex: number,
@@ -73,7 +73,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const cleanWord = displayWord;
         const normalizedWord = displayLemma; // Use lemma for normalization/lookups
         
-        const overlayTranslatedTargetWord = getOverlayOppositeWord(normalizedWord);
+        const overlayTranslatedTargetWord = getOverlayOppositeWord(normalizedWord, idx);
 
         // For TranslationTokens, we don't have segmentIndex, so use idx
         const displaySentence = getDisplaySentence(idx);
@@ -97,7 +97,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               punctuation='' // No trailing punctuation in new structure
               isOpen={open}
               isSaved={saved}
-              isTranslating={isTranslating(normalizedWord)}
+              isTranslating={isTranslating(normalizedWord, idx)}
               overlayOppositeWord={overlayTranslatedTargetWord ?? undefined}
               displaySentenceContext={displaySentence}
               overlaySentenceContext={overlaySentence}
@@ -124,6 +124,7 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
                 difficulty: wordToken.difficulty,
                 from_definition: wordToken.from_definition,
               }}
+              position={idx}
             />
           </span>
         );

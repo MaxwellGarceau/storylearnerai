@@ -34,6 +34,7 @@ interface WordMenuProps {
   isSaved?: boolean;
   isTranslating?: boolean;
   wordMetadata: WordMetadata;
+  position?: number; // Position in text for position-based translations
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
@@ -48,6 +49,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   targetSentence,
   isSaved,
   isTranslating,
+  position,
   wordMetadata: {
     to_word: toWord,
     from_word: fromWord,
@@ -77,7 +79,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
   const effectiveOppositeWord = targetWord;
   const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(toWord) ?? false;
   const effectiveIsTranslating =
-    isTranslating ?? ctx?.isTranslatingWord?.(toWord) ?? false;
+    isTranslating ?? ctx?.isTranslatingWord?.(toWord, position) ?? false;
 
   // Search for word info when dictionary is shown
   // Use dictionaryWord (from_lemma) if available, otherwise fall back to word

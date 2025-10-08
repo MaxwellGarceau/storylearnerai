@@ -10,6 +10,7 @@ export function useTranslationCache(args: {
   const { targetWordInSentence, translateSentence } = useWordTranslation();
   const { extractSentenceContext, fromLanguage, targetLanguage } = args;
 
+  // Position-based translation cache: key = "lemma:position"
   const [targetWords, setTargetWords] = useState<Map<string, string>>(
     new Map()
   );
@@ -20,17 +21,56 @@ export function useTranslationCache(args: {
     new Set()
   );
 
-  const setWordTranslation = useCallback(
-    (normalizedWord: string, toText: string) => {
-      setTargetWords(prev => new Map(prev).set(normalizedWord, toText));
-    },
+  // Helper function to create position-based keys
+  const createPositionKey = useCallback(
+    (lemma: string, position: number) => `${lemma}:${position}`,
     []
+  );
+
+  // Helper function to get translation by position or fallback to lemma
+  const getTranslationByPosition = useCallback(
+    (lemma: string, position: number) => {
+      const positionKey = createPositionKey(lemma, position);
+      return targetWords.get(positionKey) ?? targetWords.get(lemma);
+    },
+    [targetWords, createPositionKey]
+  );
+
+  const setWordTranslation = useCallback(
+    (normalizedWord: string, toText: string, position?: number) => {
+      if (position !== undefined) {
+        const positionKey = createPositionKey(normalizedWord, position);
+        setTargetWords(prev => new Map(prev).set(positionKey, toText));
+      } else {
+        // Fallback to lemma-based key for backward compatibility
+        setTargetWords(prev => new Map(prev).set(normalizedWord, toText));
+      }
+    },
+    [createPositionKey]
   );
 
   const handleTranslate = useCallback(
     async (normalizedWord: string, wordIndex: number) => {
-      if (targetWords.has(normalizedWord)) return;
-      setTranslatingWords(prev => new Set(prev).add(normalizedWord));
+      const positionKey = createPositionKey(normalizedWord, wordIndex);
+      
+      // Check if we already have a translation for this specific position
+      if (targetWords.has(positionKey)) return;
+      
+      // Also check if we have a lemma-based translation (for backward compatibility)
+      if (targetWords.has(normalizedWord)) {
+        // Copy lemma-based translation to position-based key
+        setTargetWords(prev => {
+          const newMap = new Map(prev);
+          const lemmaTranslation = prev.get(normalizedWord);
+          if (lemmaTranslation) {
+            newMap.set(positionKey, lemmaTranslation);
+          }
+          return newMap;
+        });
+        return;
+      }
+      
+      setTranslatingWords(prev => new Set(prev).add(positionKey));
 
       try {
         const sentenceContext = extractSentenceContext(wordIndex);
@@ -55,12 +95,12 @@ export function useTranslationCache(args: {
           fromLanguage
         );
         if (toText) {
-          setTargetWords(prev => new Map(prev).set(normalizedWord, toText));
+          setTargetWords(prev => new Map(prev).set(positionKey, toText));
         }
       } finally {
         setTranslatingWords(prev => {
           const newSet = new Set(prev);
-          newSet.delete(normalizedWord);
+          newSet.delete(positionKey);
           return newSet;
         });
       }
@@ -73,6 +113,7 @@ export function useTranslationCache(args: {
       targetWordInSentence,
       targetLanguage,
       fromLanguage,
+      createPositionKey,
     ]
   );
 
@@ -82,5 +123,7 @@ export function useTranslationCache(args: {
     translatingWords,
     setWordTranslation,
     handleTranslate,
+    getTranslationByPosition,
+    createPositionKey,
   };
 }

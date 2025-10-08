@@ -14,10 +14,13 @@ export interface InteractiveTextContextValue {
   savedTranslationId?: number;
   includedVocabulary: string[];
   // Selector helpers
-  getOppositeWordFor: (word: string) => string | undefined;
-  isTranslatingWord: (word: string) => boolean;
+  getOppositeWordFor: (word: string, position?: number) => string | undefined;
+  isTranslatingWord: (word: string, position?: number) => boolean;
   isSavedWord: (word: string) => boolean;
   isIncludedVocabulary: (word: string) => boolean;
+  // Position-based translation helpers
+  getTranslationByPosition: (lemma: string, position: number) => string | undefined;
+  createPositionKey: (lemma: string, position: number) => string;
 }
 
 export const InteractiveTextContext =
