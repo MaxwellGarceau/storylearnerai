@@ -94,7 +94,7 @@ CRITICAL REQUIREMENTS:
 - If the original {fromLanguage} text uses a different tense/aspect/number than the final translated 'to_word', ADJUST 'from_word' and 'from_definition' to align with the 'to_word'. Example: If the translated token is present tense "ama" (she loves), 'from_word' should be "loves" (present), not "loved" (past)
 - Use standard part-of-speech tags based on the {toLanguage} word's function in the sentence
 - Assign difficulty levels based on the {toLanguage} word complexity and CEFR standards
-- Both 'to_lemma' and 'from_lemma' must be single words only - never return multi-word phrases as lemmas
+- Both 'to_lemma' and 'from_lemma' must be single words only - NEVER RETURN MULTI-WORD PHRASES AS LEMMAS
 - When reconstructing the story by concatenating all tokens in order, it must exactly match the 'translation' field
 - Return ONLY valid JSON, no additional text or markdown formatting`;
 
