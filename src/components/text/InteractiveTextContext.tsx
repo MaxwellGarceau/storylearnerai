@@ -21,6 +21,8 @@ export interface InteractiveTextContextValue {
   // Position-based translation helpers
   getTranslationByPosition: (lemma: string, position: number) => string | undefined;
   createPositionKey: (lemma: string, position: number) => string;
+  findAllLemmaPositions: (lemma: string) => number[];
+  translateAllLemmaInstances: (lemma: string) => Promise<void>;
 }
 
 export const InteractiveTextContext =

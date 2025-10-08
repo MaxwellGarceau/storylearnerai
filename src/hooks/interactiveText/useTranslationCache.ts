@@ -6,6 +6,7 @@ export function useTranslationCache(args: {
   extractSentenceContext: (wordIndex: number) => string;
   fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
+  tokens?: Array<{ to_lemma?: string; from_lemma?: string; type?: string }>; // Add tokens to track all lemma positions
 }) {
   const { targetWordInSentence, translateSentence } = useWordTranslation();
   const { extractSentenceContext, fromLanguage, targetLanguage } = args;
@@ -36,6 +37,22 @@ export function useTranslationCache(args: {
     [targetWords, createPositionKey]
   );
 
+  // Helper function to find all positions where a lemma appears
+  const findAllLemmaPositions = useCallback(
+    (lemma: string) => {
+      if (!args.tokens) return [];
+      const positions: number[] = [];
+      args.tokens.forEach((token, index) => {
+        // Only check word tokens (skip punctuation and whitespace)
+        if (token.type === 'word' && (token.to_lemma === lemma || token.from_lemma === lemma)) {
+          positions.push(index);
+        }
+      });
+      return positions;
+    },
+    [args.tokens]
+  );
+
   const setWordTranslation = useCallback(
     (normalizedWord: string, toText: string, position?: number) => {
       if (position !== undefined) {
@@ -47,6 +64,77 @@ export function useTranslationCache(args: {
       }
     },
     [createPositionKey]
+  );
+
+  // Function to translate all instances of a lemma
+  const translateAllLemmaInstances = useCallback(
+    async (lemma: string) => {
+      const allPositions = findAllLemmaPositions(lemma);
+      
+      // Set translating state for all positions
+      const positionKeys = allPositions.map(pos => createPositionKey(lemma, pos));
+      setTranslatingWords(prev => {
+        const newSet = new Set(prev);
+        positionKeys.forEach(key => newSet.add(key));
+        return newSet;
+      });
+
+      try {
+        // Translate each position individually to get context-specific translations
+        const translationPromises = allPositions.map(async (position) => {
+          // Skip if already translated
+          const positionKey = createPositionKey(lemma, position);
+          if (targetWords.has(positionKey)) return;
+
+          const sentenceContext = extractSentenceContext(position);
+          
+          // Ensure sentence is translated
+          if (!targetSentences.has(sentenceContext)) {
+            const targetSentence = await translateSentence(
+              sentenceContext,
+              targetLanguage,
+              fromLanguage
+            );
+            if (targetSentence) {
+              setTargetSentences(prev =>
+                new Map(prev).set(sentenceContext, targetSentence)
+              );
+            }
+          }
+
+          // Get word-specific translation
+          const toText = await targetWordInSentence(
+            lemma,
+            sentenceContext,
+            targetLanguage,
+            fromLanguage
+          );
+          if (toText) {
+            setTargetWords(prev => new Map(prev).set(positionKey, toText));
+          }
+        });
+
+        await Promise.all(translationPromises);
+      } finally {
+        // Clear translating state for all positions
+        setTranslatingWords(prev => {
+          const newSet = new Set(prev);
+          positionKeys.forEach(key => newSet.delete(key));
+          return newSet;
+        });
+      }
+    },
+    [
+      findAllLemmaPositions,
+      createPositionKey,
+      targetWords,
+      extractSentenceContext,
+      targetSentences,
+      translateSentence,
+      targetWordInSentence,
+      targetLanguage,
+      fromLanguage,
+    ]
   );
 
   const handleTranslate = useCallback(
@@ -70,50 +158,13 @@ export function useTranslationCache(args: {
         return;
       }
       
-      setTranslatingWords(prev => new Set(prev).add(positionKey));
-
-      try {
-        const sentenceContext = extractSentenceContext(wordIndex);
-
-        if (!targetSentences.has(sentenceContext)) {
-          const targetSentence = await translateSentence(
-            sentenceContext,
-            targetLanguage,
-            fromLanguage
-          );
-          if (targetSentence) {
-            setTargetSentences(prev =>
-              new Map(prev).set(sentenceContext, targetSentence)
-            );
-          }
-        }
-
-        const toText = await targetWordInSentence(
-          normalizedWord,
-          sentenceContext,
-          targetLanguage,
-          fromLanguage
-        );
-        if (toText) {
-          setTargetWords(prev => new Map(prev).set(positionKey, toText));
-        }
-      } finally {
-        setTranslatingWords(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(positionKey);
-          return newSet;
-        });
-      }
+      // Use the new function to translate all instances of this lemma
+      await translateAllLemmaInstances(normalizedWord);
     },
     [
       targetWords,
-      extractSentenceContext,
-      targetSentences,
-      translateSentence,
-      targetWordInSentence,
-      targetLanguage,
-      fromLanguage,
       createPositionKey,
+      translateAllLemmaInstances,
     ]
   );
 
@@ -125,5 +176,7 @@ export function useTranslationCache(args: {
     handleTranslate,
     getTranslationByPosition,
     createPositionKey,
+    findAllLemmaPositions,
+    translateAllLemmaInstances,
   };
 }

@@ -62,10 +62,13 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     handleTranslate,
     getTranslationByPosition,
     createPositionKey,
+    findAllLemmaPositions,
+    translateAllLemmaInstances,
   } = useTranslationCache({
     extractSentenceContext,
     fromLanguage,
     targetLanguage,
+    tokens,
   });
 
   // Create callbacks before conditional return (hooks must be called unconditionally)
@@ -124,6 +127,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     // If we have metadata with from_word, use it directly without API call
     if (metadata?.from_word) {
       setWordTranslation(w, metadata.from_word, segmentIndex);
+      // Also translate all other instances of this lemma
+      void translateAllLemmaInstances(w);
       return;
     }
 
@@ -131,6 +136,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     const savedByFrom = findSavedWordData(w);
     if (savedByFrom?.target_word) {
       setWordTranslation(w, savedByFrom.target_word, segmentIndex);
+      // Also translate all other instances of this lemma
+      void translateAllLemmaInstances(w);
       return;
     }
 
@@ -138,10 +145,12 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
     const savedByTarget = findSavedByTargetWord(w);
     if (savedByTarget?.from_word) {
       setWordTranslation(w, savedByTarget.from_word, segmentIndex);
+      // Also translate all other instances of this lemma
+      void translateAllLemmaInstances(w);
       return;
     }
 
-    // Fallback: call API to translate
+    // Fallback: call API to translate (this will automatically translate all instances)
     void handleTranslate(w, segmentIndex);
   };
 
@@ -170,6 +179,8 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         isIncludedVocabulary,
         getTranslationByPosition,
         createPositionKey,
+        findAllLemmaPositions,
+        translateAllLemmaInstances,
       }}
     >
       <InteractiveTextView

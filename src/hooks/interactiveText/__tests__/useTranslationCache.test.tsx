@@ -17,11 +17,17 @@ describe('useTranslationCache', () => {
 
   it('caches word translations and tracks translating state', async () => {
     const extractSentenceContext = vi.fn(() => 'Hello world.');
+    const mockTokens = [
+      { type: 'word', to_lemma: 'hello', from_lemma: 'hello' },
+      { type: 'whitespace', value: ' ' },
+      { type: 'word', to_lemma: 'world', from_lemma: 'world' },
+    ];
     const { result } = renderHook(() =>
       useTranslationCache({
         extractSentenceContext,
         fromLanguage: 'en',
         targetLanguage: 'es',
+        tokens: mockTokens,
       })
     );
 
@@ -31,13 +37,14 @@ describe('useTranslationCache', () => {
       await result.current.handleTranslate('hello', 0);
     });
 
-    expect(result.current.targetWords.get('hello')).toBeTruthy();
+    // Check that translation is stored with position-based key
+    expect(result.current.targetWords.get('hello:0')).toBeTruthy();
     expect(result.current.translatingWords.size).toBe(0);
 
     // Second call should hit cache and not change
     await act(async () => {
       await result.current.handleTranslate('hello', 0);
     });
-    expect(result.current.targetWords.get('hello')).toBeTruthy();
+    expect(result.current.targetWords.get('hello:0')).toBeTruthy();
   });
 });
