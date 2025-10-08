@@ -42,6 +42,9 @@ vi.mock('../../api/supabase/database/savedTranslationService', () => ({
     saveTranslationWithTokens() {
       return Promise.resolve(2);
     }
+    deleteSavedTranslation(_translationId: number, _userId: string) {
+      return Promise.resolve();
+    }
   },
 }));
 
@@ -75,6 +78,19 @@ describe.skip('useSavedTranslations', () => {
         'Test Notes'
       );
       expect(created).not.toBeNull();
+    });
+  });
+
+  it('deletes saved translations', async () => {
+    const { result } = renderHook(() => useSavedTranslations());
+
+    await waitFor(() =>
+      expect(result.current.savedTranslations.length).toBe(1)
+    );
+
+    await act(async () => {
+      const deleted = await result.current.deleteSavedTranslation(1);
+      expect(deleted).toBe(true);
     });
   });
 });

@@ -63,6 +63,7 @@ export default function SavedTranslationsList() {
     savedTranslations,
     loading: isLoading,
     error,
+    deleteSavedTranslation,
   } = useSavedTranslations();
 
   const { languages, loading: languagesLoading } = useLanguages();
@@ -84,16 +85,21 @@ export default function SavedTranslationsList() {
     });
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm(t('savedTranslations.deleteConfirm'))) {
       try {
-        // TODO: Implement delete when the hook supports it
-        logger.info('ui', 'Delete not yet implemented for id:', { id });
+        const success = await deleteSavedTranslation(id);
+        if (success) {
+          logger.info('ui', 'Successfully deleted translation', { id });
+        } else {
+          logger.error('ui', 'Failed to delete translation', { id });
+        }
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Unknown error';
         logger.error('ui', 'Failed to delete translation', {
           error: errorMessage,
+          id,
         });
       }
     }
@@ -291,7 +297,7 @@ export default function SavedTranslationsList() {
                     variant='outline'
                     size='sm'
                     onClick={() => void handleDelete(translation.id)}
-                    disabled={false}
+                    disabled={isLoading}
                   >
                     {t('savedTranslations.results.delete')}
                   </Button>

@@ -5,8 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { DashboardPage } from '../DashboardPage';
 import { useAuth } from '../../hooks/useAuth';
 import { UserService } from '../../api/supabase/database/userProfileService';
+import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import type { RenderResult } from '@testing-library/react';
 import type { DatabaseUserInsert } from '../../types/database';
+import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
@@ -43,9 +45,12 @@ vi.mock('react-i18next', () => {
 
     // Recent activity
     'dashboard.recentActivity.title': 'Recent Activity',
+    'dashboard.recentActivity.loading': 'Loading recent activity...',
     'dashboard.recentActivity.noActivity': 'No recent activity',
     'dashboard.recentActivity.noActivityDescription':
       'Start translating stories to see your activity here',
+    'dashboard.recentActivity.untitledStory': 'Untitled Story',
+    'dashboard.recentActivity.viewAll': 'View All ({count} translations)',
   };
 
   const stableT = (key: string, options?: Record<string, unknown>) => {
@@ -56,6 +61,13 @@ vi.mock('react-i18next', () => {
       typeof options.name === 'string'
     ) {
       translation = translation.replace('{{name}}', options.name);
+    }
+    if (
+      key === 'dashboard.recentActivity.viewAll' &&
+      options?.count &&
+      typeof options.count === 'number'
+    ) {
+      translation = translation.replace('{count}', options.count.toString());
     }
     return translation;
   };
@@ -103,6 +115,9 @@ vi.mock('../../hooks/useLanguages', () => ({
 // Mock the useAuth hook
 vi.mock('../../hooks/useAuth');
 
+// Mock the useSavedTranslations hook
+vi.mock('../../hooks/useSavedTranslations');
+
 // Mock the UserService
 vi.mock('../../api/supabase/database/userProfileService', () => ({
   UserService: {
@@ -112,6 +127,7 @@ vi.mock('../../api/supabase/database/userProfileService', () => ({
 
 const mockUseAuth = vi.mocked(useAuth);
 const mockUserService = vi.mocked(UserService);
+const mockUseSavedTranslations = vi.mocked(useSavedTranslations);
 
 // Mock react-router-dom hooks
 const mockNavigate = vi.fn();
@@ -164,6 +180,15 @@ describe('DashboardPage Component', () => {
       error: null,
     } as ReturnType<typeof useAuth>);
     vi.mocked(mockUserService.getUser).mockResolvedValue(mockProfile);
+    vi.mocked(mockUseSavedTranslations).mockReturnValue({
+      savedTranslations: [],
+      loading: false,
+      error: null,
+      loadTranslations: vi.fn(),
+      refreshTranslations: vi.fn(),
+      saveTranslationWithTokens: vi.fn(),
+      deleteSavedTranslation: vi.fn(),
+    });
   });
 
   it('renders quick actions section', async () => {
@@ -276,6 +301,79 @@ describe('DashboardPage Component', () => {
       expect(
         screen.getAllByText('Your language learning dashboard')
       ).toBeTruthy();
+    });
+  });
+
+  it('displays recent translations when available', async () => {
+    const mockTranslations: DatabaseSavedTranslationWithDetails[] = [
+      {
+        id: 1,
+        user_id: 'user-123',
+        from_text: 'Hello world',
+        to_text: 'Hola mundo',
+        from_language_id: 1,
+        to_language_id: 2,
+        difficulty_level_id: 1,
+        title: 'Test Story',
+        notes: null,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+        from_language: {
+          id: 1,
+          code: 'en',
+          name: 'English',
+          native_name: 'English',
+          created_at: '2023-01-01T00:00:00Z',
+        },
+        to_language: {
+          id: 2,
+          code: 'es',
+          name: 'Spanish',
+          native_name: 'Español',
+          created_at: '2023-01-01T00:00:00Z',
+        },
+        difficulty_level: {
+          id: 1,
+          code: 'beginner',
+          name: 'Beginner',
+          description: 'Easy level',
+          created_at: '2023-01-01T00:00:00Z',
+        },
+      },
+    ];
+
+    vi.mocked(mockUseSavedTranslations).mockReturnValue({
+      savedTranslations: mockTranslations,
+      loading: false,
+      error: null,
+      loadTranslations: vi.fn(),
+      refreshTranslations: vi.fn(),
+      saveTranslationWithTokens: vi.fn(),
+      deleteSavedTranslation: vi.fn(),
+    });
+
+    void renderWithRouter(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('Test Story')).toBeInTheDocument();
+      expect(screen.getByText('English → Spanish')).toBeInTheDocument();
+      expect(screen.getByText('Hello world...')).toBeInTheDocument();
+    });
+  });
+
+  it('shows loading state for recent activity', async () => {
+    vi.mocked(mockUseSavedTranslations).mockReturnValue({
+      savedTranslations: [],
+      loading: true,
+      error: null,
+      loadTranslations: vi.fn(),
+      refreshTranslations: vi.fn(),
+      saveTranslationWithTokens: vi.fn(),
+      deleteSavedTranslation: vi.fn(),
+    });
+
+    void renderWithRouter(<DashboardPage />);
+    await waitFor(() => {
+      expect(screen.getByText('Loading recent activity...')).toBeInTheDocument();
     });
   });
 });

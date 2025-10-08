@@ -24,6 +24,7 @@ interface UseSavedTranslationsReturn {
     title?: string,
     notes?: string
   ) => Promise<number | null>;
+  deleteSavedTranslation: (translationId: number) => Promise<boolean>;
 }
 
 // Create a singleton instance of the service
@@ -136,6 +137,56 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     [user, toast, loadTranslations]
   );
 
+  const deleteSavedTranslation = useCallback(
+    async (translationId: number): Promise<boolean> => {
+      if (!user?.id) {
+        toast({
+          title: 'Error',
+          description: 'You must be logged in to delete translations',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        await savedTranslationService.deleteSavedTranslation(translationId, user.id);
+
+        // Refresh the translations list
+        await loadTranslations();
+
+        // Notify other listeners (e.g., sidebars) to refresh immediately
+        try {
+          window.dispatchEvent(new CustomEvent('saved-translations:updated'));
+        } catch {
+          // no-op in non-browser/test environments
+        }
+
+        toast({
+          title: 'Success',
+          description: 'Translation deleted successfully',
+        });
+
+        return true;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to delete translation';
+        setError(errorMessage);
+        toast({
+          title: 'Error',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, toast, loadTranslations]
+  );
+
   useEffect(() => {
     void loadTranslations();
   }, [loadTranslations]);
@@ -147,5 +198,6 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     loadTranslations,
     refreshTranslations,
     saveTranslationWithTokens,
+    deleteSavedTranslation,
   };
 }

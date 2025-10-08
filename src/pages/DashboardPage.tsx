@@ -239,14 +239,65 @@ export const DashboardPage: React.FC = () => {
           <h2 className='text-xl font-semibold'>
             {t('dashboard.recentActivity.title')}
           </h2>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('dashboard.recentActivity.noActivity')}</CardTitle>
-              <CardDescription>
-                {t('dashboard.recentActivity.noActivityDescription')}
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          {isLoadingSavedTranslations ? (
+            <Card>
+              <CardHeader>
+                <div className='flex items-center gap-2'>
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                  <CardTitle>{t('dashboard.recentActivity.loading')}</CardTitle>
+                </div>
+              </CardHeader>
+            </Card>
+          ) : savedTranslations.length > 0 ? (
+            <div className='space-y-3'>
+              {savedTranslations.slice(0, 3).map((translation) => (
+                <Card
+                  key={translation.id}
+                  className='hover:shadow-md transition-shadow cursor-pointer'
+                  onClick={() => navigate(`/story?id=${translation.id}`)}
+                >
+                  <CardHeader className='pb-2'>
+                    <div className='flex items-start justify-between'>
+                      <CardTitle className='text-base leading-tight'>
+                        {translation.title ?? t('dashboard.recentActivity.untitledStory')}
+                      </CardTitle>
+                      <Badge variant='secondary' className='text-xs'>
+                        {getLanguageName(translation.from_language.code)} → {getLanguageName(translation.to_language.code)}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className='pt-0'>
+                    <p className='text-sm text-muted-foreground line-clamp-2'>
+                      {translation.from_text.substring(0, 100)}...
+                    </p>
+                    <p className='text-xs text-muted-foreground mt-2'>
+                      {new Date(translation.created_at).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+              {savedTranslations.length > 3 && (
+                <div className='text-center'>
+                  <Button
+                    variant='outline'
+                    onClick={() => navigate('/saved-translations')}
+                    className='text-sm'
+                  >
+                    {t('dashboard.recentActivity.viewAll', { count: savedTranslations.length })}
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('dashboard.recentActivity.noActivity')}</CardTitle>
+                <CardDescription>
+                  {t('dashboard.recentActivity.noActivityDescription')}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          )}
         </div>
       </div>
     </div>

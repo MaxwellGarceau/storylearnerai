@@ -182,8 +182,11 @@
     },
     "recentActivity": {
       "title": "Recent Activity",
+      "loading": "Loading recent activity...",
       "noActivity": "No recent activity",
-      "noActivityDescription": "Start translating stories to see your activity here"
+      "noActivityDescription": "Start translating stories to see your activity here",
+      "untitledStory": "Untitled Story",
+      "viewAll": "View All ({count} translations)"
     },
     "errors": {
       "loadFailed": "Failed to load dashboard data"
