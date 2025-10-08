@@ -33,6 +33,8 @@ const StoryContent: React.FC<StoryContentProps> = ({
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
           isDisplayingFromSide={showFrom}
+          // Disable interactive functionality when showing original story
+          disabled={showFrom}
           // Provide display-side flag via context: true when showing from-language text
           savedTranslationId={savedTranslationId}
           includedVocabulary={translationData.includedVocabulary}
