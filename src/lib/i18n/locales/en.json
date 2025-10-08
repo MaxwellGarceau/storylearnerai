@@ -343,6 +343,12 @@
     "emptyState": {
       "title": "No saved translations yet",
       "description": "Start translating stories and save them to see them here."
+    },
+    "deleteModal": {
+      "title": "Delete Translation",
+      "subtitle": "This action cannot be undone",
+      "description": "You are about to permanently delete this saved translation. This action cannot be undone.",
+      "preview": "Preview"
     }
   },
   "difficultyLevels": {

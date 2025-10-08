@@ -25,6 +25,7 @@ import {
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { DateUtils } from '../../lib/utils/dateUtils';
+import { DeleteTranslationModal } from './DeleteTranslationModal';
 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
@@ -75,6 +76,8 @@ export default function SavedTranslationsList() {
     DifficultyLevel | ''
   >('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [translationToDelete, setTranslationToDelete] = useState<DatabaseSavedTranslationWithDetails | null>(null);
 
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
@@ -85,24 +88,37 @@ export default function SavedTranslationsList() {
     });
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm(t('savedTranslations.deleteConfirm'))) {
-      try {
-        const success = await deleteSavedTranslation(id);
-        if (success) {
-          logger.info('ui', 'Successfully deleted translation', { id });
-        } else {
-          logger.error('ui', 'Failed to delete translation', { id });
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error';
-        logger.error('ui', 'Failed to delete translation', {
-          error: errorMessage,
-          id,
-        });
+  const handleDeleteClick = (translation: DatabaseSavedTranslationWithDetails) => {
+    setTranslationToDelete(translation);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (): Promise<boolean> => {
+    if (!translationToDelete) return false;
+    
+    try {
+      const success = await deleteSavedTranslation(translationToDelete.id);
+      if (success) {
+        logger.info('ui', 'Successfully deleted translation', { id: translationToDelete.id });
+        return true;
+      } else {
+        logger.error('ui', 'Failed to delete translation', { id: translationToDelete.id });
+        return false;
       }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown error';
+      logger.error('ui', 'Failed to delete translation', {
+        error: errorMessage,
+        id: translationToDelete.id,
+      });
+      return false;
     }
+  };
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+    setTranslationToDelete(null);
   };
 
 
@@ -296,7 +312,7 @@ export default function SavedTranslationsList() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => void handleDelete(translation.id)}
+                    onClick={() => handleDeleteClick(translation)}
                     disabled={isLoading}
                   >
                     {t('savedTranslations.results.delete')}
@@ -369,6 +385,14 @@ export default function SavedTranslationsList() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteTranslationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        translation={translationToDelete}
+      />
     </div>
   );
 }
