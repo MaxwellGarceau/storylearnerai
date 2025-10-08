@@ -170,6 +170,7 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
         getOverlayOppositeWord={(w: string) => targetWords.get(w)}
         isTranslating={(w: string) => translatingWords.has(w)}
         onTranslate={handleTranslateWithSavedCheck}
+        isDisplayingFromSide={isDisplayingFromSide}
       />
     </InteractiveTextProvider>
   );

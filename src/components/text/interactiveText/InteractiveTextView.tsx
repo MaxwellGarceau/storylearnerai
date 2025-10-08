@@ -24,6 +24,8 @@ interface InteractiveTextViewProps {
     segmentIndex: number,
     metadata?: WordMetadata
   ) => void;
+  // Whether we're displaying the original story (from side) or translated story (to side)
+  isDisplayingFromSide?: boolean;
 }
 
 const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
@@ -39,9 +41,11 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   getOverlayOppositeWord,
   isTranslating,
   onTranslate,
+  isDisplayingFromSide = false,
 }) => {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
+  // Early return for empty tokens
   if (tokens.length === 0) return <span className={className} />;
 
   return (
@@ -59,11 +63,17 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
 
         // Word token with rich metadata
         const wordToken = token;
-        const normalizedFromWord = wordToken.to_lemma; // Use lemma for normalization/lookups
-        const displayWord = wordToken.to_word; // Use actual word for display
-        const cleanWord = wordToken.to_word;
-        const overlayTranslatedTargetWord =
-          getOverlayOppositeWord(normalizedFromWord);
+        
+        // Dynamic keys based on which side we're displaying
+        const displayWordKey = isDisplayingFromSide ? 'from_word' : 'to_word';
+        const displayLemmaKey = isDisplayingFromSide ? 'from_lemma' : 'to_lemma';
+        
+        const displayWord = wordToken[displayWordKey];
+        const displayLemma = wordToken[displayLemmaKey];
+        const cleanWord = displayWord;
+        const normalizedWord = displayLemma; // Use lemma for normalization/lookups
+        
+        const overlayTranslatedTargetWord = getOverlayOppositeWord(normalizedWord);
 
         // For TranslationTokens, we don't have segmentIndex, so use idx
         const displaySentence = getDisplaySentence(idx);
@@ -71,24 +81,23 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
         const open = openMenuIndex === idx;
 
         const handleTranslateClick = (metadata?: WordMetadata) => {
-          onTranslate(normalizedFromWord, idx, metadata);
+          onTranslate(normalizedWord, idx, metadata);
         };
 
-        const normalizedWordForProps =
-          overlayTranslatedTargetWord ?? normalizedFromWord;
+        const normalizedWordForProps = overlayTranslatedTargetWord ?? normalizedWord;
         const saved = isSaved(normalizedWordForProps);
 
         return (
           <span key={idx}>
             <WordToken
               actionWordNormalized={normalizedWordForProps}
-              inclusionCheckWord={normalizedFromWord}
-              displayWord={displayWord} // Display to_word in menu
+              inclusionCheckWord={normalizedWord}
+              displayWord={displayWord}
               cleanWord={cleanWord}
               punctuation='' // No trailing punctuation in new structure
               isOpen={open}
               isSaved={saved}
-              isTranslating={isTranslating(normalizedFromWord)}
+              isTranslating={isTranslating(normalizedWord)}
               overlayOppositeWord={overlayTranslatedTargetWord ?? undefined}
               displaySentenceContext={displaySentence}
               overlaySentenceContext={overlaySentence}
@@ -104,7 +113,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
               onTranslate={handleTranslateClick}
               enableTooltips={enableTooltips}
               disabled={disabled}
-              // Pass new metadata
+              // Pass metadata with swapped values based on display side
+              // NOTE: These metadata values are ALWAYS the 'from' and 'to' words, not the swapped values
               wordMetadata={{
                 from_word: wordToken.from_word,
                 from_lemma: wordToken.from_lemma,

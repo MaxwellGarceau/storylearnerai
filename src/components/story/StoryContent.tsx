@@ -21,8 +21,8 @@ const StoryContent: React.FC<StoryContentProps> = ({
   const fromLanguage = translationData.fromLanguage;
   const targetLanguage = translationData.toLanguage;
 
-  // Only pass tokens when displaying target text (tokens correspond to translated text)
-  const tokens = !showFrom ? translationData.tokens : undefined;
+  // Always pass tokens - they contain both from and to data that we can swap based on display side
+  const tokens = translationData.tokens;
 
   return (
     <div className='relative overflow-hidden'>
