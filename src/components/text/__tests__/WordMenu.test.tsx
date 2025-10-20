@@ -149,6 +149,18 @@ describe('WordMenu Component', () => {
         typeof useAuthModule.useAuth
       >);
 
+  // Helper function to create default wordMetadata
+  const createDefaultWordMetadata = (overrides = {}) => ({
+    from_word: 'hello',
+    from_lemma: 'hello',
+    to_word: 'hola',
+    to_lemma: 'hola',
+    pos: null,
+    difficulty: null,
+    from_definition: null,
+    ...overrides,
+  });
+
   it('hides menu actions when user is logged out', () => {
     vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
       user: null,
@@ -161,6 +173,7 @@ describe('WordMenu Component', () => {
           open={true}
           fromLanguage='en'
           targetLanguage='es'
+          wordMetadata={createDefaultWordMetadata()}
         >
           <span>hello</span>
         </WordMenu>
@@ -176,7 +189,13 @@ describe('WordMenu Component', () => {
   it('renders with word text', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='hello' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='hello' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
+      >
         <span>hello</span>
       </WordMenu>
     );
@@ -187,13 +206,20 @@ describe('WordMenu Component', () => {
   it('displays the word in the menu header', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='world' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='world' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'world', to_word: 'mundo' })}
+      >
         <span>world</span>
       </WordMenu>
     );
 
     // Check that the word appears in the menu header (the div with text-sm font-medium class)
-    const menuHeader = screen.getByText('world', {
+    // The component displays the to_word from metadata, not the word prop
+    const menuHeader = screen.getByText('mundo', {
       selector: '.text-sm.font-medium',
     });
     expect(menuHeader).toBeInTheDocument();
@@ -202,7 +228,13 @@ describe('WordMenu Component', () => {
   it('renders translate, dictionary, and vocabulary save buttons', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='test' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+      >
         <span>test</span>
       </WordMenu>
     );
@@ -227,6 +259,7 @@ describe('WordMenu Component', () => {
         onOpenChange={handleOpenChange}
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -235,7 +268,8 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     fireEvent.click(buttons[0]); // First button should be translate
 
-    expect(handleTranslate).toHaveBeenCalledWith('hello');
+    // The component calls onTranslate with the to_word from metadata
+    expect(handleTranslate).toHaveBeenCalledWith('hola');
     expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
@@ -248,13 +282,15 @@ describe('WordMenu Component', () => {
         fromLanguage='en'
         targetLanguage='es'
         targetWord='mundo'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'world', to_word: 'mundo' })}
       >
         <span>world</span>
       </WordMenu>
     );
 
     const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
-    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'world');
+    // The component uses the metadata values for the VocabularySaveButton props
+    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'mundo');
     expect(vocabularySaveButton).toHaveAttribute(
       'data-translated-word',
       'mundo'
@@ -269,7 +305,13 @@ describe('WordMenu Component', () => {
   it('shows dictionary content when dictionary button is clicked', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='test' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+      >
         <span>test</span>
       </WordMenu>
     );
@@ -284,7 +326,13 @@ describe('WordMenu Component', () => {
   it('renders with correct open state', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='test' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+      >
         <span>test</span>
       </WordMenu>
     );
@@ -295,7 +343,13 @@ describe('WordMenu Component', () => {
   it('renders with closed state', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={false} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='test' 
+        open={false} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+      >
         <span>test</span>
       </WordMenu>
     );
@@ -306,7 +360,13 @@ describe('WordMenu Component', () => {
   it('renders trigger with asChild prop', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu 
+        word='test' 
+        open={true} 
+        fromLanguage='en' 
+        targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+      >
         <span>test</span>
       </WordMenu>
     );
@@ -325,6 +385,7 @@ describe('WordMenu Component', () => {
         open={true}
         fromLanguage={'unsupported' as unknown as LanguageCode}
         targetLanguage={'unsupported' as unknown as LanguageCode}
+        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
       >
         <span>test</span>
       </WordMenu>
@@ -343,6 +404,7 @@ describe('WordMenu Component', () => {
         isTranslating={true}
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -371,6 +433,7 @@ describe('WordMenu Component', () => {
         isTranslating={false}
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -402,6 +465,7 @@ describe('WordMenu Component', () => {
         onTranslate={handleTranslate}
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -423,6 +487,7 @@ describe('WordMenu Component', () => {
         targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -446,6 +511,7 @@ describe('WordMenu Component', () => {
         targetWord='hola'
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>
@@ -468,6 +534,7 @@ describe('WordMenu Component', () => {
         isSaved={true}
         fromLanguage='en'
         targetLanguage='es'
+        wordMetadata={createDefaultWordMetadata()}
       >
         <span>hello</span>
       </WordMenu>

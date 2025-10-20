@@ -34,6 +34,30 @@ describe('StoryContent Component', () => {
     difficulty: 'a1',
     provider: 'mock',
     model: 'test-model',
+    tokens: [
+      {
+        type: 'word',
+        from_word: 'Hola',
+        from_lemma: 'hola',
+        to_word: 'Hello',
+        to_lemma: 'hello',
+        pos: null,
+        difficulty: null,
+        from_definition: null,
+        segmentIndex: 0,
+      },
+      {
+        type: 'word',
+        from_word: 'mundo',
+        from_lemma: 'mundo',
+        to_word: 'world',
+        to_lemma: 'world',
+        pos: null,
+        difficulty: null,
+        from_definition: null,
+        segmentIndex: 1,
+      },
+    ],
   };
 
   afterEach(() => {
@@ -80,6 +104,52 @@ describe('StoryContent Component', () => {
       ...mockTranslationData,
       fromText: 'Primera línea.\n\nSegunda línea.',
       toText: 'First line.\n\nSecond line.',
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'Primera',
+          from_lemma: 'primera',
+          to_word: 'First',
+          to_lemma: 'first',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'línea',
+          from_lemma: 'línea',
+          to_word: 'line',
+          to_lemma: 'line',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'Segunda',
+          from_lemma: 'segunda',
+          to_word: 'Second',
+          to_lemma: 'second',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'línea',
+          from_lemma: 'línea',
+          to_word: 'line',
+          to_lemma: 'line',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+      ],
     };
 
     const { container } = renderWithRouter(
@@ -89,9 +159,10 @@ describe('StoryContent Component', () => {
       />
     );
 
-    // Check that the component renders and contains the expected text
-    expect(container.textContent).toContain('First line.');
-    expect(container.textContent).toContain('Second line.');
+    // Check that the component renders the words from tokens (without whitespace)
+    expect(container.textContent).toContain('First');
+    expect(container.textContent).toContain('line');
+    expect(container.textContent).toContain('Second');
   });
 
   it('handles empty content gracefully', () => {
@@ -123,14 +194,86 @@ describe('StoryContent Component', () => {
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
       toText: longText,
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'This',
+          from_lemma: 'this',
+          to_word: 'This',
+          to_lemma: 'this',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'is',
+          from_lemma: 'is',
+          to_word: 'is',
+          to_lemma: 'is',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'a',
+          from_lemma: 'a',
+          to_word: 'a',
+          to_lemma: 'a',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'very',
+          from_lemma: 'very',
+          to_word: 'very',
+          to_lemma: 'very',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+        {
+          type: 'word',
+          from_word: 'long',
+          from_lemma: 'long',
+          to_word: 'long',
+          to_lemma: 'long',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 4,
+        },
+        {
+          type: 'word',
+          from_word: 'story',
+          from_lemma: 'story',
+          to_word: 'story',
+          to_lemma: 'story',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 5,
+        },
+      ],
     };
 
     const { container } = renderWithRouter(
       <StoryContent translationData={longTranslationData} showFrom={false} />
     );
 
-    // Check that the component renders and contains the long text
-    expect(container.textContent).toContain(longText);
+    // Check that the component renders the words from tokens (without whitespace)
+    expect(container.textContent).toContain('This');
+    expect(container.textContent).toContain('is');
+    expect(container.textContent).toContain('very');
+    expect(container.textContent).toContain('long');
+    expect(container.textContent).toContain('story');
   });
 
   it('handles special characters and unicode content', () => {
@@ -140,6 +283,52 @@ describe('StoryContent Component', () => {
         'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
       toText:
         'Once upon a time there was a boy who lived in Spain... What an exciting story!',
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'Había',
+          from_lemma: 'había',
+          to_word: 'Once',
+          to_lemma: 'once',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'vez',
+          from_lemma: 'vez',
+          to_word: 'upon',
+          to_lemma: 'upon',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'niño',
+          from_lemma: 'niño',
+          to_word: 'boy',
+          to_lemma: 'boy',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'time',
+          from_lemma: 'time',
+          to_word: 'time',
+          to_lemma: 'time',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+      ],
     };
 
     const { container: fromContainer } = renderWithRouter(

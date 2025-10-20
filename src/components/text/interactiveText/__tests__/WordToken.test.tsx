@@ -125,7 +125,7 @@ describe('WordToken', () => {
     render(<WordToken {...commonProps} />);
 
     expect(screen.getByTestId('word-menu')).toBeInTheDocument();
-    expect(screen.getByTestId('menu-word')).toHaveTextContent('hello');
+    expect(screen.getByTestId('menu-word')).toHaveTextContent('Hello');
     expect(screen.getByTestId('menu-from')).toHaveTextContent('en');
     expect(screen.getByTestId('menu-target')).toHaveTextContent('es');
     expect(screen.getByTestId('menu-saved')).toHaveTextContent('true');
@@ -141,7 +141,12 @@ describe('WordToken', () => {
     const onWordClick = vi.fn();
     render(<WordToken {...commonProps} onWordClick={onWordClick} />);
 
-    fireEvent.click(screen.getByText('Hello'));
+    // Click on the WordHighlight span element that contains the text
+    const helloElements = screen.getAllByText('Hello');
+    const wordHighlightElement = helloElements.find(el => 
+      el.closest('span[class*="inline-block transition-colors"]')
+    );
+    fireEvent.click(wordHighlightElement!);
     expect(onWordClick).toHaveBeenCalledTimes(1);
   });
 

@@ -140,11 +140,19 @@ const useLanguagesMock = {
 };
 
 vi.mock('../../../hooks/useSavedTranslations', () => ({
-  useSavedTranslations: () => useSavedTranslationsMock,
+  useSavedTranslations: () => ({
+    savedTranslations: useSavedTranslationsMock.savedTranslations,
+    loading: useSavedTranslationsMock.loading,
+    error: useSavedTranslationsMock.error,
+    deleteSavedTranslation: vi.fn().mockResolvedValue(true),
+  }),
 }));
 
 vi.mock('../../../hooks/useLanguages', () => ({
-  useLanguages: () => useLanguagesMock,
+  useLanguages: () => ({
+    languages: useLanguagesMock.languages,
+    loading: useLanguagesMock.loading,
+  }),
 }));
 
 vi.mock('../../../hooks/useDifficultyLevels', () => ({
