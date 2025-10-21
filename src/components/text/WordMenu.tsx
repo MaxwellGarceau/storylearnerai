@@ -46,11 +46,11 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const fromLanguageId = fromLanguage ? getLanguageIdByCode(fromLanguage) : null;
   const targetLanguageId = getLanguageIdByCode(targetLanguage);
 
-  // Search for word info when dictionary is shown
-  const wordForDictionary = metadata.from_lemma ?? metadata.from_word;
+  // Search for word info when dictionary is shown - only if we have a lemma
+  const wordForDictionary = metadata.from_lemma;
 
   useEffect(() => {
-    if (showDictionary && isOpen && fromLanguage) {
+    if (showDictionary && isOpen && fromLanguage && wordForDictionary) {
       void searchWord(
         wordForDictionary,
         fromLanguage,
