@@ -24,6 +24,50 @@ interface WordTokenProps {
   enableTooltips?: boolean;
 }
 
+interface WordTokenDisabledProps {
+  word: string;
+  translation?: string;
+  disabled?: boolean;
+  punctuation?: string;
+  vocabularyHighlightClass: string;
+}
+
+const WordTokenDisabled: React.FC<WordTokenDisabledProps> = ({
+  word,
+  translation,
+  disabled,
+  punctuation,
+  vocabularyHighlightClass,
+}) => {
+  return (
+    <span>
+      {translation ? (
+        <span className='relative inline-block align-baseline'>
+          <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
+            {translation}
+          </span>
+          <WordHighlight
+            word={word}
+            disabled={disabled}
+            className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
+          >
+            {word}
+          </WordHighlight>
+        </span>
+      ) : (
+        <WordHighlight
+          word={word}
+          disabled={disabled}
+          className={vocabularyHighlightClass}
+        >
+          {word}
+        </WordHighlight>
+      )}
+      {punctuation}
+    </span>
+  );
+};
+
 const WordToken: React.FC<WordTokenProps> = ({
   word,
   position,
@@ -57,31 +101,13 @@ const WordToken: React.FC<WordTokenProps> = ({
 
   if (!enableTooltips || disabled) {
     return (
-      <span>
-        {translation ? (
-          <span className='relative inline-block align-baseline'>
-            <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
-              {translation}
-            </span>
-            <WordHighlight
-              word={word}
-              disabled={disabled}
-              className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
-            >
-              {word}
-            </WordHighlight>
-          </span>
-        ) : (
-          <WordHighlight
-            word={word}
-            disabled={disabled}
-            className={vocabularyHighlightClass}
-          >
-            {word}
-          </WordHighlight>
-        )}
-        {punctuation}
-      </span>
+      <WordTokenDisabled
+        word={word}
+        translation={translation}
+        disabled={disabled}
+        punctuation={punctuation}
+        vocabularyHighlightClass={vocabularyHighlightClass}
+      />
     );
   }
 
