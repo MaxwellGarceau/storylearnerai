@@ -53,11 +53,11 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
     if (showDictionary && isOpen) {
       void searchWord(
         wordForDictionary,
-        'en', // Simplified for now
-        'es' // Simplified for now
+        fromLanguage,
+        targetLanguage
       );
     }
-  }, [showDictionary, isOpen, wordForDictionary, searchWord]);
+  }, [showDictionary, isOpen, wordForDictionary, searchWord, fromLanguage, targetLanguage]);
 
   const handleDictionary = () => {
     setShowDictionary(true);
