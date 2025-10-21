@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import StoryContent from '../StoryContent';
 import { TranslationResponse } from '../../../lib/translationService';
+import { LanguageFilterProvider } from '../../../hooks/useLanguageFilter';
 
 // Mock the necessary hooks and components
 vi.mock('../../../hooks/useWordActions', () => ({
@@ -37,7 +38,14 @@ vi.mock('../../../hooks/interactiveText/useSavedWords', () => ({
 
 vi.mock('../../../hooks/useLanguages', () => ({
   useLanguages: () => ({
+    languages: [
+      { code: 'en', name: 'English' },
+      { code: 'es', name: 'Spanish' },
+    ],
     getLanguageIdByCode: vi.fn().mockReturnValue(1),
+    getLanguageName: vi.fn().mockImplementation((code: string) => 
+      code === 'en' ? 'English' : 'Spanish'
+    ),
   }),
 }));
 
@@ -52,8 +60,8 @@ vi.mock('../../../hooks/useDictionary', () => ({
 
 vi.mock('../../../hooks/useAuth', () => ({
   useAuth: () => ({
-    user: null,
-    isAuthenticated: false,
+    user: { id: 'test-user-id', email: 'test@example.com' },
+    isAuthenticated: true,
   }),
 }));
 
@@ -80,6 +88,15 @@ vi.mock('../../../lib/config/env', () => ({
       endpoint: 'https://lexicala1.p.rapidapi.com',
       apiKey: 'test-api-key',
     })),
+  },
+}));
+
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
+  UserService: {
+    getOrCreateUser: vi.fn().mockResolvedValue({
+      id: 'test-user-id',
+      native_language: 'en',
+    }),
   },
 }));
 
@@ -123,7 +140,11 @@ describe('StoryContent Component', () => {
   });
 
   const renderWithRouter = (ui: React.ReactElement) =>
-    render(<MemoryRouter>{ui}</MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <LanguageFilterProvider>{ui}</LanguageFilterProvider>
+      </MemoryRouter>
+    );
 
   it('displays translated text when showFrom is false', () => {
     const { container } = renderWithRouter(

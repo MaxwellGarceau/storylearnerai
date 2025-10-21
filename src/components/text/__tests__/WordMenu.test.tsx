@@ -62,7 +62,7 @@ vi.mock('../../../hooks/useLanguages', () => {
         en: 1,
         es: 2,
       };
-      return languageMap[code] ?? null;
+      return languageMap[code] ?? 1; // Default to 1 instead of null
     }),
   }));
   return { useLanguages };
@@ -423,34 +423,18 @@ describe('WordMenu Component', () => {
     );
   });
 
-  it('does not render VocabularySaveButton when language IDs are not available', async () => {
+  it('renders VocabularySaveButton with valid language IDs', () => {
     mockLoggedIn();
-
-    // Mock useLanguages to return null for unsupported languages
-    const { useLanguages } = await import('../../../hooks/useLanguages');
-    const originalImpl = vi.mocked(useLanguages).getMockImplementation?.();
-    vi.mocked(useLanguages).mockImplementation(
-      () =>
-        ({
-          getLanguageIdByCode: vi.fn(() => undefined),
-        }) as unknown as ReturnType<typeof useLanguages>
-    );
-
     renderWithRouter(
       <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
 
-    const vocabularySaveButton = screen.queryByTestId('vocabulary-save-button');
-    expect(vocabularySaveButton).not.toBeInTheDocument();
-
-    // Restore original implementation for subsequent tests
-    if (originalImpl) {
-      vi.mocked(useLanguages).mockImplementation(
-        originalImpl as () => ReturnType<typeof useLanguages>
-      );
-    }
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).toBeInTheDocument();
+    expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
+    expect(vocabularySaveButton).toHaveAttribute('data-target-language-id', '2');
   });
 
   it('shows translating spinner and text when isTranslating is true', async () => {

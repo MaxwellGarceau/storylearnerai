@@ -27,7 +27,7 @@ export const LanguageFilterProvider: React.FC<{
   const { user } = useAuth();
   const { languages, getLanguageName } = useLanguages();
 
-  const [fromLanguage, setFromLanguage] = useState<LanguageCode | null>(null);
+  const [fromLanguage, setFromLanguage] = useState<LanguageCode | null>('en'); // Default to 'en' to avoid null state
   const [targetLanguage, setTargetLanguageState] = useState<LanguageCode>('en');
 
   // Initialize fromLanguage from user's native language

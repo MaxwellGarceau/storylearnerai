@@ -5,6 +5,7 @@ import WordToken from '../interactiveText/WordToken';
 import type { LanguageCode } from '../../../types/llm/prompts';
 import { MemoryRouter } from 'react-router-dom';
 import * as useAuthModule from '../../../hooks/useAuth';
+import { LanguageFilterProvider } from '../../../hooks/useLanguageFilter';
 
 // Tests in this file were added by the assistant.
 
@@ -14,6 +15,8 @@ vi.mock('../../../hooks/useLanguages', () => ({
   useLanguages: () => ({
     getLanguageIdByCode: (code: string) =>
       code === 'en' ? 1 : code === 'es' ? 2 : 0,
+    getLanguageName: (code: string) =>
+      code === 'en' ? 'English' : code === 'es' ? 'Spanish' : code,
     languages: [
       { id: 1, code: 'en', name: 'English', native_name: 'English' },
       { id: 2, code: 'es', name: 'Spanish', native_name: 'Español' },
@@ -115,13 +118,15 @@ describe('Canonical save mapping (from → target) passed to save button', () =>
     // Displayed token is from-language (en): "hello"
     render(
       <MemoryRouter>
-        <WordToken
-          word='hello'
-          position={0}
-          punctuation=''
-          enableTooltips={true}
-          disabled={false}
-        />
+        <LanguageFilterProvider>
+          <WordToken
+            word='hello'
+            position={0}
+            punctuation=''
+            enableTooltips={true}
+            disabled={false}
+          />
+        </LanguageFilterProvider>
       </MemoryRouter>
     );
 
@@ -136,13 +141,15 @@ describe('Canonical save mapping (from → target) passed to save button', () =>
     // Displayed token is target-language (es): "hola"
     render(
       <MemoryRouter>
-        <WordToken
-          word='hola'
-          position={0}
-          punctuation=''
-          enableTooltips={true}
-          disabled={false}
-        />
+        <LanguageFilterProvider>
+          <WordToken
+            word='hola'
+            position={0}
+            punctuation=''
+            enableTooltips={true}
+            disabled={false}
+          />
+        </LanguageFilterProvider>
       </MemoryRouter>
     );
 
