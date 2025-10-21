@@ -43,14 +43,14 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const { fromLanguage, targetLanguage } = useLanguageSettings();
 
   // Get language IDs for the VocabularySaveButton using actual language codes
-  const fromLanguageId = fromLanguage ? getLanguageIdByCode(fromLanguage) : null;
+  const fromLanguageId = getLanguageIdByCode(fromLanguage);
   const targetLanguageId = getLanguageIdByCode(targetLanguage);
 
   // Search for word info when dictionary is shown - only if we have a lemma
   const wordForDictionary = metadata.from_lemma;
 
   useEffect(() => {
-    if (showDictionary && isOpen && fromLanguage && wordForDictionary) {
+    if (showDictionary && isOpen && wordForDictionary) {
       void searchWord(
         wordForDictionary,
         fromLanguage,

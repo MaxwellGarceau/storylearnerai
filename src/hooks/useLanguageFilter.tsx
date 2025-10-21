@@ -102,7 +102,7 @@ export const LanguageFilterProvider: React.FC<{
 
 // Read-only hook for getting current language settings
 export const useLanguageSettings = (): {
-  fromLanguage: LanguageCode | null;
+  fromLanguage: LanguageCode;
   targetLanguage: LanguageCode;
 } => {
   const ctx = useContext(LanguageFilterContext);
@@ -111,6 +111,12 @@ export const useLanguageSettings = (): {
       'useLanguageSettings must be used within LanguageFilterProvider'
     );
   }
+  if (!ctx.fromLanguage) {
+    throw new Error(
+      'fromLanguage is required but not set. This hook should only be used in story contexts where language is always available.'
+    );
+  }
+  
   return {
     fromLanguage: ctx.fromLanguage,
     targetLanguage: ctx.targetLanguage,
