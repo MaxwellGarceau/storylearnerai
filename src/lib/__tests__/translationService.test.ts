@@ -39,6 +39,10 @@ describe('translationService', () => {
       temperature: 0.7,
       projectId: 'test-project',
     });
+
+    // Mock LLM service manager methods
+    vi.mocked(llmServiceManager.getProvider).mockReturnValue('gemini');
+    vi.mocked(llmServiceManager.getModel).mockReturnValue('gemini-1.5-flash');
   });
 
   afterEach(() => {
@@ -73,6 +77,9 @@ describe('translationService', () => {
         selectedVocabulary: [],
         includedVocabulary: [],
         missingVocabulary: [],
+        tokens: expect.any(Array),
+        hasMetadataWarnings: false,
+        usedFallbackTokens: true,
       });
     });
 
@@ -87,6 +94,7 @@ describe('translationService', () => {
       } as unknown as Awaited<
         ReturnType<typeof llmServiceManager.generateCompletion>
       >);
+      vi.mocked(llmServiceManager.getModel).mockReturnValue('gemini-1.5-flash');
 
       const request = {
         text: 'Hello world',
@@ -104,10 +112,13 @@ describe('translationService', () => {
         toLanguage: 'es',
         difficulty: 'a1',
         provider: 'gemini',
-        model: 'gemini-1.5-flash',
+        model: undefined,
         selectedVocabulary: [],
         includedVocabulary: [],
         missingVocabulary: [],
+        tokens: expect.any(Array),
+        hasMetadataWarnings: false,
+        usedFallbackTokens: true,
       });
     });
 

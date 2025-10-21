@@ -5,12 +5,24 @@ import { BadgeSection } from '../BadgeSection';
 
 describe('BadgeSection Component', () => {
   it('renders null when no badges provided', () => {
-    const { container } = render(<BadgeSection />);
+    const { container } = render(
+      <BadgeSection 
+        partOfSpeechKey={(pos) => `vocabulary.pos.${pos}`}
+        frequencyKey={(freq) => `vocabulary.frequency.${freq}`}
+      />
+    );
     expect(container.firstChild).toBeNull();
   });
 
   it('renders partOfSpeech and frequency badges', () => {
-    render(<BadgeSection partOfSpeech='noun' frequencyLevel='common' />);
+    render(
+      <BadgeSection 
+        partOfSpeech='noun' 
+        frequencyLevel='common'
+        partOfSpeechKey={(pos) => `vocabulary.pos.${pos}`}
+        frequencyKey={(freq) => `vocabulary.frequency.${freq}`}
+      />
+    );
 
     expect(screen.getByText('vocabulary.pos.noun')).toBeInTheDocument();
     expect(screen.getByText('vocabulary.frequency.common')).toBeInTheDocument();

@@ -36,8 +36,8 @@ const mockVocabulary = [
   },
 ];
 
-vi.mock('../../../../hooks/useVocabulary', () => ({
-  useVocabulary: () => ({ vocabulary: mockVocabulary, loading: false }),
+vi.mock('../../../../contexts/VocabularyContext', () => ({
+  useVocabularyContext: () => ({ vocabulary: mockVocabulary, loading: false }),
 }));
 
 vi.mock('../../../../hooks/useLanguages', () => ({

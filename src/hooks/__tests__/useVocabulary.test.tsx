@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useVocabulary } from '../useVocabulary';
+import { useVocabularyContext } from '../../contexts/VocabularyContext';
 
 vi.mock('../useAuth', () => ({ useAuth: () => ({ user: { id: 'u1' } }) }));
 vi.mock('../useToast', () => ({ useToast: () => ({ toast: vi.fn() }) }));
@@ -54,11 +54,11 @@ vi.mock('../../lib/vocabularyService', () => ({
 }));
 
 // NOTE: Skipped in this environment to avoid OOM issues in isolated runs.
-describe.skip('useVocabulary', () => {
+describe.skip('useVocabularyContext', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('loads and mutates vocabulary', async () => {
-    const { result } = renderHook(() => useVocabulary());
+    const { result } = renderHook(() => useVocabularyContext());
 
     await waitFor(() => expect(result.current.vocabulary.length).toBe(1));
 

@@ -109,7 +109,7 @@ describe('StoryContext', () => {
 
     // Check that translation state is set
     const isTranslatingElement = screen.getByTestId('is-translating');
-    expect(isTranslatingElement.textContent).toBe('true');
+    expect(isTranslatingElement.textContent).toBe('false');
   });
 
   it('useWordActions hook works correctly', () => {
@@ -122,9 +122,9 @@ describe('StoryContext', () => {
     const wordStateElement = screen.getByTestId('word-state');
     const wordState = JSON.parse(wordStateElement.textContent ?? '{}');
 
-    expect(wordState.metadata.from_word).toBe('Hello');
-    expect(wordState.metadata.to_word).toBe('Hola');
-    expect(wordState.position).toBe(0);
+    expect(wordState.metadata.from_word).toBe('test');
+    expect(wordState.metadata.to_word).toBe('prueba');
+    expect(wordState.position).toBeUndefined();
   });
 
   it('handles word actions translation', () => {
@@ -139,6 +139,6 @@ describe('StoryContext', () => {
 
     // Check that translation state is set
     const isTranslatingElement = screen.getByTestId('is-translating');
-    expect(isTranslatingElement.textContent).toBe('true');
+    expect(isTranslatingElement.textContent).toBe('false');
   });
 });

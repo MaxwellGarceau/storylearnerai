@@ -15,11 +15,15 @@ vi.mock('../../../../hooks/useLanguages', () => ({
 }));
 
 const mockSave = vi.fn().mockResolvedValue({ id: 1 });
-vi.mock('../../../../hooks/useVocabulary', () => ({
-  useVocabulary: () => ({
+vi.mock('../../../../contexts/VocabularyContext', () => ({
+  useVocabularyContext: () => ({
     saveVocabularyWord: mockSave,
     updateVocabularyWord: vi.fn(),
+    deleteVocabularyWord: vi.fn(),
+    checkVocabularyExists: vi.fn(),
     vocabulary: [],
+    loading: false,
+    error: null,
   }),
 }));
 

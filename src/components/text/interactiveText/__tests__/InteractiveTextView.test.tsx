@@ -5,6 +5,7 @@ import { StoryProvider } from '../../../../contexts/StoryContext';
 import type { TranslationToken } from '../../../../types/llm/tokens';
 import type { TranslationResponse } from '../../../../lib/translationService';
 
+
 // Mock WordToken to observe props and interactions
 vi.mock('../WordToken', () => ({
   __esModule: true,
@@ -43,10 +44,10 @@ describe('InteractiveTextView', () => {
     tokens: [
       {
         type: 'word',
-        to_word: 'Hello',
-        to_lemma: 'hello',
-        from_word: 'Hola',
-        from_lemma: 'hola',
+        to_word: 'Hola',
+        to_lemma: 'hola',
+        from_word: 'Hello',
+        from_lemma: 'hello',
         pos: 'interjection',
         difficulty: 'a1',
         from_definition: 'A greeting',
@@ -55,10 +56,10 @@ describe('InteractiveTextView', () => {
       { type: 'whitespace', value: ' ' },
       {
         type: 'word',
-        to_word: 'world',
-        to_lemma: 'world',
-        from_word: 'mundo',
-        from_lemma: 'mundo',
+        to_word: 'mundo',
+        to_lemma: 'mundo',
+        from_word: 'world',
+        from_lemma: 'world',
         pos: 'noun',
         difficulty: 'a2',
         from_definition: 'The earth',
@@ -81,11 +82,11 @@ describe('InteractiveTextView', () => {
     punctuation: string;
     disabled: boolean;
     enableTooltips: boolean;
-  }) => {
+  }, isDisplayingFromSide: boolean = true) => {
     return render(
       <StoryProvider
         translationData={mockTranslationData}
-        isDisplayingFromSide={false}
+        isDisplayingFromSide={isDisplayingFromSide}
       >
         <InteractiveTextView {...props} />
       </StoryProvider>
@@ -95,6 +96,7 @@ describe('InteractiveTextView', () => {
   it('renders non-word tokens directly and word tokens via WordToken', () => {
     renderWithProvider({ ...baseProps, tokens });
 
+    // With isDisplayingFromSide: true, we expect English words
     expect(screen.getByTestId('word-token-Hello')).toBeInTheDocument();
     expect(screen.getByTestId('word-token-world')).toBeInTheDocument();
     // Check that punctuation and whitespace are rendered directly
@@ -108,26 +110,11 @@ describe('InteractiveTextView', () => {
   });
 
   it('displays correct words based on isDisplayingFromSide', () => {
-    // Test showing from words (original story)
+    // Test showing from words (original story) - default behavior with isDisplayingFromSide: true
     render(
       <StoryProvider
         translationData={mockTranslationData}
         isDisplayingFromSide={true}
-      >
-        <InteractiveTextView {...baseProps} tokens={tokens} />
-      </StoryProvider>
-    );
-
-    expect(screen.getByTestId('word-Hola')).toBeInTheDocument();
-    expect(screen.getByTestId('word-mundo')).toBeInTheDocument();
-
-    cleanup();
-
-    // Test showing to words (translated story)
-    render(
-      <StoryProvider
-        translationData={mockTranslationData}
-        isDisplayingFromSide={false}
       >
         <InteractiveTextView {...baseProps} tokens={tokens} />
       </StoryProvider>

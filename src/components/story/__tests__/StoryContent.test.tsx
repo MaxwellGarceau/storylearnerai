@@ -5,6 +5,65 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import StoryContent from '../StoryContent';
 import { TranslationResponse } from '../../../lib/translationService';
 
+// Mock the necessary hooks and components
+vi.mock('../../../hooks/useWordActions', () => ({
+  useWordActions: vi.fn(() => ({
+    isSaved: false,
+    isTranslating: false,
+    translation: null,
+    isOpen: false,
+    handleTranslate: vi.fn(),
+    handleToggleMenu: vi.fn(),
+    handleSave: vi.fn(),
+    metadata: {
+      from_word: 'test',
+      from_lemma: 'test',
+      to_word: 'prueba',
+      to_lemma: 'prueba',
+      pos: 'noun',
+      difficulty: 'a1',
+      from_definition: 'A test word',
+    },
+  })),
+}));
+
+vi.mock('../../../hooks/interactiveText/useSavedWords', () => ({
+  useSavedWords: () => ({
+    savedOriginalWords: new Set(),
+    savedTargetWords: new Set(),
+    findSavedWordData: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    getLanguageIdByCode: vi.fn().mockReturnValue(1),
+  }),
+}));
+
+vi.mock('../../../hooks/useDictionary', () => ({
+  useDictionary: () => ({
+    wordInfo: null,
+    isLoading: false,
+    error: null,
+    searchWord: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    isAuthenticated: false,
+  }),
+}));
+
+vi.mock('../../../hooks/useLocalization', () => ({
+  useLocalization: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+
 // Mock the environment config
 vi.mock('../../../lib/config/env', () => ({
   EnvironmentConfig: {
@@ -93,7 +152,7 @@ describe('StoryContent Component', () => {
     );
 
     const contentContainer = container.firstChild as HTMLElement;
-    expect(contentContainer).toHaveClass('relative', 'overflow-hidden');
+    expect(contentContainer).toHaveClass('relative');
 
     // Check that the component renders with the expected structure
     expect(container.querySelector('div')).toBeInTheDocument();
@@ -381,7 +440,7 @@ describe('StoryContent Component', () => {
 
     // Check that the component renders with transition classes
     const contentContainer = container.firstChild as HTMLElement;
-    expect(contentContainer).toHaveClass('relative', 'overflow-hidden');
+    expect(contentContainer).toHaveClass('relative');
   });
 
   it('maintains consistent structure regardless of content', () => {

@@ -2,31 +2,44 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import InteractiveText from '../InteractiveText';
 
-vi.mock('../../../hooks/useVocabulary', () => ({
-  useVocabulary: () => ({
-    vocabulary: [
-      {
-        id: 1,
-        user_id: 'u',
-        from_word: 'hola',
-        target_word: 'hello',
-        target_language_id: 1,
-        from_language_id: 2,
-        from_word_context: null,
-        target_word_context: null,
-        definition: null,
-        part_of_speech: null,
-        frequency_level: null,
-        saved_translation_id: null,
-        created_at: '',
-        updated_at: '',
-        from_language_name: 'Spanish',
-        target_language_name: 'English',
-      },
-    ],
+// Mock StoryContext to provide the necessary context
+vi.mock('../../../contexts/StoryContext', () => ({
+  useStoryContext: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+    translationData: {
+      fromLanguage: 'es',
+      toLanguage: 'en',
+      includedVocabulary: [],
+    },
+    isDisplayingFromSide: true, // Show source language (Spanish)
+  }),
+  StoryProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+// Mock useWordActions hook
+vi.mock('../../../hooks/useWordActions', () => ({
+  useWordActions: () => ({
+    isSaved: false,
+    isTranslating: false,
+    translation: null,
+    isOpen: false,
+    handleToggleMenu: vi.fn(),
+    handleTranslate: vi.fn(),
+    handleSave: vi.fn(),
   }),
 }));
 
+// Mock useSavedWords hook to return saved words
+vi.mock('../../../hooks/interactiveText/useSavedWords', () => ({
+  useSavedWords: () => ({
+    savedOriginalWords: new Set<string>(['hola']), // 'hola' is saved in original words
+    savedTargetWords: new Set<string>(),
+    loading: false,
+  }),
+}));
+
+// Mock useLanguages hook
 vi.mock('../../../hooks/useLanguages', () => ({
   useLanguages: () => ({
     getLanguageIdByCode: (code: 'en' | 'es') => (code === 'en' ? 1 : 2),
@@ -35,9 +48,41 @@ vi.mock('../../../hooks/useLanguages', () => ({
 
 describe('InteractiveText saved word highlighting', () => {
   it('applies yellow highlight to saved words', () => {
+    const tokens = [
+      {
+        type: 'word' as const,
+        from_word: 'Hola',
+        from_lemma: 'hola',
+        to_word: 'Hello',
+        to_lemma: 'hello',
+        pos: 'interjection' as const,
+        difficulty: 'a1' as const,
+        from_definition: 'A greeting',
+      },
+      {
+        type: 'whitespace' as const,
+        value: ' ',
+      },
+      {
+        type: 'word' as const,
+        from_word: 'amigo',
+        from_lemma: 'amigo',
+        to_word: 'friend',
+        to_lemma: 'friend',
+        pos: 'noun' as const,
+        difficulty: 'a1' as const,
+        from_definition: 'A friend',
+      },
+      {
+        type: 'punctuation' as const,
+        value: '.',
+      },
+    ];
+
     render(
       <InteractiveText
         text='Hola amigo.'
+        tokens={tokens}
         fromLanguage='es'
         targetLanguage='en'
         enableTooltips={false}
