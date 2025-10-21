@@ -1,6 +1,7 @@
 import React from 'react';
 import { TranslationToken } from '../../../types/llm/tokens';
 import WordToken from './WordToken';
+import { useStoryContext } from '../../../contexts/StoryContext';
 
 interface InteractiveTextViewProps {
   className?: string;
@@ -15,6 +16,8 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   enableTooltips,
   disabled,
 }) => {
+  const { isDisplayingFromSide } = useStoryContext();
+
   // Early return for no tokens
   if (tokens.length === 0) return <span className={className} />;
 
@@ -22,10 +25,13 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
     <span className={className}>
       {tokens.map((token, index) => {
         if (token.type === 'word') {
+          // Choose the appropriate word based on display side
+          const displayWord = isDisplayingFromSide ? token.from_word : token.to_word;
+
           return (
             <WordToken
-              key={`${token.from_word}-${index}`}
-              word={token.from_word}
+              key={`${displayWord}-${index}`}
+              word={displayWord}
               position={index}
               punctuation={''} // Will be handled by next token
               disabled={disabled}
