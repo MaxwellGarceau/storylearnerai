@@ -51,6 +51,7 @@ The primary learning unit, containing:
 ```
 
 **Design Rationale:**
+
 - **to_word first**: The word from the translated story that learners are reading (in toLanguage - the learning language)
 - **Lemmatization**: Helps learners recognize that "corriendo," "corre," and "corrió" are forms of "correr" and creates a unique key for the word
 - **Bidirectional mapping**: Links to the native language word for reference
@@ -68,6 +69,7 @@ Orthographic marks that structure meaning:
 ```
 
 **Design Rationale:**
+
 - **Separated from words**: Allows distinct handling in UI (e.g., no tooltip on punctuation)
 - **Preserves orthography**: Essential for proper text reconstruction
 - **Lightweight**: Minimal metadata since punctuation has universal meaning
@@ -84,6 +86,7 @@ Spacing elements that separate linguistic units:
 ```
 
 **Design Rationale:**
+
 - **Explicit representation**: Ensures perfect text reconstruction
 - **Separate from punctuation**: Different semantic purposes (structure vs. spacing)
 - **Supports varied whitespace**: Spaces, tabs, newlines all preserved
@@ -135,6 +138,7 @@ For an English speaker learning Spanish, reading the translated phrase "Ella va 
 ```
 
 Notice:
+
 1. Two separate entries for "correr" (the Spanish word being learned)
 2. Different English definitions reflecting actual usage in context
 3. Different difficulty levels (physical "correr" is A1, managerial "correr" is B1)
@@ -154,7 +158,8 @@ Notice:
 **Purpose**: The dictionary/base form of the word in the translated story (toLanguage)
 **Example**: For "corriendo" → `"correr"`, for "gatos" → `"gato"`
 
-**Rationale**: 
+**Rationale**:
+
 - Helps learners recognize word families in the target language
 - Essential for vocabulary building (learners track lemmas, not every inflection)
 - Enables dictionary lookups and cross-reference
@@ -166,6 +171,7 @@ Notice:
 **Example**: For Spanish "corriendo" → English `"running"`
 
 **Rationale**:
+
 - Provides translation reference in their native fromLanguage
 - Helps learners make native → foreign language connections
 - Useful for creating mental bridges between languages
@@ -177,6 +183,7 @@ Notice:
 **Example**: For English "running" → `"run"`
 
 **Rationale**:
+
 - Parallel structure to target language lemmatization
 - Helps learners recognize conjugation patterns across languages
 - Supports cross-linguistic morphology understanding
@@ -187,6 +194,7 @@ Notice:
 **Values**: `noun`, `verb`, `adjective`, `adverb`, `pronoun`, `preposition`, `conjunction`, `interjection`, `article`, `determiner`, `other`
 
 **Rationale**:
+
 - **Explicit Grammar Learning**: Research shows explicit grammar instruction aids acquisition
 - **Vocabulary Organization**: Learners naturally categorize words by function
 - **Collocation Awareness**: Understanding that "quick" (adjective) and "quickly" (adverb) have different usage patterns
@@ -198,6 +206,7 @@ Notice:
 **Values**: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`
 
 **Rationale**:
+
 - **Graded Exposure**: Learners can identify words at/above their level
 - **Vocabulary Prioritization**: Focus on appropriate-level words first
 - **Progress Tracking**: "I've mastered all A2 words in this story"
@@ -205,6 +214,7 @@ Notice:
 - **Metacognitive Awareness**: Learners understand what makes a word complex
 
 **CEFR Alignment**:
+
 - **A1**: Most common 500-1000 words, basic grammar
 - **A2**: Common 1000-2000 words, everyday situations
 - **B1**: 2000-3000 words, abstract concepts, complex grammar
@@ -217,6 +227,7 @@ Notice:
 **Example**: For an English speaker learning Spanish, seeing "corriendo": `"Moving rapidly on foot (in this context: exercising)"`
 
 **Rationale**:
+
 - **Native Language = Comprehension**: Cognitive load is reduced when definitions are in the learner's L1 (their native fromLanguage)
 - **Context Specificity**: "(in this context: exercising)" clarifies the specific usage
 - **Eliminates Guessing**: Learners don't have to infer meaning from multiple dictionary definitions
@@ -227,14 +238,15 @@ Notice:
 The definition is provided in the learner's native fromLanguage (the language they're fluent in) to explain the toLanguage word (the language they're learning):
 
 1. **Cognitive Load Theory**: Learning new words in a foreign language while also learning the language itself creates excessive cognitive load
-2. **Input Hypothesis**: Learners need comprehensible input; definitions in an unknown language aren't comprehensible  
+2. **Input Hypothesis**: Learners need comprehensible input; definitions in an unknown language aren't comprehensible
 3. **Practical Efficiency**: Native language definitions provide immediate understanding
 4. **Learning Direction**: The fromLanguage is the learner's native/fluent language, while toLanguage is what they're studying
 
 **Example Learning Scenarios**:
+
 - **English speaker learning Spanish**: fromLanguage=en (native), toLanguage=es (learning)
   - Spanish word "correr" is defined in English: "To run or move rapidly on foot"
-- **Spanish speaker learning English**: fromLanguage=es (native), toLanguage=en (learning)  
+- **Spanish speaker learning English**: fromLanguage=es (native), toLanguage=en (learning)
   - English word "run" is defined in Spanish: "Correr o moverse rápidamente sobre los pies"
 
 ## Integration with Interactive Text System
@@ -281,6 +293,7 @@ The system tracks which words learners have saved:
 ### Context Preservation
 
 When users click a word, the system provides:
+
 - The full sentence context
 - The specific definition for this usage
 - The source word for reference
@@ -317,29 +330,29 @@ The Gemini API receives a detailed prompt requesting structured output:
 {
   "translation": "El gato corre rápidamente.",
   "tokens": [
-    { 
-      "type": "word", 
+    {
+      "type": "word",
       "to_word": "El",
       "from_word": "The",
       "from_definition": "Definite article used to specify a particular noun"
     },
     { "type": "whitespace", "value": " " },
-    { 
-      "type": "word", 
+    {
+      "type": "word",
       "to_word": "gato",
       "from_word": "cat",
       "from_definition": "A small domesticated carnivorous mammal"
     },
     { "type": "whitespace", "value": " " },
-    { 
-      "type": "word", 
+    {
+      "type": "word",
       "to_word": "corre",
       "from_word": "runs",
       "from_definition": "To move rapidly on foot"
     },
     { "type": "whitespace", "value": " " },
-    { 
-      "type": "word", 
+    {
+      "type": "word",
       "to_word": "rápidamente",
       "from_word": "quickly",
       "from_definition": "At a fast speed or rate"
@@ -421,6 +434,7 @@ Learners read Spanish text and interact with words to see English definitions, s
 A typical 500-word story generates ~1,500 tokens (words + punctuation + whitespace). With rich metadata, each word token is ~200-300 bytes, resulting in ~300KB payloads.
 
 **Optimization Strategies**:
+
 1. **Compression**: gzip reduces JSON by ~70%
 2. **Lazy Loading**: Load metadata on-demand for long stories
 3. **Caching**: Cache translated stories with metadata
@@ -429,10 +443,12 @@ A typical 500-word story generates ~1,500 tokens (words + punctuation + whitespa
 ### LLM Token Usage
 
 Requesting structured JSON with detailed metadata increases token usage:
+
 - **Input tokens**: Detailed prompt (~500 tokens)
 - **Output tokens**: ~3-5 tokens per word in story (a 500-word story uses ~2,500 output tokens)
 
 This is acceptable because:
+
 1. The value per token is very high (rich learning metadata)
 2. Modern LLMs like Gemini have large context windows (100K+ tokens)
 3. Cost per token continues to decrease
@@ -443,6 +459,7 @@ This is acceptable because:
 ### 1. Adaptive Definitions
 
 Provide different definition complexity levels based on learner proficiency:
+
 - **Beginner**: Simple definitions in native language
 - **Intermediate**: More detailed definitions in native language
 - **Advanced**: Definitions in target language
@@ -480,11 +497,7 @@ Highlight common word combinations:
 ```json
 {
   "to_word": "make",
-  "collocations": [
-    "make a decision",
-    "make progress",
-    "make sense"
-  ]
+  "collocations": ["make a decision", "make progress", "make sense"]
 }
 ```
 
@@ -528,4 +541,3 @@ Provide word origins for advanced learners:
 The Word Translation System represents a paradigm shift from translation-as-output to translation-as-learning-tool. By providing comprehensive, context-specific metadata for every word, the system transforms passive reading into active language acquisition. The token-based architecture, pedagogically-informed design, and rich metadata create an environment where learners can deeply engage with target language texts while maintaining comprehension through native language support.
 
 This system embodies the principle that effective language learning tools must do more than translate—they must teach.
-

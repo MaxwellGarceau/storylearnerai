@@ -30,9 +30,7 @@ vi.mock('../StoryContent', () => ({
   }) => (
     <div data-testid='story-content'>
       <div>Content - showFrom: {showFrom.toString()}</div>
-      <div>
-        {showFrom ? translationData.fromText : translationData.toText}
-      </div>
+      <div>{showFrom ? translationData.fromText : translationData.toText}</div>
     </div>
   ),
 }));

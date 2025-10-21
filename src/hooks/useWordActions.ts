@@ -28,9 +28,12 @@ export const useWordActions = (word: string, position?: number) => {
     }
   }, [word, position, isTranslating, translateWord]);
 
-  const handleSave = useCallback((metadata: WordMetadata) => {
-    saveWord(word, metadata);
-  }, [word, saveWord]);
+  const handleSave = useCallback(
+    (metadata: WordMetadata) => {
+      saveWord(word, metadata);
+    },
+    [word, saveWord]
+  );
 
   const handleToggleMenu = useCallback(() => {
     toggleWordMenu(word, position);
@@ -43,12 +46,12 @@ export const useWordActions = (word: string, position?: number) => {
     isTranslating,
     translation,
     isOpen: wordState.isOpen,
-    
+
     // Actions
     handleTranslate,
     handleSave,
     handleToggleMenu,
-    
+
     // Metadata
     metadata: wordState.metadata,
   };

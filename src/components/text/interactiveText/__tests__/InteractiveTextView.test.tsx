@@ -1,32 +1,26 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InteractiveTextView from '../InteractiveTextView';
 import { StoryProvider } from '../../../../contexts/StoryContext';
 import type { TranslationToken } from '../../../../types/llm/tokens';
 import type { TranslationResponse } from '../../../../lib/translationService';
 
-interface WordTokenProps {
-  actionWordNormalized: string;
-  inclusionCheckWord: string;
-  cleanWord: string;
-  punctuation: string;
-  isOpen: boolean;
-  isSaved: boolean;
-  isTranslating: boolean;
-  overlayOppositeWord?: string;
-  displaySentenceContext: string;
-  overlaySentenceContext?: string;
-  onOpenChange: (open: boolean) => void;
-  onWordClick: () => void;
-  onTranslate: () => void;
-  enableTooltips: boolean;
-  disabled: boolean;
-}
-
 // Mock WordToken to observe props and interactions
 vi.mock('../WordToken', () => ({
   __esModule: true,
-  default: ({ word, position, punctuation, disabled, enableTooltips }: any) => (
+  default: ({
+    word,
+    position,
+    punctuation,
+    disabled,
+    enableTooltips,
+  }: {
+    word: string;
+    position: number;
+    punctuation: string;
+    disabled: boolean;
+    enableTooltips: boolean;
+  }) => (
     <span data-testid={`word-token-${word}`} data-position={position}>
       <span data-testid={`word-${word}`}>{word}</span>
       <span data-testid={`punctuation-${word}`}>{punctuation}</span>
@@ -81,10 +75,16 @@ describe('InteractiveTextView', () => {
 
   const tokens: TranslationToken[] = mockTranslationData.tokens;
 
-  const renderWithProvider = (props: any) => {
+  const renderWithProvider = (props: {
+    word: string;
+    position: number;
+    punctuation: string;
+    disabled: boolean;
+    enableTooltips: boolean;
+  }) => {
     return render(
-      <StoryProvider 
-        translationData={mockTranslationData} 
+      <StoryProvider
+        translationData={mockTranslationData}
         isDisplayingFromSide={false}
       >
         <InteractiveTextView {...props} />
@@ -110,8 +110,8 @@ describe('InteractiveTextView', () => {
   it('displays correct words based on isDisplayingFromSide', () => {
     // Test showing from words (original story)
     render(
-      <StoryProvider 
-        translationData={mockTranslationData} 
+      <StoryProvider
+        translationData={mockTranslationData}
         isDisplayingFromSide={true}
       >
         <InteractiveTextView {...baseProps} tokens={tokens} />
@@ -125,8 +125,8 @@ describe('InteractiveTextView', () => {
 
     // Test showing to words (translated story)
     render(
-      <StoryProvider 
-        translationData={mockTranslationData} 
+      <StoryProvider
+        translationData={mockTranslationData}
         isDisplayingFromSide={false}
       >
         <InteractiveTextView {...baseProps} tokens={tokens} />

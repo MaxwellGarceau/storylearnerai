@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mocks must be declared before component import
@@ -46,7 +46,8 @@ const mockT = (key: string, params?: Record<string, string | number>) => {
     'savedTranslations.results.delete': 'Delete',
     'savedTranslations.deleteModal.title': 'Delete Translation',
     'savedTranslations.deleteModal.subtitle': 'This action cannot be undone.',
-    'savedTranslations.deleteModal.description': 'Are you sure you want to delete this translation? This action cannot be undone.',
+    'savedTranslations.deleteModal.description':
+      'Are you sure you want to delete this translation? This action cannot be undone.',
     'savedTranslations.deleteModal.preview': 'Preview',
     'common.cancel': 'Cancel',
     'common.delete': 'Delete',

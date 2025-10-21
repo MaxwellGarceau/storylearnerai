@@ -189,10 +189,10 @@ describe('WordMenu Component', () => {
   it('renders with word text', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='hello' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='hello'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
         wordMetadata={createDefaultWordMetadata()}
       >
@@ -206,12 +206,15 @@ describe('WordMenu Component', () => {
   it('displays the word in the menu header', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='world' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='world'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'world', to_word: 'mundo' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'world',
+          to_word: 'mundo',
+        })}
       >
         <span>world</span>
       </WordMenu>
@@ -228,12 +231,15 @@ describe('WordMenu Component', () => {
   it('renders translate, dictionary, and vocabulary save buttons', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='test' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>
@@ -282,7 +288,10 @@ describe('WordMenu Component', () => {
         fromLanguage='en'
         targetLanguage='es'
         targetWord='mundo'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'world', to_word: 'mundo' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'world',
+          to_word: 'mundo',
+        })}
       >
         <span>world</span>
       </WordMenu>
@@ -305,12 +314,15 @@ describe('WordMenu Component', () => {
   it('shows dictionary content when dictionary button is clicked', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='test' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>
@@ -326,12 +338,15 @@ describe('WordMenu Component', () => {
   it('renders with correct open state', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='test' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>
@@ -343,12 +358,15 @@ describe('WordMenu Component', () => {
   it('renders with closed state', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='test' 
-        open={false} 
-        fromLanguage='en' 
+      <WordMenu
+        word='test'
+        open={false}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>
@@ -360,12 +378,15 @@ describe('WordMenu Component', () => {
   it('renders trigger with asChild prop', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu 
-        word='test' 
-        open={true} 
-        fromLanguage='en' 
+      <WordMenu
+        word='test'
+        open={true}
+        fromLanguage='en'
         targetLanguage='es'
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>
@@ -385,7 +406,10 @@ describe('WordMenu Component', () => {
         open={true}
         fromLanguage={'unsupported' as unknown as LanguageCode}
         targetLanguage={'unsupported' as unknown as LanguageCode}
-        wordMetadata={createDefaultWordMetadata({ from_word: 'test', to_word: 'prueba' })}
+        wordMetadata={createDefaultWordMetadata({
+          from_word: 'test',
+          to_word: 'prueba',
+        })}
       >
         <span>test</span>
       </WordMenu>

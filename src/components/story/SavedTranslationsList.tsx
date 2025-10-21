@@ -77,7 +77,8 @@ export default function SavedTranslationsList() {
   >('');
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [translationToDelete, setTranslationToDelete] = useState<DatabaseSavedTranslationWithDetails | null>(null);
+  const [translationToDelete, setTranslationToDelete] =
+    useState<DatabaseSavedTranslationWithDetails | null>(null);
 
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
@@ -88,26 +89,31 @@ export default function SavedTranslationsList() {
     });
   };
 
-  const handleDeleteClick = (translation: DatabaseSavedTranslationWithDetails) => {
+  const handleDeleteClick = (
+    translation: DatabaseSavedTranslationWithDetails
+  ) => {
     setTranslationToDelete(translation);
     setDeleteModalOpen(true);
   };
 
   const handleDeleteConfirm = async (): Promise<boolean> => {
     if (!translationToDelete) return false;
-    
+
     try {
       const success = await deleteSavedTranslation(translationToDelete.id);
       if (success) {
-        logger.info('ui', 'Successfully deleted translation', { id: translationToDelete.id });
+        logger.info('ui', 'Successfully deleted translation', {
+          id: translationToDelete.id,
+        });
         return true;
       } else {
-        logger.error('ui', 'Failed to delete translation', { id: translationToDelete.id });
+        logger.error('ui', 'Failed to delete translation', {
+          id: translationToDelete.id,
+        });
         return false;
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Unknown error';
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       logger.error('ui', 'Failed to delete translation', {
         error: errorMessage,
         id: translationToDelete.id,
@@ -121,19 +127,21 @@ export default function SavedTranslationsList() {
     setTranslationToDelete(null);
   };
 
-
   const handleViewStory = async (
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
     try {
       // Load the full translation with tokens from the database
       const service = new SavedTranslationService();
-      const savedTranslationWithTokens = await service.loadTranslationWithTokens(savedTranslation.id);
-      
+      const savedTranslationWithTokens =
+        await service.loadTranslationWithTokens(savedTranslation.id);
+
       if (savedTranslationWithTokens) {
         // Convert loaded tokens to TranslationToken format
-        const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslationWithTokens.tokens);
-        
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+          savedTranslationWithTokens.tokens
+        );
+
         const translationData: TranslationResponse = {
           fromText: savedTranslationWithTokens.from_text,
           toText: savedTranslationWithTokens.to_text,
@@ -144,7 +152,7 @@ export default function SavedTranslationsList() {
           provider: 'saved',
           model: 'saved-translation',
         };
-        
+
         void navigate(`/story?id=${savedTranslation.id}`, {
           state: {
             translationData,
@@ -153,12 +161,17 @@ export default function SavedTranslationsList() {
           },
         });
       } else {
-        logger.error('ui', 'Failed to load saved translation with tokens', { translationId: savedTranslation.id });
+        logger.error('ui', 'Failed to load saved translation with tokens', {
+          translationId: savedTranslation.id,
+        });
         // Fallback to basic navigation without tokens
         void navigate(`/story?id=${savedTranslation.id}`);
       }
     } catch (error) {
-      logger.error('ui', 'Error loading saved translation with tokens', { error, translationId: savedTranslation.id });
+      logger.error('ui', 'Error loading saved translation with tokens', {
+        error,
+        translationId: savedTranslation.id,
+      });
       // Fallback to basic navigation without tokens
       void navigate(`/story?id=${savedTranslation.id}`);
     }

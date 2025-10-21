@@ -13,4 +13,3 @@ const WhitespaceToken: React.FC<WhitespaceTokenProps> = ({ value }) => {
 };
 
 export default WhitespaceToken;
-

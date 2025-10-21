@@ -18,7 +18,10 @@ export interface InteractiveTextContextValue {
   isSavedWord: (word: string) => boolean;
   isIncludedVocabulary: (word: string) => boolean;
   // Position-based translation helpers
-  getTranslationByPosition: (lemma: string, position: number) => string | undefined;
+  getTranslationByPosition: (
+    lemma: string,
+    position: number
+  ) => string | undefined;
   createPositionKey: (lemma: string, position: number) => string;
   findAllLemmaPositions: (lemma: string) => number[];
   translateAllLemmaInstances: (lemma: string) => void;

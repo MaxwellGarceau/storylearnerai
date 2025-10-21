@@ -19,11 +19,7 @@ interface WordMenuProps {
   position?: number;
 }
 
-const WordMenu: React.FC<WordMenuProps> = ({
-  children,
-  word,
-  position,
-}) => {
+const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const {
     isSaved,
     isTranslating,
@@ -50,13 +46,13 @@ const WordMenu: React.FC<WordMenuProps> = ({
 
   // Search for word info when dictionary is shown
   const wordForDictionary = metadata.from_lemma ?? metadata.from_word;
-  
+
   useEffect(() => {
     if (showDictionary && isOpen) {
       void searchWord(
         wordForDictionary,
         'en', // Simplified for now
-        'es'  // Simplified for now
+        'es' // Simplified for now
       );
     }
   }, [showDictionary, isOpen, wordForDictionary, searchWord]);
@@ -77,10 +73,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
       : 'Translate';
 
   return (
-    <Popover
-      open={isOpen}
-      onOpenChange={handleToggleMenu}
-    >
+    <Popover open={isOpen} onOpenChange={handleToggleMenu}>
       <PopoverTrigger asChild>
         <span
           className={`inline-block align-baseline rounded-sm px-0.5 py-0 transition-colors duration-200 cursor-pointer ${isOpen ? 'bg-primary/30 ring-1 ring-primary/40' : 'hover:bg-primary/20 hover:ring-1 hover:ring-primary/30'}`}
@@ -114,7 +107,9 @@ const WordMenu: React.FC<WordMenuProps> = ({
           {!showDictionary ? (
             <>
               <div className='text-center mb-3'>
-                <div className='text-sm font-medium mb-1'>{metadata.to_word}</div>
+                <div className='text-sm font-medium mb-1'>
+                  {metadata.to_word}
+                </div>
                 {translation && (
                   <div className='text-sm text-muted-foreground'>
                     {translation}

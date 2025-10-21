@@ -59,27 +59,28 @@ export function DeleteTranslationModal({
           <p className='text-muted-foreground mb-4'>
             {t('savedTranslations.deleteModal.description')}
           </p>
-          
+
           <div className='bg-muted/50 rounded-lg p-4 space-y-3'>
             <div>
               <h4 className='font-medium text-sm mb-1'>
-                {translation.title || t('savedTranslations.results.untitled')}
+                {translation.title ?? t('savedTranslations.results.untitled')}
               </h4>
               <p className='text-xs text-muted-foreground'>
-                {translation.from_language.name} → {translation.to_language.name} • {translation.difficulty_level.name}
+                {translation.from_language.name} →{' '}
+                {translation.to_language.name} •{' '}
+                {translation.difficulty_level.name}
               </p>
             </div>
-            
+
             <div className='text-sm'>
               <p className='text-muted-foreground mb-1'>
                 {t('savedTranslations.deleteModal.preview')}:
               </p>
               <div className='bg-background rounded border p-2 max-h-20 overflow-y-auto'>
                 <p className='text-xs leading-relaxed'>
-                  {translation.from_text.length > 100 
+                  {translation.from_text.length > 100
                     ? `${translation.from_text.substring(0, 100)}...`
-                    : translation.from_text
-                  }
+                    : translation.from_text}
                 </p>
               </div>
             </div>
@@ -87,9 +88,9 @@ export function DeleteTranslationModal({
         </div>
 
         <div className='flex gap-3 justify-end'>
-          <Button 
-            variant='outline' 
-            onClick={onClose} 
+          <Button
+            variant='outline'
+            onClick={onClose}
             disabled={isDeleting}
             className='flex items-center gap-2'
           >

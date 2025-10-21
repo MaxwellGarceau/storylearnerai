@@ -15,12 +15,22 @@ vi.mock('../../useWordTranslation', () => ({
 describe('useTranslationCache', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('caches word translations and tracks translating state', async () => {
+  it('caches word translations and tracks translating state', () => {
     const extractSentenceContext = vi.fn(() => 'Hello world.');
     const mockTokens = [
-      { type: 'word', to_lemma: 'hello', from_lemma: 'hello', from_word: 'hola' },
+      {
+        type: 'word',
+        to_lemma: 'hello',
+        from_lemma: 'hello',
+        from_word: 'hola',
+      },
       { type: 'whitespace', value: ' ' },
-      { type: 'word', to_lemma: 'world', from_lemma: 'world', from_word: 'mundo' },
+      {
+        type: 'word',
+        to_lemma: 'world',
+        from_lemma: 'world',
+        from_word: 'mundo',
+      },
     ];
     const { result } = renderHook(() =>
       useTranslationCache({
@@ -31,8 +41,8 @@ describe('useTranslationCache', () => {
 
     expect(result.current.translatingWords.size).toBe(0);
 
-    await act(async () => {
-      await result.current.handleTranslate('hello', 0);
+    act(() => {
+      result.current.handleTranslate('hello', 0);
     });
 
     // Check that translation is stored with position-based key
@@ -40,8 +50,8 @@ describe('useTranslationCache', () => {
     expect(result.current.translatingWords.size).toBe(0);
 
     // Second call should hit cache and not change
-    await act(async () => {
-      await result.current.handleTranslate('hello', 0);
+    act(() => {
+      result.current.handleTranslate('hello', 0);
     });
     expect(result.current.targetWords.get('hello:0')).toBeTruthy();
   });

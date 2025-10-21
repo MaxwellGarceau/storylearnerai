@@ -14,7 +14,14 @@ import {
 } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Alert } from '../components/ui/Alert';
-import { BookOpen, Plus, User as UserIcon, Globe, Loader2, Trash2 } from 'lucide-react';
+import {
+  BookOpen,
+  Plus,
+  User as UserIcon,
+  Globe,
+  Loader2,
+  Trash2,
+} from 'lucide-react';
 import type { DatabaseUser } from '../types/database/user';
 import type { NullableString } from '../types/common';
 import { useTranslation } from 'react-i18next';
@@ -26,14 +33,18 @@ import type { DatabaseSavedTranslationWithDetails } from '../types/database';
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const { getLanguageName } = useLanguages();
-  const { savedTranslations, loading: isLoadingSavedTranslations, deleteSavedTranslation } =
-    useSavedTranslations();
+  const {
+    savedTranslations,
+    loading: isLoadingSavedTranslations,
+    deleteSavedTranslation,
+  } = useSavedTranslations();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<NullableString>(null);
   const [profile, setProfile] = useState<DatabaseUser | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [translationToDelete, setTranslationToDelete] = useState<DatabaseSavedTranslationWithDetails | null>(null);
+  const [translationToDelete, setTranslationToDelete] =
+    useState<DatabaseSavedTranslationWithDetails | null>(null);
   const { t } = useTranslation();
 
   const loadDashboardData = useCallback(async () => {
@@ -69,14 +80,16 @@ export const DashboardPage: React.FC = () => {
     }
   }, [user, loadDashboardData]);
 
-  const handleDeleteClick = (translation: DatabaseSavedTranslationWithDetails) => {
+  const handleDeleteClick = (
+    translation: DatabaseSavedTranslationWithDetails
+  ) => {
     setTranslationToDelete(translation);
     setDeleteModalOpen(true);
   };
 
   const handleDeleteConfirm = async (): Promise<boolean> => {
     if (!translationToDelete) return false;
-    
+
     try {
       const success = await deleteSavedTranslation(translationToDelete.id);
       return success;
@@ -276,29 +289,31 @@ export const DashboardPage: React.FC = () => {
             </Card>
           ) : savedTranslations.length > 0 ? (
             <div className='space-y-3'>
-              {savedTranslations.slice(0, 3).map((translation) => (
+              {savedTranslations.slice(0, 3).map(translation => (
                 <Card
                   key={translation.id}
                   className='hover:shadow-md transition-shadow'
                 >
                   <CardHeader className='pb-2'>
                     <div className='flex items-start justify-between'>
-                      <div 
+                      <div
                         className='flex-1 cursor-pointer'
                         onClick={() => navigate(`/story?id=${translation.id}`)}
                       >
                         <CardTitle className='text-base leading-tight'>
-                          {translation.title ?? t('dashboard.recentActivity.untitledStory')}
+                          {translation.title ??
+                            t('dashboard.recentActivity.untitledStory')}
                         </CardTitle>
                       </div>
                       <div className='flex items-center gap-2'>
                         <Badge variant='secondary' className='text-xs'>
-                          {getLanguageName(translation.from_language.code)} → {getLanguageName(translation.to_language.code)}
+                          {getLanguageName(translation.from_language.code)} →{' '}
+                          {getLanguageName(translation.to_language.code)}
                         </Badge>
                         <Button
                           variant='outline'
                           size='sm'
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             handleDeleteClick(translation);
                           }}
@@ -309,7 +324,7 @@ export const DashboardPage: React.FC = () => {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent 
+                  <CardContent
                     className='pt-0 cursor-pointer'
                     onClick={() => navigate(`/story?id=${translation.id}`)}
                   >
@@ -329,7 +344,9 @@ export const DashboardPage: React.FC = () => {
                     onClick={() => navigate('/saved-translations')}
                     className='text-sm'
                   >
-                    {t('dashboard.recentActivity.viewAll', { count: savedTranslations.length })}
+                    {t('dashboard.recentActivity.viewAll', {
+                      count: savedTranslations.length,
+                    })}
                   </Button>
                 </div>
               )}
@@ -337,7 +354,9 @@ export const DashboardPage: React.FC = () => {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>{t('dashboard.recentActivity.noActivity')}</CardTitle>
+                <CardTitle>
+                  {t('dashboard.recentActivity.noActivity')}
+                </CardTitle>
                 <CardDescription>
                   {t('dashboard.recentActivity.noActivityDescription')}
                 </CardDescription>

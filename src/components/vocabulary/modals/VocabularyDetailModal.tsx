@@ -43,7 +43,9 @@ export function VocabularyDetailModal({
 
         if (savedTranslation) {
           // Convert loaded tokens to TranslationToken format
-          const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslation.tokens);
+          const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+            savedTranslation.tokens
+          );
 
           // Prefer URL param navigation for deep linking and refresh safety
           void navigate(`/story?id=${savedTranslation.id}`, {

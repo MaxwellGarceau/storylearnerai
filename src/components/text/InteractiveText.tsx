@@ -32,17 +32,20 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   includedVocabulary = [],
 }) => {
   // Create mock translation data for the context
-  const translationData = useMemo(() => ({
-    fromText: text || '',
-    toText: text || '', // Simplified for now
-    fromLanguage,
-    toLanguage: targetLanguage,
-    difficulty: 'a1' as const,
-    provider: 'mock' as const,
-    model: 'test-model',
-    tokens,
-    includedVocabulary,
-  }), [text, fromLanguage, targetLanguage, tokens, includedVocabulary]);
+  const translationData = useMemo(
+    () => ({
+      fromText: text ?? '',
+      toText: text ?? '', // Simplified for now
+      fromLanguage,
+      toLanguage: targetLanguage,
+      difficulty: 'a1' as const,
+      provider: 'mock' as const,
+      model: 'test-model',
+      tokens,
+      includedVocabulary,
+    }),
+    [text, fromLanguage, targetLanguage, tokens, includedVocabulary]
+  );
 
   // Early return for undefined or empty text
   if (!text?.trim()) {

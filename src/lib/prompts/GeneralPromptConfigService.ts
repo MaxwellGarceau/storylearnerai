@@ -439,9 +439,10 @@ Please include and naturally use the following target-language words when approp
       .map(w => `- ${w}`)
       .join('\n');
 
-    return this.VOCABULARY_SECTION
-      .replace('{difficulty}', context.difficulty)
-      .replace('{vocabList}', vocabList);
+    return this.VOCABULARY_SECTION.replace(
+      '{difficulty}',
+      context.difficulty
+    ).replace('{vocabList}', vocabList);
   }
 
   /**

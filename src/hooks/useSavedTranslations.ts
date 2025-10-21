@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import type {
-  DatabaseSavedTranslationWithDetails,
-} from '../types/database/translation';
+import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation';
 import type { VoidPromise } from '../types/common';
 import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
@@ -89,20 +87,27 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
 
       try {
         // Convert TranslationToken[] to the format expected by saveTranslationWithTokens
-        const convertedTokens = TokenConverter.convertUITokensToDatabaseTokens(translationData.tokens);
-        const tokens = [...convertedTokens.word, ...convertedTokens.punctuation, ...convertedTokens.whitespace];
+        const convertedTokens = TokenConverter.convertUITokensToDatabaseTokens(
+          translationData.tokens
+        );
+        const tokens = [
+          ...convertedTokens.word,
+          ...convertedTokens.punctuation,
+          ...convertedTokens.whitespace,
+        ];
 
-        const translationId = await savedTranslationService.saveTranslationWithTokens({
-          userId: user.id,
-          fromLanguage: translationData.fromLanguage,
-          toLanguage: translationData.toLanguage,
-          fromText,
-          toText: translationData.toText,
-          difficultyLevel: translationData.difficulty,
-          title,
-          notes,
-          tokens,
-        });
+        const translationId =
+          await savedTranslationService.saveTranslationWithTokens({
+            userId: user.id,
+            fromLanguage: translationData.fromLanguage,
+            toLanguage: translationData.toLanguage,
+            fromText,
+            toText: translationData.toText,
+            difficultyLevel: translationData.difficulty,
+            title,
+            notes,
+            tokens,
+          });
 
         // Refresh the translations list
         await loadTranslations();
@@ -152,7 +157,10 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       setError(null);
 
       try {
-        await savedTranslationService.deleteSavedTranslation(translationId, user.id);
+        await savedTranslationService.deleteSavedTranslation(
+          translationId,
+          user.id
+        );
 
         // Refresh the translations list
         await loadTranslations();
@@ -172,7 +180,9 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
         return true;
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : 'Failed to delete translation';
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete translation';
         setError(errorMessage);
         toast({
           title: 'Error',

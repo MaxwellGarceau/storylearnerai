@@ -11,7 +11,7 @@ import { logger } from '../logger';
 
 /**
  * Validates translation tokens from LLM responses
- * 
+ *
  * Two-tier validation:
  * 1. Required fields: Must be present or validation fails (triggers fallback)
  * 2. Metadata fields: Can be missing, will be set to null with warning
@@ -338,7 +338,9 @@ export class TranslationTokenValidator {
     const warnings: string[] = [];
 
     if (!t.value || typeof t.value !== 'string') {
-      errors.push(`Whitespace token at index ${index} missing or invalid value`);
+      errors.push(
+        `Whitespace token at index ${index} missing or invalid value`
+      );
       return { token: null as never, errors, warnings };
     }
 
@@ -349,4 +351,3 @@ export class TranslationTokenValidator {
     };
   }
 }
-

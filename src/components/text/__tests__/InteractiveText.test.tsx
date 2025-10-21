@@ -209,14 +209,26 @@ describe('InteractiveText Component', () => {
   });
 
   it('handles empty text', () => {
-    render(<InteractiveText text='' tokens={[]} fromLanguage='en' targetLanguage='es' />);
+    render(
+      <InteractiveText
+        text=''
+        tokens={[]}
+        fromLanguage='en'
+        targetLanguage='es'
+      />
+    );
     // For empty text, we should not have any word highlights
     expect(screen.queryByTestId(/word-highlight-/)).not.toBeInTheDocument();
   });
 
   it('handles text with only punctuation', () => {
     render(
-      <InteractiveText text='!@#$%' tokens={[]} fromLanguage='en' targetLanguage='es' />
+      <InteractiveText
+        text='!@#$%'
+        tokens={[]}
+        fromLanguage='en'
+        targetLanguage='es'
+      />
     );
 
     // Should not create any word highlights for pure punctuation

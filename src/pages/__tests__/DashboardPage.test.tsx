@@ -373,7 +373,9 @@ describe('DashboardPage Component', () => {
 
     void renderWithRouter(<DashboardPage />);
     await waitFor(() => {
-      expect(screen.getByText('Loading recent activity...')).toBeInTheDocument();
+      expect(
+        screen.getByText('Loading recent activity...')
+      ).toBeInTheDocument();
     });
   });
 });

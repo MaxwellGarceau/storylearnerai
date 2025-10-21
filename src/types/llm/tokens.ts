@@ -23,7 +23,7 @@ export interface BaseToken {
 
 /**
  * Word token with linguistic metadata
- * 
+ *
  * Required fields: type, to_word, to_lemma, from_word, from_lemma
  * Metadata fields: pos, difficulty, from_definition (can be null if validation fails)
  */
@@ -80,4 +80,3 @@ export interface TokenValidationResult {
   warnings: string[]; // For metadata field issues
   data: TranslationWithTokens | null;
 }
-

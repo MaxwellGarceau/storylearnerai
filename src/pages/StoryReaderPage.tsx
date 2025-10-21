@@ -50,10 +50,14 @@ const StoryReaderPage: React.FC = () => {
         setErrorById(null);
         try {
           const service = new SavedTranslationService();
-          const saved = await service.loadTranslationWithTokens(urlSavedTranslationId);
+          const saved = await service.loadTranslationWithTokens(
+            urlSavedTranslationId
+          );
           if (saved) {
             // Convert loaded tokens to TranslationToken format
-            const tokens = TokenConverter.convertDatabaseTokensToUITokens(saved.tokens);
+            const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+              saved.tokens
+            );
 
             const response: TranslationResponse = {
               fromText: saved.from_text,

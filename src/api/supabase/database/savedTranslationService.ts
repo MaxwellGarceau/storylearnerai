@@ -156,7 +156,7 @@ export class SavedTranslationService {
     // 2) Insert tokens in order
     const tokenInserts = tokens.map((token, index) => {
       if (token.type === 'word') {
-        const word = token as WordTokenInput;
+        const word = token;
         return {
           translation_id: translationId,
           token_index: index,
@@ -171,7 +171,7 @@ export class SavedTranslationService {
           token_value: null,
         };
       }
-      const generic = token as PunctuationOrWhitespaceTokenInput;
+      const generic = token;
       return {
         translation_id: translationId,
         token_index: index,

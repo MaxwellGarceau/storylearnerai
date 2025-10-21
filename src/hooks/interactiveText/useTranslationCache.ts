@@ -5,7 +5,6 @@ export function useTranslationCache(args: {
   extractSentenceContext: (wordIndex: number) => string;
   tokens?: TranslationToken[]; // Add tokens to track all lemma positions
 }) {
-
   // Position-based translation cache: key = "lemma:position"
   const [targetWords, setTargetWords] = useState<Map<string, string>>(
     new Map()
@@ -36,7 +35,10 @@ export function useTranslationCache(args: {
       const positions: number[] = [];
       args.tokens.forEach((token, index) => {
         // Only check word tokens (skip punctuation and whitespace)
-        if (token.type === 'word' && (token.to_lemma === lemma || token.from_lemma === lemma)) {
+        if (
+          token.type === 'word' &&
+          (token.to_lemma === lemma || token.from_lemma === lemma)
+        ) {
           positions.push(index);
         }
       });
@@ -62,11 +64,13 @@ export function useTranslationCache(args: {
   const translateAllLemmaInstances = useCallback(
     (lemma: string) => {
       if (!args.tokens) return;
-      
+
       const allPositions = findAllLemmaPositions(lemma);
-      
+
       // Set translating state for all positions
-      const positionKeys = allPositions.map(pos => createPositionKey(lemma, pos));
+      const positionKeys = allPositions.map(pos =>
+        createPositionKey(lemma, pos)
+      );
       setTranslatingWords(prev => {
         const newSet = new Set(prev);
         positionKeys.forEach(key => newSet.add(key));
@@ -74,7 +78,7 @@ export function useTranslationCache(args: {
       });
 
       // Use existing metadata to translate all instances
-      allPositions.forEach((position) => {
+      allPositions.forEach(position => {
         // Skip if already translated
         const positionKey = createPositionKey(lemma, position);
         if (targetWords.has(positionKey)) return;
@@ -96,21 +100,16 @@ export function useTranslationCache(args: {
         return newSet;
       });
     },
-    [
-      args.tokens,
-      findAllLemmaPositions,
-      createPositionKey,
-      targetWords,
-    ]
+    [args.tokens, findAllLemmaPositions, createPositionKey, targetWords]
   );
 
   const handleTranslate = useCallback(
-    async (normalizedWord: string, wordIndex: number) => {
+    (normalizedWord: string, wordIndex: number) => {
       const positionKey = createPositionKey(normalizedWord, wordIndex);
-      
+
       // Check if we already have a translation for this specific position
       if (targetWords.has(positionKey)) return;
-      
+
       // Also check if we have a lemma-based translation (for backward compatibility)
       if (targetWords.has(normalizedWord)) {
         // Copy lemma-based translation to position-based key
@@ -124,15 +123,11 @@ export function useTranslationCache(args: {
         });
         return;
       }
-      
+
       // Use the new function to translate all instances of this lemma
       translateAllLemmaInstances(normalizedWord);
     },
-    [
-      targetWords,
-      createPositionKey,
-      translateAllLemmaInstances,
-    ]
+    [targetWords, createPositionKey, translateAllLemmaInstances]
   );
 
   return {

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { StoryProvider, useStoryContext } from '../StoryContext';
 import { useWordActions } from '../../hooks/useWordActions';
 import { TranslationResponse } from '../../lib/translationService';
@@ -8,24 +8,35 @@ import { TranslationResponse } from '../../lib/translationService';
 const TestComponent = () => {
   const { translateWord, getWordState, isWordTranslating } = useStoryContext();
   const wordState = getWordState('hello', 0);
-  
+
   return (
     <div>
-      <div data-testid="word-state">{JSON.stringify(wordState)}</div>
-      <div data-testid="is-translating">{isWordTranslating('hello', 0).toString()}</div>
+      <div data-testid='word-state'>{JSON.stringify(wordState)}</div>
+      <div data-testid='is-translating'>
+        {isWordTranslating('hello', 0).toString()}
+      </div>
       <button onClick={() => translateWord('hello', 0)}>Translate</button>
     </div>
   );
 };
 
 // Test component that uses word actions
-const WordActionsTestComponent = ({ word, position }: { word: string; position?: number }) => {
-  const { wordState, isTranslating, handleTranslate } = useWordActions(word, position);
-  
+const WordActionsTestComponent = ({
+  word,
+  position,
+}: {
+  word: string;
+  position?: number;
+}) => {
+  const { wordState, isTranslating, handleTranslate } = useWordActions(
+    word,
+    position
+  );
+
   return (
     <div>
-      <div data-testid="word-state">{JSON.stringify(wordState)}</div>
-      <div data-testid="is-translating">{isTranslating.toString()}</div>
+      <div data-testid='word-state'>{JSON.stringify(wordState)}</div>
+      <div data-testid='is-translating'>{isTranslating.toString()}</div>
       <button onClick={handleTranslate}>Translate</button>
     </div>
   );
@@ -77,8 +88,8 @@ describe('StoryContext', () => {
     );
 
     const wordStateElement = screen.getByTestId('word-state');
-    const wordState = JSON.parse(wordStateElement.textContent || '{}');
-    
+    const wordState = JSON.parse(wordStateElement.textContent ?? '{}');
+
     expect(wordState.metadata.from_word).toBe('Hello');
     expect(wordState.metadata.to_word).toBe('Hola');
     expect(wordState.isOpen).toBe(false);
@@ -86,7 +97,7 @@ describe('StoryContext', () => {
     expect(wordState.isTranslating).toBe(false);
   });
 
-  it('handles word translation', async () => {
+  it('handles word translation', () => {
     render(
       <StoryProvider translationData={mockTranslationData}>
         <TestComponent />
@@ -104,22 +115,22 @@ describe('StoryContext', () => {
   it('useWordActions hook works correctly', () => {
     render(
       <StoryProvider translationData={mockTranslationData}>
-        <WordActionsTestComponent word="Hello" position={0} />
+        <WordActionsTestComponent word='Hello' position={0} />
       </StoryProvider>
     );
 
     const wordStateElement = screen.getByTestId('word-state');
-    const wordState = JSON.parse(wordStateElement.textContent || '{}');
-    
+    const wordState = JSON.parse(wordStateElement.textContent ?? '{}');
+
     expect(wordState.metadata.from_word).toBe('Hello');
     expect(wordState.metadata.to_word).toBe('Hola');
     expect(wordState.position).toBe(0);
   });
 
-  it('handles word actions translation', async () => {
+  it('handles word actions translation', () => {
     render(
       <StoryProvider translationData={mockTranslationData}>
-        <WordActionsTestComponent word="Hello" position={0} />
+        <WordActionsTestComponent word='Hello' position={0} />
       </StoryProvider>
     );
 

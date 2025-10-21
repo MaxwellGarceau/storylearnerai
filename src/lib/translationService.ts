@@ -199,11 +199,15 @@ class TranslationService {
       const prompt =
         generalPromptConfigService.buildWordTranslationPrompt(context);
 
-      logger.debug('translation', 'Prompt, context, and request before llm call', {
-        prompt,
-        context,
-        request,
-      });
+      logger.debug(
+        'translation',
+        'Prompt, context, and request before llm call',
+        {
+          prompt,
+          context,
+          request,
+        }
+      );
 
       const llmResponse = await llmServiceManager.generateCompletion({
         prompt,

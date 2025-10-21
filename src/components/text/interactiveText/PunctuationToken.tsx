@@ -13,4 +13,3 @@ const PunctuationToken: React.FC<PunctuationTokenProps> = ({ value }) => {
 };
 
 export default PunctuationToken;
-

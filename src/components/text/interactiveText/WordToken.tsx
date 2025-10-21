@@ -77,36 +77,34 @@ const WordToken: React.FC<WordTokenProps> = ({
   disabled = false,
   enableTooltips = true,
 }) => {
-  const {
-    isSaved,
-    isTranslating,
-    translation,
-    isOpen,
-    handleToggleMenu,
-  } = useWordActions(word, position);
+  const { isSaved, isTranslating, translation, isOpen, handleToggleMenu } =
+    useWordActions(word, position);
 
   // Get language information from StoryContext
   const { translationData, isDisplayingFromSide } = useStoryContext();
   const fromLanguage = translationData.fromLanguage;
   const toLanguage = translationData.toLanguage;
-  const includedVocabulary = translationData.includedVocabulary || [];
+  const includedVocabulary = translationData.includedVocabulary ?? [];
 
   // Check if word is saved in vocabulary
-  const { savedOriginalWords, savedTargetWords, loading: vocabularyLoading } = useSavedWords(fromLanguage, toLanguage);
-  
+  const {
+    savedOriginalWords,
+    savedTargetWords,
+    loading: vocabularyLoading,
+  } = useSavedWords(fromLanguage, toLanguage);
+
   // Check if word is in included vocabulary (user-selected for translation)
-  const isWordIncludedVocabulary = includedVocabulary.some(vocabWord =>
-    vocabWord.toLowerCase() === word.toLowerCase()
+  const isWordIncludedVocabulary = includedVocabulary.some(
+    vocabWord => vocabWord.toLowerCase() === word.toLowerCase()
   );
 
   // When displaying from side, check if the displayed word (from language) is in vocabulary
   // When displaying to side, check if the corresponding from language word is in vocabulary
-  const isWordInVocabulary = !vocabularyLoading && (
-    isDisplayingFromSide 
-      ? savedOriginalWords.has(word.toLowerCase())  // Displaying from language, check original words
-      : savedTargetWords.has(word.toLowerCase())     // Displaying to language, check target words
-  );
-
+  const isWordInVocabulary =
+    !vocabularyLoading &&
+    (isDisplayingFromSide
+      ? savedOriginalWords.has(word.toLowerCase()) // Displaying from language, check original words
+      : savedTargetWords.has(word.toLowerCase())); // Displaying to language, check target words
 
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({
@@ -138,10 +136,7 @@ const WordToken: React.FC<WordTokenProps> = ({
 
   return (
     <span>
-      <WordMenu
-        word={word}
-        position={position}
-      >
+      <WordMenu word={word} position={position}>
         {translation ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>

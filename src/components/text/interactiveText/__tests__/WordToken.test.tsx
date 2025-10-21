@@ -143,7 +143,7 @@ describe('WordToken', () => {
 
     // Click on the WordHighlight span element that contains the text
     const helloElements = screen.getAllByText('Hello');
-    const wordHighlightElement = helloElements.find(el => 
+    const wordHighlightElement = helloElements.find(el =>
       el.closest('span[class*="inline-block transition-colors"]')
     );
     fireEvent.click(wordHighlightElement!);

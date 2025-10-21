@@ -142,16 +142,22 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   };
 
-  const openSavedTranslation = async (saved: DatabaseSavedTranslationWithDetails) => {
+  const openSavedTranslation = async (
+    saved: DatabaseSavedTranslationWithDetails
+  ) => {
     try {
       // Load the full translation with tokens from the database
       const service = new SavedTranslationService();
-      const savedTranslation = await service.loadTranslationWithTokens(saved.id);
-      
+      const savedTranslation = await service.loadTranslationWithTokens(
+        saved.id
+      );
+
       if (savedTranslation) {
         // Convert loaded tokens to TranslationToken format
-        const tokens = TokenConverter.convertDatabaseTokensToUITokens(savedTranslation.tokens);
-        
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+          savedTranslation.tokens
+        );
+
         void navigate(`/story?id=${saved.id}`, {
           state: {
             translationData: {
@@ -169,12 +175,17 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
           },
         });
       } else {
-        logger.error('ui', 'Failed to load saved translation with tokens', { translationId: saved.id });
+        logger.error('ui', 'Failed to load saved translation with tokens', {
+          translationId: saved.id,
+        });
         // Fallback to basic navigation without tokens
         void navigate(`/story?id=${saved.id}`);
       }
     } catch (error) {
-      logger.error('ui', 'Error loading saved translation with tokens', { error, translationId: saved.id });
+      logger.error('ui', 'Error loading saved translation with tokens', {
+        error,
+        translationId: saved.id,
+      });
       // Fallback to basic navigation without tokens
       void navigate(`/story?id=${saved.id}`);
     }

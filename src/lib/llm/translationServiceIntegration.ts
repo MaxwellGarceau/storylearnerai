@@ -6,7 +6,7 @@ import { logger } from '../logger';
 
 /**
  * Integration layer between LLM Service and Translation Service
- * 
+ *
  * Responsibilities:
  * - Request translation from LLM
  * - Validate response format
@@ -16,7 +16,7 @@ import { logger } from '../logger';
 export class TranslationServiceIntegration {
   /**
    * Generates translation with structured tokens
-   * 
+   *
    * @param prompt - The translation prompt
    * @param maxTokens - Maximum tokens for LLM response
    * @param temperature - LLM temperature setting
@@ -106,7 +106,7 @@ export class TranslationServiceIntegration {
 
   /**
    * Generates fallback tokens from plain text response
-   * 
+   *
    * @param rawContent - Plain text from LLM
    * @returns Translation with fallback tokens
    */
@@ -125,8 +125,10 @@ export class TranslationServiceIntegration {
       const tokens = FallbackTokenGenerator.generateTokens(translation);
 
       // Validate reconstruction (for debugging)
-      const reconstructionValid =
-        FallbackTokenGenerator.validateReconstruction(translation, tokens);
+      const reconstructionValid = FallbackTokenGenerator.validateReconstruction(
+        translation,
+        tokens
+      );
 
       if (!reconstructionValid) {
         logger.error(
@@ -161,4 +163,3 @@ export class TranslationServiceIntegration {
     }
   }
 }
-

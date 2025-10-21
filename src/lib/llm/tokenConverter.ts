@@ -1,10 +1,20 @@
-import type { TranslationToken, WordToken, PunctuationToken, WhitespaceToken, PartOfSpeech } from '../../types/llm/tokens';
+import type {
+  TranslationToken,
+  WordToken,
+  PunctuationToken,
+  WhitespaceToken,
+  PartOfSpeech,
+} from '../../types/llm/tokens';
 import type { DifficultyLevel } from '../../types/llm/prompts';
-import type { LoadedWordToken, LoadedNonWordToken, LoadedTranslationToken } from '../../api/supabase/database/savedTranslationService';
+import type {
+  LoadedWordToken,
+  LoadedNonWordToken,
+  LoadedTranslationToken,
+} from '../../api/supabase/database/savedTranslationService';
 
 /**
  * Utility class for converting between different token formats
- * 
+ *
  * Handles conversion between:
  * - Database token format (LoadedWordToken, LoadedPunctuationToken, LoadedWhitespaceToken)
  * - UI token format (TranslationToken, WordToken, PunctuationToken, WhitespaceToken)
@@ -12,7 +22,7 @@ import type { LoadedWordToken, LoadedNonWordToken, LoadedTranslationToken } from
 export class TokenConverter {
   /**
    * Converts database tokens to UI tokens
-   * 
+   *
    * @param dbTokens - Array of tokens from database
    * @returns Array of tokens for UI consumption
    */
@@ -28,7 +38,9 @@ export class TokenConverter {
         case 'whitespace':
           return this.convertWhitespaceToken(token);
         default:
-          throw new Error(`Unknown token type: ${(token as any).type}`);
+          throw new Error(
+            `Unknown token type: ${(token as LoadedTranslationToken).token_type}`
+          );
       }
     });
   }
@@ -52,7 +64,9 @@ export class TokenConverter {
   /**
    * Converts a database punctuation token to UI punctuation token
    */
-  private static convertPunctuationToken(dbToken: LoadedNonWordToken): PunctuationToken {
+  private static convertPunctuationToken(
+    dbToken: LoadedNonWordToken
+  ): PunctuationToken {
     return {
       type: 'punctuation' as const,
       value: dbToken.value,
@@ -62,7 +76,9 @@ export class TokenConverter {
   /**
    * Converts a database whitespace token to UI whitespace token
    */
-  private static convertWhitespaceToken(dbToken: LoadedNonWordToken): WhitespaceToken {
+  private static convertWhitespaceToken(
+    dbToken: LoadedNonWordToken
+  ): WhitespaceToken {
     return {
       type: 'whitespace' as const,
       value: dbToken.value,
@@ -71,7 +87,7 @@ export class TokenConverter {
 
   /**
    * Converts UI tokens to database token format
-   * 
+   *
    * @param uiTokens - Array of tokens from UI
    * @returns Array of tokens for database storage
    */
@@ -113,7 +129,9 @@ export class TokenConverter {
           });
           break;
         default:
-          throw new Error(`Unknown token type: ${(token as any).type}`);
+          throw new Error(
+            `Unknown token type: ${(token as LoadedTranslationToken).token_type}`
+          );
       }
     });
 
@@ -122,7 +140,7 @@ export class TokenConverter {
 
   /**
    * Validates that token conversion preserves data integrity
-   * 
+   *
    * @param originalTokens - Original tokens
    * @param convertedTokens - Converted tokens
    * @returns true if conversion is valid
@@ -151,13 +169,15 @@ export class TokenConverter {
           if (original.from_word !== converted.from_word) return false;
           if (original.from_lemma !== converted.from_lemma) return false;
           if ((original.pos ?? null) !== converted.pos) return false;
-          if ((original.difficulty ?? null) !== converted.difficulty) return false;
-          if ((original.from_definition ?? null) !== converted.from_definition) return false;
+          if ((original.difficulty ?? null) !== converted.difficulty)
+            return false;
+          if ((original.from_definition ?? null) !== converted.from_definition)
+            return false;
           break;
         case 'punctuation':
         case 'whitespace':
           if (converted.type !== original.type) return false;
-          if (original.value !== (converted as PunctuationToken | WhitespaceToken).value) return false;
+          if (original.value !== converted.value) return false;
           break;
       }
     }

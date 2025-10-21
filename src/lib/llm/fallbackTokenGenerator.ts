@@ -4,7 +4,7 @@ import { logger } from '../logger';
 /**
  * Generates tokens from plain text when LLM doesn't return proper JSON
  * This is a deterministic fallback that maintains data structure consistency
- * 
+ *
  * Note: Fallback tokens have minimal metadata:
  * - No from_word/from_lemma (unknown)
  * - No pos/difficulty/from_definition (set to null)
@@ -24,7 +24,7 @@ export class FallbackTokenGenerator {
     logger.time('llm', 'fallback-token-generation');
 
     const tokens: TranslationToken[] = [];
-    
+
     // Split on whitespace, keeping the delimiters
     const segments = text.split(/(\s+)/);
 
@@ -124,4 +124,3 @@ export class FallbackTokenGenerator {
     return isValid;
   }
 }
-

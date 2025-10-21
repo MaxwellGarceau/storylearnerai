@@ -26,7 +26,9 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
       {tokens.map((token, index) => {
         if (token.type === 'word') {
           // Choose the appropriate word based on display side
-          const displayWord = isDisplayingFromSide ? token.from_word : token.to_word;
+          const displayWord = isDisplayingFromSide
+            ? token.from_word
+            : token.to_word;
 
           return (
             <WordToken
@@ -39,17 +41,9 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
             />
           );
         } else if (token.type === 'punctuation') {
-          return (
-            <span key={`punctuation-${index}`}>
-              {token.value}
-            </span>
-          );
+          return <span key={`punctuation-${index}`}>{token.value}</span>;
         } else if (token.type === 'whitespace') {
-          return (
-            <span key={`whitespace-${index}`}>
-              {token.value}
-            </span>
-          );
+          return <span key={`whitespace-${index}`}>{token.value}</span>;
         }
         return null;
       })}

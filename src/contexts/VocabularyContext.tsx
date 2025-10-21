@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 import { VocabularyService } from '../lib/vocabularyService';
 import type {
   Vocabulary,
@@ -34,7 +40,9 @@ const VocabularyContext = createContext<VocabularyContextValue | null>(null);
 export const useVocabularyContext = () => {
   const context = useContext(VocabularyContext);
   if (!context) {
-    throw new Error('useVocabularyContext must be used within a VocabularyProvider');
+    throw new Error(
+      'useVocabularyContext must be used within a VocabularyProvider'
+    );
   }
   return context;
 };
@@ -115,7 +123,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (err) {
         // On error, refetch to ensure consistency
         await loadVocabulary();
-        
+
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to save vocabulary word';
         setError(errorMessage);
@@ -163,7 +171,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (err) {
         // On error, refetch to ensure consistency
         await loadVocabulary();
-        
+
         const errorMessage =
           err instanceof Error
             ? err.message
@@ -210,7 +218,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (err) {
         // On error, refetch to ensure consistency
         await loadVocabulary();
-        
+
         const errorMessage =
           err instanceof Error
             ? err.message

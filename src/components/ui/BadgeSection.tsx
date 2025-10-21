@@ -16,7 +16,6 @@ export function BadgeSection({
   frequencyKey,
   className = '',
 }: BadgeSectionProps) {
-
   if (!partOfSpeech && !frequencyLevel) {
     return null;
   }
