@@ -2,6 +2,8 @@ import React from 'react';
 import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
 import { useWordActions } from '../../../hooks/useWordActions';
+import { useSavedWords } from '../../../hooks/interactiveText/useSavedWords';
+import { useStoryContext } from '../../../contexts/StoryContext';
 import { getVocabularyHighlightClass } from '../../../lib/vocabularyHighlightService';
 import type { DifficultyLevel } from '../../../types/llm/prompts';
 import type { PartOfSpeech } from '../../../types/llm/tokens';
@@ -83,10 +85,27 @@ const WordToken: React.FC<WordTokenProps> = ({
     handleToggleMenu,
   } = useWordActions(word, position);
 
+  // Get language information from StoryContext
+  const { translationData, isDisplayingFromSide } = useStoryContext();
+  const fromLanguage = translationData.fromLanguage;
+  const toLanguage = translationData.toLanguage;
+
+  // Check if word is saved in vocabulary
+  const { savedOriginalWords, savedTargetWords, loading: vocabularyLoading } = useSavedWords(fromLanguage, toLanguage);
+  
+  // When displaying from side, check if the displayed word (from language) is in vocabulary
+  // When displaying to side, check if the corresponding from language word is in vocabulary
+  const isWordInVocabulary = !vocabularyLoading && (
+    isDisplayingFromSide 
+      ? savedOriginalWords.has(word.toLowerCase())  // Displaying from language, check original words
+      : savedTargetWords.has(word.toLowerCase())     // Displaying to language, check target words
+  );
+
+
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({
     isIncludedVocabulary: false, // Will be provided by context
-    isSaved,
+    isSaved: isSaved || isWordInVocabulary, // Check both local state and vocabulary
     isTranslating,
     isTranslated: !!translation,
     isActive: isOpen,

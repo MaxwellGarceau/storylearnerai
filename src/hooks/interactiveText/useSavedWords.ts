@@ -19,7 +19,7 @@ export function useSavedWords(
   fromLanguage: LanguageCode,
   targetLanguage: LanguageCode
 ) {
-  const { vocabulary } = useVocabularyContext();
+  const { vocabulary, loading } = useVocabularyContext();
   const { getLanguageIdByCode } = useLanguages();
 
   const fromLanguageId = getLanguageIdByCode(fromLanguage);
@@ -96,5 +96,6 @@ export function useSavedWords(
     findSavedWordData,
     savedTargetWords,
     findSavedByTargetWord,
+    loading,
   };
 }
