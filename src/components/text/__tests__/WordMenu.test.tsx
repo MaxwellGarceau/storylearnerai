@@ -434,7 +434,10 @@ describe('WordMenu Component', () => {
     const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
     expect(vocabularySaveButton).toBeInTheDocument();
     expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
-    expect(vocabularySaveButton).toHaveAttribute('data-target-language-id', '2');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-target-language-id',
+      '2'
+    );
   });
 
   it('shows translating spinner and text when isTranslating is true', async () => {

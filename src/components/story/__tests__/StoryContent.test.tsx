@@ -43,9 +43,11 @@ vi.mock('../../../hooks/useLanguages', () => ({
       { code: 'es', name: 'Spanish' },
     ],
     getLanguageIdByCode: vi.fn().mockReturnValue(1),
-    getLanguageName: vi.fn().mockImplementation((code: string) => 
-      code === 'en' ? 'English' : 'Spanish'
-    ),
+    getLanguageName: vi
+      .fn()
+      .mockImplementation((code: string) =>
+        code === 'en' ? 'English' : 'Spanish'
+      ),
   }),
 }));
 
