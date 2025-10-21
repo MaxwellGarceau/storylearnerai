@@ -293,7 +293,9 @@ export default function SavedTranslationsList() {
           <Card
             key={translation.id}
             className='hover:shadow-md transition-shadow cursor-pointer'
-            onClick={() => handleViewStory(translation)}
+            onClick={() => {
+              void handleViewStory(translation);
+            }}
           >
             <CardHeader>
               <div className='flex justify-between items-start'>
@@ -318,7 +320,9 @@ export default function SavedTranslationsList() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => handleViewStory(translation)}
+                    onClick={() => {
+                      void handleViewStory(translation);
+                    }}
                   >
                     {t('savedTranslations.results.viewStory')}
                   </Button>

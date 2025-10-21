@@ -298,7 +298,9 @@ export const DashboardPage: React.FC = () => {
                     <div className='flex items-start justify-between'>
                       <div
                         className='flex-1 cursor-pointer'
-                        onClick={() => navigate(`/story?id=${translation.id}`)}
+                        onClick={() => {
+                          void navigate(`/story?id=${translation.id}`);
+                        }}
                       >
                         <CardTitle className='text-base leading-tight'>
                           {translation.title ??
@@ -326,7 +328,9 @@ export const DashboardPage: React.FC = () => {
                   </CardHeader>
                   <CardContent
                     className='pt-0 cursor-pointer'
-                    onClick={() => navigate(`/story?id=${translation.id}`)}
+                    onClick={() => {
+                      void navigate(`/story?id=${translation.id}`);
+                    }}
                   >
                     <p className='text-sm text-muted-foreground line-clamp-2'>
                       {translation.from_text.substring(0, 100)}...
@@ -341,7 +345,9 @@ export const DashboardPage: React.FC = () => {
                 <div className='text-center'>
                   <Button
                     variant='outline'
-                    onClick={() => navigate('/saved-translations')}
+                    onClick={() => {
+                      void navigate('/saved-translations');
+                    }}
                     className='text-sm'
                   >
                     {t('dashboard.recentActivity.viewAll', {

@@ -83,7 +83,7 @@ export function useTranslationCache(args: {
         const positionKey = createPositionKey(lemma, position);
         if (targetWords.has(positionKey)) return;
 
-        const token = args.tokens![position];
+        const token = args.tokens?.[position];
         if (token && token.type === 'word') {
           // Use the from_word from the token's metadata as the translation
           const translation = token.from_word;

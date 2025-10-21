@@ -146,7 +146,9 @@ describe('WordToken', () => {
     const wordHighlightElement = helloElements.find(el =>
       el.closest('span[class*="inline-block transition-colors"]')
     );
-    fireEvent.click(wordHighlightElement!);
+    if (wordHighlightElement) {
+      fireEvent.click(wordHighlightElement);
+    }
     expect(onWordClick).toHaveBeenCalledTimes(1);
   });
 

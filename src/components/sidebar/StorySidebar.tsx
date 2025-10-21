@@ -257,7 +257,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
                 isLoadingSavedTranslations={isLoadingSavedTranslations}
                 sampleStories={sampleStories}
                 isLoadingSampleId={isLoading}
-                onOpenSavedTranslation={openSavedTranslation}
+                onOpenSavedTranslation={translation => {
+                  void openSavedTranslation(translation);
+                }}
                 onOpenSampleStory={s => {
                   void handleStoryClick(s);
                 }}
