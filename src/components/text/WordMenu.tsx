@@ -51,13 +51,16 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
 
   useEffect(() => {
     if (showDictionary && isOpen && wordForDictionary) {
-      void searchWord(
-        wordForDictionary,
-        fromLanguage,
-        targetLanguage
-      );
+      void searchWord(wordForDictionary, fromLanguage, targetLanguage);
     }
-  }, [showDictionary, isOpen, wordForDictionary, searchWord, fromLanguage, targetLanguage]);
+  }, [
+    showDictionary,
+    isOpen,
+    wordForDictionary,
+    searchWord,
+    fromLanguage,
+    targetLanguage,
+  ]);
 
   const handleDictionary = () => {
     setShowDictionary(true);

@@ -116,7 +116,7 @@ export const useLanguageSettings = (): {
       'fromLanguage is required but not set. This hook should only be used in story contexts where language is always available.'
     );
   }
-  
+
   return {
     fromLanguage: ctx.fromLanguage,
     targetLanguage: ctx.targetLanguage,
