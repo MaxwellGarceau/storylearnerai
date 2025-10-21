@@ -25,7 +25,7 @@ const StoryContent: React.FC<StoryContentProps> = ({
   const tokens = translationData.tokens;
 
   return (
-    <div className='relative overflow-hidden'>
+    <div className='relative'>
       <div className='text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed'>
         <InteractiveText
           text={displayText}
