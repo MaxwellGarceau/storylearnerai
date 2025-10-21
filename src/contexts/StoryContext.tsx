@@ -175,7 +175,7 @@ export const StoryProvider: React.FC<{
     // Simulate translation (in real implementation, this would call the translation service)
     setTimeout(() => {
       const wordState = getWordState(word, position);
-      const translation = wordState.metadata.to_word || `translated_${word}`;
+      const translation = wordState.metadata.from_word || `translated_${word}`;
       
       // Update translation cache
       setTranslationCache(prev => new Map(prev).set(key, translation));
