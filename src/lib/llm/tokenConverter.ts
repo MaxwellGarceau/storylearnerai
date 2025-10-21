@@ -37,10 +37,6 @@ export class TokenConverter {
           return this.convertPunctuationToken(token);
         case 'whitespace':
           return this.convertWhitespaceToken(token);
-        default:
-          throw new Error(
-            `Unknown token type: ${(token as LoadedTranslationToken).token_type}`
-          );
       }
     });
   }
@@ -128,10 +124,6 @@ export class TokenConverter {
             value: token.value,
           });
           break;
-        default:
-          throw new Error(
-            `Unknown token type: ${(token as LoadedTranslationToken).token_type}`
-          );
       }
     });
 
