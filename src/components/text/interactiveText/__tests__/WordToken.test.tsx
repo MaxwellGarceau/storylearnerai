@@ -5,22 +5,20 @@ import { LanguageCode } from '../../../../types/llm/prompts';
 import React from 'react';
 // Unused imports removed
 
-// Mock InteractiveText context to provide languages
-vi.mock('../../useInteractiveTextContext', () => ({
-  __esModule: true,
-  useInteractiveTextContext: () => ({
+// Mock StoryContext to provide languages and other context values
+vi.mock('../../../../contexts/StoryContext', () => ({
+  useStoryContext: () => ({
     fromLanguage: 'en',
     targetLanguage: 'es',
-    isIncludedVocabulary: vi.fn(() => false),
-    getOppositeWordFor: vi.fn(),
-    isTranslatingWord: vi.fn(() => false),
-    isSavedWord: vi.fn(() => false),
-    savedOriginalWords: new Set(),
-    findSavedWordData: vi.fn(),
-    targetWords: new Map(),
-    targetSentences: new Map(),
-    translatingWords: new Set(),
-    includedVocabulary: [],
+    isDisplayingFromSide: true,
+    translationData: {
+      fromText: 'Hello world',
+      toText: 'Hola mundo',
+      fromLanguage: 'en',
+      toLanguage: 'es',
+      difficulty: 'a1',
+      tokens: [],
+    },
   }),
 }));
 
