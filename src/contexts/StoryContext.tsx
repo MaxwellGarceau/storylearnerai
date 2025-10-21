@@ -14,6 +14,20 @@ import { WordMetadata } from '../components/text/interactiveText/WordToken';
  * - Translation cache: Stores runtime translations for words
  * - Translating words: Tracks which words are currently being translated
  * - Position-based keys: Supports both lemma-based and position-specific word tracking
+ * 
+ * Why Centralize Logic Here:
+ * - Word interactions are tightly coupled (translating affects state, menu, and related words)
+ * - Single source of truth for all word-related state and behavior
+ * - Easy coordination between multiple words and components
+ * - Simple component interfaces (components just use useWordActions)
+ * - Consistent behavior across all word interactions
+ * 
+ * When to Refactor:
+ * - Performance issues (too many re-renders from large context)
+ * - Testing difficulties (hard to test individual pieces of logic)
+ * - New requirements that don't fit current pattern (real-time collaboration, advanced workflows)
+ * - Context becoming too large (500+ lines) or handling unrelated concerns
+ * - Need for more granular state management or service layer separation
  */
 
 export interface WordState {
