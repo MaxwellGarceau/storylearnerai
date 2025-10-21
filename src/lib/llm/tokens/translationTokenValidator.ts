@@ -5,9 +5,9 @@ import {
   WhitespaceToken,
   TokenValidationResult,
   PartOfSpeech,
-} from '../../types/llm/tokens';
-import { DifficultyLevel } from '../../types/llm/prompts';
-import { logger } from '../logger';
+} from '../../../types/llm/tokens';
+import { DifficultyLevel } from '../../../types/llm/prompts';
+import { logger } from '../../logger';
 
 /**
  * Validates translation tokens from LLM responses

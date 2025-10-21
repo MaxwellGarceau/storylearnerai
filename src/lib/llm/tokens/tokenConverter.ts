@@ -4,13 +4,13 @@ import type {
   PunctuationToken,
   WhitespaceToken,
   PartOfSpeech,
-} from '../../types/llm/tokens';
-import type { DifficultyLevel } from '../../types/llm/prompts';
+} from '../../../types/llm/tokens';
+import type { DifficultyLevel } from '../../../types/llm/prompts';
 import type {
   LoadedWordToken,
   LoadedNonWordToken,
   LoadedTranslationToken,
-} from '../../api/supabase/database/savedTranslationService';
+} from '../../../api/supabase/database/savedTranslationService';
 
 /**
  * Utility class for converting between different token formats

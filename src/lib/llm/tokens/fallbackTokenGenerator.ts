@@ -1,5 +1,5 @@
-import { TranslationToken, WordToken } from '../../types/llm/tokens';
-import { logger } from '../logger';
+import { TranslationToken, WordToken } from '../../../types/llm/tokens';
+import { logger } from '../../logger';
 
 /**
  * Generates tokens from plain text when LLM doesn't return proper JSON
