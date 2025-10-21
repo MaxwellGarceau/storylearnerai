@@ -89,10 +89,16 @@ const WordToken: React.FC<WordTokenProps> = ({
   const { translationData, isDisplayingFromSide } = useStoryContext();
   const fromLanguage = translationData.fromLanguage;
   const toLanguage = translationData.toLanguage;
+  const includedVocabulary = translationData.includedVocabulary || [];
 
   // Check if word is saved in vocabulary
   const { savedOriginalWords, savedTargetWords, loading: vocabularyLoading } = useSavedWords(fromLanguage, toLanguage);
   
+  // Check if word is in included vocabulary (user-selected for translation)
+  const isWordIncludedVocabulary = includedVocabulary.some(vocabWord =>
+    vocabWord.toLowerCase() === word.toLowerCase()
+  );
+
   // When displaying from side, check if the displayed word (from language) is in vocabulary
   // When displaying to side, check if the corresponding from language word is in vocabulary
   const isWordInVocabulary = !vocabularyLoading && (
@@ -104,7 +110,7 @@ const WordToken: React.FC<WordTokenProps> = ({
 
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({
-    isIncludedVocabulary: false, // Will be provided by context
+    isIncludedVocabulary: isWordIncludedVocabulary, // Check if word is in included vocabulary
     isSaved: isSaved || isWordInVocabulary, // Check both local state and vocabulary
     isTranslating,
     isTranslated: !!translation,
