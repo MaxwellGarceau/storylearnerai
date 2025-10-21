@@ -68,6 +68,14 @@ vi.mock('../../../hooks/useLanguages', () => {
   return { useLanguages };
 });
 
+// Mock the useStoryContext hook
+vi.mock('../../../contexts/StoryContext', () => ({
+  useStoryContext: vi.fn(() => ({
+    fromLanguage: 'en',
+    targetLanguage: 'es',
+  })),
+}));
+
 // Mock the VocabularySaveButton component
 vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
   VocabularySaveButton: ({
