@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import { useLanguages } from '../../../hooks/useLanguages';
 import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
 import { useLocalization } from '../../../hooks/useLocalization';
@@ -26,7 +26,7 @@ export function VocabularySidebar({
   currentFromLanguageId,
 }: VocabularySidebarProps) {
   const { t } = useLocalization();
-  const { vocabulary, loading } = useVocabulary();
+  const { vocabulary, loading } = useVocabularyContext();
   const { languages, getLanguageIdByCode } = useLanguages();
   const { user } = useAuth();
   const { targetLanguage } = useLanguageFilter();

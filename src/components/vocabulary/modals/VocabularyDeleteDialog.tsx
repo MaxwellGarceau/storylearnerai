@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../ui/Button';
-import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import type { VocabularyWithLanguages } from '../../../types/database/vocabulary';
 import { useLocalization } from '../../../hooks/useLocalization';
 import type { VoidFunction } from '../../../types/common';
@@ -18,7 +18,7 @@ export function VocabularyDeleteDialog({
   onDeleteSuccess,
 }: VocabularyDeleteDialogProps) {
   const { t } = useLocalization();
-  const { deleteVocabularyWord } = useVocabulary();
+  const { deleteVocabularyWord } = useVocabularyContext();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {

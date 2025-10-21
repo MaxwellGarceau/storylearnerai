@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import { useLanguages } from '../../../hooks/useLanguages';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { VocabularyModalContainer } from './VocabularyModalContainer';
@@ -51,7 +51,7 @@ export function VocabularyUpsertModal(props: VocabularyUpsertModalProps) {
     saveVocabularyWord,
     updateVocabularyWord,
     vocabulary: userVocabulary,
-  } = useVocabulary();
+  } = useVocabularyContext();
 
   const isCreateMode = props.mode === 'create';
   const editVocabulary = (props as EditProps).vocabulary;

@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import { Button } from '../../ui/Button';
 import type { TFunction } from 'i18next';
 import { BookOpen, Check } from 'lucide-react';
-import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import { useLocalization } from '../../../hooks/useLocalization';
 import type { VocabularyInsert } from '../../../types/database/vocabulary';
 import { logger } from '../../../lib/logger';
@@ -68,7 +68,7 @@ export function VocabularySaveButton({
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
   const translate: TFunction = tOverride ?? t;
-  const { checkVocabularyExists, saveVocabularyWord } = useVocabulary();
+  const { checkVocabularyExists, saveVocabularyWord } = useVocabularyContext();
   const effectiveSave = saveVocabularyOverride ?? saveVocabularyWord;
   const effectiveCheck = checkExistsOverride ?? checkVocabularyExists;
   const [isSaved, setIsSaved] = useState(false);

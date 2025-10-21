@@ -168,6 +168,17 @@ export const StoryProvider: React.FC<{
   const translateWord = useCallback((word: string, position?: number) => {
     const key = createWordKey(word, position);
     
+    // Check if translation already exists in cache
+    const cachedTranslation = translationCache.get(key);
+    if (cachedTranslation) {
+      // Translation already exists, just update the word state
+      updateWordState(word, position, {
+        translation: cachedTranslation,
+        isTranslating: false,
+      });
+      return;
+    }
+    
     // Set translating state
     setTranslatingWords(prev => new Set(prev).add(key));
     updateWordState(word, position, { isTranslating: true });
@@ -193,7 +204,7 @@ export const StoryProvider: React.FC<{
         return newSet;
       });
     }, 1000);
-  }, [createWordKey, updateWordState, getWordState]);
+  }, [createWordKey, updateWordState, getWordState, translationCache]);
 
   const saveWord = useCallback((word: string, metadata: WordMetadata) => {
     // This would integrate with the vocabulary saving system

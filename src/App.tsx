@@ -15,14 +15,17 @@ import { useWalkthrough } from './hooks/useWalkthrough';
 // import { usePopoverSafeguard } from './hooks/usePopoverSafeguard';
 import './lib/i18n';
 import { LanguageFilterProvider } from './hooks/useLanguageFilter';
+import { VocabularyProvider } from './contexts/VocabularyContext';
 
 function App() {
   return (
     <TooltipProvider>
       <LanguageFilterProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <VocabularyProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </VocabularyProvider>
       </LanguageFilterProvider>
     </TooltipProvider>
   );

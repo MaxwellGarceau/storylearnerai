@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
 import { VocabularyService } from '../lib/vocabularyService';
 import type {
   Vocabulary,
@@ -8,10 +8,10 @@ import type {
   VocabularyPromise,
   BooleanPromise,
 } from '../types/database/vocabulary';
-import { useAuth } from './useAuth';
-import { useToast } from './useToast';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 
-interface UseVocabularyReturn {
+interface VocabularyContextValue {
   vocabulary: VocabularyWithLanguages[];
   loading: boolean;
   error: string | null;
@@ -21,7 +21,6 @@ interface UseVocabularyReturn {
     updates: VocabularyUpdate
   ) => VocabularyPromise;
   deleteVocabularyWord: (id: number) => BooleanPromise;
-
   checkVocabularyExists: (
     fromWord: string,
     targetWord: string,
@@ -30,13 +29,26 @@ interface UseVocabularyReturn {
   ) => BooleanPromise;
 }
 
-export function useVocabulary(): UseVocabularyReturn {
+const VocabularyContext = createContext<VocabularyContextValue | null>(null);
+
+export const useVocabularyContext = () => {
+  const context = useContext(VocabularyContext);
+  if (!context) {
+    throw new Error('useVocabularyContext must be used within a VocabularyProvider');
+  }
+  return context;
+};
+
+export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { user } = useAuth();
   const { toast } = useToast();
 
   const [vocabulary, setVocabulary] = useState<VocabularyWithLanguages[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const loadVocabulary = useCallback(async () => {
     if (!user?.id) return;
@@ -49,6 +61,7 @@ export function useVocabulary(): UseVocabularyReturn {
         user.id
       );
       setVocabulary(basicVocabulary);
+      setHasLoaded(true);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load vocabulary';
@@ -82,7 +95,7 @@ export function useVocabulary(): UseVocabularyReturn {
         const savedWord =
           await VocabularyService.saveVocabularyWord(vocabularyData);
 
-        // Refresh the vocabulary list
+        // Refresh the vocabulary list to get the full object with language information
         await loadVocabulary();
 
         // Notify other listeners (e.g., sidebars) to refresh immediately
@@ -100,6 +113,9 @@ export function useVocabulary(): UseVocabularyReturn {
 
         return savedWord;
       } catch (err) {
+        // On error, refetch to ensure consistency
+        await loadVocabulary();
+        
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to save vocabulary word';
         setError(errorMessage);
@@ -127,7 +143,7 @@ export function useVocabulary(): UseVocabularyReturn {
           updates
         );
 
-        // Refresh the vocabulary list
+        // Refresh the vocabulary list to get the full object with language information
         await loadVocabulary();
 
         // Notify other listeners to refresh
@@ -145,6 +161,9 @@ export function useVocabulary(): UseVocabularyReturn {
 
         return updatedWord;
       } catch (err) {
+        // On error, refetch to ensure consistency
+        await loadVocabulary();
+        
         const errorMessage =
           err instanceof Error
             ? err.message
@@ -171,8 +190,8 @@ export function useVocabulary(): UseVocabularyReturn {
       try {
         await VocabularyService.deleteVocabularyWord(id);
 
-        // Refresh the vocabulary list
-        await loadVocabulary();
+        // Optimistic update: Remove the word from local state immediately
+        setVocabulary(prev => prev.filter(word => word.id !== id));
 
         // Notify other listeners to refresh
         try {
@@ -189,6 +208,9 @@ export function useVocabulary(): UseVocabularyReturn {
 
         return true;
       } catch (err) {
+        // On error, refetch to ensure consistency
+        await loadVocabulary();
+        
         const errorMessage =
           err instanceof Error
             ? err.message
@@ -236,20 +258,25 @@ export function useVocabulary(): UseVocabularyReturn {
     [user?.id]
   );
 
-  // Load vocabulary when user changes
+  // Load vocabulary when user changes, but only if not already loaded
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && !hasLoaded && !loading) {
       void loadVocabulary();
-    } else {
+    } else if (!user?.id) {
       setVocabulary([]);
+      setHasLoaded(false);
     }
-  }, [user?.id, loadVocabulary]);
+  }, [user?.id, loadVocabulary, hasLoaded, loading]);
 
   // Listen for cross-component updates to refresh immediately
+  // Note: This is now less critical since we use optimistic updates
   useEffect(() => {
     const handleUpdated = () => {
       if (user?.id) {
-        void loadVocabulary();
+        // Only refetch if we don't have vocabulary data yet
+        if (vocabulary.length === 0) {
+          void loadVocabulary();
+        }
       }
     };
     try {
@@ -259,9 +286,9 @@ export function useVocabulary(): UseVocabularyReturn {
     } catch {
       return () => {};
     }
-  }, [user?.id, loadVocabulary]);
+  }, [user?.id, loadVocabulary, vocabulary.length]);
 
-  return {
+  const contextValue: VocabularyContextValue = {
     vocabulary,
     loading,
     error,
@@ -270,4 +297,10 @@ export function useVocabulary(): UseVocabularyReturn {
     deleteVocabularyWord,
     checkVocabularyExists,
   };
-}
+
+  return (
+    <VocabularyContext.Provider value={contextValue}>
+      {children}
+    </VocabularyContext.Provider>
+  );
+};
