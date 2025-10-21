@@ -19,11 +19,11 @@ export function useTranslationCache(args: {
     []
   );
 
-  // Helper function to get translation by position or fallback to lemma
+  // Helper function to get translation by position
   const getTranslationByPosition = useCallback(
     (lemma: string, position: number) => {
       const positionKey = createPositionKey(lemma, position);
-      return targetWords.get(positionKey) ?? targetWords.get(lemma);
+      return targetWords.get(positionKey);
     },
     [targetWords, createPositionKey]
   );
