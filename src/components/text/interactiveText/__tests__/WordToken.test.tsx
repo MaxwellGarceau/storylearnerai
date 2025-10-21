@@ -3,8 +3,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordToken from '../WordToken';
 import { LanguageCode } from '../../../../types/llm/prompts';
 import React from 'react';
-import { useWordActions } from '../../../../hooks/useWordActions';
-import WordMenu from '../../WordMenu';
+// Unused imports removed
 
 // Mock InteractiveText context to provide languages
 vi.mock('../../useInteractiveTextContext', () => ({
@@ -112,12 +111,7 @@ describe('WordToken', () => {
   };
 
   it('renders with tooltips disabled using plain highlight and overlay when provided', () => {
-    render(
-      <WordToken
-        {...commonProps}
-        enableTooltips={false}
-      />
-    );
+    render(<WordToken {...commonProps} enableTooltips={false} />);
 
     // No WordMenu when tooltips disabled
     expect(screen.queryByTestId('word-menu')).not.toBeInTheDocument();

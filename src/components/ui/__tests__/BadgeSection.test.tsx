@@ -6,9 +6,9 @@ import { BadgeSection } from '../BadgeSection';
 describe('BadgeSection Component', () => {
   it('renders null when no badges provided', () => {
     const { container } = render(
-      <BadgeSection 
-        partOfSpeechKey={(pos) => `vocabulary.pos.${pos}`}
-        frequencyKey={(freq) => `vocabulary.frequency.${freq}`}
+      <BadgeSection
+        partOfSpeechKey={pos => `vocabulary.pos.${pos}`}
+        frequencyKey={freq => `vocabulary.frequency.${freq}`}
       />
     );
     expect(container.firstChild).toBeNull();
@@ -16,11 +16,11 @@ describe('BadgeSection Component', () => {
 
   it('renders partOfSpeech and frequency badges', () => {
     render(
-      <BadgeSection 
-        partOfSpeech='noun' 
+      <BadgeSection
+        partOfSpeech='noun'
         frequencyLevel='common'
-        partOfSpeechKey={(pos) => `vocabulary.pos.${pos}`}
-        frequencyKey={(freq) => `vocabulary.frequency.${freq}`}
+        partOfSpeechKey={pos => `vocabulary.pos.${pos}`}
+        frequencyKey={freq => `vocabulary.frequency.${freq}`}
       />
     );
 

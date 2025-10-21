@@ -75,7 +75,7 @@ describe('CRITICAL: Prompt System Core Functionality', () => {
       expect(prompt).toContain('Preserve cultural context where appropriate');
       expect(prompt).toContain('Keep the story engaging and readable');
       expect(prompt).toContain(
-        'Return a valid JSON object with \'translation\' and \'words\' fields'
+        "Return a valid JSON object with 'translation' and 'words' fields"
       );
     });
 
@@ -181,7 +181,9 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
     );
     const storyIndex = lines.findIndex(line => line === 'es Story:');
     const footerIndex = lines.findIndex(line =>
-      line.includes('Return ONLY valid JSON, no additional text or markdown formatting')
+      line.includes(
+        'Return ONLY valid JSON, no additional text or markdown formatting'
+      )
     );
 
     // Verify correct ordering
@@ -217,6 +219,8 @@ describe('CRITICAL: Complete Prompt Structure Validation', () => {
       await generalPromptConfigService.buildTranslationPrompt(mockContext);
 
     // Check footer format
-    expect(prompt).toMatch(/Return ONLY valid JSON, no additional text or markdown formatting$/);
+    expect(prompt).toMatch(
+      /Return ONLY valid JSON, no additional text or markdown formatting$/
+    );
   });
 });

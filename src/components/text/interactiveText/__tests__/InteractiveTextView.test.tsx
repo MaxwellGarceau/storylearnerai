@@ -5,7 +5,6 @@ import { StoryProvider } from '../../../../contexts/StoryContext';
 import type { TranslationToken } from '../../../../types/llm/tokens';
 import type { TranslationResponse } from '../../../../lib/translationService';
 
-
 // Mock WordToken to observe props and interactions
 vi.mock('../WordToken', () => ({
   __esModule: true,
@@ -76,13 +75,16 @@ describe('InteractiveTextView', () => {
 
   const tokens: TranslationToken[] = mockTranslationData.tokens;
 
-  const renderWithProvider = (props: {
-    word: string;
-    position: number;
-    punctuation: string;
-    disabled: boolean;
-    enableTooltips: boolean;
-  }, isDisplayingFromSide: boolean = true) => {
+  const renderWithProvider = (
+    props: {
+      word: string;
+      position: number;
+      punctuation: string;
+      disabled: boolean;
+      enableTooltips: boolean;
+    },
+    isDisplayingFromSide = true
+  ) => {
     return render(
       <StoryProvider
         translationData={mockTranslationData}

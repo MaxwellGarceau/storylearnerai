@@ -54,20 +54,20 @@ vi.mock('./src/contexts/StoryContext', () => ({
     fromLanguage: 'es',
     targetLanguage: 'en',
     getWordTranslation: vi.fn(),
-         getWordState: vi.fn().mockReturnValue({
-           isOpen: false,
-           isSaved: false,
-           isTranslating: false,
-           metadata: {
-             from_word: 'Hello',
-             from_lemma: 'hello',
-             to_word: 'Hola',
-             to_lemma: 'hola',
-             pos: 'interjection',
-             difficulty: 'a1',
-             from_definition: 'A greeting',
-           },
-         }),
+    getWordState: vi.fn().mockReturnValue({
+      isOpen: false,
+      isSaved: false,
+      isTranslating: false,
+      metadata: {
+        from_word: 'Hello',
+        from_lemma: 'hello',
+        to_word: 'Hola',
+        to_lemma: 'hola',
+        pos: 'interjection',
+        difficulty: 'a1',
+        from_definition: 'A greeting',
+      },
+    }),
     isWordSaved: vi.fn().mockReturnValue(false),
     isWordTranslating: vi.fn().mockReturnValue(false),
     translateWord: vi.fn(),
@@ -78,16 +78,30 @@ vi.mock('./src/contexts/StoryContext', () => ({
       toLanguage: 'en',
       includedVocabulary: [],
     },
-    isDisplayingFromSide: (global as any).__mockStoryContext?.isDisplayingFromSide ?? false,
+    isDisplayingFromSide:
+      (global as { __mockStoryContext?: { isDisplayingFromSide?: boolean } })
+        .__mockStoryContext?.isDisplayingFromSide ?? false,
   }),
-  StoryProvider: ({ children, isDisplayingFromSide }: { children: React.ReactNode; isDisplayingFromSide?: boolean }) => {
+  StoryProvider: ({
+    children,
+    isDisplayingFromSide,
+  }: {
+    children: React.ReactNode;
+    isDisplayingFromSide?: boolean;
+  }) => {
     // Store the isDisplayingFromSide value for the useStoryContext mock to use
-    (global as any).__mockStoryContext = {
+    (
+      global as { __mockStoryContext?: { isDisplayingFromSide?: boolean } }
+    ).__mockStoryContext = {
       isDisplayingFromSide: isDisplayingFromSide ?? false,
     };
-    
+
     // Use a simple div wrapper that provides the context
-    return React.createElement('div', { 'data-testid': 'story-provider' }, children);
+    return React.createElement(
+      'div',
+      { 'data-testid': 'story-provider' },
+      children
+    );
   },
 }));
 

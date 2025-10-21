@@ -63,7 +63,6 @@ vi.mock('../../../hooks/useLocalization', () => ({
   }),
 }));
 
-
 // Mock the environment config
 vi.mock('../../../lib/config/env', () => ({
   EnvironmentConfig: {

@@ -81,30 +81,29 @@ vi.mock('../client', () => ({
 
 describe('SavedTranslationService', () => {
   let service: SavedTranslationService;
-  let mockLanguageService: any;
-  let mockDifficultyLevelService: any;
+  let mockLanguageService: unknown;
+  let mockDifficultyLevelService: unknown;
 
   beforeEach(async () => {
     // Import the mocked services
     const { LanguageService } = await import('../languageService');
     const { DifficultyLevelService } = await import('../difficultyLevelService');
-    
+
     mockLanguageService = new LanguageService();
     mockDifficultyLevelService = new DifficultyLevelService();
-    
+
     // Configure language service mock
-    mockLanguageService.getLanguageByCode.mockImplementation((code: string) => {
+    (mockLanguageService as { getLanguageByCode: (code: string) => unknown }).getLanguageByCode.mockImplementation((code: string) => {
       if (code === 'en') return { id: 1, code: 'en', name: 'English' };
       if (code === 'es') return { id: 2, code: 'es', name: 'Spanish' };
       return null;
     });
-    
+
     // Configure difficulty level service mock
-    mockDifficultyLevelService.getDifficultyLevelByCode.mockImplementation((code: string) => {
+    (mockDifficultyLevelService as { getDifficultyLevelByCode: (code: string) => unknown }).getDifficultyLevelByCode.mockImplementation((code: string) => {
       if (code === 'a1') return { id: 1, code: 'a1', name: 'A1' };
       return null;
     });
-    
     service = new SavedTranslationService();
   });
 
@@ -122,13 +121,13 @@ describe('SavedTranslationService', () => {
     };
 
     it('should throw error for invalid language code', async () => {
-      const invalidRequest = { ...validRequest, fromLanguage: 'invalid' as any };
+      const invalidRequest = { ...validRequest, fromLanguage: 'invalid' as LanguageCode };
       await expect(service.saveTranslationWithTokens(invalidRequest))
         .rejects.toThrow('Language not found: invalid');
     });
 
     it('should throw error for invalid difficulty level', async () => {
-      const invalidRequest = { ...validRequest, difficultyLevel: 'invalid' as any };
+      const invalidRequest = { ...validRequest, difficultyLevel: 'invalid' as DifficultyLevel };
       await expect(service.saveTranslationWithTokens(invalidRequest))
         .rejects.toThrow('Language not found: en');
     });

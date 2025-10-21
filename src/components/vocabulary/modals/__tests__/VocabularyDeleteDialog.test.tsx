@@ -7,7 +7,7 @@ vi.mock('../../../../hooks/useLocalization', () => ({
 
 const mockDelete = vi.fn().mockResolvedValue(true);
 vi.mock('../../../../contexts/VocabularyContext', () => ({
-  useVocabularyContext: () => ({ 
+  useVocabularyContext: () => ({
     deleteVocabularyWord: mockDelete,
     vocabulary: [],
     loading: false,

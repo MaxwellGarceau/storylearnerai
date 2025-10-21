@@ -265,7 +265,9 @@ describe('PromptConfigService', () => {
 
       // Should handle empty text without errors
       expect(prompt).toContain('es Story:');
-      expect(prompt).toContain('Return a valid JSON object with \'translation\' and \'words\' fields');
+      expect(prompt).toContain(
+        "Return a valid JSON object with 'translation' and 'words' fields"
+      );
     });
 
     it('should handle text with quotes and apostrophes', async () => {
