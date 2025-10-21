@@ -12,6 +12,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
 import { useWordActions } from '../../hooks/useWordActions';
+import { useStoryContext } from '../../contexts/StoryContext';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -39,10 +40,11 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
+  const { fromLanguage, targetLanguage } = useStoryContext();
 
-  // Get language IDs for the VocabularySaveButton
-  const fromLanguageId = getLanguageIdByCode(metadata.from_word ? 'en' : 'es'); // Simplified for now
-  const targetLanguageId = getLanguageIdByCode(metadata.to_word ? 'es' : 'en'); // Simplified for now
+  // Get language IDs for the VocabularySaveButton using story context
+  const fromLanguageId = getLanguageIdByCode(fromLanguage);
+  const targetLanguageId = getLanguageIdByCode(targetLanguage);
 
   // Search for word info when dictionary is shown
   const wordForDictionary = metadata.from_lemma ?? metadata.from_word;
