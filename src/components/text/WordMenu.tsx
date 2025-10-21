@@ -12,7 +12,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
 import { useWordActions } from '../../hooks/useWordActions';
-import { useLanguageFilter } from '../../hooks/useLanguageFilter';
+import { useLanguageSettings } from '../../hooks/useLanguageFilter';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -40,7 +40,7 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
-  const { fromLanguage, targetLanguage } = useLanguageFilter();
+  const { fromLanguage, targetLanguage } = useLanguageSettings();
 
   // Get language IDs for the VocabularySaveButton using actual language codes
   const fromLanguageId = fromLanguage ? getLanguageIdByCode(fromLanguage) : null;

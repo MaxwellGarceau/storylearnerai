@@ -68,13 +68,11 @@ vi.mock('../../../hooks/useLanguages', () => {
   return { useLanguages };
 });
 
-// Mock the useLanguageFilter hook
+// Mock the useLanguageSettings hook
 vi.mock('../../../hooks/useLanguageFilter', () => ({
-  useLanguageFilter: vi.fn(() => ({
+  useLanguageSettings: vi.fn(() => ({
     fromLanguage: 'en',
     targetLanguage: 'es',
-    setTargetLanguage: vi.fn(),
-    availableTargetLanguages: [],
   })),
 }));
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import { useLanguages } from '../../../hooks/useLanguages';
-import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
+import { useLanguageSettings } from '../../../hooks/useLanguageFilter';
 import { useLocalization } from '../../../hooks/useLocalization';
 import { useAuth } from '../../../hooks/useAuth';
 import { AuthPrompt } from '../../ui/AuthPrompt';
@@ -29,7 +29,7 @@ export function VocabularySidebar({
   const { vocabulary, loading } = useVocabularyContext();
   const { languages, getLanguageIdByCode } = useLanguages();
   const { user } = useAuth();
-  const { targetLanguage } = useLanguageFilter();
+  const { targetLanguage } = useLanguageSettings();
 
   const [searchTerm, setSearchTerm] = useState('');
   // Local language filter removed; filtering is controlled by the Story Sidebar's global filter
