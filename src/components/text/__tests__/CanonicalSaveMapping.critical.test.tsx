@@ -24,6 +24,24 @@ vi.mock('../../../hooks/useLanguages', () => ({
   }),
 }));
 
+// Mock UserService to prevent database calls
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
+  UserService: {
+    getOrCreateUser: vi.fn().mockResolvedValue({
+      id: 'test-user-id',
+      native_language: 'en',
+    }),
+  },
+}));
+
+// Mock useAuth to provide a user
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user-id', email: 'test@example.com' },
+    isAuthenticated: true,
+  }),
+}));
+
 // Mock StoryContext to provide the necessary context
 let isDisplayingFromSide = true;
 
