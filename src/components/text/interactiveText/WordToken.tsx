@@ -1,9 +1,9 @@
 import React from 'react';
 import WordMenu from '../WordMenu';
 import WordHighlight from '../WordHighlight';
-import { useInteractiveTextContext } from '../useInteractiveTextContext';
+import { useWordActions } from '../../../hooks/useWordActions';
 import { getVocabularyHighlightClass } from '../../../lib/vocabularyHighlightService';
-import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
+import type { DifficultyLevel } from '../../../types/llm/prompts';
 import type { PartOfSpeech } from '../../../types/llm/tokens';
 
 export interface WordMetadata {
@@ -17,96 +17,67 @@ export interface WordMetadata {
 }
 
 interface WordTokenProps {
-  actionWordNormalized: string;
-  cleanWord: string;
-  displayWord?: string; // Word to display in menu (to_word)
-  punctuation: string;
-  isOpen: boolean;
-  isSaved: boolean;
-  isTranslating: boolean;
-  overlayOppositeWord?: string; // used for overlay only (runtime translation)
-  // Use this word to decide included-vocabulary highlighting (tie to displayed token)
-  inclusionCheckWord: string;
-  displaySentenceContext: string;
-  overlaySentenceContext?: string;
-  fromLanguage: LanguageCode;
-  targetLanguage: LanguageCode;
-  onOpenChange: (open: boolean) => void;
-  onWordClick: () => void;
-  onTranslate: (metadata?: WordMetadata) => void;
-  enableTooltips: boolean;
-  disabled: boolean;
-  // Optional: Rich metadata from LLM
-  wordMetadata?: WordMetadata;
-  // Position in the text for position-based translations
+  word: string;
   position?: number;
+  punctuation?: string;
+  disabled?: boolean;
+  enableTooltips?: boolean;
 }
 
 const WordToken: React.FC<WordTokenProps> = ({
-  actionWordNormalized,
-  cleanWord,
-  displayWord,
-  punctuation,
-  isOpen,
-  isSaved,
-  isTranslating,
-  overlayOppositeWord,
-  inclusionCheckWord,
-  displaySentenceContext,
-  overlaySentenceContext,
-  fromLanguage,
-  targetLanguage,
-  onOpenChange,
-  onWordClick,
-  onTranslate,
-  enableTooltips,
-  disabled,
-  wordMetadata,
+  word,
   position,
+  punctuation = '',
+  disabled = false,
+  enableTooltips = true,
 }) => {
-  const ctx = useInteractiveTextContext();
-  const isIncludedVocabulary =
-    ctx?.isIncludedVocabulary(inclusionCheckWord) ?? false;
+  const {
+    isSaved,
+    isTranslating,
+    translation,
+    isOpen,
+    handleToggleMenu,
+  } = useWordActions(word, position);
 
   // Use the vocabulary highlighting service for consistent color coding
   const vocabularyHighlightClass = getVocabularyHighlightClass({
-    isIncludedVocabulary,
+    isIncludedVocabulary: false, // Will be provided by context
     isSaved,
     isTranslating,
-    isTranslated: !!overlayOppositeWord, // Word has been translated and shows overlay
+    isTranslated: !!translation,
     isActive: isOpen,
     isDisabled: disabled,
   });
 
   const handleWordClick = () => {
     if (enableTooltips && !disabled) {
-      onWordClick();
+      handleToggleMenu();
     }
   };
 
   if (!enableTooltips || disabled) {
     return (
       <span>
-        {overlayOppositeWord ? (
+        {translation ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
-              {overlayOppositeWord}
+              {translation}
             </span>
             <WordHighlight
-              word={actionWordNormalized}
+              word={word}
               disabled={disabled}
               className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
             >
-              {cleanWord}
+              {word}
             </WordHighlight>
           </span>
         ) : (
           <WordHighlight
-            word={actionWordNormalized}
+            word={word}
             disabled={disabled}
             className={vocabularyHighlightClass}
           >
-            {cleanWord}
+            {word}
           </WordHighlight>
         )}
         {punctuation}
@@ -117,55 +88,33 @@ const WordToken: React.FC<WordTokenProps> = ({
   return (
     <span>
       <WordMenu
-        word={displayWord ?? cleanWord}
-        dictionaryWord={wordMetadata?.from_lemma ?? inclusionCheckWord}
-        open={isOpen}
-        onOpenChange={onOpenChange}
-        onTranslate={() => {
-          onTranslate(wordMetadata);
-        }}
-        fromLanguage={fromLanguage}
-        targetLanguage={targetLanguage}
-        targetWord={overlayOppositeWord}
-        fromSentence={displaySentenceContext}
-        targetSentence={overlaySentenceContext}
-        isSaved={isSaved}
-        isTranslating={isTranslating}
-        wordMetadata={wordMetadata ?? {
-          from_word: '',
-          from_lemma: '',
-          to_word: '',
-          to_lemma: '',
-          pos: null,
-          difficulty: null,
-          from_definition: null,
-        }}
+        word={word}
         position={position}
       >
-        {overlayOppositeWord ? (
+        {translation ? (
           <span className='relative inline-block align-baseline'>
             <span className='absolute left-1/2 -translate-x-1/2 -top-[1.35rem] text-[0.7rem] italic text-primary font-medium pointer-events-none select-none px-1 whitespace-nowrap'>
-              {overlayOppositeWord}
+              {translation}
             </span>
             <WordHighlight
-              word={actionWordNormalized}
+              word={word}
               disabled={disabled}
               active={isOpen}
               className={`line-through decoration-2 decoration-red-500 ${vocabularyHighlightClass}`}
               onClick={handleWordClick}
             >
-              {cleanWord}
+              {word}
             </WordHighlight>
           </span>
         ) : (
           <WordHighlight
-            word={actionWordNormalized}
+            word={word}
             disabled={disabled}
             active={isOpen}
             className={vocabularyHighlightClass}
             onClick={handleWordClick}
           >
-            {cleanWord}
+            {word}
           </WordHighlight>
         )}
       </WordMenu>

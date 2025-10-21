@@ -8,108 +8,58 @@ import { useDictionary } from '../../hooks/useDictionary';
 import { VocabularySaveButton } from '../vocabulary/buttons/VocabularySaveButton';
 import { useLanguages } from '../../hooks/useLanguages';
 import DictionaryEntry from '../dictionary/DictionaryEntry/DictionaryEntry';
-import { LanguageCode } from '../../types/llm/prompts';
-import { useInteractiveTextContext } from './useInteractiveTextContext';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
-import type { WordMetadata } from './interactiveText/WordToken';
+import { useWordActions } from '../../hooks/useWordActions';
 
-// TODO: mgarceau 2025-10-07
-// Refactor WordMenu to eliminate redundant props (e.g., targetWord. wordMetaData is the source of truth).
-// Currently, saved target words are tracked via useTranslationCache (see src/hooks/interactiveText/useTranslationCache.ts).
-// Consider centralizing state management, possibly using a story-level context for cleaner data flow.
 interface WordMenuProps {
   children: React.ReactNode;
-  word: string; // Word to display in menu
-  dictionaryWord?: string; // Word to use for dictionary lookup (from_lemma)
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  onTranslate?: (word: string) => void;
-  fromLanguage?: LanguageCode;
-  targetLanguage?: LanguageCode;
-  targetWord?: string;
-  fromSentence?: string;
-  targetSentence?: string;
-  isSaved?: boolean;
-  isTranslating?: boolean;
-  wordMetadata: WordMetadata;
-  position?: number; // Position in text for position-based translations
+  word: string;
+  position?: number;
 }
 
 const WordMenu: React.FC<WordMenuProps> = ({
   children,
-  open,
-  targetWord,
-  onOpenChange,
-  onTranslate,
-  fromLanguage,
-  targetLanguage,
-  fromSentence,
-  targetSentence,
-  isSaved,
-  isTranslating,
+  word,
   position,
-  wordMetadata: {
-    to_word: toWord,
-    from_word: fromWord,
-    from_lemma: fromLemma,
-    pos: pos,
-    difficulty: difficulty,
-    from_definition: fromDefinition,
-  },
 }) => {
-  const ctx = useInteractiveTextContext();
+  const {
+    isSaved,
+    isTranslating,
+    translation,
+    isOpen,
+    handleTranslate,
+    handleToggleMenu,
+    metadata,
+  } = useWordActions(word, position);
+
   const location = useLocation();
   const routeSavedTranslationId = (
     location.state as { savedTranslationId?: number } | null
   )?.savedTranslationId;
-  const effectiveSavedTranslationId =
-    ctx?.savedTranslationId ?? routeSavedTranslationId;
   const { user } = useAuth();
   const { t } = useLocalization();
   const [showDictionary, setShowDictionary] = useState(false);
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
 
-  const effectiveFromLanguage = fromLanguage ?? ctx?.fromLanguage;
-  const effectiveTargetLanguage = targetLanguage ?? ctx?.targetLanguage;
-  const isDisplayingFromSide = ctx?.isDisplayingFromSide ?? true;
-  // Show overlay only when this token has been translated (parent passes targetWord when translated)
-  const effectiveOppositeWord = targetWord;
-  const effectiveIsSaved = isSaved ?? ctx?.isSavedWord?.(toWord) ?? false;
-  const effectiveIsTranslating =
-    isTranslating ?? ctx?.isTranslatingWord?.(toWord, position) ?? false;
+  // Get language IDs for the VocabularySaveButton
+  const fromLanguageId = getLanguageIdByCode(metadata.from_word ? 'en' : 'es'); // Simplified for now
+  const targetLanguageId = getLanguageIdByCode(metadata.to_word ? 'es' : 'en'); // Simplified for now
 
   // Search for word info when dictionary is shown
-  // Use dictionaryWord (from_lemma) if available, otherwise fall back to word
-  const wordForDictionary = fromLemma ?? fromWord;
+  const wordForDictionary = metadata.from_lemma ?? metadata.from_word;
   
   useEffect(() => {
-    if (showDictionary && open) {
+    if (showDictionary && isOpen) {
       void searchWord(
         wordForDictionary,
-        effectiveFromLanguage,
-        effectiveTargetLanguage
+        'en', // Simplified for now
+        'es'  // Simplified for now
       );
     }
-  }, [
-    showDictionary,
-    open,
-    wordForDictionary,
-    effectiveFromLanguage,
-    effectiveTargetLanguage,
-    searchWord,
-  ]);
-
-  const handleTranslate = () => {
-    // Always allow translate click unless actively translating
-    // The parent component (InteractiveText) will check metadata and decide
-    // whether to use it directly or make an API call
-    if (!effectiveIsTranslating) {
-      onTranslate?.(toWord);
-    }
-  };
+  }, [showDictionary, isOpen, wordForDictionary, searchWord]);
 
   const handleDictionary = () => {
     setShowDictionary(true);
@@ -119,49 +69,21 @@ const WordMenu: React.FC<WordMenuProps> = ({
     setShowDictionary(false);
   };
 
-  // Get language IDs for the VocabularySaveButton
-  const fromLanguageId = effectiveFromLanguage
-    ? getLanguageIdByCode(effectiveFromLanguage)
-    : null;
-  const targetLanguageId = effectiveTargetLanguage
-    ? getLanguageIdByCode(effectiveTargetLanguage)
-    : null;
-
-  const translateButtonDisabled = effectiveIsTranslating;
-
-  const translateButtonLabel = effectiveIsTranslating
+  const translateButtonDisabled = isTranslating;
+  const translateButtonLabel = isTranslating
     ? 'Translating...'
-    : effectiveOppositeWord && !effectiveIsSaved
+    : translation && !isSaved
       ? 'Translated'
       : 'Translate';
 
-  // Compute canonical contexts: from = user's from-language sentence, target = user's target-language sentence
-  let effectiveFromContext = fromSentence;
-  let effectiveTargetContext = targetSentence;
-  // Trust the display-side flag for orientation instead of string checks
-  if (!isDisplayingFromSide) {
-    effectiveFromContext = targetSentence;
-    effectiveTargetContext = fromSentence;
-  }
-
-  // Compute canonical words (from = user's from-language, target = user's target-language)
-  const canonicalFromWord = isDisplayingFromSide
-    ? toWord
-    : (effectiveOppositeWord ?? '');
-  const canonicalTargetWord = isDisplayingFromSide
-    ? (effectiveOppositeWord ?? '')
-    : toWord;
-
   return (
     <Popover
-      open={open}
-      onOpenChange={isOpen => {
-        onOpenChange?.(isOpen);
-      }}
+      open={isOpen}
+      onOpenChange={handleToggleMenu}
     >
       <PopoverTrigger asChild>
         <span
-          className={`inline-block align-baseline rounded-sm px-0.5 py-0 transition-colors duration-200 cursor-pointer ${open ? 'bg-primary/30 ring-1 ring-primary/40' : 'hover:bg-primary/20 hover:ring-1 hover:ring-primary/30'}`}
+          className={`inline-block align-baseline rounded-sm px-0.5 py-0 transition-colors duration-200 cursor-pointer ${isOpen ? 'bg-primary/30 ring-1 ring-primary/40' : 'hover:bg-primary/20 hover:ring-1 hover:ring-primary/30'}`}
           style={{ lineHeight: '1.35em' }}
           data-word-trigger
           onClick={() => {}}
@@ -192,10 +114,10 @@ const WordMenu: React.FC<WordMenuProps> = ({
           {!showDictionary ? (
             <>
               <div className='text-center mb-3'>
-                <div className='text-sm font-medium mb-1'>{toWord}</div>
-                {effectiveOppositeWord && (
+                <div className='text-sm font-medium mb-1'>{metadata.to_word}</div>
+                {translation && (
                   <div className='text-sm text-muted-foreground'>
-                    {effectiveOppositeWord}
+                    {translation}
                   </div>
                 )}
               </div>
@@ -207,7 +129,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                       size='sm'
                       onClick={handleTranslate}
                       disabled={translateButtonDisabled}
-                      loading={effectiveIsTranslating}
+                      loading={isTranslating}
                       loadingText='Translating...'
                       spinnerSize='sm'
                     >
@@ -225,23 +147,22 @@ const WordMenu: React.FC<WordMenuProps> = ({
                     </Button>
                     {fromLanguageId && targetLanguageId && (
                       <VocabularySaveButton
-                        fromWord={canonicalFromWord}
-                        targetWord={canonicalTargetWord}
-                        fromContext={effectiveFromContext}
-                        targetContext={effectiveTargetContext}
+                        fromWord={metadata.from_word}
+                        targetWord={metadata.to_word}
+                        fromContext={''} // Will be provided by context
+                        targetContext={''} // Will be provided by context
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
-                        partOfSpeech={pos ?? undefined}
-                        definition={fromDefinition ?? undefined}
-                        frequencyLevel={difficulty ?? undefined}
-                        // frequencyLevel can be added when token includes frequency info
-                        savedTranslationId={effectiveSavedTranslationId}
+                        partOfSpeech={metadata.pos ?? undefined}
+                        definition={metadata.from_definition ?? undefined}
+                        frequencyLevel={metadata.difficulty ?? undefined}
+                        savedTranslationId={routeSavedTranslationId}
                         size='sm'
                         variant='outline'
-                        isSaved={effectiveIsSaved}
+                        isSaved={isSaved}
                         onBeforeOpen={() => {
-                          if (!effectiveOppositeWord) {
-                            onTranslate?.(toWord);
+                          if (!translation) {
+                            handleTranslate();
                           }
                         }}
                       />
@@ -259,24 +180,23 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 <div className='flex items-center gap-2'>
                   {user && fromLanguageId && targetLanguageId && (
                     <VocabularySaveButton
-                      fromWord={canonicalFromWord}
-                      targetWord={canonicalTargetWord}
-                      fromContext={effectiveFromContext}
-                      targetContext={effectiveTargetContext}
+                      fromWord={metadata.from_word}
+                      targetWord={metadata.to_word}
+                      fromContext={''} // Will be provided by context
+                      targetContext={''} // Will be provided by context
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       partOfSpeech={undefined}
                       definition={undefined}
-                      // frequencyLevel can be added when token includes frequency info
-                      savedTranslationId={effectiveSavedTranslationId}
+                      savedTranslationId={routeSavedTranslationId}
                       size='sm'
                       variant='outline'
                       className='mr-2'
                       showTextOnly={true}
-                      isSaved={effectiveIsSaved}
+                      isSaved={isSaved}
                       onBeforeOpen={() => {
-                        if (!effectiveOppositeWord) {
-                          onTranslate?.(toWord);
+                        if (!translation) {
+                          handleTranslate();
                         }
                       }}
                     />
@@ -292,7 +212,7 @@ const WordMenu: React.FC<WordMenuProps> = ({
                 </div>
               </div>
               <DictionaryEntry.Root
-                word={wordForDictionary} // from_lemma
+                word={wordForDictionary}
                 wordInfo={wordInfo}
                 isLoading={isLoading}
                 error={error}

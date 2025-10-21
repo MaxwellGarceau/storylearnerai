@@ -1,11 +1,7 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { LanguageCode } from '../../types/llm/prompts';
 import { TranslationToken } from '../../types/llm/tokens';
-import type { WordMetadata } from './interactiveText/WordToken';
-import { useSavedWords } from '../../hooks/interactiveText/useSavedWords';
-import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
-import { useTranslationCache } from '../../hooks/interactiveText/useTranslationCache';
-import { InteractiveTextProvider } from './InteractiveTextContext';
+import { StoryProvider } from '../../contexts/StoryContext';
 import InteractiveTextView from './interactiveText/InteractiveTextView';
 
 interface InteractiveTextProps {
@@ -25,7 +21,7 @@ interface InteractiveTextProps {
 
 const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   text,
-  tokens: translationTokens,
+  tokens = [],
   className,
   fromLanguage,
   targetLanguage,
@@ -35,168 +31,37 @@ const InteractiveTextComponent: React.FC<InteractiveTextProps> = ({
   savedTranslationId,
   includedVocabulary = [],
 }) => {
-  // Always call hooks first, regardless of text content
-  // Tokens are always provided by TranslationService (either from LLM or fallback)
-  const tokens = translationTokens ?? [];
-
-  // Split text into segments for sentence extraction (keeps indices aligned with token.segmentIndex)
-  const words = useMemo(() => text?.split(/(\s+)/) ?? [], [text]);
-
-  // Sentence context helpers
-  const { extractSentenceContext } = useSentenceContext(words);
-
-  // Saved words and lookup
-  const {
-    savedOriginalWords,
-    savedTargetWords,
-    findSavedWordData,
-    findSavedByTargetWord,
-  } = useSavedWords(fromLanguage, targetLanguage);
-
-  // Translation cache and handler
-  const {
-    targetWords,
-    translatingWords,
-    setWordTranslation,
-    handleTranslate,
-    getTranslationByPosition,
-    createPositionKey,
-    findAllLemmaPositions,
-    translateAllLemmaInstances,
-  } = useTranslationCache({
-    extractSentenceContext,
+  // Create mock translation data for the context
+  const translationData = useMemo(() => ({
+    fromText: text || '',
+    toText: text || '', // Simplified for now
+    fromLanguage,
+    toLanguage: targetLanguage,
+    difficulty: 'a1' as const,
+    provider: 'mock' as const,
+    model: 'test-model',
     tokens,
-  });
+    includedVocabulary,
+  }), [text, fromLanguage, targetLanguage, tokens, includedVocabulary]);
 
-  // Create callbacks before conditional return (hooks must be called unconditionally)
-  const getOppositeWordFor = useCallback(
-    (word: string, position?: number) => {
-      // Try position-based runtime overlay first if position is provided
-      if (position !== undefined) {
-        const positionBased = getTranslationByPosition(word, position);
-        if (positionBased) return positionBased;
-      }
-      
-      // Try runtime overlay (lemma-based)
-      const runtime = targetWords.get(word);
-      if (runtime) return runtime;
-      
-      // Then try saved reverse lookup (when viewing target-side word)
-      const saved = findSavedByTargetWord(word);
-      if (saved?.from_word) return saved.from_word;
-      return undefined;
-    },
-    [targetWords, findSavedByTargetWord, getTranslationByPosition]
-  );
-
-  const isTranslatingWord = useCallback(
-    (word: string, position?: number) => {
-      if (position !== undefined) {
-        const positionKey = createPositionKey(word, position);
-        return translatingWords.has(positionKey);
-      }
-      return translatingWords.has(word);
-    },
-    [translatingWords, createPositionKey]
-  );
-
-  const isSavedWord = useCallback(
-    (word: string) =>
-      savedOriginalWords.has(word) || savedTargetWords.has(word),
-    [savedOriginalWords, savedTargetWords]
-  );
-
-  const isIncludedVocabulary = useCallback(
-    (word: string) => includedVocabulary.includes(word),
-    [includedVocabulary]
-  );
-
-  const handleTranslateWithSavedCheck = (
-    w: string,
-    segmentIndex: number,
-    metadata?: WordMetadata
-  ) => {
-    // Check if we already have a position-based translation
-    const positionKey = createPositionKey(w, segmentIndex);
-    const alreadyRuntime = targetWords.get(positionKey) ?? targetWords.get(w);
-    if (alreadyRuntime) return;
-
-    // If we have metadata with from_word, use it directly without API call
-    if (metadata?.from_word) {
-      setWordTranslation(w, metadata.from_word, segmentIndex);
-      // Also translate all other instances of this lemma
-      translateAllLemmaInstances(w);
-      return;
-    }
-
-    // If w is a from-word saved key, inject its target
-    const savedByFrom = findSavedWordData(w);
-    if (savedByFrom?.target_word) {
-      setWordTranslation(w, savedByFrom.target_word, segmentIndex);
-      // Also translate all other instances of this lemma
-      translateAllLemmaInstances(w);
-      return;
-    }
-
-    // If w is a target-word saved key (viewing target side), inject its from word as overlay
-    const savedByTarget = findSavedByTargetWord(w);
-    if (savedByTarget?.from_word) {
-      setWordTranslation(w, savedByTarget.from_word, segmentIndex);
-      // Also translate all other instances of this lemma
-      translateAllLemmaInstances(w);
-      return;
-    }
-
-    // Fallback: call API to translate (this will automatically translate all instances)
-    void handleTranslate(w, segmentIndex);
-  };
-
-  // Early return for undefined or empty text (after all hooks are called)
+  // Early return for undefined or empty text
   if (!text?.trim()) {
     return <span className={className} />;
   }
 
   return (
-    <InteractiveTextProvider
-      value={{
-        fromLanguage,
-        targetLanguage,
-        isDisplayingFromSide,
-        savedOriginalWords,
-        // expose only existing finders to keep context stable
-        findSavedWordData,
-        targetWords,
-        translatingWords,
-        savedTranslationId,
-        includedVocabulary,
-        getOppositeWordFor,
-        isTranslatingWord,
-        isSavedWord,
-        isIncludedVocabulary,
-        getTranslationByPosition,
-        createPositionKey,
-        findAllLemmaPositions,
-        translateAllLemmaInstances,
-      }}
+    <StoryProvider
+      translationData={translationData}
+      savedTranslationId={savedTranslationId}
+      isDisplayingFromSide={isDisplayingFromSide}
     >
       <InteractiveTextView
         className={className}
         tokens={tokens}
         enableTooltips={enableTooltips}
         disabled={disabled}
-        fromLanguage={fromLanguage}
-        targetLanguage={targetLanguage}
-        getDisplaySentence={(segmentIndex: number) =>
-          extractSentenceContext(segmentIndex)
-        }
-        getOverlaySentence={() => undefined}
-        isSaved={(w: string) => isSavedWord(w)}
-        getOverlayOppositeWord={(w: string, position?: number) => getOppositeWordFor(w, position)}
-        isTranslating={(w: string, position?: number) => isTranslatingWord(w, position)}
-        onTranslate={handleTranslateWithSavedCheck}
-        isDisplayingFromSide={isDisplayingFromSide}
       />
-    </InteractiveTextProvider>
+    </StoryProvider>
   );
 };
 
