@@ -14,7 +14,7 @@ import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
 import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../lib/llm/tokenConverter';
+import { TokenConverter } from '../../lib/llm/tokens';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import {

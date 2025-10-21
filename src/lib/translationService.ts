@@ -5,7 +5,7 @@ import { LanguageCode, DifficultyLevel } from '../types/llm/prompts';
 import { LLMError } from '../types/llm/providers';
 import { TranslationToken } from '../types/llm/tokens';
 import { TranslationServiceIntegration } from './llm/translationServiceIntegration';
-import { FallbackTokenGenerator } from './llm/fallbackTokenGenerator';
+import { FallbackTokenGenerator } from './llm/tokens';
 import { logger } from './logger';
 
 export interface TranslationRequest {

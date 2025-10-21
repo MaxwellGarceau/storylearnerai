@@ -1,6 +1,5 @@
 import { llmServiceManager } from './LLMServiceManager';
-import { TranslationTokenValidator } from './translationTokenValidator';
-import { FallbackTokenGenerator } from './fallbackTokenGenerator';
+import { TranslationTokenValidator, FallbackTokenGenerator } from './tokens';
 import { TranslationWithTokens } from '../../types/llm/tokens';
 import { logger } from '../logger';
 

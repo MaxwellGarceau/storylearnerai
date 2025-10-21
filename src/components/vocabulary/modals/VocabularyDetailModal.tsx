@@ -17,7 +17,7 @@ import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
 import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../../lib/llm/tokenConverter';
+import { TokenConverter } from '../../../lib/llm/tokens';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;

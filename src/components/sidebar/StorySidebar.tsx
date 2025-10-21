@@ -14,7 +14,7 @@ import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
 import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../lib/llm/tokenConverter';
+import { TokenConverter } from '../../lib/llm/tokens';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';

@@ -5,7 +5,7 @@ import type { VoidPromise } from '../types/common';
 import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
-import { TokenConverter } from '../lib/llm/tokenConverter';
+import { TokenConverter } from '../lib/llm/tokens';
 
 // Type alias to avoid duplicate type definition
 type LoadTranslationsFunction = () => VoidPromise;

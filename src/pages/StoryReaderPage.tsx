@@ -11,7 +11,7 @@ import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../lib/llm/tokenConverter';
+import { TokenConverter } from '../lib/llm/tokens';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
