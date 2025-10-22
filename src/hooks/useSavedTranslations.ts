@@ -213,7 +213,8 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
         setError(errorMessage);
         return null;
       }
-    }, []
+    },
+    []
   );
 
   useEffect(() => {

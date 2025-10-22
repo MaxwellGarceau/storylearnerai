@@ -177,6 +177,18 @@ export class SavedTranslationService {
     };
 
     // 2) Load ordered tokens
+    type TokenRow = {
+      token_type: 'word' | 'punctuation' | 'whitespace';
+      to_word: string | null;
+      to_lemma: string | null;
+      from_word: string | null;
+      from_lemma: string | null;
+      pos: string | null;
+      difficulty: string | null;
+      from_definition: string | null;
+      token_value: string | null;
+    };
+
     const tokensResult = await supabase
       .from('translation_tokens')
       .select('*')
@@ -189,22 +201,22 @@ export class SavedTranslationService {
       throw new Error(`Failed to load translation tokens: ${tokensResult.error.message}`);
     }
 
-    const reconstructedTokens: LoadedTranslationToken[] = (tokensResult.data ?? []).map(row => {
+    const reconstructedTokens: LoadedTranslationToken[] = (tokensResult.data as unknown as TokenRow[] | null ?? []).map((row: TokenRow) => {
       if (row.token_type === 'word') {
         return {
           type: 'word',
-          to_word: row.to_word as string,
-          to_lemma: row.to_lemma as string,
-          from_word: row.from_word as string,
-          from_lemma: row.from_lemma as string,
-          pos: (row.pos ?? undefined) as string | undefined,
-          difficulty: (row.difficulty ?? undefined) as string | undefined,
-          from_definition: (row.from_definition ?? undefined) as string | undefined,
+          to_word: row.to_word ?? '',
+          to_lemma: row.to_lemma ?? '',
+          from_word: row.from_word ?? '',
+          from_lemma: row.from_lemma ?? '',
+          pos: row.pos ?? undefined,
+          difficulty: row.difficulty ?? undefined,
+          from_definition: row.from_definition ?? undefined,
         };
       }
       return {
-        type: row.token_type as 'punctuation' | 'whitespace',
-        value: row.token_value as string,
+        type: row.token_type,
+        value: row.token_value ?? '',
       };
     });
 

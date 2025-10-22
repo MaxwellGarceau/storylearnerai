@@ -20,10 +20,10 @@ export default defineConfig({
     testTimeout: 30000, // 30 seconds timeout for individual tests
     hookTimeout: 30000, // 30 seconds timeout for hooks
     teardownTimeout: 5000, // 5 seconds timeout for teardown
-    pool: 'forks', // Use fork pool for better isolation
+    pool: 'threads',
     poolOptions: {
-      forks: {
-        singleFork: true, // Run tests in single fork for CI stability
+      threads: {
+        singleThread: true,
       },
     },
   },

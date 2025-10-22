@@ -73,4 +73,3 @@ export interface LoadedTranslation {
   to_language: DatabaseLanguage;
   difficulty_level: DatabaseDifficultyLevel;
 }
-

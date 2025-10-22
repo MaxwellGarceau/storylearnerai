@@ -174,6 +174,25 @@ vi.mock('../../../hooks/useSavedTranslations', () => ({
     loading: useSavedTranslationsMock.loading,
     error: useSavedTranslationsMock.error,
     deleteSavedTranslation: vi.fn().mockResolvedValue(true),
+    loadTranslationWithTokens: vi
+      .fn()
+      .mockImplementation(async (id: number) => ({
+        id,
+        from_text: 'Hola mundo',
+        to_text: 'Hello world',
+        tokens: [],
+        from_language: { id: 1, code: 'es', name: 'Spanish' },
+        to_language: { id: 2, code: 'en', name: 'English' },
+        difficulty_level: { id: 1, code: 'a1', name: 'A1 (Beginner)' },
+        from_language_id: 1,
+        to_language_id: 2,
+        difficulty_level_id: 1,
+        user_id: 'user-1',
+        title: 'Sample Title',
+        notes: 'Some helpful notes',
+        created_at: '2024-01-01T00:00:00.000Z',
+        updated_at: '2024-01-01T00:00:00.000Z',
+      })),
   }),
 }));
 

@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
 import { SavedTranslationService } from '../savedTranslationService';
-import type { SaveTranslationParams } from '../savedTranslationService';
+import type { SaveTranslationParams } from '../../../../types/app/translations';
+import type { LanguageCode, DifficultyLevel } from '../../../../types/llm/prompts';
 
 // Mock the sanitization utilities
 vi.mock('../../../../lib/utils/sanitization', () => ({
@@ -93,14 +94,14 @@ describe('SavedTranslationService', () => {
     mockDifficultyLevelService = new DifficultyLevelService();
 
     // Configure language service mock
-    (mockLanguageService as { getLanguageByCode: (code: string) => unknown }).getLanguageByCode.mockImplementation((code: string) => {
+    (mockLanguageService as { getLanguageByCode: MockedFunction<(code: string) => unknown> }).getLanguageByCode.mockImplementation((code: string) => {
       if (code === 'en') return { id: 1, code: 'en', name: 'English' };
       if (code === 'es') return { id: 2, code: 'es', name: 'Spanish' };
       return null;
     });
 
     // Configure difficulty level service mock
-    (mockDifficultyLevelService as { getDifficultyLevelByCode: (code: string) => unknown }).getDifficultyLevelByCode.mockImplementation((code: string) => {
+    (mockDifficultyLevelService as { getDifficultyLevelByCode: MockedFunction<(code: string) => unknown> }).getDifficultyLevelByCode.mockImplementation((code: string) => {
       if (code === 'a1') return { id: 1, code: 'a1', name: 'A1' };
       return null;
     });
