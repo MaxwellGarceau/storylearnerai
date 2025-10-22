@@ -13,8 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
-import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../lib/llm/tokens';
+import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';
@@ -40,6 +39,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     savedTranslations,
     loading: isLoadingSavedTranslations,
     refreshTranslations,
+    loadTranslationWithTokens,
   } = useSavedTranslations();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -146,11 +146,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     saved: DatabaseSavedTranslationWithDetails
   ) => {
     try {
-      // Load the full translation with tokens from the database
-      const service = new SavedTranslationService();
-      const savedTranslation = await service.loadTranslationWithTokens(
-        saved.id
-      );
+      const savedTranslation = await loadTranslationWithTokens(saved.id);
 
       if (savedTranslation) {
         // Convert loaded tokens to TranslationToken format

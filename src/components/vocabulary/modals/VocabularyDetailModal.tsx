@@ -16,8 +16,8 @@ import { BadgeSection } from '../../ui/BadgeSection';
 import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
-import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../../lib/llm/tokens';
+import { TokenConverter } from '../../../lib/llm/tokens/tokenConverter';
+import { useSavedTranslations } from '../../../hooks/useSavedTranslations';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -30,14 +30,14 @@ export function VocabularyDetailModal({
   const { t } = useLocalization();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { loadTranslationWithTokens } = useSavedTranslations();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleNavigateToSavedTranslation = async () => {
     if (vocabulary.saved_translation_id && user) {
       try {
-        const service = new SavedTranslationService();
-        const savedTranslation = await service.loadTranslationWithTokens(
+        const savedTranslation = await loadTranslationWithTokens(
           vocabulary.saved_translation_id
         );
 

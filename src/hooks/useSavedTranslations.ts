@@ -5,7 +5,8 @@ import type { VoidPromise } from '../types/common';
 import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
-import { TokenConverter } from '../lib/llm/tokens';
+import { TokenConverter } from '../lib/llm/tokens/tokenConverter';
+import type { LoadedTranslation } from '../types/app/translations';
 
 // Type alias to avoid duplicate type definition
 type LoadTranslationsFunction = () => VoidPromise;
@@ -16,6 +17,9 @@ interface UseSavedTranslationsReturn {
   error: string | null;
   loadTranslations: LoadTranslationsFunction;
   refreshTranslations: LoadTranslationsFunction;
+  loadTranslationWithTokens: (
+    translationId: number
+  ) => Promise<LoadedTranslation | null>;
   saveTranslationWithTokens: (
     translationData: TranslationResponse,
     fromText: string,
@@ -197,6 +201,21 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     [user, toast, loadTranslations]
   );
 
+  const loadTranslationWithTokens = useCallback(
+    async (translationId: number): Promise<LoadedTranslation | null> => {
+      try {
+        return await savedTranslationService.loadTranslationWithTokens(
+          translationId
+        );
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to load translation';
+        setError(errorMessage);
+        return null;
+      }
+    }, []
+  );
+
   useEffect(() => {
     void loadTranslations();
   }, [loadTranslations]);
@@ -207,6 +226,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     error,
     loadTranslations,
     refreshTranslations,
+    loadTranslationWithTokens,
     saveTranslationWithTokens,
     deleteSavedTranslation,
   };

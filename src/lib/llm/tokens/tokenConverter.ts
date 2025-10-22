@@ -10,7 +10,7 @@ import type {
   LoadedWordToken,
   LoadedNonWordToken,
   LoadedTranslationToken,
-} from '../../../api/supabase/database/savedTranslationService';
+} from '../../../types/app/translations';
 
 /**
  * Utility class for converting between different token formats

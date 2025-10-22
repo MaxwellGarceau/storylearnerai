@@ -10,14 +10,15 @@ import StorySidebar from '../components/sidebar/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../lib/llm/tokens';
+import { TokenConverter } from '../lib/llm/tokens/tokenConverter';
+import { useSavedTranslations } from '../hooks/useSavedTranslations';
 
 const StoryReaderPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { loadTranslationWithTokens } = useSavedTranslations();
   const { getLanguageName } = useLanguages();
   const [searchParams] = useSearchParams();
   const state = location.state as {
@@ -49,10 +50,7 @@ const StoryReaderPage: React.FC = () => {
         setLoadingById(true);
         setErrorById(null);
         try {
-          const service = new SavedTranslationService();
-          const saved = await service.loadTranslationWithTokens(
-            urlSavedTranslationId
-          );
+          const saved = await loadTranslationWithTokens(urlSavedTranslationId);
           if (saved) {
             // Convert loaded tokens to TranslationToken format
             const tokens = TokenConverter.convertDatabaseTokensToUITokens(
@@ -83,7 +81,7 @@ const StoryReaderPage: React.FC = () => {
       };
       void run();
     }
-  }, [translationData, urlSavedTranslationId, user]);
+  }, [translationData, urlSavedTranslationId, user, loadTranslationWithTokens]);
 
   // Use test data if in debug mode and no translation data
   const isDebugMode = window.location.search.includes('debug=walkthrough');

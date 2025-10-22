@@ -8,6 +8,8 @@ import { logger } from '../../logger';
  * Note: Fallback tokens have minimal metadata:
  * - No from_word/from_lemma (unknown)
  * - No pos/difficulty/from_definition (set to null)
+ * - Deeper metadata may later be generated using in-app libraries or a
+ *   dedicated backend (e.g., Python with NLP libraries) to enrich tokens.
  */
 export class FallbackTokenGenerator {
   private static readonly LEADING_WORD_RE = /^[\p{L}\p{N}'']+/u;

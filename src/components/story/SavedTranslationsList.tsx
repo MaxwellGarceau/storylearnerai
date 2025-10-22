@@ -13,8 +13,7 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
-import { SavedTranslationService } from '../../api/supabase/database/savedTranslationService';
-import { TokenConverter } from '../../lib/llm/tokens';
+import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import {
@@ -65,6 +64,7 @@ export default function SavedTranslationsList() {
     loading: isLoading,
     error,
     deleteSavedTranslation,
+    loadTranslationWithTokens,
   } = useSavedTranslations();
 
   const { languages, loading: languagesLoading } = useLanguages();
@@ -131,10 +131,9 @@ export default function SavedTranslationsList() {
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
     try {
-      // Load the full translation with tokens from the database
-      const service = new SavedTranslationService();
-      const savedTranslationWithTokens =
-        await service.loadTranslationWithTokens(savedTranslation.id);
+      const savedTranslationWithTokens = await loadTranslationWithTokens(
+        savedTranslation.id
+      );
 
       if (savedTranslationWithTokens) {
         // Convert loaded tokens to TranslationToken format

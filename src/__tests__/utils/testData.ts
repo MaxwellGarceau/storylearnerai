@@ -1,5 +1,5 @@
 import type { TranslationResponse } from '../../lib/translationService';
-import { FallbackTokenGenerator } from '../../lib/llm/tokens';
+import { FallbackTokenGenerator } from '../../lib/llm/tokens/fallbackTokenGenerator';
 
 // Test translation data for walkthrough testing
 export const testWalkthroughTranslationData: TranslationResponse = {

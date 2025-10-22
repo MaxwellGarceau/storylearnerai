@@ -7,7 +7,7 @@ import type {
   DatabaseDifficultyLevel,
 } from '../../../types/database';
 import type { DatabaseSavedTranslationWithDetailsPromise } from '../../../types/database/promise';
-import type { LanguageCode, DifficultyLevel } from '../../../types/llm/prompts';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import { validateStoryText, sanitizeText } from '../../../lib/utils/sanitization';
 import type { VoidPromise } from '../../../types/common';
 import { LanguageService } from './languageService';
@@ -28,74 +28,12 @@ type SavedTranslationFiltersWithOptionalLanguages = Omit<SavedTranslationFilters
   to_language_code?: LanguageCode;
 };
 
-// New translation/token types for the translations + translation_tokens schema
-export type WordTokenInput = {
-  type: 'word';
-  to_word: string;
-  to_lemma: string;
-  from_word: string;
-  from_lemma: string;
-  pos?: string;
-  difficulty?: string;
-  from_definition?: string;
-};
-
-export type PunctuationOrWhitespaceTokenInput = {
-  type: 'punctuation' | 'whitespace';
-  value: string;
-};
-
-export type TranslationTokenInput =
-  | WordTokenInput
-  | PunctuationOrWhitespaceTokenInput;
-
-export interface SaveTranslationParams {
-  userId: string;
-  fromLanguage: LanguageCode;
-  toLanguage: LanguageCode;
-  fromText: string;
-  toText: string;
-  difficultyLevel: DifficultyLevel; // e.g., a1, a2, b1, b2 (required in new schema)
-  title?: string;
-  notes?: string;
-  tokens: TranslationTokenInput[];
-}
-
-export type LoadedWordToken = {
-  type: 'word';
-  to_word: string;
-  to_lemma: string;
-  from_word: string;
-  from_lemma: string;
-  pos?: string;
-  difficulty?: string;
-  from_definition?: string;
-};
-
-export type LoadedNonWordToken = {
-  type: 'punctuation' | 'whitespace';
-  value: string;
-};
-
-export type LoadedTranslationToken = LoadedWordToken | LoadedNonWordToken;
-
-export interface LoadedTranslation {
-  id: number;
-  user_id: string;
-  from_language_id: number;
-  to_language_id: number;
-  from_text: string;
-  to_text: string;
-  difficulty_level_id: number;
-  title?: string | null;
-  notes?: string | null;
-  created_at: string;
-  updated_at: string;
-  tokens: LoadedTranslationToken[];
-  from_language: DatabaseLanguage;
-  to_language: DatabaseLanguage;
-  difficulty_level: DatabaseDifficultyLevel;
-}
+// Use centralized app translation types
+import type {
+  SaveTranslationParams,
+  LoadedTranslationToken,
+  LoadedTranslation,
+} from '../../../types/app/translations';
 
 export class SavedTranslationService {
   private languageService = new LanguageService();

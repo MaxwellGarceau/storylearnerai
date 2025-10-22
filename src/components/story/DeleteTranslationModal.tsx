@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
+import { ModalHeader } from '../ui/ModalHeader';
 import { useTranslation } from 'react-i18next';
 import { Trash2, X } from 'lucide-react';
 import type { DatabaseSavedTranslationWithDetails } from '../../types/database';
@@ -41,19 +42,14 @@ export function DeleteTranslationModal({
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 !m-0'>
       <div className='bg-background rounded-lg shadow-lg sm:max-w-[500px] m-4 max-h-[90vh] overflow-y-auto p-6 relative'>
-        <div className='flex items-center gap-3 mb-4'>
-          <div className='flex-shrink-0 w-10 h-10 bg-destructive/10 rounded-full flex items-center justify-center'>
-            <Trash2 className='w-5 h-5 text-destructive' />
-          </div>
-          <div>
-            <h2 className='text-lg font-semibold'>
-              {t('savedTranslations.deleteModal.title')}
-            </h2>
-            <p className='text-sm text-muted-foreground'>
-              {t('savedTranslations.deleteModal.subtitle')}
-            </p>
-          </div>
-        </div>
+        <ModalHeader
+          title={t('savedTranslations.deleteModal.title')}
+          onClose={onClose}
+          icon={Trash2}
+        />
+        <p className='text-sm text-muted-foreground mt-2 mb-4'>
+          {t('savedTranslations.deleteModal.subtitle')}
+        </p>
 
         <div className='mb-6'>
           <p className='text-muted-foreground mb-4'>
