@@ -144,10 +144,10 @@ export interface Database {
         Row: {
           id: number;
           user_id: string; // Foreign key reference to users.id (UUID)
-          from_story: string;
-          target_story: string;
+          from_text: string;
+          to_text: string;
           from_language_id: number; // Foreign key reference to languages.id
-          target_language_id: number; // Foreign key reference to languages.id
+          to_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title: NullableString;
           notes: NullableString;
@@ -157,10 +157,10 @@ export interface Database {
         Insert: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID) - will be set by the service
-          from_story: string;
-          target_story: string;
+          from_text: string;
+          to_text: string;
           from_language_id: number; // Foreign key reference to languages.id
-          target_language_id: number; // Foreign key reference to languages.id
+          to_language_id: number; // Foreign key reference to languages.id
           difficulty_level_id: number;
           title?: NullableString;
           notes?: NullableString;
@@ -170,15 +170,60 @@ export interface Database {
         Update: {
           id?: number;
           user_id?: string; // Foreign key reference to users.id (UUID)
-          from_story?: string;
-          target_story?: string;
+          from_text?: string;
+          to_text?: string;
           from_language_id?: number; // Foreign key reference to languages.id
-          target_language_id?: number; // Foreign key reference to languages.id
+          to_language_id?: number; // Foreign key reference to languages.id
           difficulty_level_id?: number;
           title?: NullableString;
           notes?: NullableString;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      // Translation tokens
+      translation_tokens: {
+        Row: {
+          id: number;
+          translation_id: number; // Foreign key reference to saved_translations.id
+          token_index: number;
+          token_type: string; // 'word', 'punctuation', 'whitespace'
+          to_word: NullableString;
+          to_lemma: NullableString;
+          from_word: NullableString;
+          from_lemma: NullableString;
+          pos: NullableString; // part of speech
+          difficulty: NullableString;
+          from_definition: NullableString;
+          token_value: NullableString;
+        };
+        Insert: {
+          id?: number;
+          translation_id: number; // Foreign key reference to saved_translations.id
+          token_index: number;
+          token_type: string; // 'word', 'punctuation', 'whitespace'
+          to_word?: NullableString;
+          to_lemma?: NullableString;
+          from_word?: NullableString;
+          from_lemma?: NullableString;
+          pos?: NullableString; // part of speech
+          difficulty?: NullableString;
+          from_definition?: NullableString;
+          token_value?: NullableString;
+        };
+        Update: {
+          id?: number;
+          translation_id?: number; // Foreign key reference to saved_translations.id
+          token_index?: number;
+          token_type?: string; // 'word', 'punctuation', 'whitespace'
+          to_word?: NullableString;
+          to_lemma?: NullableString;
+          from_word?: NullableString;
+          from_lemma?: NullableString;
+          pos?: NullableString; // part of speech
+          difficulty?: NullableString;
+          from_definition?: NullableString;
+          token_value?: NullableString;
         };
       };
     };

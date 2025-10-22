@@ -5,6 +5,7 @@ import WordToken from '../interactiveText/WordToken';
 import type { LanguageCode } from '../../../types/llm/prompts';
 import { MemoryRouter } from 'react-router-dom';
 import * as useAuthModule from '../../../hooks/useAuth';
+import { LanguageFilterProvider } from '../../../hooks/useLanguageFilter';
 
 // Tests in this file were added by the assistant.
 
@@ -14,6 +15,8 @@ vi.mock('../../../hooks/useLanguages', () => ({
   useLanguages: () => ({
     getLanguageIdByCode: (code: string) =>
       code === 'en' ? 1 : code === 'es' ? 2 : 0,
+    getLanguageName: (code: string) =>
+      code === 'en' ? 'English' : code === 'es' ? 'Spanish' : code,
     languages: [
       { id: 1, code: 'en', name: 'English', native_name: 'English' },
       { id: 2, code: 'es', name: 'Spanish', native_name: 'Español' },
@@ -21,27 +24,69 @@ vi.mock('../../../hooks/useLanguages', () => ({
   }),
 }));
 
-// Provide InteractiveText context with toggleable display side
-const ctxBase = {
-  fromLanguage: 'en' as LanguageCode,
-  targetLanguage: 'es' as LanguageCode,
-  savedOriginalWords: new Set<string>(),
-  findSavedWordData: vi.fn(),
-  targetWords: new Map<string, string>(),
-  targetSentences: new Map<string, string>(),
-  translatingWords: new Set<string>(),
-  includedVocabulary: [],
-  getOppositeWordFor: vi.fn(),
-  isTranslatingWord: vi.fn(() => false),
-  isSavedWord: vi.fn(() => false),
-  isIncludedVocabulary: vi.fn(() => false),
-};
+// Mock UserService to prevent database calls
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
+  UserService: {
+    getOrCreateUser: vi.fn().mockResolvedValue({
+      id: 'test-user-id',
+      native_language: 'en',
+    }),
+  },
+}));
 
+// Mock useAuth to provide a user
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user-id', email: 'test@example.com' },
+    isAuthenticated: true,
+  }),
+}));
+
+// Mock StoryContext to provide the necessary context
 let isDisplayingFromSide = true;
 
-vi.mock('../useInteractiveTextContext', () => ({
-  __esModule: true,
-  useInteractiveTextContext: () => ({ ...ctxBase, isDisplayingFromSide }),
+vi.mock('../../../contexts/StoryContext', () => ({
+  useStoryContext: () => ({
+    fromLanguage: 'en' as LanguageCode,
+    targetLanguage: 'es' as LanguageCode,
+    translationData: {
+      fromLanguage: 'en' as LanguageCode,
+      toLanguage: 'es' as LanguageCode,
+      includedVocabulary: [],
+    },
+    isDisplayingFromSide,
+  }),
+}));
+
+// Mock useWordActions hook
+vi.mock('../../../hooks/useWordActions', () => ({
+  useWordActions: () => ({
+    isSaved: false,
+    isTranslating: false,
+    translation: null,
+    isOpen: true,
+    handleToggleMenu: vi.fn(),
+    handleTranslate: vi.fn(),
+    handleSave: vi.fn(),
+    metadata: {
+      from_word: 'hello',
+      from_lemma: 'hello',
+      to_word: 'hola',
+      to_lemma: 'hola',
+      pos: 'interjection',
+      difficulty: 'a1',
+      from_definition: 'A greeting',
+    },
+  }),
+}));
+
+// Mock useSavedWords hook
+vi.mock('../../../hooks/interactiveText/useSavedWords', () => ({
+  useSavedWords: () => ({
+    savedOriginalWords: new Set<string>(),
+    savedTargetWords: new Set<string>(),
+    loading: false,
+  }),
 }));
 
 // Ensure user is logged in so VocabularySaveButton renders
@@ -85,36 +130,21 @@ vi.mock('../../vocabulary/buttons/VocabularySaveButton', () => ({
 }));
 
 describe('Canonical save mapping (from → target) passed to save button', () => {
-  beforeEach(() => {
-    // reset runtime translation overlay per test
-    ctxBase.targetWords.clear();
-  });
-
   it('from-side (displaying from-language): passes fromWord=display, targetWord=overlay', () => {
     isDisplayingFromSide = true;
 
-    // Displayed token is from-language (en): "hello"; overlay opposite word is target-language (es): "hola"
+    // Displayed token is from-language (en): "hello"
     render(
       <MemoryRouter>
-        <WordToken
-          actionWordNormalized='hello'
-          inclusionCheckWord='hello'
-          cleanWord='Hello'
-          punctuation=''
-          isOpen={true}
-          isSaved={false}
-          isTranslating={false}
-          overlayOppositeWord='hola'
-          displaySentenceContext='Hello world.'
-          overlaySentenceContext='Hola mundo.'
-          fromLanguage='en'
-          targetLanguage='es'
-          onOpenChange={() => {}}
-          onWordClick={() => {}}
-          onTranslate={() => {}}
-          enableTooltips={true}
-          disabled={false}
-        />
+        <LanguageFilterProvider>
+          <WordToken
+            word='hello'
+            position={0}
+            punctuation=''
+            enableTooltips={true}
+            disabled={false}
+          />
+        </LanguageFilterProvider>
       </MemoryRouter>
     );
 
@@ -126,28 +156,18 @@ describe('Canonical save mapping (from → target) passed to save button', () =>
   it('target-side (displaying target-language): passes fromWord=overlay, targetWord=display', () => {
     isDisplayingFromSide = false;
 
-    // Displayed token is target-language (es): "hola"; overlay opposite word is from-language (en): "hello"
+    // Displayed token is target-language (es): "hola"
     render(
       <MemoryRouter>
-        <WordToken
-          actionWordNormalized='hola'
-          inclusionCheckWord='hola'
-          cleanWord='Hola'
-          punctuation=''
-          isOpen={true}
-          isSaved={false}
-          isTranslating={false}
-          overlayOppositeWord='hello'
-          displaySentenceContext='Hola mundo.'
-          overlaySentenceContext='Hello world.'
-          fromLanguage='en'
-          targetLanguage='es'
-          onOpenChange={() => {}}
-          onWordClick={() => {}}
-          onTranslate={() => {}}
-          enableTooltips={true}
-          disabled={false}
-        />
+        <LanguageFilterProvider>
+          <WordToken
+            word='hola'
+            position={0}
+            punctuation=''
+            enableTooltips={true}
+            disabled={false}
+          />
+        </LanguageFilterProvider>
       </MemoryRouter>
     );
 

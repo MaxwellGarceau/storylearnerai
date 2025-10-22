@@ -99,7 +99,14 @@
   "dashboard": {
     "title": "Panel",
     "welcome": "Bienvenido de vuelta",
-    "recentActivity": "Actividad Reciente",
+    "recentActivity": {
+      "title": "Actividad Reciente",
+      "loading": "Cargando actividad reciente...",
+      "noActivity": "Sin actividad reciente",
+      "noActivityDescription": "Comienza a traducir historias para ver tu actividad aquí",
+      "untitledStory": "Historia Sin Título",
+      "viewAll": "Ver Todas ({count} traducciones)"
+    },
     "quickActions": "Acciones Rápidas",
     "stats": {
       "storiesTranslated": "Historias Traducidas",

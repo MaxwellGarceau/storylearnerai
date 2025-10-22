@@ -28,7 +28,7 @@ vi.mock('../../../hooks/useToast', () => ({
 describe('SaveTranslationButton Component', () => {
   const mockTranslationData: TranslationResponse = {
     fromText: 'Hola mundo',
-    targetText: 'Hello world',
+    toText: 'Hello world',
     fromLanguage: 'es',
     toLanguage: 'en',
     difficulty: 'a1',

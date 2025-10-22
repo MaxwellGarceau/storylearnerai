@@ -1,21 +1,13 @@
-import React, { useState } from 'react';
-import type { Token } from '../../../hooks/interactiveText/useTokenizedText';
-import type { LanguageCode } from '../../../types/llm/prompts';
+import React from 'react';
+import { TranslationToken } from '../../../types/llm/tokens';
 import WordToken from './WordToken';
+import { useStoryContext } from '../../../contexts/StoryContext';
 
 interface InteractiveTextViewProps {
   className?: string;
-  tokens: Token[];
+  tokens: TranslationToken[];
   enableTooltips: boolean;
   disabled: boolean;
-  fromLanguage: LanguageCode;
-  targetLanguage: LanguageCode;
-  getDisplaySentence: (segmentIndex: number) => string;
-  getOverlaySentence: (displaySentence: string) => string | undefined;
-  isSaved: (displayWordNormalized: string) => boolean;
-  getOverlayOppositeWord: (displayWordNormalized: string) => string | undefined;
-  isTranslating: (normalizedWord: string) => boolean;
-  onTranslate: (normalizedWord: string, segmentIndex: number) => void;
 }
 
 const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
@@ -23,77 +15,37 @@ const InteractiveTextView: React.FC<InteractiveTextViewProps> = ({
   tokens,
   enableTooltips,
   disabled,
-  fromLanguage,
-  targetLanguage,
-  getDisplaySentence,
-  getOverlaySentence,
-  isSaved,
-  getOverlayOppositeWord,
-  isTranslating,
-  onTranslate,
 }) => {
-  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const { isDisplayingFromSide } = useStoryContext();
 
+  // Early return for no tokens
   if (tokens.length === 0) return <span className={className} />;
 
   return (
-    <span
-      className={`${className ?? ''} relative block leading-9 md:leading-10 pt-5`}
-    >
-      {tokens.map((t, idx) => {
-        if (t.kind !== 'word') {
-          return <span key={idx}>{t.text}</span>;
-        }
+    <span className={className}>
+      {tokens.map((token, index) => {
+        if (token.type === 'word') {
+          // Choose the appropriate word based on display side
+          const displayWord = isDisplayingFromSide
+            ? token.from_word
+            : token.to_word;
 
-        const normalizedFromWord = t.normalizedWord;
-        const cleanWord = t.cleanWord;
-        const punctuation = t.punctuation;
-        const overlayTranslatedTargetWord =
-          getOverlayOppositeWord(normalizedFromWord);
-        const displaySentence = getDisplaySentence(t.segmentIndex);
-        const overlaySentence = getOverlaySentence(displaySentence);
-        const open = openMenuIndex === idx;
-
-        const handleTranslateClick = () => {
-          // Always delegate to parent: it will inject saved or call API
-          onTranslate(normalizedFromWord, t.segmentIndex);
-        };
-
-        // When available, treat the translated opposite-language word as the normalized key for WordToken
-        const normalizedWordForProps =
-          overlayTranslatedTargetWord ?? normalizedFromWord;
-        // Saved status should be checked against the from-language word when overlay exists
-        const saved = isSaved(normalizedWordForProps);
-
-        return (
-          <span key={idx}>
+          return (
             <WordToken
-              actionWordNormalized={normalizedWordForProps}
-              inclusionCheckWord={normalizedFromWord}
-              cleanWord={cleanWord}
-              punctuation={punctuation}
-              isOpen={open}
-              isSaved={saved}
-              isTranslating={isTranslating(normalizedFromWord)}
-              // Only show overlay (opposite-language word) when a translation exists
-              overlayOppositeWord={overlayTranslatedTargetWord ?? undefined}
-              displaySentenceContext={displaySentence}
-              overlaySentenceContext={overlaySentence}
-              fromLanguage={fromLanguage}
-              targetLanguage={targetLanguage}
-              onOpenChange={isOpen => {
-                if (isOpen) setOpenMenuIndex(idx);
-                else if (open) setOpenMenuIndex(null);
-              }}
-              onWordClick={() =>
-                setOpenMenuIndex(prev => (prev === idx ? null : idx))
-              }
-              onTranslate={handleTranslateClick}
-              enableTooltips={enableTooltips}
+              key={`${displayWord}-${index}`}
+              word={displayWord}
+              position={index}
+              punctuation={''} // Will be handled by next token
               disabled={disabled}
+              enableTooltips={enableTooltips}
             />
-          </span>
-        );
+          );
+        } else if (token.type === 'punctuation') {
+          return <span key={`punctuation-${index}`}>{token.value}</span>;
+        } else if (token.type === 'whitespace') {
+          return <span key={`whitespace-${index}`}>{token.value}</span>;
+        }
+        return null;
       })}
     </span>
   );

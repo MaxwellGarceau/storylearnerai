@@ -7,6 +7,7 @@ export interface VocabularyHighlightState {
   isIncludedVocabulary: boolean;
   isSaved: boolean;
   isTranslating?: boolean;
+  isTranslated?: boolean; // Has overlay translation
   isActive?: boolean;
   isDisabled?: boolean;
 }
@@ -40,6 +41,11 @@ export class VocabularyHighlightService {
       highContrast: 'bg-blue-300 dark:bg-blue-800 border border-blue-400',
       colorblindFriendly: 'bg-sky-200 dark:bg-sky-900/40 border border-sky-300',
     },
+    translated: {
+      default: 'bg-blue-100 dark:bg-blue-900/30',
+      highContrast: 'bg-blue-200 dark:bg-blue-800/50 border border-blue-300',
+      colorblindFriendly: 'bg-sky-100 dark:bg-sky-900/30 border border-sky-200',
+    },
     active: {
       default: 'bg-purple-200 dark:bg-purple-900/40',
       highContrast: 'bg-purple-300 dark:bg-purple-800 border border-purple-400',
@@ -57,7 +63,7 @@ export class VocabularyHighlightService {
   ): string {
     const { accessible = false, theme = 'default' } = options;
 
-    // Priority order: included vocabulary > saved > translating > active
+    // Priority order: included vocabulary > saved > translating > translated > active
     if (state.isIncludedVocabulary) {
       return this.getThemeClass('included', theme, accessible);
     }
@@ -68,6 +74,10 @@ export class VocabularyHighlightService {
 
     if (state.isTranslating) {
       return this.getThemeClass('translating', theme, accessible);
+    }
+
+    if (state.isTranslated) {
+      return this.getThemeClass('translated', theme, accessible);
     }
 
     if (state.isActive) {

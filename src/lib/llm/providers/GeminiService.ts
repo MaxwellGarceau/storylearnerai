@@ -20,17 +20,39 @@ export class GeminiService extends LLMService {
       const geminiConfig = this.config;
       const model = request.model ?? geminiConfig.model;
 
+      logger.debug('llm', 'Sending Gemini API request', {
+        model,
+        promptLength: request.prompt.length,
+        maxTokens: request.maxTokens ?? geminiConfig.maxTokens,
+        temperature: request.temperature ?? geminiConfig.temperature,
+      });
+
       const response = await this.genAI.models.generateContent({
         model: model,
         contents: [{ text: request.prompt }],
         config: {
           temperature: request.temperature ?? geminiConfig.temperature,
           maxOutputTokens: request.maxTokens ?? geminiConfig.maxTokens,
+          responseMimeType: request.responseMimeType ?? 'application/json',
         },
       });
 
       const content = response.text ?? '';
       const usage = response.usageMetadata;
+
+      logger.info('llm', 'Received Gemini API response', {
+        model,
+        contentLength: content.length,
+        promptTokens: usage?.promptTokenCount ?? 0,
+        completionTokens: usage?.candidatesTokenCount ?? 0,
+        totalTokens: usage?.totalTokenCount ?? 0,
+      });
+
+      // Log raw response for debugging JSON format
+      logger.debug('llm', 'Raw Gemini response content', {
+        contentPreview: content.substring(0, 500),
+        isValidJson: this.isValidJson(content),
+      });
 
       return {
         content,
@@ -51,6 +73,15 @@ export class GeminiService extends LLMService {
         : new Error(
             error instanceof Error ? error.message : 'Gemini API request failed'
           );
+    }
+  }
+
+  private isValidJson(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch {
+      return false;
     }
   }
 

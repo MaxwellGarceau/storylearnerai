@@ -62,10 +62,10 @@ export function useWordTranslation(): UseWordTranslationReturn {
           sentence,
           fromLanguage,
           toLanguage,
-          targetText: response.targetText,
+          toText: response.toText,
         });
 
-        return response.targetText;
+        return response.toText;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to translate sentence';

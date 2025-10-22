@@ -1,4 +1,0 @@
-{
-  "template": "Translate the following {fromLanguage} story to {toLanguage}, adapted for {difficulty} CEFR level:\n\nInstructions:\n{instructions}\n\nSpecific {toLanguage} Guidelines:\n{languageInstructions}\n\n{nativeToTargetInstructions}\n\n{fromLanguage} Story:\n{text}\n\nPlease provide only the {toLanguage} translation.",
-  "vocabularySection": "\n\nLearner Vocabulary Focus:\nPlease include and naturally use the following target-language words when appropriate, matching {difficulty} level:\n{vocabList}\n"
-}

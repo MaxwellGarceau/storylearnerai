@@ -18,6 +18,12 @@ const mockSupabaseClient = {
         single: vi.fn(),
         maybeSingle: vi.fn(),
       })),
+      order: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(),
+          maybeSingle: vi.fn(),
+        })),
+      })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn(),

@@ -16,7 +16,8 @@ import { BadgeSection } from '../../ui/BadgeSection';
 import { ContextSection } from '../../ui/ContextSection';
 import { logger } from '../../../lib/logger';
 import { useAuth } from '../../../hooks/useAuth';
-import { SavedTranslationService } from '../../../api/supabase/database/savedTranslationService';
+import { TokenConverter } from '../../../lib/llm/tokens/tokenConverter';
+import { useSavedTranslations } from '../../../hooks/useSavedTranslations';
 interface VocabularyDetailModalProps {
   vocabulary: VocabularyWithLanguages;
   _onClose: () => void;
@@ -29,29 +30,34 @@ export function VocabularyDetailModal({
   const { t } = useLocalization();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { loadTranslationWithTokens } = useSavedTranslations();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleNavigateToSavedTranslation = async () => {
     if (vocabulary.saved_translation_id && user) {
       try {
-        const service = new SavedTranslationService();
-        const savedTranslation = await service.getSavedTranslation(
-          String(vocabulary.saved_translation_id),
-          user.id
+        const savedTranslation = await loadTranslationWithTokens(
+          vocabulary.saved_translation_id
         );
 
         if (savedTranslation) {
+          // Convert loaded tokens to TranslationToken format
+          const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+            savedTranslation.tokens
+          );
+
           // Prefer URL param navigation for deep linking and refresh safety
           void navigate(`/story?id=${savedTranslation.id}`, {
             state: {
               // Keep fast-path state for instant render when available
               translationData: {
-                fromText: savedTranslation.from_story,
-                targetText: savedTranslation.target_story,
+                fromText: savedTranslation.from_text,
+                toText: savedTranslation.to_text,
+                tokens,
                 difficulty: savedTranslation.difficulty_level.code,
                 fromLanguage: savedTranslation.from_language.code,
-                toLanguage: savedTranslation.target_language.code,
+                toLanguage: savedTranslation.to_language.code,
                 provider: 'saved',
                 model: 'saved-translation',
               },
@@ -125,8 +131,8 @@ export function VocabularyDetailModal({
           <BadgeSection
             partOfSpeech={vocabulary.part_of_speech}
             frequencyLevel={vocabulary.frequency_level}
-            partOfSpeechKey={pos => t(`vocabulary.pos.${pos}`)}
-            frequencyKey={freq => t(`vocabulary.frequency.${freq}`)}
+            partOfSpeechKey={pos => t(`vocabulary.partsOfSpeech.${pos}`)}
+            frequencyKey={freq => t(`vocabulary.frequencyLevels.${freq}`)}
           />
 
           {/* Context */}

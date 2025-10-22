@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS vocabulary (
     definition TEXT, -- Definition of the word
     part_of_speech VARCHAR(50), -- Part of speech (noun, verb, adjective, etc.)
     frequency_level VARCHAR(50), -- Frequency/level (common, rare, etc.)
-    saved_translation_id INTEGER REFERENCES saved_translations(id) ON DELETE SET NULL, -- Optional link to the story where this word was found
+    translation_id INTEGER REFERENCES saved_translations(id) ON DELETE SET NULL, -- Optional link to the translation where this word was found
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS idx_vocabulary_user_id ON vocabulary(user_id);
 CREATE INDEX IF NOT EXISTS idx_vocabulary_created_at ON vocabulary(created_at);
 CREATE INDEX IF NOT EXISTS idx_vocabulary_target_language ON vocabulary(target_language_id);
 CREATE INDEX IF NOT EXISTS idx_vocabulary_from_language ON vocabulary(from_language_id);
-CREATE INDEX IF NOT EXISTS idx_vocabulary_saved_translation ON vocabulary(saved_translation_id);
+CREATE INDEX IF NOT EXISTS idx_vocabulary_translation ON vocabulary(translation_id);
 CREATE INDEX IF NOT EXISTS idx_vocabulary_from_word ON vocabulary(from_word);
 CREATE INDEX IF NOT EXISTS idx_vocabulary_target_word ON vocabulary(target_word);
 

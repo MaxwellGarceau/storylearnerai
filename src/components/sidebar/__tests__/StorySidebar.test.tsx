@@ -10,6 +10,10 @@ vi.mock('../../../hooks/useLanguageFilter', () => ({
     setTargetLanguage: vi.fn(),
     availableTargetLanguages: [{ code: 'en', name: 'English' }],
   }),
+  useLanguageSettings: () => ({
+    fromLanguage: 'es',
+    targetLanguage: 'en',
+  }),
 }));
 import {
   setupSidebarMocks,

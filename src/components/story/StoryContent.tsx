@@ -15,20 +15,26 @@ const StoryContent: React.FC<StoryContentProps> = ({
 }) => {
   const displayText = showFrom
     ? translationData.fromText
-    : translationData.targetText;
+    : translationData.toText;
 
   // Keep canonical language orientation for saving/lookups
   const fromLanguage = translationData.fromLanguage;
   const targetLanguage = translationData.toLanguage;
 
+  // Always pass tokens - they contain both from and to data that we can swap based on display side
+  const tokens = translationData.tokens;
+
   return (
-    <div className='relative overflow-hidden'>
+    <div className='relative'>
       <div className='text-foreground whitespace-pre-wrap transition-opacity duration-300 leading-relaxed'>
         <InteractiveText
           text={displayText}
+          tokens={tokens}
           fromLanguage={fromLanguage}
           targetLanguage={targetLanguage}
           isDisplayingFromSide={showFrom}
+          // Disable interactive functionality when showing original story
+          disabled={showFrom}
           // Provide display-side flag via context: true when showing from-language text
           savedTranslationId={savedTranslationId}
           includedVocabulary={translationData.includedVocabulary}

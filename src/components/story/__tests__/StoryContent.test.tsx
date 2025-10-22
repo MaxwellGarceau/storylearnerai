@@ -4,6 +4,74 @@ import '@testing-library/jest-dom';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import StoryContent from '../StoryContent';
 import { TranslationResponse } from '../../../lib/translationService';
+import { LanguageFilterProvider } from '../../../hooks/useLanguageFilter';
+
+// Mock the necessary hooks and components
+vi.mock('../../../hooks/useWordActions', () => ({
+  useWordActions: vi.fn(() => ({
+    isSaved: false,
+    isTranslating: false,
+    translation: null,
+    isOpen: false,
+    handleTranslate: vi.fn(),
+    handleToggleMenu: vi.fn(),
+    handleSave: vi.fn(),
+    metadata: {
+      from_word: 'test',
+      from_lemma: 'test',
+      to_word: 'prueba',
+      to_lemma: 'prueba',
+      pos: 'noun',
+      difficulty: 'a1',
+      from_definition: 'A test word',
+    },
+  })),
+}));
+
+vi.mock('../../../hooks/interactiveText/useSavedWords', () => ({
+  useSavedWords: () => ({
+    savedOriginalWords: new Set(),
+    savedTargetWords: new Set(),
+    findSavedWordData: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../hooks/useLanguages', () => ({
+  useLanguages: () => ({
+    languages: [
+      { code: 'en', name: 'English' },
+      { code: 'es', name: 'Spanish' },
+    ],
+    getLanguageIdByCode: vi.fn().mockReturnValue(1),
+    getLanguageName: vi
+      .fn()
+      .mockImplementation((code: string) =>
+        code === 'en' ? 'English' : 'Spanish'
+      ),
+  }),
+}));
+
+vi.mock('../../../hooks/useDictionary', () => ({
+  useDictionary: () => ({
+    wordInfo: null,
+    isLoading: false,
+    error: null,
+    searchWord: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user-id', email: 'test@example.com' },
+    isAuthenticated: true,
+  }),
+}));
+
+vi.mock('../../../hooks/useLocalization', () => ({
+  useLocalization: () => ({
+    t: (key: string) => key,
+  }),
+}));
 
 // Mock the environment config
 vi.mock('../../../lib/config/env', () => ({
@@ -25,15 +93,48 @@ vi.mock('../../../lib/config/env', () => ({
   },
 }));
 
+vi.mock('../../../api/supabase/database/userProfileService', () => ({
+  UserService: {
+    getOrCreateUser: vi.fn().mockResolvedValue({
+      id: 'test-user-id',
+      native_language: 'en',
+    }),
+  },
+}));
+
 describe('StoryContent Component', () => {
   const mockTranslationData: TranslationResponse = {
     fromText: 'Hola mundo',
-    targetText: 'Hello world',
+    toText: 'Hello world',
     fromLanguage: 'es',
     toLanguage: 'en',
     difficulty: 'a1',
     provider: 'mock',
     model: 'test-model',
+    tokens: [
+      {
+        type: 'word',
+        from_word: 'Hola',
+        from_lemma: 'hola',
+        to_word: 'Hello',
+        to_lemma: 'hello',
+        pos: null,
+        difficulty: null,
+        from_definition: null,
+        segmentIndex: 0,
+      },
+      {
+        type: 'word',
+        from_word: 'mundo',
+        from_lemma: 'mundo',
+        to_word: 'world',
+        to_lemma: 'world',
+        pos: null,
+        difficulty: null,
+        from_definition: null,
+        segmentIndex: 1,
+      },
+    ],
   };
 
   afterEach(() => {
@@ -41,7 +142,11 @@ describe('StoryContent Component', () => {
   });
 
   const renderWithRouter = (ui: React.ReactElement) =>
-    render(<MemoryRouter>{ui}</MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <LanguageFilterProvider>{ui}</LanguageFilterProvider>
+      </MemoryRouter>
+    );
 
   it('displays translated text when showFrom is false', () => {
     const { container } = renderWithRouter(
@@ -69,7 +174,7 @@ describe('StoryContent Component', () => {
     );
 
     const contentContainer = container.firstChild as HTMLElement;
-    expect(contentContainer).toHaveClass('relative', 'overflow-hidden');
+    expect(contentContainer).toHaveClass('relative');
 
     // Check that the component renders with the expected structure
     expect(container.querySelector('div')).toBeInTheDocument();
@@ -79,7 +184,53 @@ describe('StoryContent Component', () => {
     const multilineTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: 'Primera línea.\n\nSegunda línea.',
-      targetText: 'First line.\n\nSecond line.',
+      toText: 'First line.\n\nSecond line.',
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'Primera',
+          from_lemma: 'primera',
+          to_word: 'First',
+          to_lemma: 'first',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'línea',
+          from_lemma: 'línea',
+          to_word: 'line',
+          to_lemma: 'line',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'Segunda',
+          from_lemma: 'segunda',
+          to_word: 'Second',
+          to_lemma: 'second',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'línea',
+          from_lemma: 'línea',
+          to_word: 'line',
+          to_lemma: 'line',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+      ],
     };
 
     const { container } = renderWithRouter(
@@ -89,16 +240,17 @@ describe('StoryContent Component', () => {
       />
     );
 
-    // Check that the component renders and contains the expected text
-    expect(container.textContent).toContain('First line.');
-    expect(container.textContent).toContain('Second line.');
+    // Check that the component renders the words from tokens (without whitespace)
+    expect(container.textContent).toContain('First');
+    expect(container.textContent).toContain('line');
+    expect(container.textContent).toContain('Second');
   });
 
   it('handles empty content gracefully', () => {
     const emptyTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: '',
-      targetText: '',
+      toText: '',
     };
 
     const { container: targetContainer } = renderWithRouter(
@@ -122,15 +274,87 @@ describe('StoryContent Component', () => {
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
-      targetText: longText,
+      toText: longText,
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'This',
+          from_lemma: 'this',
+          to_word: 'This',
+          to_lemma: 'this',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'is',
+          from_lemma: 'is',
+          to_word: 'is',
+          to_lemma: 'is',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'a',
+          from_lemma: 'a',
+          to_word: 'a',
+          to_lemma: 'a',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'very',
+          from_lemma: 'very',
+          to_word: 'very',
+          to_lemma: 'very',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+        {
+          type: 'word',
+          from_word: 'long',
+          from_lemma: 'long',
+          to_word: 'long',
+          to_lemma: 'long',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 4,
+        },
+        {
+          type: 'word',
+          from_word: 'story',
+          from_lemma: 'story',
+          to_word: 'story',
+          to_lemma: 'story',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 5,
+        },
+      ],
     };
 
     const { container } = renderWithRouter(
       <StoryContent translationData={longTranslationData} showFrom={false} />
     );
 
-    // Check that the component renders and contains the long text
-    expect(container.textContent).toContain(longText);
+    // Check that the component renders the words from tokens (without whitespace)
+    expect(container.textContent).toContain('This');
+    expect(container.textContent).toContain('is');
+    expect(container.textContent).toContain('very');
+    expect(container.textContent).toContain('long');
+    expect(container.textContent).toContain('story');
   });
 
   it('handles special characters and unicode content', () => {
@@ -138,8 +362,54 @@ describe('StoryContent Component', () => {
       ...mockTranslationData,
       fromText:
         'Había una vez un niño que vivía en España... ¡Qué historia más emocionante!',
-      targetText:
+      toText:
         'Once upon a time there was a boy who lived in Spain... What an exciting story!',
+      tokens: [
+        {
+          type: 'word',
+          from_word: 'Había',
+          from_lemma: 'había',
+          to_word: 'Once',
+          to_lemma: 'once',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 0,
+        },
+        {
+          type: 'word',
+          from_word: 'vez',
+          from_lemma: 'vez',
+          to_word: 'upon',
+          to_lemma: 'upon',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 1,
+        },
+        {
+          type: 'word',
+          from_word: 'niño',
+          from_lemma: 'niño',
+          to_word: 'boy',
+          to_lemma: 'boy',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 2,
+        },
+        {
+          type: 'word',
+          from_word: 'time',
+          from_lemma: 'time',
+          to_word: 'time',
+          to_lemma: 'time',
+          pos: null,
+          difficulty: null,
+          from_definition: null,
+          segmentIndex: 3,
+        },
+      ],
     };
 
     const { container: fromContainer } = renderWithRouter(
@@ -192,21 +462,21 @@ describe('StoryContent Component', () => {
 
     // Check that the component renders with transition classes
     const contentContainer = container.firstChild as HTMLElement;
-    expect(contentContainer).toHaveClass('relative', 'overflow-hidden');
+    expect(contentContainer).toHaveClass('relative');
   });
 
   it('maintains consistent structure regardless of content', () => {
     const shortTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText: 'Corto.',
-      targetText: 'Short.',
+      toText: 'Short.',
     };
 
     const longTranslationData: TranslationResponse = {
       ...mockTranslationData,
       fromText:
         'Esta es una historia muy larga que contiene múltiples párrafos y líneas de texto para probar el comportamiento del componente.',
-      targetText:
+      toText:
         'This is a very long story that contains multiple paragraphs and lines of text to test component behavior.',
     };
 

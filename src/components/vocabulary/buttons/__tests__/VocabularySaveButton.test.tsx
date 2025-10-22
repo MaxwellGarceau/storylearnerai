@@ -1,25 +1,16 @@
-import { useState } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
-// Stable mocks across renders to avoid infinite effect loops
-const mockCheckVocabularyExists = vi.fn().mockResolvedValue(false);
-const mockSaveVocabularyWord = vi.fn().mockResolvedValue({ id: 1 });
-
-vi.mock('../../../hooks/useVocabulary', () => ({
-  useVocabulary: () => ({
-    checkVocabularyExists: mockCheckVocabularyExists,
-    saveVocabularyWord: mockSaveVocabularyWord,
-  }),
-}));
-
 // Mock useLocalization to return keys directly
 vi.mock('../../../hooks/useLocalization', () => ({
   useLocalization: () => ({ t: (k: string) => k }),
 }));
 
-// Import after mocks so the component uses the mocked hooks
+import { useState } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { VocabularySaveButton } from '../VocabularySaveButton';
+
+// Mock functions for testing
+const mockCheckVocabularyExists = vi.fn().mockResolvedValue(false);
+const mockSaveVocabularyWord = vi.fn().mockResolvedValue({ id: 1 });
 
 describe('VocabularySaveButton', () => {
   beforeEach(() => {

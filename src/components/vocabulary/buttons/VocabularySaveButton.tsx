@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import { Button } from '../../ui/Button';
 import type { TFunction } from 'i18next';
 import { BookOpen, Check } from 'lucide-react';
-import { useVocabulary } from '../../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../../contexts/VocabularyContext';
 import { useLocalization } from '../../../hooks/useLocalization';
 import type { VocabularyInsert } from '../../../types/database/vocabulary';
 import { logger } from '../../../lib/logger';
@@ -15,6 +15,11 @@ interface VocabularySaveButtonProps {
   targetContext?: string;
   fromLanguageId: number;
   targetLanguageId: number;
+  // Optional metadata to persist with saved vocab
+  partOfSpeech?: string;
+  definition?: string;
+  frequencyLevel?: string;
+  // TODO: difficultyLevel requires DB support; add when schema updated
   className?: string;
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
@@ -47,6 +52,9 @@ export function VocabularySaveButton({
   targetContext,
   fromLanguageId,
   targetLanguageId,
+  partOfSpeech,
+  definition,
+  frequencyLevel,
   className,
   variant = 'outline',
   size = 'sm',
@@ -60,7 +68,7 @@ export function VocabularySaveButton({
 }: VocabularySaveButtonProps) {
   const { t } = useLocalization();
   const translate: TFunction = tOverride ?? t;
-  const { checkVocabularyExists, saveVocabularyWord } = useVocabulary();
+  const { checkVocabularyExists, saveVocabularyWord } = useVocabularyContext();
   const effectiveSave = saveVocabularyOverride ?? saveVocabularyWord;
   const effectiveCheck = checkExistsOverride ?? checkVocabularyExists;
   const [isSaved, setIsSaved] = useState(false);
@@ -122,6 +130,9 @@ export function VocabularySaveButton({
       target_language_id: targetLanguageId,
       from_word_context: fromContext,
       target_word_context: targetContext,
+      part_of_speech: partOfSpeech,
+      definition,
+      frequency_level: frequencyLevel,
       ...(typeof savedTranslationId === 'number'
         ? { saved_translation_id: savedTranslationId }
         : {}),

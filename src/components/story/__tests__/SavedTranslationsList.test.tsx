@@ -2,6 +2,27 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+// Mocks must be declared before component import
+vi.mock('../../../api/supabase/database/savedTranslationService', () => ({
+  SavedTranslationService: vi.fn().mockImplementation(() => ({
+    loadTranslationWithTokens: vi.fn().mockResolvedValue({
+      id: 1,
+      from_text: 'Hola mundo',
+      to_text: 'Hello world',
+      tokens: [],
+      from_language: { code: 'es' },
+      to_language: { code: 'en' },
+      difficulty_level: { code: 'a1' },
+    }),
+  })),
+}));
+
+vi.mock('../../../lib/llm/tokenConverter', () => ({
+  TokenConverter: {
+    convertDatabaseTokensToUITokens: vi.fn().mockReturnValue([]),
+  },
+}));
+
 import SavedTranslationsList from '../SavedTranslationsList';
 import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
 
@@ -23,6 +44,14 @@ const mockT = (key: string, params?: Record<string, string | number>) => {
     'savedTranslations.results.untitled': 'Untitled',
     'savedTranslations.results.viewStory': 'View Story',
     'savedTranslations.results.delete': 'Delete',
+    'savedTranslations.deleteModal.title': 'Delete Translation',
+    'savedTranslations.deleteModal.subtitle': 'This action cannot be undone.',
+    'savedTranslations.deleteModal.description':
+      'Are you sure you want to delete this translation? This action cannot be undone.',
+    'savedTranslations.deleteModal.preview': 'Preview',
+    'common.cancel': 'Cancel',
+    'common.delete': 'Delete',
+    'common.deleting': 'Deleting...',
     'savedTranslations.content.notes': 'Notes',
     'savedTranslations.content.fromStory': 'Original Story',
     'savedTranslations.content.translatedStory': 'Translated Story',
@@ -80,10 +109,10 @@ const makeSaved = (
 ): DatabaseSavedTranslationWithDetails => ({
   id: overrides.id ?? 1,
   user_id: 'user-1',
-  from_story: overrides.from_story ?? 'Hola mundo',
-  target_story: overrides.target_story ?? 'Hello world',
+  from_text: overrides.from_text ?? 'Hola mundo',
+  to_text: overrides.to_text ?? 'Hello world',
   from_language_id: 1,
-  target_language_id: 2,
+  to_language_id: 2,
   difficulty_level_id: 1,
   title: overrides.title ?? 'Sample Title',
   notes: overrides.notes ?? 'Some helpful notes',
@@ -96,7 +125,7 @@ const makeSaved = (
     native_name: 'Español',
     created_at: '2023-01-01T00:00:00.000Z',
   },
-  target_language: {
+  to_language: {
     id: 2,
     code: 'en',
     name: 'English',
@@ -140,11 +169,38 @@ const useLanguagesMock = {
 };
 
 vi.mock('../../../hooks/useSavedTranslations', () => ({
-  useSavedTranslations: () => useSavedTranslationsMock,
+  useSavedTranslations: () => ({
+    savedTranslations: useSavedTranslationsMock.savedTranslations,
+    loading: useSavedTranslationsMock.loading,
+    error: useSavedTranslationsMock.error,
+    deleteSavedTranslation: vi.fn().mockResolvedValue(true),
+    loadTranslationWithTokens: vi.fn().mockImplementation((id: number) =>
+      Promise.resolve({
+        id,
+        from_text: 'Hola mundo',
+        to_text: 'Hello world',
+        tokens: [],
+        from_language: { id: 1, code: 'es', name: 'Spanish' },
+        to_language: { id: 2, code: 'en', name: 'English' },
+        difficulty_level: { id: 1, code: 'a1', name: 'A1 (Beginner)' },
+        from_language_id: 1,
+        to_language_id: 2,
+        difficulty_level_id: 1,
+        user_id: 'user-1',
+        title: 'Sample Title',
+        notes: 'Some helpful notes',
+        created_at: '2024-01-01T00:00:00.000Z',
+        updated_at: '2024-01-01T00:00:00.000Z',
+      })
+    ),
+  }),
 }));
 
 vi.mock('../../../hooks/useLanguages', () => ({
-  useLanguages: () => useLanguagesMock,
+  useLanguages: () => ({
+    languages: useLanguagesMock.languages,
+    loading: useLanguagesMock.loading,
+  }),
 }));
 
 vi.mock('../../../hooks/useDifficultyLevels', () => ({
@@ -215,7 +271,7 @@ describe('SavedTranslationsList', () => {
         state: expect.objectContaining({
           translationData: expect.objectContaining({
             fromText: 'Hola mundo',
-            targetText: 'Hello world',
+            toText: 'Hello world',
             fromLanguage: 'es',
             toLanguage: 'en',
             difficulty: 'a1',
@@ -273,18 +329,22 @@ describe('SavedTranslationsList', () => {
     expect(infoMock).toHaveBeenCalled();
   });
 
-  it('prompts for delete and logs when confirmed', () => {
+  it('prompts for delete and logs when confirmed', async () => {
     useSavedTranslationsMock.savedTranslations = [makeSaved({ id: 3 })];
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-
     render(<SavedTranslationsList />);
 
     const deleteButton = screen.getByRole('button', { name: 'Delete' });
     fireEvent.click(deleteButton);
 
-    expect(confirmSpy).toHaveBeenCalled();
-    expect(infoMock).toHaveBeenCalled();
+    // Modal should appear with title and controls
+    expect(screen.getByText('Delete Translation')).toBeInTheDocument();
 
-    confirmSpy.mockRestore();
+    // Confirm deletion: choose the last visible "Delete" button (modal confirm)
+    const deleteButtons = screen.getAllByRole('button', { name: 'Delete' });
+    fireEvent.click(deleteButtons[deleteButtons.length - 1]);
+
+    await waitFor(() => {
+      expect(infoMock).toHaveBeenCalled();
+    });
   });
 });

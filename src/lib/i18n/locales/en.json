@@ -182,8 +182,11 @@
     },
     "recentActivity": {
       "title": "Recent Activity",
+      "loading": "Loading recent activity...",
       "noActivity": "No recent activity",
-      "noActivityDescription": "Start translating stories to see your activity here"
+      "noActivityDescription": "Start translating stories to see your activity here",
+      "untitledStory": "Untitled Story",
+      "viewAll": "View All ({count} translations)"
     },
     "errors": {
       "loadFailed": "Failed to load dashboard data"
@@ -340,6 +343,12 @@
     "emptyState": {
       "title": "No saved translations yet",
       "description": "Start translating stories and save them to see them here."
+    },
+    "deleteModal": {
+      "title": "Delete Translation",
+      "subtitle": "This action cannot be undone",
+      "description": "You are about to permanently delete this saved translation. This action cannot be undone.",
+      "preview": "Preview"
     }
   },
   "difficultyLevels": {
@@ -445,10 +454,12 @@
       "numeral": "Numeral"
     },
     "frequencyLevels": {
-      "common": "Common",
-      "uncommon": "Uncommon",
-      "rare": "Rare",
-      "veryRare": "Very Rare"
+      "a1": "A1",
+      "a2": "A2",
+      "b1": "B1",
+      "b2": "B2",
+      "c1": "C1",
+      "c2": "C2"
     },
     "details": {
       "title": "Vocabulary Details",

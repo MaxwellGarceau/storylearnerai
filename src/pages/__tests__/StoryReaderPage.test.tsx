@@ -93,7 +93,7 @@ vi.mock('../../components/story/StoryRender', () => ({
   default: ({ translationData }: { translationData: TranslationResponse }) => (
     <div data-testid='story-render'>
       <div>Original: {translationData.fromText}</div>
-      <div>Translated: {translationData.targetText}</div>
+      <div>Translated: {translationData.toText}</div>
     </div>
   ),
 }));
@@ -170,7 +170,7 @@ describe('StoryReaderPage', () => {
   it('renders story content when translation data is available', () => {
     const mockTranslationData: TranslationResponse = {
       fromText: 'Test story in Spanish',
-      targetText: 'Test story in English',
+      toText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',
@@ -192,7 +192,7 @@ describe('StoryReaderPage', () => {
   it('shows navigation buttons when story is displayed', () => {
     const mockTranslationData: TranslationResponse = {
       fromText: 'Test story in Spanish',
-      targetText: 'Test story in English',
+      toText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',
@@ -216,7 +216,7 @@ describe('StoryReaderPage', () => {
   it('navigates to /translate when Translate Another Story button is clicked', () => {
     const mockTranslationData: TranslationResponse = {
       fromText: 'Test story in Spanish',
-      targetText: 'Test story in English',
+      toText: 'Test story in English',
       fromLanguage: 'es',
       toLanguage: 'en',
       difficulty: 'a2',

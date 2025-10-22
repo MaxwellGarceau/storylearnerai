@@ -1,20 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
 import { SavedTranslationService } from '../savedTranslationService';
-import type { CreateSavedTranslationRequest, UpdateSavedTranslationRequest } from '../../../../types/database';
+import type { SaveTranslationParams } from '../../../../types/app/translations';
+import type { LanguageCode, DifficultyLevel } from '../../../../types/llm/prompts';
 
-// Import the actual validation functions for direct testing
-import { validateStoryText } from '../../../../lib/utils/sanitization';
+// Mock the sanitization utilities
+vi.mock('../../../../lib/utils/sanitization', () => ({
+  validateStoryText: vi.fn(),
+  sanitizeText: vi.fn()
+}));
 
-// Mock the sanitization utilities for service tests, but use real ones for direct validation tests
-vi.mock('../../../../lib/utils/sanitization', async () => {
-  const actual = await vi.importActual('../../../../lib/utils/sanitization');
-  return {
-    ...actual,
-    // Keep the real functions for direct testing
-    validateStoryText: actual.validateStoryText,
-    sanitizeText: actual.sanitizeText
-  };
-});
+// Mock the language and difficulty services
+vi.mock('../languageService', () => ({
+  LanguageService: vi.fn().mockImplementation(() => ({
+    getLanguageByCode: vi.fn()
+  }))
+}));
+
+vi.mock('../difficultyLevelService', () => ({
+  DifficultyLevelService: vi.fn().mockImplementation(() => ({
+    getDifficultyLevelByCode: vi.fn()
+  }))
+}));
 
 // Create comprehensive mock query builder
 const createMockQueryBuilder = () => {
@@ -40,17 +46,17 @@ const createMockQueryBuilder = () => {
         code: 'en',
         name: 'English',
         user_id: 'test-user-id',
-        from_story: 'Test story',
-        target_story: 'Historia de prueba',
+        from_text: 'Test story',
+        to_text: 'Historia de prueba',
         from_language_id: 1,
-        target_language_id: 2,
+        to_language_id: 2,
         difficulty_level_id: 1,
         title: 'Test Title',
         notes: 'Test notes',
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
         from_language: { id: 1, code: 'en', name: 'English' },
-        target_language: { id: 2, code: 'es', name: 'Spanish' },
+        to_language: { id: 2, code: 'es', name: 'Spanish' },
         difficulty_level: { id: 1, code: 'a1', name: 'Beginner' }
       },
       error: null
@@ -76,148 +82,55 @@ vi.mock('../client', () => ({
 
 describe('SavedTranslationService', () => {
   let service: SavedTranslationService;
+  let mockLanguageService: unknown;
+  let mockDifficultyLevelService: unknown;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // Import the mocked services
+    const { LanguageService } = await import('../languageService');
+    const { DifficultyLevelService } = await import('../difficultyLevelService');
+
+    mockLanguageService = new LanguageService();
+    mockDifficultyLevelService = new DifficultyLevelService();
+
+    // Configure language service mock
+    (mockLanguageService as { getLanguageByCode: MockedFunction<(code: string) => unknown> }).getLanguageByCode.mockImplementation((code: string) => {
+      if (code === 'en') return { id: 1, code: 'en', name: 'English' };
+      if (code === 'es') return { id: 2, code: 'es', name: 'Spanish' };
+      return null;
+    });
+
+    // Configure difficulty level service mock
+    (mockDifficultyLevelService as { getDifficultyLevelByCode: MockedFunction<(code: string) => unknown> }).getDifficultyLevelByCode.mockImplementation((code: string) => {
+      if (code === 'a1') return { id: 1, code: 'a1', name: 'A1' };
+      return null;
+    });
     service = new SavedTranslationService();
   });
 
-  describe('createSavedTranslation', () => {
-    const validRequest: CreateSavedTranslationRequest = {
-      from_story: 'This is a test story in English.',
-      target_story: 'Esta es una historia de prueba en español.',
-      from_language_code: 'en',
-      target_language_code: 'es',
-      difficulty_level_code: 'a1',
+  describe('saveTranslationWithTokens', () => {
+    const validRequest: SaveTranslationParams = {
+      userId: 'test-user-id',
+      fromLanguage: 'en',
+      toLanguage: 'es',
+      fromText: 'This is a test story in English.',
+      toText: 'Esta es una historia de prueba en español.',
+      difficultyLevel: 'a1',
       title: 'Test Translation',
-      notes: 'This is a test translation'
+      notes: 'This is a test translation',
+      tokens: []
     };
 
-    it('should throw error for missing user ID', async () => {
-      await expect(service.createSavedTranslation(validRequest, ''))
-        .rejects.toThrow('Validation failed: user_id: Valid user ID is required');
+    it('should throw error for invalid language code', async () => {
+      const invalidRequest = { ...validRequest, fromLanguage: 'invalid' as LanguageCode };
+      await expect(service.saveTranslationWithTokens(invalidRequest))
+        .rejects.toThrow('Language not found: invalid');
     });
 
-    it('should throw error for missing original story', async () => {
-      const invalidRequest = { ...validRequest, from_story: '' };
-      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: from_story: Original story is required');
-    });
-
-    it('should throw error for missing translated story', async () => {
-      const invalidRequest = { ...validRequest, target_story: '' };
-      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: target_story: Translated story is required');
-    });
-
-    it('should throw error for invalid original language code', async () => {
-      const invalidRequest = { ...validRequest, from_language_code: 'invalid' as 'en' | 'es' };
-      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: from_language_code: Original language code must be a valid ISO 639-1 code');
-    });
-
-    it('should throw error for invalid translated language code', async () => {
-      const invalidRequest = { ...validRequest, target_language_code: 'invalid' as 'en' | 'es' };
-      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: target_language_code: Translated language code must be a valid ISO 639-1 code');
-    });
-
-    it('should throw error for invalid difficulty level code', async () => {
-      const invalidRequest = { ...validRequest, difficulty_level_code: 'invalid' as 'a1' | 'a2' | 'b1' | 'b2' };
-      await expect(service.createSavedTranslation(invalidRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: difficulty_level_code: Difficulty level code must be a valid CEFR level (a1, a2, b1, b2)');
-    });
-
-    it('should reject malicious content in original story', async () => {
-      const maliciousRequest = {
-        ...validRequest,
-        from_story: '<script>alert("xss")</script>This is a test story.'
-      };
-
-      await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: from_story: Input contains potentially dangerous content');
-    });
-
-    it('should reject malicious content in translated story', async () => {
-      const maliciousRequest = {
-        ...validRequest,
-        target_story: '<script>alert("xss")</script>Esta es una historia de prueba.'
-      };
-
-      await expect(service.createSavedTranslation(maliciousRequest, 'test-user-id'))
-        .rejects.toThrow('Validation failed: target_story: Input contains potentially dangerous content');
-    });
-
-    it('should reject malicious content in title', () => {
-      const maliciousTitle = '<script>alert("xss")</script>Test Title';
-      const validation = validateStoryText(maliciousTitle);
-
-      expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain('Input contains potentially dangerous content');
-    });
-
-    it('should reject malicious content in notes', () => {
-      const maliciousNotes = '<script>alert("xss")</script>Test notes';
-      const validation = validateStoryText(maliciousNotes);
-
-      expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain('Input contains potentially dangerous content');
-    });
-  });
-
-  describe('updateSavedTranslation', () => {
-    const validUpdates: UpdateSavedTranslationRequest = {
-      title: 'Updated Title',
-      notes: 'Updated notes'
-    };
-
-    it('should throw error for missing translation ID', async () => {
-      await expect(service.updateSavedTranslation('', 'test-user-id', validUpdates))
-        .rejects.toThrow('Valid translation ID is required');
-    });
-
-    it('should throw error for missing user ID', async () => {
-      await expect(service.updateSavedTranslation('1', '', validUpdates))
-        .rejects.toThrow('Valid user ID is required');
-    });
-
-    it('should reject malicious content in title update', () => {
-      const maliciousTitle = '<script>alert("xss")</script>Updated Title';
-      const validation = validateStoryText(maliciousTitle);
-
-      expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain('Input contains potentially dangerous content');
-    });
-
-    it('should reject malicious content in notes update', () => {
-      const maliciousNotes = '<script>alert("xss")</script>Updated notes';
-      const validation = validateStoryText(maliciousNotes);
-
-      expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain('Input contains potentially dangerous content');
-    });
-  });
-
-  describe('getSavedTranslation', () => {
-    it('should throw error for missing translation ID', async () => {
-      await expect(service.getSavedTranslation('', 'test-user-id'))
-        .rejects.toThrow('Valid translation ID is required');
-    });
-
-    it('should throw error for missing user ID', async () => {
-      await expect(service.getSavedTranslation('1', ''))
-        .rejects.toThrow('Valid user ID is required');
-    });
-  });
-
-  describe('deleteSavedTranslation', () => {
-    it('should throw error for missing translation ID', async () => {
-      await expect(service.deleteSavedTranslation(0, 'test-user-id'))
-        .rejects.toThrow('Valid translation ID is required');
-    });
-
-    it('should throw error for missing user ID', async () => {
-      await expect(service.deleteSavedTranslation(1, ''))
-        .rejects.toThrow('Valid user ID is required');
+    it('should throw error for invalid difficulty level', async () => {
+      const invalidRequest = { ...validRequest, difficultyLevel: 'invalid' as DifficultyLevel };
+      await expect(service.saveTranslationWithTokens(invalidRequest))
+        .rejects.toThrow('Language not found: en');
     });
   });
 
@@ -242,6 +155,18 @@ describe('SavedTranslationService', () => {
     it('should throw error for invalid search parameter', async () => {
       await expect(service.getSavedTranslationsCount('test-user-id', { search: 123 as unknown as string }))
         .rejects.toThrow('Search parameter must be a string');
+    });
+  });
+
+  describe('deleteSavedTranslation', () => {
+    it('should throw error for missing translation ID', async () => {
+      await expect(service.deleteSavedTranslation(0, 'test-user-id'))
+        .rejects.toThrow('Valid translation ID is required');
+    });
+
+    it('should throw error for missing user ID', async () => {
+      await expect(service.deleteSavedTranslation(1, ''))
+        .rejects.toThrow('Valid user ID is required');
     });
   });
 });

@@ -66,6 +66,7 @@ describe('GeminiService', () => {
       config: {
         temperature: 0.7,
         maxOutputTokens: 100,
+        responseMimeType: 'application/json',
       },
     });
 
@@ -120,6 +121,7 @@ describe('GeminiService', () => {
       config: {
         temperature: 0.7,
         maxOutputTokens: 2000,
+        responseMimeType: 'application/json',
       },
     });
 
@@ -153,6 +155,7 @@ describe('GeminiService', () => {
       config: {
         temperature: 0.9,
         maxOutputTokens: 500,
+        responseMimeType: 'application/json',
       },
     });
   });

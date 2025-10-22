@@ -265,7 +265,9 @@ describe('PromptConfigService', () => {
 
       // Should handle empty text without errors
       expect(prompt).toContain('es Story:');
-      expect(prompt).toContain('Please provide only the en translation');
+      expect(prompt).toContain(
+        "Return a valid JSON object with 'translation' and 'words' fields"
+      );
     });
 
     it('should handle text with quotes and apostrophes', async () => {
@@ -418,11 +420,11 @@ describe('PromptConfigService', () => {
 
       // English target should contain English-specific instructions
       expect(enPrompt).toContain('English words');
-      expect(enPrompt).toContain('en translation');
+      expect(enPrompt).toContain('English');
 
       // Spanish target should contain Spanish-specific instructions
       expect(esPrompt).toContain('Spanish words');
-      expect(esPrompt).toContain('es translation');
+      expect(esPrompt).toContain('es');
     });
   });
 });

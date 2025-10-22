@@ -2,8 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useSavedWords } from '../useSavedWords';
 
-vi.mock('../../useVocabulary', () => ({
-  useVocabulary: () => ({
+vi.mock('../../useLanguages', () => ({
+  useLanguages: () => ({
+    getLanguageIdByCode: (code: 'en' | 'es') => (code === 'en' ? 1 : 2),
+  }),
+}));
+
+// Override the global VocabularyContext mock for this test
+vi.mock('../../../contexts/VocabularyContext', () => ({
+  useVocabularyContext: () => ({
     vocabulary: [
       {
         id: 1,
@@ -34,12 +41,12 @@ vi.mock('../../useVocabulary', () => ({
         },
       },
     ],
-  }),
-}));
-
-vi.mock('../../useLanguages', () => ({
-  useLanguages: () => ({
-    getLanguageIdByCode: (code: 'en' | 'es') => (code === 'en' ? 1 : 2),
+    loading: false,
+    error: null,
+    saveVocabularyWord: vi.fn().mockResolvedValue({ id: 1 }),
+    updateVocabularyWord: vi.fn(),
+    deleteVocabularyWord: vi.fn(),
+    checkVocabularyExists: vi.fn().mockResolvedValue(false),
   }),
 }));
 

@@ -27,7 +27,7 @@ export const LanguageFilterProvider: React.FC<{
   const { user } = useAuth();
   const { languages, getLanguageName } = useLanguages();
 
-  const [fromLanguage, setFromLanguage] = useState<LanguageCode | null>(null);
+  const [fromLanguage, setFromLanguage] = useState<LanguageCode | null>('en'); // Default to 'en' to avoid null state
   const [targetLanguage, setTargetLanguageState] = useState<LanguageCode>('en');
 
   // Initialize fromLanguage from user's native language
@@ -100,6 +100,30 @@ export const LanguageFilterProvider: React.FC<{
   );
 };
 
+// Read-only hook for getting current language settings
+export const useLanguageSettings = (): {
+  fromLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
+} => {
+  const ctx = useContext(LanguageFilterContext);
+  if (!ctx) {
+    throw new Error(
+      'useLanguageSettings must be used within LanguageFilterProvider'
+    );
+  }
+  if (!ctx.fromLanguage) {
+    throw new Error(
+      'fromLanguage is required but not set. This hook should only be used in story contexts where language is always available.'
+    );
+  }
+
+  return {
+    fromLanguage: ctx.fromLanguage,
+    targetLanguage: ctx.targetLanguage,
+  };
+};
+
+// Full hook for components that need to modify language settings
 export const useLanguageFilter = (): LanguageFilterContextValue => {
   const ctx = useContext(LanguageFilterContext);
   if (!ctx) {

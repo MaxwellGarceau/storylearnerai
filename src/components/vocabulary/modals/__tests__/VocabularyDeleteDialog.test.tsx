@@ -6,8 +6,16 @@ vi.mock('../../../../hooks/useLocalization', () => ({
 }));
 
 const mockDelete = vi.fn().mockResolvedValue(true);
-vi.mock('../../../../hooks/useVocabulary', () => ({
-  useVocabulary: () => ({ deleteVocabularyWord: mockDelete }),
+vi.mock('../../../../contexts/VocabularyContext', () => ({
+  useVocabularyContext: () => ({
+    deleteVocabularyWord: mockDelete,
+    vocabulary: [],
+    loading: false,
+    error: null,
+    saveVocabularyWord: vi.fn(),
+    updateVocabularyWord: vi.fn(),
+    checkVocabularyExists: vi.fn(),
+  }),
 }));
 
 import { VocabularyDeleteDialog } from '../VocabularyDeleteDialog';

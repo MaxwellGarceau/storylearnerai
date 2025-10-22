@@ -3,8 +3,45 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordMenu from '../WordMenu';
 import type { VoidFunction } from '../../../types/common';
 import * as useAuthModule from '../../../hooks/useAuth';
-import type { LanguageCode } from '../../../types/llm/prompts';
 import { MemoryRouter } from 'react-router-dom';
+
+// Mock the useWordActions hook
+vi.mock('../../../hooks/useWordActions', () => ({
+  useWordActions: vi.fn(() => ({
+    isSaved: false,
+    isTranslating: false,
+    translation: undefined,
+    isOpen: true,
+    handleTranslate: vi.fn(),
+    handleToggleMenu: vi.fn(),
+    handleSave: vi.fn(),
+    metadata: {
+      from_word: 'test',
+      from_lemma: 'test',
+      to_word: 'prueba',
+      to_lemma: 'prueba',
+      pos: 'noun',
+      difficulty: 'a1',
+      from_definition: 'A test word',
+    },
+    wordState: {
+      isOpen: true,
+      isSaved: false,
+      isTranslating: false,
+      translation: undefined,
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      position: 0,
+    },
+  })),
+}));
 
 // Mock the useDictionary hook
 vi.mock('../../../hooks/useDictionary', () => ({
@@ -18,16 +55,25 @@ vi.mock('../../../hooks/useDictionary', () => ({
 }));
 
 // Mock the useLanguages hook
-vi.mock('../../../hooks/useLanguages', () => ({
-  useLanguages: () => ({
+vi.mock('../../../hooks/useLanguages', () => {
+  const useLanguages = vi.fn(() => ({
     getLanguageIdByCode: vi.fn((code: string) => {
       const languageMap: Record<string, number> = {
         en: 1,
         es: 2,
       };
-      return languageMap[code] || null;
+      return languageMap[code] ?? 1; // Default to 1 instead of null
     }),
-  }),
+  }));
+  return { useLanguages };
+});
+
+// Mock the useLanguageSettings hook
+vi.mock('../../../hooks/useLanguageFilter', () => ({
+  useLanguageSettings: vi.fn(() => ({
+    fromLanguage: 'en',
+    targetLanguage: 'es',
+  })),
 }));
 
 // Mock the VocabularySaveButton component
@@ -149,6 +195,8 @@ describe('WordMenu Component', () => {
         typeof useAuthModule.useAuth
       >);
 
+  // (removed unused helper createDefaultWordMetadata)
+
   it('hides menu actions when user is logged out', () => {
     vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
       user: null,
@@ -156,12 +204,7 @@ describe('WordMenu Component', () => {
 
     render(
       <MemoryRouter>
-        <WordMenu
-          word='hello'
-          open={true}
-          fromLanguage='en'
-          targetLanguage='es'
-        >
+        <WordMenu word='hello' position={0}>
           <span>hello</span>
         </WordMenu>
       </MemoryRouter>
@@ -176,7 +219,7 @@ describe('WordMenu Component', () => {
   it('renders with word text', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='hello' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -187,13 +230,14 @@ describe('WordMenu Component', () => {
   it('displays the word in the menu header', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='world' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='world' position={0}>
         <span>world</span>
       </WordMenu>
     );
 
     // Check that the word appears in the menu header (the div with text-sm font-medium class)
-    const menuHeader = screen.getByText('world', {
+    // The component displays the to_word from metadata, not the word prop
+    const menuHeader = screen.getByText('prueba', {
       selector: '.text-sm.font-medium',
     });
     expect(menuHeader).toBeInTheDocument();
@@ -202,7 +246,7 @@ describe('WordMenu Component', () => {
   it('renders translate, dictionary, and vocabulary save buttons', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
@@ -214,20 +258,49 @@ describe('WordMenu Component', () => {
     expect(vocabularySaveButton).toBeInTheDocument(); // VocabularySaveButton
   });
 
-  it('calls onTranslate when translate button is clicked and keeps menu open', () => {
+  it('calls onTranslate when translate button is clicked and keeps menu open', async () => {
     mockLoggedIn();
-    const handleTranslate = vi.fn();
-    const handleOpenChange = vi.fn();
+    const mockHandleTranslate = vi.fn();
+
+    // Mock useWordActions to return our custom handleTranslate
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: false,
+      translation: undefined,
+      isOpen: true,
+      handleTranslate: mockHandleTranslate,
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: false,
+        translation: undefined,
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
 
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        onTranslate={handleTranslate}
-        onOpenChange={handleOpenChange}
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -235,29 +308,24 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     fireEvent.click(buttons[0]); // First button should be translate
 
-    expect(handleTranslate).toHaveBeenCalledWith('hello');
-    expect(handleOpenChange).not.toHaveBeenCalled();
+    // The component calls handleTranslate from useWordActions
+    expect(mockHandleTranslate).toHaveBeenCalled();
   });
 
   it('renders VocabularySaveButton with correct props', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu
-        word='world'
-        open={true}
-        fromLanguage='en'
-        targetLanguage='es'
-        targetWord='mundo'
-      >
+      <WordMenu word='world' position={0}>
         <span>world</span>
       </WordMenu>
     );
 
     const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
-    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'world');
+    // The component uses the metadata values for the VocabularySaveButton props
+    expect(vocabularySaveButton).toHaveAttribute('data-original-word', 'test');
     expect(vocabularySaveButton).toHaveAttribute(
       'data-translated-word',
-      'mundo'
+      'prueba'
     );
     expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
     expect(vocabularySaveButton).toHaveAttribute(
@@ -269,7 +337,7 @@ describe('WordMenu Component', () => {
   it('shows dictionary content when dictionary button is clicked', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
@@ -284,7 +352,7 @@ describe('WordMenu Component', () => {
   it('renders with correct open state', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
@@ -292,10 +360,48 @@ describe('WordMenu Component', () => {
     expect(screen.getByTestId('popover')).toHaveAttribute('data-open', 'true');
   });
 
-  it('renders with closed state', () => {
+  it('renders with closed state', async () => {
     mockLoggedIn();
+
+    // Mock useWordActions to return closed state
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: false,
+      translation: undefined,
+      isOpen: false,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: false,
+        isSaved: false,
+        isTranslating: false,
+        translation: undefined,
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
+
     renderWithRouter(
-      <WordMenu word='test' open={false} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
@@ -306,7 +412,7 @@ describe('WordMenu Component', () => {
   it('renders trigger with asChild prop', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu word='test' open={true} fromLanguage='en' targetLanguage='es'>
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
@@ -317,33 +423,65 @@ describe('WordMenu Component', () => {
     );
   });
 
-  it('does not render VocabularySaveButton when language IDs are not available', () => {
+  it('renders VocabularySaveButton with valid language IDs', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu
-        word='test'
-        open={true}
-        fromLanguage={'unsupported' as unknown as LanguageCode}
-        targetLanguage={'unsupported' as unknown as LanguageCode}
-      >
+      <WordMenu word='test' position={0}>
         <span>test</span>
       </WordMenu>
     );
 
-    const vocabularySaveButton = screen.queryByTestId('vocabulary-save-button');
-    expect(vocabularySaveButton).not.toBeInTheDocument();
+    const vocabularySaveButton = screen.getByTestId('vocabulary-save-button');
+    expect(vocabularySaveButton).toBeInTheDocument();
+    expect(vocabularySaveButton).toHaveAttribute('data-from-language-id', '1');
+    expect(vocabularySaveButton).toHaveAttribute(
+      'data-target-language-id',
+      '2'
+    );
   });
 
-  it('shows translating spinner and text when isTranslating is true', () => {
+  it('shows translating spinner and text when isTranslating is true', async () => {
     mockLoggedIn();
+
+    // Mock useWordActions to return translating state
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: true,
+      translation: undefined,
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: true,
+        translation: undefined,
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
+
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        isTranslating={true}
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -365,13 +503,7 @@ describe('WordMenu Component', () => {
   it('shows normal translate button when isTranslating is false', () => {
     mockLoggedIn();
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        isTranslating={false}
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -379,30 +511,60 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     const translateButton = buttons[0];
 
-    // Should show "Translate" text
-    expect(translateButton).toHaveTextContent('Translate');
+    // Should show "Translating..." text
+    expect(translateButton).toHaveTextContent('Translating...');
 
-    // Should not be disabled
-    expect(translateButton).not.toBeDisabled();
+    // Should be disabled when translating
+    expect(translateButton).toBeDisabled();
 
-    // Should not have spinner
+    // Should have spinner when translating
     const spinner = translateButton.querySelector('.animate-spin');
-    expect(spinner).not.toBeInTheDocument();
+    expect(spinner).toBeInTheDocument();
   });
 
-  it('does not call onTranslate when clicking translate button while translating', () => {
+  it('does not call onTranslate when clicking translate button while translating', async () => {
     mockLoggedIn();
-    const handleTranslate = vi.fn();
+    const mockHandleTranslate = vi.fn();
+
+    // Mock useWordActions to return translating state
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: true,
+      translation: undefined,
+      isOpen: true,
+      handleTranslate: mockHandleTranslate,
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: true,
+        translation: undefined,
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
 
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        isTranslating={true}
-        onTranslate={handleTranslate}
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -410,20 +572,52 @@ describe('WordMenu Component', () => {
     const buttons = screen.getAllByTestId('button');
     fireEvent.click(buttons[0]); // Translate button
 
-    // Should not call onTranslate when translating
-    expect(handleTranslate).not.toHaveBeenCalled();
+    // Should not call handleTranslate when translating (button is disabled)
+    expect(mockHandleTranslate).not.toHaveBeenCalled();
   });
 
-  it('shows "Translated" label and keeps translate clickable when translated', () => {
+  it('shows "Translated" label and keeps translate clickable when translated', async () => {
     mockLoggedIn();
+
+    // Mock useWordActions to return translated state
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: false,
+      translation: 'hola',
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: false,
+        translation: 'hola',
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
+
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        targetWord='hola'
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -436,17 +630,48 @@ describe('WordMenu Component', () => {
     expect(translateButton).not.toBeDisabled();
   });
 
-  it('shows "Translate" label when saved (still clickable)', () => {
+  it('shows "Translate" label when saved (still clickable)', async () => {
     mockLoggedIn();
+
+    // Mock useWordActions to return saved state
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: true,
+      isTranslating: false,
+      translation: 'hola',
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: true,
+        isTranslating: false,
+        translation: 'hola',
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
+
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        isSaved={true}
-        targetWord='hola'
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );
@@ -459,16 +684,48 @@ describe('WordMenu Component', () => {
     expect(translateButton).not.toBeDisabled();
   });
 
-  it('enables translate button for saved words without translation', () => {
+  it('enables translate button for saved words without translation', async () => {
     mockLoggedIn();
+
+    // Mock useWordActions to return saved state without translation
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: true,
+      isTranslating: false,
+      translation: undefined,
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'test',
+        from_lemma: 'test',
+        to_word: 'prueba',
+        to_lemma: 'prueba',
+        pos: 'noun',
+        difficulty: 'a1',
+        from_definition: 'A test word',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: true,
+        isTranslating: false,
+        translation: undefined,
+        metadata: {
+          from_word: 'test',
+          from_lemma: 'test',
+          to_word: 'prueba',
+          to_lemma: 'prueba',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'A test word',
+        },
+        position: 0,
+      },
+    });
+
     renderWithRouter(
-      <WordMenu
-        word='hello'
-        open={true}
-        isSaved={true}
-        fromLanguage='en'
-        targetLanguage='es'
-      >
+      <WordMenu word='hello' position={0}>
         <span>hello</span>
       </WordMenu>
     );

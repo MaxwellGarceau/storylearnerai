@@ -13,6 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
+import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
 
 import SidebarToggle from './SidebarToggle';
 import SidebarHeader from './SidebarHeader';
@@ -38,6 +39,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     savedTranslations,
     loading: isLoadingSavedTranslations,
     refreshTranslations,
+    loadTranslationWithTokens,
   } = useSavedTranslations();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -120,9 +122,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     setIsLoading(String(story.id));
     try {
       const response = await translationService.translate({
-        text: story.from_story,
+        text: story.from_text,
         fromLanguage: story.from_language.code,
-        toLanguage: story.target_language.code,
+        toLanguage: story.to_language.code,
         difficulty: story.difficulty_level.code,
       });
 
@@ -140,20 +142,49 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     }
   };
 
-  const openSavedTranslation = (saved: DatabaseSavedTranslationWithDetails) => {
-    void navigate(`/story?id=${saved.id}`, {
-      state: {
-        translationData: {
-          fromText: saved.from_story,
-          targetText: saved.target_story,
-          difficulty: saved.difficulty_level.code,
-          fromLanguage: saved.from_language.code,
-          toLanguage: saved.target_language.code,
-        },
-        isSavedStory: true,
-        savedTranslationId: saved.id,
-      },
-    });
+  const openSavedTranslation = async (
+    saved: DatabaseSavedTranslationWithDetails
+  ) => {
+    try {
+      const savedTranslation = await loadTranslationWithTokens(saved.id);
+
+      if (savedTranslation) {
+        // Convert loaded tokens to TranslationToken format
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+          savedTranslation.tokens
+        );
+
+        void navigate(`/story?id=${saved.id}`, {
+          state: {
+            translationData: {
+              fromText: savedTranslation.from_text,
+              toText: savedTranslation.to_text,
+              tokens,
+              fromLanguage: savedTranslation.from_language.code,
+              toLanguage: savedTranslation.to_language.code,
+              difficulty: savedTranslation.difficulty_level.code,
+              provider: 'saved',
+              model: 'saved-translation',
+            },
+            isSavedStory: true,
+            savedTranslationId: saved.id,
+          },
+        });
+      } else {
+        logger.error('ui', 'Failed to load saved translation with tokens', {
+          translationId: saved.id,
+        });
+        // Fallback to basic navigation without tokens
+        void navigate(`/story?id=${saved.id}`);
+      }
+    } catch (error) {
+      logger.error('ui', 'Error loading saved translation with tokens', {
+        error,
+        translationId: saved.id,
+      });
+      // Fallback to basic navigation without tokens
+      void navigate(`/story?id=${saved.id}`);
+    }
   };
 
   const getDifficultyColor = (difficulty: DifficultyLevel) => {
@@ -218,11 +249,13 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
               <StoriesSection
                 savedTranslations={(
                   savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
-                ).filter(s => s.target_language.code === targetLanguage)}
+                ).filter(s => s.to_language.code === targetLanguage)}
                 isLoadingSavedTranslations={isLoadingSavedTranslations}
                 sampleStories={sampleStories}
                 isLoadingSampleId={isLoading}
-                onOpenSavedTranslation={openSavedTranslation}
+                onOpenSavedTranslation={translation => {
+                  void openSavedTranslation(translation);
+                }}
                 onOpenSampleStory={s => {
                   void handleStoryClick(s);
                 }}

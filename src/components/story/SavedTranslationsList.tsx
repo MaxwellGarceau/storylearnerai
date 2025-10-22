@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertIcon } from '../ui/Alert';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useDifficultyLevels } from '../../hooks/useDifficultyLevels';
+import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
 import { DatabaseSavedTranslationWithDetails } from '../../types/database';
 import { TranslationResponse } from '../../lib/translationService';
 import {
@@ -23,6 +24,7 @@ import {
 import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { DateUtils } from '../../lib/utils/dateUtils';
+import { DeleteTranslationModal } from './DeleteTranslationModal';
 
 export default function SavedTranslationsList() {
   const navigate = useNavigate();
@@ -61,6 +63,8 @@ export default function SavedTranslationsList() {
     savedTranslations,
     loading: isLoading,
     error,
+    deleteSavedTranslation,
+    loadTranslationWithTokens,
   } = useSavedTranslations();
 
   const { languages, loading: languagesLoading } = useLanguages();
@@ -72,56 +76,104 @@ export default function SavedTranslationsList() {
     DifficultyLevel | ''
   >('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [translationToDelete, setTranslationToDelete] =
+    useState<DatabaseSavedTranslationWithDetails | null>(null);
 
   const handleFilterChange = () => {
     // TODO: Implement filtering when the hook supports it
     logger.info('ui', 'Filtering not yet implemented', {
-      target_language_code: selectedLanguage || undefined,
+      to_language_code: selectedLanguage || undefined,
       difficulty_level_code: selectedDifficulty || undefined,
       search: searchTerm.trim() || undefined,
     });
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm(t('savedTranslations.deleteConfirm'))) {
-      try {
-        // TODO: Implement delete when the hook supports it
-        logger.info('ui', 'Delete not yet implemented for id:', { id });
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error';
-        logger.error('ui', 'Failed to delete translation', {
-          error: errorMessage,
+  const handleDeleteClick = (
+    translation: DatabaseSavedTranslationWithDetails
+  ) => {
+    setTranslationToDelete(translation);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (): Promise<boolean> => {
+    if (!translationToDelete) return false;
+
+    try {
+      const success = await deleteSavedTranslation(translationToDelete.id);
+      if (success) {
+        logger.info('ui', 'Successfully deleted translation', {
+          id: translationToDelete.id,
         });
+        return true;
+      } else {
+        logger.error('ui', 'Failed to delete translation', {
+          id: translationToDelete.id,
+        });
+        return false;
       }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      logger.error('ui', 'Failed to delete translation', {
+        error: errorMessage,
+        id: translationToDelete.id,
+      });
+      return false;
     }
   };
 
-  const convertToTranslationResponse = (
-    savedTranslation: DatabaseSavedTranslationWithDetails
-  ): TranslationResponse => {
-    return {
-      fromText: savedTranslation.from_story,
-      targetText: savedTranslation.target_story,
-      fromLanguage: savedTranslation.from_language.code,
-      toLanguage: savedTranslation.target_language.code,
-      difficulty: savedTranslation.difficulty_level.code,
-      provider: 'saved',
-      model: 'saved-translation',
-    };
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
+    setTranslationToDelete(null);
   };
 
-  const handleViewStory = (
+  const handleViewStory = async (
     savedTranslation: DatabaseSavedTranslationWithDetails
   ) => {
-    const translationData = convertToTranslationResponse(savedTranslation);
-    void navigate(`/story?id=${savedTranslation.id}`, {
-      state: {
-        translationData,
-        isSavedStory: true,
-        savedTranslationId: savedTranslation.id,
-      },
-    });
+    try {
+      const savedTranslationWithTokens = await loadTranslationWithTokens(
+        savedTranslation.id
+      );
+
+      if (savedTranslationWithTokens) {
+        // Convert loaded tokens to TranslationToken format
+        const tokens = TokenConverter.convertDatabaseTokensToUITokens(
+          savedTranslationWithTokens.tokens
+        );
+
+        const translationData: TranslationResponse = {
+          fromText: savedTranslationWithTokens.from_text,
+          toText: savedTranslationWithTokens.to_text,
+          tokens,
+          fromLanguage: savedTranslationWithTokens.from_language.code,
+          toLanguage: savedTranslationWithTokens.to_language.code,
+          difficulty: savedTranslationWithTokens.difficulty_level.code,
+          provider: 'saved',
+          model: 'saved-translation',
+        };
+
+        void navigate(`/story?id=${savedTranslation.id}`, {
+          state: {
+            translationData,
+            isSavedStory: true,
+            savedTranslationId: savedTranslation.id,
+          },
+        });
+      } else {
+        logger.error('ui', 'Failed to load saved translation with tokens', {
+          translationId: savedTranslation.id,
+        });
+        // Fallback to basic navigation without tokens
+        void navigate(`/story?id=${savedTranslation.id}`);
+      }
+    } catch (error) {
+      logger.error('ui', 'Error loading saved translation with tokens', {
+        error,
+        translationId: savedTranslation.id,
+      });
+      // Fallback to basic navigation without tokens
+      void navigate(`/story?id=${savedTranslation.id}`);
+    }
   };
 
   if ((isLoading || languagesLoading) && savedTranslations.length === 0) {
@@ -240,7 +292,9 @@ export default function SavedTranslationsList() {
           <Card
             key={translation.id}
             className='hover:shadow-md transition-shadow cursor-pointer'
-            onClick={() => handleViewStory(translation)}
+            onClick={() => {
+              void handleViewStory(translation);
+            }}
           >
             <CardHeader>
               <div className='flex justify-between items-start'>
@@ -255,7 +309,7 @@ export default function SavedTranslationsList() {
                       month: 'short',
                       day: 'numeric',
                     })}
-                    {` • ${translation.from_language.name} → ${translation.target_language.name}`}
+                    {` • ${translation.from_language.name} → ${translation.to_language.name}`}
                   </CardDescription>
                 </div>
                 <div className='flex gap-2' onClick={e => e.stopPropagation()}>
@@ -265,15 +319,17 @@ export default function SavedTranslationsList() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => handleViewStory(translation)}
+                    onClick={() => {
+                      void handleViewStory(translation);
+                    }}
                   >
                     {t('savedTranslations.results.viewStory')}
                   </Button>
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => void handleDelete(translation.id)}
-                    disabled={false}
+                    onClick={() => handleDeleteClick(translation)}
+                    disabled={isLoading}
                   >
                     {t('savedTranslations.results.delete')}
                   </Button>
@@ -298,7 +354,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.fromStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.from_story}
+                    {translation.from_text}
                   </div>
                 </div>
                 <div>
@@ -306,7 +362,7 @@ export default function SavedTranslationsList() {
                     {t('savedTranslations.content.translatedStory')}
                   </h4>
                   <div className='text-sm text-muted-foreground max-h-32 overflow-y-auto border rounded p-2'>
-                    {translation.target_story}
+                    {translation.to_text}
                   </div>
                 </div>
               </div>
@@ -345,6 +401,14 @@ export default function SavedTranslationsList() {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteTranslationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        translation={translationToDelete}
+      />
     </div>
   );
 }

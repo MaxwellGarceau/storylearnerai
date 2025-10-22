@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SavedTranslationService } from '../api/supabase/database/savedTranslationService';
-import type {
-  DatabaseSavedTranslationWithDetails,
-  CreateSavedTranslationRequest,
-} from '../types/database/translation';
+import type { DatabaseSavedTranslationWithDetails } from '../types/database/translation';
 import type { VoidPromise } from '../types/common';
+import type { TranslationResponse } from '../lib/translationService';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
+import { TokenConverter } from '../lib/llm/tokens/tokenConverter';
+import type { LoadedTranslation } from '../types/app/translations';
 
 // Type alias to avoid duplicate type definition
 type LoadTranslationsFunction = () => VoidPromise;
@@ -17,9 +17,16 @@ interface UseSavedTranslationsReturn {
   error: string | null;
   loadTranslations: LoadTranslationsFunction;
   refreshTranslations: LoadTranslationsFunction;
-  createSavedTranslation: (
-    data: CreateSavedTranslationRequest
-  ) => Promise<DatabaseSavedTranslationWithDetails | null>;
+  loadTranslationWithTokens: (
+    translationId: number
+  ) => Promise<LoadedTranslation | null>;
+  saveTranslationWithTokens: (
+    translationData: TranslationResponse,
+    fromText: string,
+    title?: string,
+    notes?: string
+  ) => Promise<number | null>;
+  deleteSavedTranslation: (translationId: number) => Promise<boolean>;
 }
 
 // Create a singleton instance of the service
@@ -63,10 +70,13 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     await loadTranslations();
   }, [loadTranslations]);
 
-  const createSavedTranslation = useCallback(
+  const saveTranslationWithTokens = useCallback(
     async (
-      data: CreateSavedTranslationRequest
-    ): Promise<DatabaseSavedTranslationWithDetails | null> => {
+      translationData: TranslationResponse,
+      fromText: string,
+      title?: string,
+      notes?: string
+    ): Promise<number | null> => {
       if (!user?.id) {
         toast({
           title: 'Error',
@@ -80,8 +90,28 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
       setError(null);
 
       try {
-        const savedTranslation =
-          await savedTranslationService.createSavedTranslation(data, user.id);
+        // Convert TranslationToken[] to the format expected by saveTranslationWithTokens
+        const convertedTokens = TokenConverter.convertUITokensToDatabaseTokens(
+          translationData.tokens
+        );
+        const tokens = [
+          ...convertedTokens.word,
+          ...convertedTokens.punctuation,
+          ...convertedTokens.whitespace,
+        ];
+
+        const translationId =
+          await savedTranslationService.saveTranslationWithTokens({
+            userId: user.id,
+            fromLanguage: translationData.fromLanguage,
+            toLanguage: translationData.toLanguage,
+            fromText,
+            toText: translationData.toText,
+            difficultyLevel: translationData.difficulty,
+            title,
+            notes,
+            tokens,
+          });
 
         // Refresh the translations list
         await loadTranslations();
@@ -98,7 +128,7 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
           description: 'Translation saved successfully',
         });
 
-        return savedTranslation;
+        return translationId;
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Failed to save translation';
@@ -116,6 +146,77 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     [user, toast, loadTranslations]
   );
 
+  const deleteSavedTranslation = useCallback(
+    async (translationId: number): Promise<boolean> => {
+      if (!user?.id) {
+        toast({
+          title: 'Error',
+          description: 'You must be logged in to delete translations',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        await savedTranslationService.deleteSavedTranslation(
+          translationId,
+          user.id
+        );
+
+        // Refresh the translations list
+        await loadTranslations();
+
+        // Notify other listeners (e.g., sidebars) to refresh immediately
+        try {
+          window.dispatchEvent(new CustomEvent('saved-translations:updated'));
+        } catch {
+          // no-op in non-browser/test environments
+        }
+
+        toast({
+          title: 'Success',
+          description: 'Translation deleted successfully',
+        });
+
+        return true;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete translation';
+        setError(errorMessage);
+        toast({
+          title: 'Error',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, toast, loadTranslations]
+  );
+
+  const loadTranslationWithTokens = useCallback(
+    async (translationId: number): Promise<LoadedTranslation | null> => {
+      try {
+        return await savedTranslationService.loadTranslationWithTokens(
+          translationId
+        );
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to load translation';
+        setError(errorMessage);
+        return null;
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     void loadTranslations();
   }, [loadTranslations]);
@@ -126,6 +227,8 @@ export function useSavedTranslations(): UseSavedTranslationsReturn {
     error,
     loadTranslations,
     refreshTranslations,
-    createSavedTranslation,
+    loadTranslationWithTokens,
+    saveTranslationWithTokens,
+    deleteSavedTranslation,
   };
 }

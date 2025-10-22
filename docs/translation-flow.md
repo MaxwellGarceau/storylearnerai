@@ -59,7 +59,7 @@ The translation flow supports selecting both a from language (source) and a to l
 
 ### Notes
 
-- Current supported codes: `en`, `es` (see `src/types/llm/prompts.ts`).
+- Current supported language codes: `en`, `es` (see `src/types/llm/prompts.ts`). Supported difficulty levels: `a1`, `a2`, `b1`, `b2`.
 - Copy in i18n resources that explicitly mentions English is preserved; UI labels and data flow use the dynamic from/to selections.
 
 ### Sample Stories

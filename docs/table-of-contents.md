@@ -5,6 +5,8 @@
 - [LLM Service System](llm-service-system.md) - AI-powered translation and content generation
 - [LLM Prompt System](llm-prompt-system.md) - Dynamic prompt configuration and management
 - [Translation Flow](translation-flow.md) - From/To language selection and end-to-end flow
+- [Word Translation System](word-translation-system.md) - Token-based architecture with rich linguistic metadata
+- [Translation Schema](translation-schema.md) - Tables for translations and token sequences
 - [Gemini Service Example](gemini-service-example.md) - Gemini configuration and usage
 - [Dictionary System](dictionary-system.md) - Real-time word lookup and definition system
 - [Routing System](routing-system.md) - Application navigation and routing

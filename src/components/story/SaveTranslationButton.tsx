@@ -48,7 +48,7 @@ export default function SaveTranslationButton({
   }>({});
 
   const { user } = useAuth();
-  const { createSavedTranslation } = useSavedTranslations();
+  const { saveTranslationWithTokens } = useSavedTranslations();
   const { getLanguageCode } = useLanguages();
   const { getDifficultyLevelName } = useDifficultyLevels();
 
@@ -99,7 +99,7 @@ export default function SaveTranslationButton({
   };
 
   const handleSave = async () => {
-    if (!translationData.targetText) {
+    if (!translationData.toText) {
       setError('No translated text available to save');
       return;
     }
@@ -126,15 +126,12 @@ export default function SaveTranslationButton({
         return;
       }
 
-      const result = await createSavedTranslation({
-        from_story: fromStory,
-        target_story: translationData.targetText,
-        from_language_code: fromLanguageCode,
-        target_language_code: targetLanguageCode,
-        difficulty_level_code: difficultyLevel,
-        title: sanitizedTitle ?? undefined,
-        notes: sanitizedNotes ?? undefined,
-      });
+      const result = await saveTranslationWithTokens(
+        translationData,
+        fromStory,
+        sanitizedTitle ?? undefined,
+        sanitizedNotes ?? undefined
+      );
 
       if (result) {
         // Close the modal and reset form

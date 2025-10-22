@@ -4,16 +4,16 @@ import type { NullableString } from '../../types/common';
 interface BadgeSectionProps {
   partOfSpeech?: NullableString;
   frequencyLevel?: NullableString;
-  partOfSpeechKey?: (pos: string) => string;
-  frequencyKey?: (freq: string) => string;
+  partOfSpeechKey: (pos: string) => string;
+  frequencyKey: (freq: string) => string;
   className?: string;
 }
 
 export function BadgeSection({
   partOfSpeech,
   frequencyLevel,
-  partOfSpeechKey = pos => `vocabulary.pos.${pos}`,
-  frequencyKey = freq => `vocabulary.frequency.${freq}`,
+  partOfSpeechKey,
+  frequencyKey,
   className = '',
 }: BadgeSectionProps) {
   if (!partOfSpeech && !frequencyLevel) {

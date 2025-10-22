@@ -1,7 +1,6 @@
 import {
   LanguagePromptConfig,
   GeneralPromptConfig,
-  TemplateConfig,
   PromptInstructions,
   PromptBuildContext,
   NativeToTargetLanguageConfig,
@@ -13,7 +12,6 @@ import {
 import { logger } from '../logger';
 import languageConfigData from './config/to-language.json';
 import generalConfigData from './config/general.json';
-import templateConfigData from './config/template.json';
 import type { VoidPromise } from '../../types/common';
 
 /**
@@ -36,14 +34,79 @@ import type { VoidPromise } from '../../types/common';
 class GeneralPromptConfigService {
   private languageConfig: LanguagePromptConfig;
   private generalConfig: GeneralPromptConfig;
-  private templateConfig: TemplateConfig;
   private nativeToTargetConfig: NativeToTargetLanguageConfig;
   private configLoadingPromise: VoidPromise | null = null;
+
+  // Template content moved from template.json
+  private readonly TEMPLATE = `Translate the following {fromLanguage} story to {toLanguage}, adapted for {difficulty} CEFR level:
+
+Instructions:
+{instructions}
+
+Specific {toLanguage} Guidelines:
+{languageInstructions}
+
+{nativeToTargetInstructions}
+
+{fromLanguage} Story:
+{text}
+
+RESPONSE FORMAT:
+Return a JSON object with the following structure:
+{
+  "translation": "<full translated {toLanguage} story text>",
+  "tokens": [
+    {
+      "type": "word",
+      "to_word": "<word from the translated {toLanguage} story>",
+      "to_lemma": "<lemma/base form of the {toLanguage} word - must be a single word, not a phrase>",
+      "from_word": "<corresponding word from the original {fromLanguage} story>",
+      "from_lemma": "<lemma/base form of the original {fromLanguage} word - must be a single word, not a phrase>",
+      "pos": "<part of speech: noun|verb|adjective|adverb|pronoun|preposition|conjunction|interjection|article|determiner|other>",
+      "difficulty": "<CEFR level: A1|A2|B1|B2|C1|C2>",
+      "from_definition": "<context-appropriate definition written in {fromLanguage} language explaining the {fromLanguage} word based on how it's used in THIS SPECIFIC CONTEXT>"
+    },
+    {
+      "type": "punctuation",
+      "value": "<punctuation mark: period, comma, question mark, exclamation mark, quotation mark, semicolon, colon, dash, etc.>"
+    },
+    {
+      "type": "whitespace",
+      "value": "<whitespace character: space, tab, newline, etc.>"
+    }
+  ]
+}
+
+CRITICAL REQUIREMENTS:
+- The 'tokens' array must include EVERY element from the TRANSLATED {toLanguage} story: all words, punctuation marks, and whitespace
+- Each element is one of three types:
+  * "word" - for all words (nouns, verbs, adjectives, adverbs, articles, pronouns, prepositions, conjunctions, etc.)
+  * "punctuation" - for punctuation marks ONLY (periods, commas, question marks, exclamation marks, quotation marks, semicolons, colons, dashes, parentheses, etc.)
+  * "whitespace" - for whitespace characters ONLY (spaces, tabs, newlines, etc.)
+- If a word appears multiple times in the story, include a separate word object for EACH occurrence
+- Each duplicate word entry must have a context-specific definition based on how it's used at that particular position in the story
+- Maintain exact token order matching the translated story from first character to last
+- The 'from_definition' must be written in {fromLanguage} language (the user's native language) so they can easily understand the definition
+- The 'from_definition' should define the {fromLanguage} word as it's specifically used in this context (e.g., "correr" in Spanish meaning "dirigir un negocio" vs "correr una carrera" should have different definitions)
+- Each word object represents a single word occurrence from the translated story, not the original
+- The 'to_word' is the SOURCE OF TRUTH for meaning, tense, aspect, number, gender, and usage. All metadata must align to how the 'to_word' is used in the translated sentence
+- The 'from_word' and 'from_definition' MUST be derived to match the exact sense and tense/aspect of the 'to_word' as used in the translated {toLanguage} sentence, EVEN IF this differs from the original {fromLanguage} text
+- If the original {fromLanguage} text uses a different tense/aspect/number than the final translated 'to_word', ADJUST 'from_word' and 'from_definition' to align with the 'to_word'. Example: If the translated token is present tense "ama" (she loves), 'from_word' should be "loves" (present), not "loved" (past)
+- Use standard part-of-speech tags based on the {toLanguage} word's function in the sentence
+- Assign difficulty levels based on the {toLanguage} word complexity and CEFR standards
+- Both 'to_lemma' and 'from_lemma' must be single words only - NEVER RETURN MULTI-WORD PHRASES AS LEMMAS
+- When reconstructing the story by concatenating all tokens in order, it must exactly match the 'translation' field
+- Return ONLY valid JSON, no additional text or markdown formatting`;
+
+  private readonly VOCABULARY_SECTION = `
+
+Learner Vocabulary Focus:
+Please include and naturally use the following target-language words when appropriate in the translation, matching {difficulty} level:
+{vocabList}`;
 
   constructor() {
     this.languageConfig = languageConfigData as LanguagePromptConfig;
     this.generalConfig = generalConfigData as GeneralPromptConfig;
-    this.templateConfig = templateConfigData as TemplateConfig;
     this.nativeToTargetConfig = {} as NativeToTargetLanguageConfig;
     this.configLoadingPromise = this.loadNativeToTargetConfigs();
   }
@@ -263,7 +326,7 @@ class GeneralPromptConfigService {
    * Get the prompt template
    */
   getTemplate(): string {
-    return this.templateConfig.template;
+    return this.TEMPLATE;
   }
 
   /**
@@ -376,9 +439,10 @@ class GeneralPromptConfigService {
       .map(w => `- ${w}`)
       .join('\n');
 
-    return this.templateConfig.vocabularySection
-      .replace('{difficulty}', context.difficulty)
-      .replace('{vocabList}', vocabList);
+    return this.VOCABULARY_SECTION.replace(
+      '{difficulty}',
+      context.difficulty
+    ).replace('{vocabList}', vocabList);
   }
 
   /**

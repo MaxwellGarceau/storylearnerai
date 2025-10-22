@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { useVocabulary } from '../useVocabulary';
+import { useVocabularyContext } from '../../contexts/VocabularyContext';
 import { useLanguages } from '../useLanguages';
 import type { LanguageCode } from '../../types/llm/prompts';
 
@@ -19,7 +19,7 @@ export function useSavedWords(
   fromLanguage: LanguageCode,
   targetLanguage: LanguageCode
 ) {
-  const { vocabulary } = useVocabulary();
+  const { vocabulary, loading } = useVocabularyContext();
   const { getLanguageIdByCode } = useLanguages();
 
   const fromLanguageId = getLanguageIdByCode(fromLanguage);
@@ -96,5 +96,6 @@ export function useSavedWords(
     findSavedWordData,
     savedTargetWords,
     findSavedByTargetWord,
+    loading,
   };
 }

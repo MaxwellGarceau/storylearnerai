@@ -3,10 +3,10 @@
     {
       "id": 1,
       "user_id": "sample-user-id",
-      "from_story": "Érase una vez tres cerditos que vivían con su madre. Un día, la madre les dijo que ya eran mayores y debían construir sus propias casas. El primer cerdito construyó su casa de paja. El segundo cerdito construyó su casa de madera. El tercer cerdito construyó su casa de ladrillos. Un día, llegó el lobo feroz. Sopló y sopló, y derribó la casa de paja. El primer cerdito corrió a la casa de madera. El lobo sopló y sopló, y derribó la casa de madera. Los dos cerditos corrieron a la casa de ladrillos. El lobo sopló y sopló, pero no pudo derribar la casa de ladrillos. Los tres cerditos vivieron felices en la casa de ladrillos.",
-      "target_story": "",
+      "from_text": "Érase una vez tres cerditos que vivían con su madre. Un día, la madre les dijo que ya eran mayores y debían construir sus propias casas. El primer cerdito construyó su casa de paja. El segundo cerdito construyó su casa de madera. El tercer cerdito construyó su casa de ladrillos. Un día, llegó el lobo feroz. Sopló y sopló, y derribó la casa de paja. El primer cerdito corrió a la casa de madera. El lobo sopló y sopló, y derribó la casa de madera. Los dos cerditos corrieron a la casa de ladrillos. El lobo sopló y sopló, pero no pudo derribar la casa de ladrillos. Los tres cerditos vivieron felices en la casa de ladrillos.",
+      "to_text": "",
       "from_language_id": 1,
-      "target_language_id": 2,
+      "to_language_id": 2,
       "difficulty_level_id": 1,
       "title": "Los tres cerditos",
       "notes": "Un cuento clásico sobre tres cerditos que construyen diferentes casas y aprenden el valor del trabajo duro.",
@@ -19,7 +19,7 @@
         "native_name": "Español",
         "created_at": "2020-01-01T00:00:00Z"
       },
-      "target_language": {
+      "to_language": {
         "id": 2,
         "code": "en",
         "name": "English",
@@ -37,10 +37,10 @@
     {
       "id": 2,
       "user_id": "sample-user-id",
-      "from_story": "Érase una vez una niña que siempre llevaba una caperuza roja. Su abuela le había hecho la caperuza y la niña la llevaba tan a menudo que todos la llamaban Caperucita Roja. Un día, su madre le pidió que llevara una cesta con comida a su abuela, que vivía en el bosque. 'No te apartes del camino', le dijo su madre. Caperucita Roja prometió obedecer. En el bosque, se encontró con el lobo. El lobo le preguntó adónde iba y Caperucita Roja le contó que iba a visitar a su abuela. El lobo corrió por el camino más corto y llegó primero a la casa de la abuela. Se comió a la abuela y se puso su camisón. Cuando Caperucita Roja llegó, el lobo la engañó y también se la comió. Un cazador que pasaba por allí oyó los ronquidos del lobo y entró en la casa. Cortó la barriga del lobo y sacó a Caperucita Roja y a su abuela, que estaban vivas. Llenaron la barriga del lobo con piedras y el lobo murió.",
-      "target_story": "",
+      "from_text": "Érase una vez una niña que siempre llevaba una caperuza roja. Su abuela le había hecho la caperuza y la niña la llevaba tan a menudo que todos la llamaban Caperucita Roja. Un día, su madre le pidió que llevara una cesta con comida a su abuela, que vivía en el bosque. 'No te apartes del camino', le dijo su madre. Caperucita Roja prometió obedecer. En el bosque, se encontró con el lobo. El lobo le preguntó adónde iba y Caperucita Roja le contó que iba a visitar a su abuela. El lobo corrió por el camino más corto y llegó primero a la casa de la abuela. Se comió a la abuela y se puso su camisón. Cuando Caperucita Roja llegó, el lobo la engañó y también se la comió. Un cazador que pasaba por allí oyó los ronquidos del lobo y entró en la casa. Cortó la barriga del lobo y sacó a Caperucita Roja y a su abuela, que estaban vivas. Llenaron la barriga del lobo con piedras y el lobo murió.",
+      "to_text": "",
       "from_language_id": 1,
-      "target_language_id": 2,
+      "to_language_id": 2,
       "difficulty_level_id": 2,
       "title": "Caperucita Roja",
       "notes": "La historia de una niña que visita a su abuela y se encuentra con un lobo astuto.",
@@ -53,7 +53,7 @@
         "native_name": "Español",
         "created_at": "2020-01-01T00:00:00Z"
       },
-      "target_language": {
+      "to_language": {
         "id": 2,
         "code": "en",
         "name": "English",
@@ -71,10 +71,10 @@
     {
       "id": 3,
       "user_id": "sample-user-id",
-      "from_story": "En una granja, una pata empollaba sus huevos. Cuando los huevos se abrieron, todos los patitos eran hermosos y amarillos, excepto uno que era grande, gris y feo. Los otros patitos se burlaban de él y lo llamaban 'patito feo'. Incluso su madre lo rechazaba. El patito feo se sintió muy triste y decidió irse de la granja. Durante el invierno, sufrió mucho frío y hambre. Cuando llegó la primavera, vio su reflejo en el agua y se dio cuenta de que ya no era un patito feo, sino un hermoso cisne blanco. Los otros cisnes lo aceptaron y el patito feo, ahora un hermoso cisne, encontró su lugar en el mundo.",
-      "target_story": "",
+      "from_text": "En una granja, una pata empollaba sus huevos. Cuando los huevos se abrieron, todos los patitos eran hermosos y amarillos, excepto uno que era grande, gris y feo. Los otros patitos se burlaban de él y lo llamaban 'patito feo'. Incluso su madre lo rechazaba. El patito feo se sintió muy triste y decidió irse de la granja. Durante el invierno, sufrió mucho frío y hambre. Cuando llegó la primavera, vio su reflejo en el agua y se dio cuenta de que ya no era un patito feo, sino un hermoso cisne blanco. Los otros cisnes lo aceptaron y el patito feo, ahora un hermoso cisne, encontró su lugar en el mundo.",
+      "to_text": "",
       "from_language_id": 1,
-      "target_language_id": 2,
+      "to_language_id": 2,
       "difficulty_level_id": 3,
       "title": "El patito feo",
       "notes": "Una historia conmovedora sobre un patito que crece hasta convertirse en un hermoso cisne.",
@@ -87,7 +87,7 @@
         "native_name": "Español",
         "created_at": "2020-01-01T00:00:00Z"
       },
-      "target_language": {
+      "to_language": {
         "id": 2,
         "code": "en",
         "name": "English",

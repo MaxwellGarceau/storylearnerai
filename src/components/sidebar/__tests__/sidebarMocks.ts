@@ -78,7 +78,7 @@ export const mockUser: User = {
 
 export const mockTranslationData: TranslationResponse = {
   fromText: 'Hello world',
-  targetText: 'Hola mundo',
+  toText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
@@ -89,7 +89,7 @@ export const mockTranslationData: TranslationResponse = {
 
 export const mockTranslationDataNoVocabulary: TranslationResponse = {
   fromText: 'Hello world',
-  targetText: 'Hola mundo',
+  toText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
@@ -100,7 +100,7 @@ export const mockTranslationDataNoVocabulary: TranslationResponse = {
 
 export const mockTranslationDataAllIncluded: TranslationResponse = {
   fromText: 'Hello world',
-  targetText: 'Hola mundo',
+  toText: 'Hola mundo',
   difficulty: 'a1' as DifficultyLevel,
   fromLanguage: 'en' as LanguageCode,
   toLanguage: 'es' as LanguageCode,
@@ -112,10 +112,10 @@ export const mockTranslationDataAllIncluded: TranslationResponse = {
 export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
   id: 1,
   user_id: 'test-user-id',
-  from_story: 'This is the original story text',
-  target_story: 'Este es el texto de la historia original',
+  from_text: 'This is the original story text',
+  to_text: 'Este es el texto de la historia original',
   from_language_id: 1,
-  target_language_id: 2,
+  to_language_id: 2,
   difficulty_level_id: 1,
   title: 'Test Story',
   notes: 'Sample story notes',
@@ -128,7 +128,7 @@ export const mockSavedTranslation: DatabaseSavedTranslationWithDetails = {
     native_name: 'English' as const,
     created_at: '2024-01-01T00:00:00Z',
   },
-  target_language: {
+  to_language: {
     id: 2,
     code: 'es' as LanguageCode,
     name: 'Spanish' as const,
@@ -149,10 +149,10 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
   {
     id: 1,
     user_id: 'sample-user-id',
-    from_story: 'Érase una vez tres cerditos...',
-    target_story: '',
+    from_text: 'Érase una vez tres cerditos...',
+    to_text: '',
     from_language_id: 1,
-    target_language_id: 2,
+    to_language_id: 2,
     difficulty_level_id: 1,
     title: 'The Three Little Pigs',
     notes:
@@ -166,7 +166,7 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
       native_name: 'Español' as const,
       created_at: '2020-01-01T00:00:00Z',
     },
-    target_language: {
+    to_language: {
       id: 2,
       code: 'en' as LanguageCode,
       name: 'English' as const,
@@ -184,10 +184,10 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
   {
     id: 2,
     user_id: 'sample-user-id',
-    from_story: 'Érase una vez una niña...',
-    target_story: '',
+    from_text: 'Érase una vez una niña...',
+    to_text: '',
     from_language_id: 1,
-    target_language_id: 2,
+    to_language_id: 2,
     difficulty_level_id: 2,
     title: 'Little Red Riding Hood',
     notes:
@@ -201,7 +201,7 @@ export const mockSampleStories: DatabaseSavedTranslationWithDetails[] = [
       native_name: 'Español' as const,
       created_at: '2020-01-01T00:00:00Z',
     },
-    target_language: {
+    to_language: {
       id: 2,
       code: 'en' as LanguageCode,
       name: 'English' as const,

@@ -29,7 +29,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
    * Search for a word in the dictionary
    */
   async searchWord(params: DictionarySearchParams): DictionaryResponsePromise {
-    const { word, targetLanguage = 'en' } = params;
+    const { word, fromLanguage = 'en' } = params;
 
     if (!this.isOnline) {
       throw createDictionaryError(
@@ -49,7 +49,7 @@ export class LexicalaApiClient implements DictionaryApiClient {
       // Lexicala API endpoint format: /search-entries?text=word&language=en
       const searchParams = new URLSearchParams({
         text: word.trim(),
-        language: targetLanguage,
+        language: fromLanguage,
       });
       const url = `${this.baseUrl}/search-entries?${searchParams.toString()}`;
       const response = await this.makeRequest(url);

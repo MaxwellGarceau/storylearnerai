@@ -5,7 +5,7 @@ import { Settings, Upload } from 'lucide-react';
 import { useLanguages } from '../../hooks/useLanguages';
 import { validateStoryText } from '../../lib/utils/sanitization';
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
-import { useVocabulary } from '../../hooks/useVocabulary';
+import { useVocabularyContext } from '../../contexts/VocabularyContext';
 import type { VoidFunction } from '../../types/common';
 import { useTranslation } from 'react-i18next';
 import PDFUploadModal from './PDFUploadModal';
@@ -45,7 +45,7 @@ const FullPageStoryInput: React.FC<FullPageStoryInputProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
   const { getLanguageName } = useLanguages();
   const { t } = useTranslation();
-  const { vocabulary, loading: vocabLoading } = useVocabulary();
+  const { vocabulary, loading: vocabLoading } = useVocabularyContext();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const rawValue = event.target.value;

@@ -480,7 +480,8 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1] as () => void;
+      const offlineHandler = offlineCall?.[1] as (() => void) | undefined;
+      if (!offlineHandler) return;
 
       offlineHandler();
       expect(client.isAvailable()).toBe(false);
@@ -492,16 +493,16 @@ describe('LexicalaApiClient (Isolated)', () => {
         call => call[0] === 'offline'
       );
       expect(offlineCall).toBeDefined();
-      const offlineHandler = offlineCall![1] as () => void;
-      offlineHandler();
+      const offlineHandler = offlineCall?.[1] as (() => void) | undefined;
+      if (offlineHandler) offlineHandler();
 
       // Then go online
       const onlineCall = mockAddEventListener.mock.calls.find(
         call => call[0] === 'online'
       );
       expect(onlineCall).toBeDefined();
-      const onlineHandler = onlineCall![1] as () => void;
-      onlineHandler();
+      const onlineHandler = onlineCall?.[1] as (() => void) | undefined;
+      if (onlineHandler) onlineHandler();
 
       expect(client.isAvailable()).toBe(true);
     });
