@@ -1,5 +1,7 @@
 As a demonstration of my skills in building modern web applications, I’d like to highlight several key areas within my StoryLearnerAI project.
 
+_For a comprehensive visual demonstration of the application in action, please see the [main README](https://github.com/MaxwellGarceau/storylearnerai/blob/main/README.md) which includes a video walkthrough showcasing the app's features and user experience._
+
 ### TypeScript
 
 I prioritize writing strongly-typed, maintainable code, and I believe my approach to TypeScript reflects that. I've established a comprehensive set of type definitions that not only model the application's data structures but also define clear contracts for different layers of the application.
