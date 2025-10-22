@@ -58,7 +58,7 @@
 
 - When saving a word from interactive text, the app now captures the entire sentence from both sides and persists them as `from_word_context` and `target_word_context`.
 - The sentence boundaries are determined by scanning tokens until punctuation (`.`, `!`, `?`).
-- Logic lives in `src/components/text/WordMenu.tsx`, which builds sentence strings from the token stream and passes them to `VocabularySaveButton` as `fromContext` and `targetContext`.
+- Logic is encapsulated in the hook `src/hooks/interactiveText/useTokenSentenceContexts.ts`, used by `src/components/text/WordMenu.tsx` to pass `fromContext` and `targetContext` to `VocabularySaveButton`.
 
 ### Saved Translation Linking
 
