@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 /**
  * Hook for extracting sentence context from a word position.
- * 
+ *
  * NOTE: "Context" here refers to the surrounding text/sentence context, NOT React Context.
  * This hook finds sentence boundaries and extracts the full sentence containing a word.
  */

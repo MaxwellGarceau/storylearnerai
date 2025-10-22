@@ -10,7 +10,7 @@ export interface TokenSentenceContexts {
 /**
  * Derives full-sentence contexts for a token position on both from/to sides.
  * Uses punctuation tokens (., !, ?) as sentence boundaries.
- * 
+ *
  * NOTE: "Context" here refers to the surrounding text/sentence context, NOT React Context.
  * This hook extracts the full sentence containing a word for vocabulary saving purposes.
  */
@@ -21,14 +21,18 @@ export function useTokenSentenceContexts(
   const fromSideTokens: string[] = useMemo(
     () =>
       tokens.map(token =>
-        token.type === 'word' ? token.from_word : (token as { value: string }).value
+        token.type === 'word'
+          ? token.from_word
+          : (token as { value: string }).value
       ),
     [tokens]
   );
   const toSideTokens: string[] = useMemo(
     () =>
       tokens.map(token =>
-        token.type === 'word' ? token.to_word : (token as { value: string }).value
+        token.type === 'word'
+          ? token.to_word
+          : (token as { value: string }).value
       ),
     [tokens]
   );
@@ -55,5 +59,3 @@ export function useTokenSentenceContexts(
 
   return { fromSentence, targetSentence };
 }
-
-
