@@ -48,3 +48,34 @@ I believe that a strong testing culture is essential for building reliable softw
 *   **Component Test: [src/components/story/__tests__/StoryContainer.test.tsx](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/components/story/__tests__/StoryContainer.test.tsx)**: This test file demonstrates how I test complex components by simulating user interactions, mocking dependencies, and asserting on the component's output in various states (loading, success, error).
 *   **Hook Test: [src/hooks/__tests__/useDictionary.test.tsx](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/hooks/__tests__/useDictionary.test.tsx)**: Here, I've used `@testing-library/react`'s `renderHook` utility to test my custom hook in isolation. This includes testing advanced asynchronous logic and edge cases, such as handling race conditions.
 *   **Service Test: [src/api/supabase/database/__tests__/savedTranslationService.test.ts](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/api/supabase/database/__tests__/savedTranslationService.test.ts)**: This file shows how I unit test the data access layer. I've created detailed mocks of the database client to isolate the service and test its logic, including input validation and error handling, without making actual database calls.
+
+### LLM Integration & AI Features
+
+The application leverages Large Language Models (LLMs) to provide intelligent translation and language learning features. I've built a robust, extensible LLM system that demonstrates advanced integration patterns and error handling.
+
+#### LLM Service Architecture
+
+I've implemented a comprehensive LLM service system with a clean, provider-agnostic architecture:
+
+*   **[src/lib/llm/LLMService.ts](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/llm/LLMService.ts)**: This abstract base class defines the contract for all LLM providers, ensuring consistent interfaces across different AI services. It includes error handling, response processing, and provider metadata management.
+*   **[src/lib/llm/LLMServiceManager.ts](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/llm/LLMServiceManager.ts)**: A singleton service manager that handles provider initialization, configuration management, and request routing. This pattern allows for easy provider switching and centralized configuration.
+*   **[src/lib/llm/providers/GeminiService.ts](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/llm/providers/GeminiService.ts)**: A concrete implementation for Google Gemini, showcasing integration with the official Google GenAI SDK. It includes comprehensive error handling, token usage tracking, and response validation.
+
+#### Advanced Translation Features
+
+The LLM integration powers sophisticated translation capabilities with structured output and fallback mechanisms:
+
+*   **[src/lib/llm/translationServiceIntegration.ts](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/llm/translationServiceIntegration.ts)**: This integration layer handles the complex process of requesting translations from LLMs, validating structured responses, and implementing fallback strategies when validation fails. It demonstrates advanced error handling and graceful degradation.
+*   **[src/lib/prompts/config/general.json](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/prompts/config/general.json)**: A sophisticated prompt configuration system that provides detailed instructions to the LLM for maintaining story quality, cultural context, and proper JSON formatting.
+*   **[src/lib/prompts/config/to-language.json](https://github.com/MaxwellGarceau/storylearnerai/blob/main/src/lib/prompts/config/to-language.json)**: CEFR-based difficulty configuration that dynamically adjusts vocabulary complexity, grammar structures, and cultural references based on the target language proficiency level (A1-B2).
+
+#### Intelligent Content Processing
+
+The system includes advanced features for processing and validating LLM responses:
+
+*   **Token Validation**: Implements robust validation of structured LLM responses with detailed error reporting and warning systems
+*   **Fallback Generation**: When structured responses fail validation, the system automatically generates fallback tokens to ensure the application remains functional
+*   **Performance Monitoring**: Comprehensive logging and timing for LLM requests, including token usage tracking and response analysis
+*   **Provider Flexibility**: Built with extensibility in mind, allowing easy addition of new LLM providers (OpenAI, Anthropic, etc.) without changing the core application logic
+
+This LLM integration demonstrates my ability to work with cutting-edge AI technologies while maintaining code quality, error handling, and system reliability. The architecture showcases advanced patterns like the Factory pattern, Singleton pattern, and comprehensive error handling strategies.
