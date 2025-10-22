@@ -174,9 +174,8 @@ vi.mock('../../../hooks/useSavedTranslations', () => ({
     loading: useSavedTranslationsMock.loading,
     error: useSavedTranslationsMock.error,
     deleteSavedTranslation: vi.fn().mockResolvedValue(true),
-    loadTranslationWithTokens: vi
-      .fn()
-      .mockImplementation(async (id: number) => ({
+    loadTranslationWithTokens: vi.fn().mockImplementation((id: number) =>
+      Promise.resolve({
         id,
         from_text: 'Hola mundo',
         to_text: 'Hello world',
@@ -192,7 +191,8 @@ vi.mock('../../../hooks/useSavedTranslations', () => ({
         notes: 'Some helpful notes',
         created_at: '2024-01-01T00:00:00.000Z',
         updated_at: '2024-01-01T00:00:00.000Z',
-      })),
+      })
+    ),
   }),
 }));
 

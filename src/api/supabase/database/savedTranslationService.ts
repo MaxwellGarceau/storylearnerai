@@ -13,6 +13,7 @@ import type { VoidPromise } from '../../../types/common';
 import { LanguageService } from './languageService';
 import { DifficultyLevelService } from './difficultyLevelService';
 import { logger } from '@/lib/logger';
+import type { NullableString } from '../../../types/common';
 
 interface ValidationError {
   field: string;
@@ -179,14 +180,14 @@ export class SavedTranslationService {
     // 2) Load ordered tokens
     type TokenRow = {
       token_type: 'word' | 'punctuation' | 'whitespace';
-      to_word: string | null;
-      to_lemma: string | null;
-      from_word: string | null;
-      from_lemma: string | null;
-      pos: string | null;
-      difficulty: string | null;
-      from_definition: string | null;
-      token_value: string | null;
+      to_word: NullableString;
+      to_lemma: NullableString;
+      from_word: NullableString;
+      from_lemma: NullableString;
+      pos: NullableString;
+      difficulty: NullableString;
+      from_definition: NullableString;
+      token_value: NullableString;
     };
 
     const tokensResult = await supabase

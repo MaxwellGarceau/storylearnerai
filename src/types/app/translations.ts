@@ -1,8 +1,10 @@
 import type { LanguageCode, DifficultyLevel } from '../../types/llm/prompts';
+import type { TokenType } from '../../types/llm/tokens';
 import type {
   DatabaseDifficultyLevel,
   DatabaseLanguage,
 } from '../../types/database';
+import type { NullableString } from '../../types/common';
 
 // DB input types for saving tokens alongside a translation
 export type WordTokenInput = {
@@ -16,8 +18,10 @@ export type WordTokenInput = {
   from_definition?: string;
 };
 
+type NonWordTokenType = Extract<TokenType, 'punctuation' | 'whitespace'>;
+
 export type PunctuationOrWhitespaceTokenInput = {
-  type: 'punctuation' | 'whitespace';
+  type: NonWordTokenType;
   value: string;
 };
 
@@ -50,7 +54,7 @@ export type LoadedWordToken = {
 };
 
 export type LoadedNonWordToken = {
-  type: 'punctuation' | 'whitespace';
+  type: NonWordTokenType;
   value: string;
 };
 
@@ -64,8 +68,8 @@ export interface LoadedTranslation {
   from_text: string;
   to_text: string;
   difficulty_level_id: number;
-  title?: string | null;
-  notes?: string | null;
+  title?: NullableString;
+  notes?: NullableString;
   created_at: string;
   updated_at: string;
   tokens: LoadedTranslationToken[];
