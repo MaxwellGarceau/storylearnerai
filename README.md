@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/98020bd1-0614-49dd-9f30-d9dbd2070ecd
 - **UI Components**: ShadCN, Radix UI, Tailwind CSS
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
-- **LLM Integration**: OpenAI, Anthropic, Google Gemini, Llama
+- **LLM Integration**: Google Gemini
 - **Testing**: Vitest, React Testing Library
 - **Linting**: ESLint
 
