@@ -13,6 +13,8 @@ import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useLanguageSettings } from '../../hooks/useLanguageFilter';
+import { useStoryContext } from '../../contexts/StoryContext';
+import { useTokenSentenceContexts } from '../../hooks/interactiveText/useTokenSentenceContexts';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -41,10 +43,18 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
   const { fromLanguage, targetLanguage } = useLanguageSettings();
+  const { translationData } = useStoryContext();
 
   // Get language IDs for the VocabularySaveButton using actual language codes
   const fromLanguageId = getLanguageIdByCode(fromLanguage);
   const targetLanguageId = getLanguageIdByCode(targetLanguage);
+
+  // Derive full-sentence contexts from tokens for the current position
+  const tokens = translationData.tokens ?? [];
+  const { fromSentence, targetSentence } = useTokenSentenceContexts(
+    tokens,
+    position
+  );
 
   // Search for word info when dictionary is shown - only if we have a lemma
   const wordForDictionary = metadata.from_lemma;
@@ -149,8 +159,8 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                       <VocabularySaveButton
                         fromWord={metadata.from_word}
                         targetWord={metadata.to_word}
-                        fromContext={''} // Will be provided by context
-                        targetContext={''} // Will be provided by context
+                        fromContext={fromSentence}
+                        targetContext={targetSentence}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
                         partOfSpeech={metadata.pos ?? undefined}
@@ -182,8 +192,8 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                     <VocabularySaveButton
                       fromWord={metadata.from_word}
                       targetWord={metadata.to_word}
-                      fromContext={''} // Will be provided by context
-                      targetContext={''} // Will be provided by context
+                      fromContext={fromSentence}
+                      targetContext={targetSentence}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       partOfSpeech={undefined}
