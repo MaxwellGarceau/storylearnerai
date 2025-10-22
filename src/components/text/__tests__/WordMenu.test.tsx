@@ -2,6 +2,7 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import WordMenu from '../WordMenu';
 import type { VoidFunction } from '../../../types/common';
+import type { LanguageCode } from '../../../types/llm/prompts';
 import * as useAuthModule from '../../../hooks/useAuth';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -141,6 +142,45 @@ vi.mock('../../ui/Popover', () => ({
       {children}
     </div>
   ),
+}));
+
+// Mock StoryContext for sentence context extraction
+vi.mock('../../../contexts/StoryContext', () => ({
+  useStoryContext: () => ({
+    fromLanguage: 'en' as LanguageCode,
+    targetLanguage: 'es' as LanguageCode,
+    translationData: {
+      fromLanguage: 'en' as LanguageCode,
+      toLanguage: 'es' as LanguageCode,
+      includedVocabulary: [],
+      tokens: [
+        {
+          type: 'word' as const,
+          from_word: 'hello',
+          from_lemma: 'hello',
+          to_word: 'hola',
+          to_lemma: 'hola',
+          pos: 'interjection',
+          difficulty: 'a1',
+          from_definition: 'A greeting',
+        },
+        { type: 'punctuation' as const, value: '.' },
+        { type: 'whitespace' as const, value: ' ' },
+        {
+          type: 'word' as const,
+          from_word: 'world',
+          from_lemma: 'world',
+          to_word: 'mundo',
+          to_lemma: 'mundo',
+          pos: 'noun',
+          difficulty: 'a1',
+          from_definition: 'The earth',
+        },
+        { type: 'punctuation' as const, value: '!' },
+      ],
+    },
+    isDisplayingFromSide: true,
+  }),
 }));
 
 // Mock the Button component

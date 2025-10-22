@@ -54,6 +54,12 @@
 - Implementation is in `src/components/vocabulary/buttons/VocabularySaveButton.tsx`.
 - The save flow uses `useVocabulary().saveVocabularyWord` which handles user checks, toasts, and refresh.
 
+### Full-Sentence Context Saving
+
+- When saving a word from interactive text, the app now captures the entire sentence from both sides and persists them as `from_word_context` and `target_word_context`.
+- The sentence boundaries are determined by scanning tokens until punctuation (`.`, `!`, `?`).
+- Logic lives in `src/components/text/WordMenu.tsx`, which builds sentence strings from the token stream and passes them to `VocabularySaveButton` as `fromContext` and `targetContext`.
+
 ### Saved Translation Linking
 
 - When a user saves a word while reading a saved story, the `saved_translation_id` of that story is persisted with the vocabulary record.

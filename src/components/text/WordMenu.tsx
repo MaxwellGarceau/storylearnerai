@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
@@ -13,6 +13,8 @@ import { AuthPrompt } from '../ui/AuthPrompt';
 import { useLocalization } from '../../hooks/useLocalization';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useLanguageSettings } from '../../hooks/useLanguageFilter';
+import { useStoryContext } from '../../contexts/StoryContext';
+import { useSentenceContext } from '../../hooks/interactiveText/useSentenceContext';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -41,10 +43,48 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
   const { wordInfo, isLoading, error, searchWord } = useDictionary();
   const { getLanguageIdByCode } = useLanguages();
   const { fromLanguage, targetLanguage } = useLanguageSettings();
+  const { translationData } = useStoryContext();
 
   // Get language IDs for the VocabularySaveButton using actual language codes
   const fromLanguageId = getLanguageIdByCode(fromLanguage);
   const targetLanguageId = getLanguageIdByCode(targetLanguage);
+
+  // Build token strings for each side to extract full sentence context
+  const tokens = translationData.tokens ?? [];
+  const fromSideTokens: string[] = useMemo(
+    () =>
+      tokens.map(token =>
+        token.type === 'word' ? token.from_word : (token as { value: string }).value
+      ),
+    [tokens]
+  );
+  const toSideTokens: string[] = useMemo(
+    () =>
+      tokens.map(token =>
+        token.type === 'word' ? token.to_word : (token as { value: string }).value
+      ),
+    [tokens]
+  );
+
+  const { extractSentenceContext: extractFromSentence } =
+    useSentenceContext(fromSideTokens);
+  const { extractSentenceContext: extractToSentence } =
+    useSentenceContext(toSideTokens);
+
+  const fromSentence = useMemo(
+    () =>
+      position !== undefined && tokens.length > 0
+        ? extractFromSentence(position)
+        : '',
+    [position, tokens.length, extractFromSentence]
+  );
+  const targetSentence = useMemo(
+    () =>
+      position !== undefined && tokens.length > 0
+        ? extractToSentence(position)
+        : '',
+    [position, tokens.length, extractToSentence]
+  );
 
   // Search for word info when dictionary is shown - only if we have a lemma
   const wordForDictionary = metadata.from_lemma;
@@ -149,8 +189,8 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                       <VocabularySaveButton
                         fromWord={metadata.from_word}
                         targetWord={metadata.to_word}
-                        fromContext={''} // Will be provided by context
-                        targetContext={''} // Will be provided by context
+                        fromContext={fromSentence}
+                        targetContext={targetSentence}
                         fromLanguageId={fromLanguageId}
                         targetLanguageId={targetLanguageId}
                         partOfSpeech={metadata.pos ?? undefined}
@@ -182,8 +222,8 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                     <VocabularySaveButton
                       fromWord={metadata.from_word}
                       targetWord={metadata.to_word}
-                      fromContext={''} // Will be provided by context
-                      targetContext={''} // Will be provided by context
+                      fromContext={fromSentence}
+                      targetContext={targetSentence}
                       fromLanguageId={fromLanguageId}
                       targetLanguageId={targetLanguageId}
                       partOfSpeech={undefined}
