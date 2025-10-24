@@ -6,8 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
 import { useLanguages } from '../hooks/useLanguages';
-import StorySidebar from '../components/sidebar/story/StorySidebar';
-import GrammarSidebar from '../components/sidebar/grammar/GrammarSidebar';
+import SidebarContainer from '../components/sidebar/SidebarContainer';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
@@ -103,9 +102,6 @@ const StoryReaderPage: React.FC = () => {
   const handleGoHome = () => {
     void navigate('/');
   };
-
-  const [storyOpen, setStoryOpen] = useState(false);
-  const [grammarOpen, setGrammarOpen] = useState(false);
 
   // Loading state when fetching by id
   if (!translationData && urlSavedTranslationId && loadingById) {
@@ -210,25 +206,7 @@ const StoryReaderPage: React.FC = () => {
       </div>
 
       {/* Combined Sidebars */}
-      <StorySidebar
-        translationData={finalTranslationData}
-        isOpen={storyOpen}
-        onOpen={() => {
-          setGrammarOpen(false);
-          setStoryOpen(true);
-        }}
-        hideToggle={grammarOpen}
-        onRequestClose={() => setStoryOpen(false)}
-      />
-      <GrammarSidebar
-        isOpen={grammarOpen}
-        onOpen={() => {
-          setStoryOpen(false);
-          setGrammarOpen(true);
-        }}
-        hideToggle={storyOpen}
-        onRequestClose={() => setGrammarOpen(false)}
-      />
+      <SidebarContainer translationData={finalTranslationData} />
     </div>
   );
 };
