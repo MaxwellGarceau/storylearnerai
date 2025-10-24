@@ -9,7 +9,7 @@ import {
   mockTranslationDataNoVocabulary,
   mockTranslationDataAllIncluded,
   mockT,
-} from './sidebarMocks';
+} from '../../__tests__/sidebarMocks';
 import type { DifficultyLevel, LanguageCode } from '../../../types/llm/prompts';
 
 // Setup mocks before tests

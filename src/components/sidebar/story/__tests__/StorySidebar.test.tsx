@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import StorySidebar from '../story/StorySidebar';
+import StorySidebar from '../StorySidebar';
 vi.mock('../../../hooks/useLanguageFilter', () => ({
   useLanguageFilter: () => ({
     fromLanguage: 'es',
@@ -28,7 +28,7 @@ import {
   mockUseSavedTranslations,
   mockUseAuth,
   mockTranslationService,
-} from './sidebarMocks';
+} from '../../__tests__/sidebarMocks';
 
 // Setup mocks before tests
 setupSidebarMocks();
