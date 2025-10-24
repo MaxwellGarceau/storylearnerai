@@ -1,5 +1,5 @@
 import React from 'react';
-import { VocabularySidebar } from '../vocabulary/sidebar/VocabularySidebar';
+import { VocabularySidebar } from '../../vocabulary/sidebar/VocabularySidebar';
 
 interface VocabularySectionProps {
   currentLanguageId: number | undefined;

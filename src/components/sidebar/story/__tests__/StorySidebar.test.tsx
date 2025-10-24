@@ -2,19 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import { LanguageFilterProvider } from '../../../../hooks/useLanguageFilter';
+
 import StorySidebar from '../StorySidebar';
-vi.mock('../../../hooks/useLanguageFilter', () => ({
-  useLanguageFilter: () => ({
-    fromLanguage: 'es',
-    targetLanguage: 'en',
-    setTargetLanguage: vi.fn(),
-    availableTargetLanguages: [{ code: 'en', name: 'English' }],
-  }),
-  useLanguageSettings: () => ({
-    fromLanguage: 'es',
-    targetLanguage: 'en',
-  }),
-}));
 import {
   setupSidebarMocks,
   resetSidebarMocks,
@@ -28,7 +18,7 @@ import {
   mockUseSavedTranslations,
   mockUseAuth,
   mockTranslationService,
-} from './sidebarMocks';
+} from '../../__tests__/sidebarMocks';
 
 // Setup mocks before tests
 setupSidebarMocks();
@@ -39,7 +29,11 @@ describe('StorySidebar Component', () => {
   };
 
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
+    return render(
+      <LanguageFilterProvider>
+        <BrowserRouter>{component}</BrowserRouter>
+      </LanguageFilterProvider>
+    );
   };
 
   beforeEach(() => {
@@ -79,7 +73,7 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+    expect(screen.getAllByText('storySidebar.storyLibrary')).toHaveLength(2);
     expect(screen.getByText('storySidebar.stories')).toBeInTheDocument();
   });
 
@@ -88,9 +82,8 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    const sidebar = screen
-      .getByText('storySidebar.storyLibrary')
-      .closest('.fixed');
+    // Find the actual sidebar element (not the toggle button)
+    const sidebar = document.querySelector('.fixed.top-16.left-0.z-40');
     expect(sidebar).toHaveClass('fixed', 'top-16', 'left-0', 'z-40');
     expect(sidebar).toHaveClass('w-80', 'max-w-[calc(100vw-16px)]');
     expect(sidebar).toHaveClass('bg-background', 'border-r', 'shadow-lg');
@@ -117,7 +110,7 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+    expect(screen.getAllByText('storySidebar.storyLibrary')).toHaveLength(2);
   });
 
   it('displays stories section by default', () => {
@@ -176,8 +169,8 @@ describe('StorySidebar Component', () => {
 
     renderWithRouter(<StorySidebar {...defaultProps} />);
 
-    expect(screen.getByText('Los tres cerditos')).toBeInTheDocument();
-    expect(screen.getByText('Caperucita Roja')).toBeInTheDocument();
+    expect(screen.getByText('The Three Little Pigs')).toBeInTheDocument();
+    expect(screen.getByText('Little Red Riding Hood')).toBeInTheDocument();
   });
 
   it('shows vocabulary section when vocabulary button is clicked', () => {
@@ -239,7 +232,7 @@ describe('StorySidebar Component', () => {
       renderWithRouter(<StorySidebar {...defaultProps} />);
 
       // Sidebar should be open
-      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+      expect(screen.getAllByText('storySidebar.storyLibrary')).toHaveLength(2);
 
       // Vocabulary section should be active - check that the button exists and is clickable
       const vocabularyButton = screen.getByRole('button', {
@@ -283,7 +276,7 @@ describe('StorySidebar Component', () => {
       renderWithRouter(<StorySidebar {...defaultProps} />);
 
       // Sidebar should be open due to hash
-      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+      expect(screen.getAllByText('storySidebar.storyLibrary')).toHaveLength(2);
 
       // Vocabulary section should be active - check that the button exists
       const vocabularyButton = screen.getByRole('button', {
@@ -329,7 +322,7 @@ describe('StorySidebar Component', () => {
       renderWithRouter(<StorySidebar {...defaultProps} />);
 
       // Should still work regardless of other location properties
-      expect(screen.getByText('storySidebar.storyLibrary')).toBeInTheDocument();
+      expect(screen.getAllByText('storySidebar.storyLibrary')).toHaveLength(2);
 
       const vocabularyButton = screen.getByRole('button', {
         name: 'storySidebar.vocabulary',

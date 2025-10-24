@@ -1,31 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import savedStoriesData from '../../data/savedStoriesEsToEn.json';
-import savedStoriesEnToEsData from '../../data/savedStoriesEnToEs.json';
+import savedStoriesData from '../../../data/savedStoriesEsToEn.json';
+import savedStoriesEnToEsData from '../../../data/savedStoriesEnToEs.json';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { translationService } from '../../lib/translationService';
-import type { DifficultyLevel } from '../../types/llm/prompts';
-import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
-import { useLanguages } from '../../hooks/useLanguages';
-import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { useAuth } from '../../hooks/useAuth';
-import { logger } from '../../lib/logger';
+import { translationService } from '../../../lib/translationService';
+import type { DifficultyLevel } from '../../../types/llm/prompts';
+import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
+import { useLanguages } from '../../../hooks/useLanguages';
+import { useSavedTranslations } from '../../../hooks/useSavedTranslations';
+import { useAuth } from '../../../hooks/useAuth';
+import { logger } from '../../../lib/logger';
 import { useTranslation } from 'react-i18next';
-import { useLanguageFilter } from '../../hooks/useLanguageFilter';
-import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
-import { Button } from '../ui/Button';
+import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
+import { TokenConverter } from '../../../lib/llm/tokens/tokenConverter';
+import { Button } from '../../ui/Button';
 import { BookOpen, BookMarked, Settings } from 'lucide-react';
 
-import BaseSidebar from './base/BaseSidebar';
-import BaseSidebarHeader from './base/BaseSidebarHeader';
-import StoriesSection from './story/StoriesSection';
-import VocabularySection from './story/VocabularySection';
-import InfoSection from './story/InfoSection';
-import NoTranslationDataMessage from './story/NoTranslationDataMessage';
-import type { TranslationResponse } from '../../lib/translationService';
+import BaseSidebar from '../base/BaseSidebar';
+import BaseSidebarHeader from '../base/BaseSidebarHeader';
+import StoriesSection from './StoriesSection';
+import VocabularySection from './VocabularySection';
+import InfoSection from './InfoSection';
+import type { TranslationResponse } from '../../../lib/translationService';
 
 interface StorySidebarProps {
   className?: string;
   translationData?: TranslationResponse;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  hideToggle?: boolean;
+  onRequestClose?: () => void;
 }
 
 type ActiveSection = 'stories' | 'vocabulary' | 'info';
@@ -33,6 +36,10 @@ type ActiveSection = 'stories' | 'vocabulary' | 'info';
 const StorySidebar: React.FC<StorySidebarProps> = ({
   className,
   translationData,
+  isOpen: controlledIsOpen,
+  onOpen: controlledOnOpen,
+  hideToggle,
+  onRequestClose,
 }) => {
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
   const {
@@ -55,13 +62,13 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
 
   const [activeSection, setActiveSection] = useState<ActiveSection>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
 
   // Allow deep-linking to the vocabulary tab via URL hash
   useEffect(() => {
     if (location.hash === '#vocabulary') {
       setActiveSection('vocabulary');
-      setIsOpen(true);
+      setInternalIsOpen(true);
     }
   }, [location]);
 
@@ -186,7 +193,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     <BaseSidebarHeader
       title={t('storySidebar.storyLibrary')}
       icon={<BookOpen className='w-5 h-5 text-primary' />}
-      onClose={() => setIsOpen(false)}
+      onClose={() =>
+        onRequestClose ? onRequestClose() : setInternalIsOpen(false)
+      }
       t={t}
     >
       <div className='flex gap-1 flex-wrap items-center'>
@@ -233,8 +242,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       className={className}
       header={header}
       footerText={footerText}
-      isOpen={isOpen}
-      onOpen={() => setIsOpen(true)}
+      isOpen={controlledIsOpen ?? internalIsOpen}
+      onOpen={controlledOnOpen ?? (() => setInternalIsOpen(true))}
+      hideToggle={hideToggle}
     >
       {activeSection === 'stories' && (
         <StoriesSection
@@ -275,11 +285,19 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       )}
 
       {activeSection === 'vocabulary' && !translationData && (
-        <NoTranslationDataMessage />
+        <div className='p-4 text-center'>
+          <p className='text-muted-foreground'>
+            {t('storySidebar.noTranslationData')}
+          </p>
+        </div>
       )}
 
       {activeSection === 'info' && !translationData && (
-        <NoTranslationDataMessage />
+        <div className='p-4 text-center'>
+          <p className='text-muted-foreground'>
+            {t('storySidebar.noTranslationData')}
+          </p>
+        </div>
       )}
     </BaseSidebar>
   );

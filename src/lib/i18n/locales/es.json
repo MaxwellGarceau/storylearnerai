@@ -182,6 +182,10 @@
       "viewDashboard": "Ver Panel"
     }
   },
+  "grammarSidebar": {
+    "title": "Gramática",
+    "footer": "Herramientas de gramática próximamente."
+  },
   "storyReader": {
     "noStory": {
       "title": "No se Encontró Historia",
