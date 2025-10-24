@@ -1,16 +1,16 @@
 import React from 'react';
-import { Button } from '../ui/Button';
+import { Button } from '../../ui/Button';
 import { X, Globe } from 'lucide-react';
 import type { TFunction } from 'i18next';
-import { useLanguageFilter } from '../../hooks/useLanguageFilter';
-import { useLanguages } from '../../hooks/useLanguages';
+import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
+import { useLanguages } from '../../../hooks/useLanguages';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/Select';
+} from '../../ui/Select';
 
 interface BaseSidebarHeaderProps {
   title: string;
@@ -42,9 +42,7 @@ const BaseSidebarHeader: React.FC<BaseSidebarHeaderProps> = ({
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           {icon}
-          <h2 className='text-lg font-semibold'>
-            {title}
-          </h2>
+          <h2 className='text-lg font-semibold'>{title}</h2>
         </div>
         <Button
           variant='ghost'
@@ -62,9 +60,7 @@ const BaseSidebarHeader: React.FC<BaseSidebarHeaderProps> = ({
         <div className='mt-3 flex items-center justify-between'>
           <Select
             value={targetLanguage}
-            onValueChange={(val: string) =>
-              setTargetLanguage(val as any)
-            }
+            onValueChange={(val: string) => setTargetLanguage(val as any)}
           >
             <SelectTrigger className='w-[160px] h-8'>
               <Globe className='h-4 w-4 mr-2' />
@@ -100,11 +96,7 @@ const BaseSidebarHeader: React.FC<BaseSidebarHeaderProps> = ({
       )}
 
       {/* Custom section buttons or children */}
-      {children && (
-        <div className='mt-3'>
-          {children}
-        </div>
-      )}
+      {children && <div className='mt-3'>{children}</div>}
     </div>
   );
 };

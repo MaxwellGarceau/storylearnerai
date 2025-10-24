@@ -10,15 +10,15 @@ interface SidebarToggleProps {
   customIcon?: React.ReactNode;
 }
 
-const SidebarToggle: React.FC<SidebarToggleProps> = ({ 
-  onOpen, 
-  t, 
-  customText, 
-  customIcon 
+const SidebarToggle: React.FC<SidebarToggleProps> = ({
+  onOpen,
+  t,
+  customText,
+  customIcon,
 }) => {
   const defaultText = t('storySidebar.storyLibrary');
   const defaultIcon = <BookOpen className='w-4 h-4' />;
-  
+
   return (
     <div className='fixed top-20 left-4 z-50'>
       <Button
@@ -28,10 +28,8 @@ const SidebarToggle: React.FC<SidebarToggleProps> = ({
         className='inline-flex items-center gap-2 shadow-lg bg-background/80 backdrop-blur-sm'
         aria-label={t('storySidebar.openLibrary')}
       >
-        {customIcon || defaultIcon}
-        <span className='hidden sm:inline'>
-          {customText || defaultText}
-        </span>
+        {customIcon ?? defaultIcon}
+        <span className='hidden sm:inline'>{customText ?? defaultText}</span>
       </Button>
     </div>
   );

@@ -15,8 +15,7 @@ import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
 import { Button } from '../ui/Button';
 import { BookOpen, BookMarked, Settings } from 'lucide-react';
 
-import BaseSidebar from './BaseSidebar';
-import BaseSidebarHeader from './BaseSidebarHeader';
+import { BaseSidebar, BaseSidebarHeader } from './base';
 import StoriesSection from './StoriesSection';
 import VocabularySection from './VocabularySection';
 import InfoSection from './InfoSection';

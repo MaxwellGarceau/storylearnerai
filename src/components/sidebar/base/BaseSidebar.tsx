@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { cn } from '../../lib/utils';
-import { useViewport } from '../../hooks/useViewport';
-import { logger } from '../../lib/logger';
+import { cn } from '../../../lib/utils';
+import { useViewport } from '../../../hooks/useViewport';
+import { logger } from '../../../lib/logger';
 import { useTranslation } from 'react-i18next';
-import SidebarToggle from './SidebarToggle';
+import SidebarToggle from '../SidebarToggle';
 
 interface BaseSidebarProps {
   className?: string;
@@ -45,10 +45,10 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   };
 
   const [internalIsOpen, setInternalIsOpen] = useState(getInitialSidebarState);
-  
+
   // Use external state if provided, otherwise use internal state
-  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
-  const setIsOpen = externalOnOpen ? externalOnOpen : setInternalIsOpen;
+  const isOpen = externalIsOpen ?? internalIsOpen;
+  const setIsOpen = externalOnOpen ?? setInternalIsOpen;
 
   useEffect(() => {
     try {
@@ -70,8 +70,8 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   return (
     <>
       {!isOpen && (
-        <SidebarToggle 
-          onOpen={() => setIsOpen(true)} 
+        <SidebarToggle
+          onOpen={() => setIsOpen(true)}
           t={t}
           customText={toggleButtonText}
           customIcon={toggleButtonIcon}
@@ -92,9 +92,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
         <div className='h-full flex flex-col'>
           {header}
 
-          <div className='flex-1 overflow-y-auto'>
-            {children}
-          </div>
+          <div className='flex-1 overflow-y-auto'>{children}</div>
 
           <div className='p-4 border-t bg-muted/30'>
             <p className='text-xs text-muted-foreground text-center'>
