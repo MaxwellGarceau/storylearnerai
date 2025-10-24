@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { cn } from '../../lib/utils';
 import savedStoriesData from '../../data/savedStoriesEsToEn.json';
 import savedStoriesEnToEsData from '../../data/savedStoriesEnToEs.json';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { translationService } from '../../lib/translationService';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
-import { useViewport } from '../../hooks/useViewport';
 import { useLanguages } from '../../hooks/useLanguages';
 import { useSavedTranslations } from '../../hooks/useSavedTranslations';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,9 +12,11 @@ import { logger } from '../../lib/logger';
 import { useTranslation } from 'react-i18next';
 import { useLanguageFilter } from '../../hooks/useLanguageFilter';
 import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
+import { Button } from '../ui/Button';
+import { BookOpen, BookMarked, Settings } from 'lucide-react';
 
-import SidebarToggle from './SidebarToggle';
-import SidebarHeader from './SidebarHeader';
+import BaseSidebar from './BaseSidebar';
+import BaseSidebarHeader from './BaseSidebarHeader';
 import StoriesSection from './StoriesSection';
 import VocabularySection from './VocabularySection';
 import InfoSection from './InfoSection';
@@ -33,7 +33,6 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
   className,
   translationData,
 }) => {
-  const { isMobile } = useViewport();
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
   const {
     savedTranslations,
@@ -53,41 +52,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       : savedStoriesData.stories
   ) as DatabaseSavedTranslationWithDetails[];
 
-  const getInitialSidebarState = (): boolean => {
-    try {
-      const saved = localStorage.getItem('sidebarOpen');
-      if (saved !== null) {
-        return JSON.parse(saved) as boolean;
-      }
-      return !isMobile;
-    } catch (error) {
-      logger.warn('ui', 'Failed to read sidebar state from localStorage', {
-        error,
-      });
-      return !isMobile;
-    }
-  };
-
-  const [isOpen, setIsOpen] = useState(getInitialSidebarState);
   const [activeSection, setActiveSection] = useState<ActiveSection>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('sidebarOpen', JSON.stringify(isOpen));
-    } catch (error) {
-      logger.warn('ui', 'Failed to save sidebar state to localStorage', {
-        error,
-      });
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebarOpen');
-    if (saved === null) {
-      setIsOpen(!isMobile);
-    }
-  }, [isMobile]);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Allow deep-linking to the vocabulary tab via URL hash
   useEffect(() => {
@@ -214,6 +181,45 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     ? getLanguageIdByCode(translationData.fromLanguage)
     : undefined;
 
+  const header = (
+    <BaseSidebarHeader
+      title={t('storySidebar.storyLibrary')}
+      icon={<BookOpen className='w-5 h-5 text-primary' />}
+      onClose={() => setIsOpen(false)}
+      t={t}
+    >
+      <div className='flex gap-1 flex-wrap items-center'>
+        <Button
+          variant={activeSection === 'stories' ? 'default' : 'ghost'}
+          size='sm'
+          onClick={() => setActiveSection('stories')}
+          className='flex-1'
+        >
+          <BookOpen className='w-4 h-4 mr-2' />
+          {t('storySidebar.stories')}
+        </Button>
+        <Button
+          variant={activeSection === 'vocabulary' ? 'default' : 'ghost'}
+          size='sm'
+          onClick={() => setActiveSection('vocabulary')}
+          className='flex-1'
+        >
+          <BookMarked className='w-4 h-4 mr-2' />
+          {t('storySidebar.vocabulary')}
+        </Button>
+        <Button
+          variant={activeSection === 'info' ? 'default' : 'ghost'}
+          size='sm'
+          onClick={() => setActiveSection('info')}
+          className='flex-1'
+        >
+          <Settings className='w-4 h-4 mr-2' />
+          {t('storySidebar.info')}
+        </Button>
+      </div>
+    </BaseSidebarHeader>
+  );
+
   const footerText =
     activeSection === 'stories'
       ? t('storySidebar.demoStories')
@@ -222,92 +228,67 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
         : t('storySidebar.translationSettings');
 
   return (
-    <>
-      {!isOpen && <SidebarToggle onOpen={() => setIsOpen(true)} t={t} />}
+    <BaseSidebar
+      className={className}
+      header={header}
+      footerText={footerText}
+      isOpen={isOpen}
+      onOpen={() => setIsOpen(true)}
+    >
+      {activeSection === 'stories' && (
+        <StoriesSection
+          savedTranslations={(
+            savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
+          ).filter(s => s.to_language.code === targetLanguage)}
+          isLoadingSavedTranslations={isLoadingSavedTranslations}
+          sampleStories={sampleStories}
+          isLoadingSampleId={isLoading}
+          onOpenSavedTranslation={translation => {
+            void openSavedTranslation(translation);
+          }}
+          onOpenSampleStory={s => {
+            void handleStoryClick(s);
+          }}
+          getDifficultyColor={getDifficultyColor}
+          getDifficultyLabel={getDifficultyLabel}
+          t={t}
+          user={user}
+        />
+      )}
 
-      <div
-        className={cn(
-          'fixed top-16 left-0 z-40 w-80 max-w-[calc(100vw-16px)] h-[calc(100vh-64px)]',
-          'bg-background border-r shadow-lg transition-all duration-300',
-          'overflow-hidden',
-          isOpen
-            ? 'translate-x-0 opacity-100'
-            : '-translate-x-full opacity-0 pointer-events-none',
-          className
-        )}
-      >
-        <div className='h-full flex flex-col'>
-          <SidebarHeader
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-            onClose={() => setIsOpen(false)}
-            t={t}
-          />
+      {activeSection === 'vocabulary' && (
+        <VocabularySection
+          currentLanguageId={currentLanguageId}
+          currentFromLanguageId={currentFromLanguageId}
+        />
+      )}
 
-          <div className='flex-1 overflow-y-auto'>
-            {activeSection === 'stories' && (
-              <StoriesSection
-                savedTranslations={(
-                  savedTranslations as unknown as DatabaseSavedTranslationWithDetails[]
-                ).filter(s => s.to_language.code === targetLanguage)}
-                isLoadingSavedTranslations={isLoadingSavedTranslations}
-                sampleStories={sampleStories}
-                isLoadingSampleId={isLoading}
-                onOpenSavedTranslation={translation => {
-                  void openSavedTranslation(translation);
-                }}
-                onOpenSampleStory={s => {
-                  void handleStoryClick(s);
-                }}
-                getDifficultyColor={getDifficultyColor}
-                getDifficultyLabel={getDifficultyLabel}
-                t={t}
-                user={user}
-              />
-            )}
+      {activeSection === 'info' && translationData && (
+        <InfoSection
+          translationData={translationData}
+          getLanguageName={getLanguageName}
+          getDifficultyColor={getDifficultyColor}
+          getDifficultyLabel={getDifficultyLabel}
+          t={t}
+        />
+      )}
 
-            {activeSection === 'vocabulary' && (
-              <VocabularySection
-                currentLanguageId={currentLanguageId}
-                currentFromLanguageId={currentFromLanguageId}
-              />
-            )}
-
-            {activeSection === 'info' && translationData && (
-              <InfoSection
-                translationData={translationData}
-                getLanguageName={getLanguageName}
-                getDifficultyColor={getDifficultyColor}
-                getDifficultyLabel={getDifficultyLabel}
-                t={t}
-              />
-            )}
-
-            {activeSection === 'vocabulary' && !translationData && (
-              <div className='p-4 text-center'>
-                <p className='text-muted-foreground'>
-                  {t('storySidebar.noTranslationData')}
-                </p>
-              </div>
-            )}
-
-            {activeSection === 'info' && !translationData && (
-              <div className='p-4 text-center'>
-                <p className='text-muted-foreground'>
-                  {t('storySidebar.noTranslationData')}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className='p-4 border-t bg-muted/30'>
-            <p className='text-xs text-muted-foreground text-center'>
-              {footerText}
-            </p>
-          </div>
+      {activeSection === 'vocabulary' && !translationData && (
+        <div className='p-4 text-center'>
+          <p className='text-muted-foreground'>
+            {t('storySidebar.noTranslationData')}
+          </p>
         </div>
-      </div>
-    </>
+      )}
+
+      {activeSection === 'info' && !translationData && (
+        <div className='p-4 text-center'>
+          <p className='text-muted-foreground'>
+            {t('storySidebar.noTranslationData')}
+          </p>
+        </div>
+      )}
+    </BaseSidebar>
   );
 };
 
