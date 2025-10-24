@@ -4,7 +4,6 @@ import NoTranslationDataMessage from '../NoTranslationDataMessage';
 import {
   setupSidebarMocks,
   resetSidebarMocks,
-  mockT,
 } from '../../__tests__/sidebarMocks';
 
 // Setup mocks before tests
@@ -25,7 +24,7 @@ describe('NoTranslationDataMessage Component', () => {
     const messageContainer = screen.getByText('storySidebar.noTranslationData');
     expect(messageContainer).toBeInTheDocument();
     expect(messageContainer).toHaveClass('text-muted-foreground');
-    
+
     // Check parent container has correct classes
     const container = messageContainer.closest('div');
     expect(container).toHaveClass('p-4', 'text-center');
@@ -35,29 +34,37 @@ describe('NoTranslationDataMessage Component', () => {
     const customClassName = 'custom-class';
     render(<NoTranslationDataMessage className={customClassName} />);
 
-    const container = screen.getByText('storySidebar.noTranslationData').closest('div');
+    const container = screen
+      .getByText('storySidebar.noTranslationData')
+      .closest('div');
     expect(container).toHaveClass('p-4', 'text-center', 'custom-class');
   });
 
   it('displays the translated message text', () => {
     render(<NoTranslationDataMessage />);
 
-    // The component should display the translation key as text (since mockT returns the key)
-    expect(screen.getByText('storySidebar.noTranslationData')).toBeInTheDocument();
+    // The component should display the translation key (since mockT returns the key)
+    expect(
+      screen.getByText('storySidebar.noTranslationData')
+    ).toBeInTheDocument();
   });
 
   it('renders without custom className when not provided', () => {
     render(<NoTranslationDataMessage />);
 
-    const container = screen.getByText('storySidebar.noTranslationData').closest('div');
+    const container = screen
+      .getByText('storySidebar.noTranslationData')
+      .closest('div');
     expect(container).toHaveClass('p-4', 'text-center');
     expect(container).not.toHaveClass('custom-class');
   });
 
   it('handles empty className prop gracefully', () => {
-    render(<NoTranslationDataMessage className="" />);
+    render(<NoTranslationDataMessage className='' />);
 
-    const container = screen.getByText('storySidebar.noTranslationData').closest('div');
+    const container = screen
+      .getByText('storySidebar.noTranslationData')
+      .closest('div');
     expect(container).toHaveClass('p-4', 'text-center');
   });
 });
