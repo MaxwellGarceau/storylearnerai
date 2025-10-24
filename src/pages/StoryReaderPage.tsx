@@ -7,6 +7,7 @@ import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
 import { useLanguages } from '../hooks/useLanguages';
 import StorySidebar from '../components/sidebar/story/StorySidebar';
+import GrammarSidebar from '../components/sidebar/grammar/GrammarSidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
@@ -205,8 +206,9 @@ const StoryReaderPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Combined Sidebar */}
+      {/* Combined Sidebars */}
       <StorySidebar translationData={finalTranslationData} />
+      <GrammarSidebar />
     </div>
   );
 };

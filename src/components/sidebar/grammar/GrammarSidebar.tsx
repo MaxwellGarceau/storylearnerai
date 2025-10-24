@@ -27,6 +27,7 @@ const GrammarSidebar: React.FC<GrammarSidebarProps> = ({ className }) => {
   return (
     <BaseSidebar
       className={className}
+      children={undefined}
       header={header}
       footerText={footerText}
       isOpen={isOpen}

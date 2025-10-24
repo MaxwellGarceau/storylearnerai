@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryContainer from '../components/story/StoryContainer';
 import StorySidebar from '../components/sidebar/story/StorySidebar';
+import GrammarSidebar from '../components/sidebar/grammar/GrammarSidebar';
 import { TranslationResponse } from '../lib/translationService';
 
 const TranslatePage: React.FC = () => {
@@ -18,6 +19,7 @@ const TranslatePage: React.FC = () => {
     <div className='relative'>
       <StoryContainer onStoryTranslated={handleStoryTranslated} />
       <StorySidebar />
+      <GrammarSidebar />
     </div>
   );
 };
