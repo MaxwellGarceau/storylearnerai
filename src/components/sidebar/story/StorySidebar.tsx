@@ -193,7 +193,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     <BaseSidebarHeader
       title={t('storySidebar.storyLibrary')}
       icon={<BookOpen className='w-5 h-5 text-primary' />}
-      onClose={() => (onRequestClose ? onRequestClose() : setInternalIsOpen(false))}
+      onClose={() =>
+        onRequestClose ? onRequestClose() : setInternalIsOpen(false)
+      }
       t={t}
     >
       <div className='flex gap-1 flex-wrap items-center'>

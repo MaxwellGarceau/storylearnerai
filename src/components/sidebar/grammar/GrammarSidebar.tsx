@@ -27,7 +27,9 @@ const GrammarSidebar: React.FC<GrammarSidebarProps> = ({
     <BaseSidebarHeader
       title={t('grammarSidebar.title') || 'Grammar'}
       icon={<SpellCheck className='w-5 h-5 text-primary' />}
-      onClose={() => (onRequestClose ? onRequestClose() : setInternalIsOpen(false))}
+      onClose={() =>
+        onRequestClose ? onRequestClose() : setInternalIsOpen(false)
+      }
       t={t}
     />
   );
@@ -52,5 +54,3 @@ const GrammarSidebar: React.FC<GrammarSidebarProps> = ({
 };
 
 export default GrammarSidebar;
-
-
