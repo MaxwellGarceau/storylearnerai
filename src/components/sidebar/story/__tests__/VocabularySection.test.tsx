@@ -1,5 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
+import { LanguageFilterProvider } from '../../../../hooks/useLanguageFilter';
+
 import VocabularySection from '../VocabularySection';
 import {
   setupSidebarMocks,
@@ -12,7 +15,7 @@ type VocabularySidebarProps = {
 };
 
 // Mock without referencing outer variables to avoid hoisting/TDZ issues
-vi.mock('../../vocabulary/sidebar/VocabularySidebar', () => ({
+vi.mock('../../../vocabulary/sidebar/VocabularySidebar', () => ({
   VocabularySidebar: (props: unknown) => (
     <div data-testid='vocabulary-sidebar' data-props={JSON.stringify(props)}>
       Vocabulary Sidebar Content
@@ -24,6 +27,25 @@ vi.mock('../../vocabulary/sidebar/VocabularySidebar', () => ({
 setupSidebarMocks();
 
 describe('VocabularySection Component', () => {
+  const renderWithProvider = (component: React.ReactElement) => {
+    const result = render(
+      <BrowserRouter>
+        <LanguageFilterProvider>{component}</LanguageFilterProvider>
+      </BrowserRouter>
+    );
+
+    return {
+      ...result,
+      rerender: (newComponent: React.ReactElement) => {
+        return result.rerender(
+          <BrowserRouter>
+            <LanguageFilterProvider>{newComponent}</LanguageFilterProvider>
+          </BrowserRouter>
+        );
+      },
+    };
+  };
+
   beforeEach(() => {
     resetSidebarMocks();
   });
@@ -33,7 +55,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('renders VocabularySidebar component', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
@@ -45,7 +67,7 @@ describe('VocabularySection Component', () => {
     const currentLanguageId = 1;
     const currentFromLanguageId = 2;
 
-    render(
+    renderWithProvider(
       <VocabularySection
         currentLanguageId={currentLanguageId}
         currentFromLanguageId={currentFromLanguageId}
@@ -61,7 +83,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('handles undefined currentLanguageId', () => {
-    render(
+    renderWithProvider(
       <VocabularySection
         currentLanguageId={undefined}
         currentFromLanguageId={2}
@@ -77,7 +99,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('handles undefined currentFromLanguageId', () => {
-    render(
+    renderWithProvider(
       <VocabularySection
         currentLanguageId={1}
         currentFromLanguageId={undefined}
@@ -93,7 +115,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('handles both props undefined', () => {
-    render(
+    renderWithProvider(
       <VocabularySection
         currentLanguageId={undefined}
         currentFromLanguageId={undefined}
@@ -109,7 +131,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('applies correct container styling', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
@@ -118,7 +140,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('renders with correct structure', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
@@ -195,7 +217,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('does not pass extra props to VocabularySidebar', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 
@@ -227,7 +249,7 @@ describe('VocabularySection Component', () => {
   it('handles large numeric IDs', () => {
     const largeId = 999999;
 
-    render(
+    renderWithProvider(
       <VocabularySection
         currentLanguageId={largeId}
         currentFromLanguageId={largeId}
@@ -243,7 +265,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('handles zero as valid language ID', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={0} currentFromLanguageId={0} />
     );
 
@@ -256,7 +278,7 @@ describe('VocabularySection Component', () => {
   });
 
   it('maintains proper component hierarchy', () => {
-    render(
+    renderWithProvider(
       <VocabularySection currentLanguageId={1} currentFromLanguageId={2} />
     );
 

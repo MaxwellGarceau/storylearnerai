@@ -195,18 +195,13 @@ describe('InfoSection Component', () => {
     const languageTestCases = [
       {
         from: 'en' as LanguageCode,
-        to: 'fr' as LanguageCode,
-        expected: 'English → French',
+        to: 'es' as LanguageCode,
+        expected: 'English → Spanish',
       },
       {
-        from: 'de' as LanguageCode,
-        to: 'it' as LanguageCode,
-        expected: 'German → Italian',
-      },
-      {
-        from: 'ja' as LanguageCode,
-        to: 'ko' as LanguageCode,
-        expected: 'Japanese → Korean',
+        from: 'es' as LanguageCode,
+        to: 'en' as LanguageCode,
+        expected: 'Spanish → English',
       },
     ];
 
