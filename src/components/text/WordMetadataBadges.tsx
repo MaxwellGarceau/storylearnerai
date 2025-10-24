@@ -14,7 +14,6 @@ export function WordMetadataBadges({
   difficulty,
   className = '',
 }: WordMetadataBadgesProps) {
-
   // Helper function to get badge variant based on difficulty
   const getDifficultyVariant = (diff: string) => {
     switch (diff) {

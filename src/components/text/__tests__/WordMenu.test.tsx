@@ -790,7 +790,7 @@ describe('WordMenu Component', () => {
 
     // Check that part of speech badge is displayed
     expect(screen.getByText('Noun')).toBeInTheDocument();
-    
+
     // Check that difficulty level badge is displayed
     expect(screen.getByText('A1')).toBeInTheDocument();
   });
@@ -842,10 +842,14 @@ describe('WordMenu Component', () => {
     );
 
     // Check that translation is displayed (in the muted text)
-    expect(screen.getByText('hola', { selector: '.text-muted-foreground' })).toBeInTheDocument();
-    
+    expect(
+      screen.getByText('hola', { selector: '.text-muted-foreground' })
+    ).toBeInTheDocument();
+
     // Check that definition is displayed
-    expect(screen.getByText('A greeting used when meeting someone')).toBeInTheDocument();
+    expect(
+      screen.getByText('A greeting used when meeting someone')
+    ).toBeInTheDocument();
   });
 
   it('does not display definition when translation is not available', () => {
@@ -907,9 +911,13 @@ describe('WordMenu Component', () => {
     );
 
     // Check that translation is displayed (in the muted text)
-    expect(screen.getByText('hola', { selector: '.text-muted-foreground' })).toBeInTheDocument();
-    
+    expect(
+      screen.getByText('hola', { selector: '.text-muted-foreground' })
+    ).toBeInTheDocument();
+
     // Check that definition is not displayed
-    expect(screen.queryByText('A greeting used when meeting someone')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('A greeting used when meeting someone')
+    ).not.toBeInTheDocument();
   });
 });
