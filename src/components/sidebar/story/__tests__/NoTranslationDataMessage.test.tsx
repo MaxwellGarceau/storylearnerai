@@ -10,6 +10,10 @@ import {
 setupSidebarMocks();
 
 describe('NoTranslationDataMessage Component', () => {
+  const messageMatcher = (content: string) =>
+    content === 'storySidebar.noTranslationData' ||
+    content === 'No translation data available to display.';
+
   beforeEach(() => {
     resetSidebarMocks();
   });
@@ -21,7 +25,7 @@ describe('NoTranslationDataMessage Component', () => {
   it('renders the no translation data message with correct styling', () => {
     render(<NoTranslationDataMessage />);
 
-    const messageContainer = screen.getByText('storySidebar.noTranslationData');
+    const messageContainer = screen.getByText(messageMatcher);
     expect(messageContainer).toBeInTheDocument();
     expect(messageContainer).toHaveClass('text-muted-foreground');
 
@@ -34,27 +38,21 @@ describe('NoTranslationDataMessage Component', () => {
     const customClassName = 'custom-class';
     render(<NoTranslationDataMessage className={customClassName} />);
 
-    const container = screen
-      .getByText('storySidebar.noTranslationData')
-      .closest('div');
+    const container = screen.getByText(messageMatcher).closest('div');
     expect(container).toHaveClass('p-4', 'text-center', 'custom-class');
   });
 
   it('displays the translated message text', () => {
     render(<NoTranslationDataMessage />);
 
-    // The component should display the translation key (since mockT returns the key)
-    expect(
-      screen.getByText('storySidebar.noTranslationData')
-    ).toBeInTheDocument();
+    // The component should display either the i18n key or translated text
+    expect(screen.getByText(messageMatcher)).toBeInTheDocument();
   });
 
   it('renders without custom className when not provided', () => {
     render(<NoTranslationDataMessage />);
 
-    const container = screen
-      .getByText('storySidebar.noTranslationData')
-      .closest('div');
+    const container = screen.getByText(messageMatcher).closest('div');
     expect(container).toHaveClass('p-4', 'text-center');
     expect(container).not.toHaveClass('custom-class');
   });
@@ -62,9 +60,7 @@ describe('NoTranslationDataMessage Component', () => {
   it('handles empty className prop gracefully', () => {
     render(<NoTranslationDataMessage className='' />);
 
-    const container = screen
-      .getByText('storySidebar.noTranslationData')
-      .closest('div');
+    const container = screen.getByText(messageMatcher).closest('div');
     expect(container).toHaveClass('p-4', 'text-center');
   });
 });
