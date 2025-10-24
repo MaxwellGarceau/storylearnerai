@@ -257,6 +257,10 @@
     "totalMissing": "Total Missing",
     "noVocabularySelected": "No vocabulary words were selected for this translation."
   },
+  "grammarSidebar": {
+    "title": "Grammar",
+    "footer": "Grammar tools coming soon."
+  },
   "storyInput": {
     "placeholder": "Ingresa tu historia en español aquí... (Enter your Spanish story here...)",
     "targetLanguage": "Target Language",
