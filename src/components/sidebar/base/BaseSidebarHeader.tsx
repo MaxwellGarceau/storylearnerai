@@ -59,7 +59,9 @@ const BaseSidebarHeader: React.FC<BaseSidebarHeaderProps> = ({
         <div className='mt-3 flex items-center justify-between'>
           <Select
             value={targetLanguage}
-            onValueChange={(val: string) => setTargetLanguage(val as 'en' | 'es')}
+            onValueChange={(val: string) =>
+              setTargetLanguage(val as 'en' | 'es')
+            }
           >
             <SelectTrigger className='w-[160px] h-8'>
               <Globe className='h-4 w-4 mr-2' />
