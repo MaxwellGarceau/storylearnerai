@@ -105,7 +105,7 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
         align='start'
         updatePositionStrategy='always'
         className={
-          'p-4 w-auto z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'
+          'p-4 w-auto max-w-[calc(100vw-2rem)] mx-4 z-[9999] bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-lg'
         }
         sideOffset={8}
         onPointerDownOutside={e => {
@@ -138,7 +138,7 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                   />
                 </div>
               </div>
-              <div className='flex flex-wrap gap-2 justify-center'>
+              <div className='flex flex-wrap gap-2 justify-center sm:flex-nowrap'>
                 {user ? (
                   <>
                     <LoadingButton
@@ -191,7 +191,7 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
               </div>
             </>
           ) : (
-            <div className='min-w-[300px] max-w-[400px]'>
+            <div className='w-full max-w-[400px]'>
               <div className='flex items-center justify-between mb-2'>
                 <h3 className='text-sm font-medium'>Dictionary</h3>
                 <div className='flex items-center gap-2'>
