@@ -27,15 +27,15 @@ const GrammarSidebar: React.FC<GrammarSidebarProps> = ({ className }) => {
   return (
     <BaseSidebar
       className={className}
-      children={undefined}
       header={header}
       footerText={footerText}
       isOpen={isOpen}
       onOpen={() => setIsOpen(true)}
       toggleButtonText={t('grammarSidebar.title') || 'Grammar'}
       toggleButtonIcon={<BookOpen className='w-4 h-4' />}
+      toggleContainerClassName='top-32'
     >
-      {/* Intentionally empty for now */}
+      <div />
     </BaseSidebar>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../../ui/Button';
+import { cn } from '../../../lib/utils';
 import { BookOpen } from 'lucide-react';
 import type { TFunction } from 'i18next';
 
@@ -8,6 +9,7 @@ interface SidebarToggleProps {
   t: TFunction;
   customText?: string;
   customIcon?: React.ReactNode;
+  containerClassName?: string;
 }
 
 const SidebarToggle: React.FC<SidebarToggleProps> = ({
@@ -15,12 +17,13 @@ const SidebarToggle: React.FC<SidebarToggleProps> = ({
   t,
   customText,
   customIcon,
+  containerClassName,
 }) => {
   const defaultText = t('storySidebar.storyLibrary');
   const defaultIcon = <BookOpen className='w-4 h-4' />;
 
   return (
-    <div className='fixed top-20 left-4 z-50'>
+    <div className={cn('fixed top-20 left-4 z-50', containerClassName)}>
       <Button
         variant='outline'
         size='default'
