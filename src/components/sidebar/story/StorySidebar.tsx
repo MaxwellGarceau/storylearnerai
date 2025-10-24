@@ -25,6 +25,10 @@ import type { TranslationResponse } from '../../../lib/translationService';
 interface StorySidebarProps {
   className?: string;
   translationData?: TranslationResponse;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  hideToggle?: boolean;
+  onRequestClose?: () => void;
 }
 
 type ActiveSection = 'stories' | 'vocabulary' | 'info';
@@ -32,6 +36,10 @@ type ActiveSection = 'stories' | 'vocabulary' | 'info';
 const StorySidebar: React.FC<StorySidebarProps> = ({
   className,
   translationData,
+  isOpen: controlledIsOpen,
+  onOpen: controlledOnOpen,
+  hideToggle,
+  onRequestClose,
 }) => {
   const { getLanguageName, getLanguageIdByCode } = useLanguages();
   const {
@@ -54,13 +62,13 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
 
   const [activeSection, setActiveSection] = useState<ActiveSection>('stories');
   const [isLoading, setIsLoading] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
 
   // Allow deep-linking to the vocabulary tab via URL hash
   useEffect(() => {
     if (location.hash === '#vocabulary') {
       setActiveSection('vocabulary');
-      setIsOpen(true);
+      setInternalIsOpen(true);
     }
   }, [location]);
 
@@ -185,7 +193,7 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
     <BaseSidebarHeader
       title={t('storySidebar.storyLibrary')}
       icon={<BookOpen className='w-5 h-5 text-primary' />}
-      onClose={() => setIsOpen(false)}
+      onClose={() => (onRequestClose ? onRequestClose() : setInternalIsOpen(false))}
       t={t}
     >
       <div className='flex gap-1 flex-wrap items-center'>
@@ -232,8 +240,9 @@ const StorySidebar: React.FC<StorySidebarProps> = ({
       className={className}
       header={header}
       footerText={footerText}
-      isOpen={isOpen}
-      onOpen={() => setIsOpen(true)}
+      isOpen={controlledIsOpen ?? internalIsOpen}
+      onOpen={controlledOnOpen ?? (() => setInternalIsOpen(true))}
+      hideToggle={hideToggle}
     >
       {activeSection === 'stories' && (
         <StoriesSection

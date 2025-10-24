@@ -13,6 +13,7 @@ interface BaseSidebarProps {
   toggleButtonText?: string;
   toggleButtonIcon?: React.ReactNode;
   toggleContainerClassName?: string;
+  hideToggle?: boolean;
   isOpen?: boolean;
   onOpen?: () => void;
 }
@@ -25,6 +26,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   toggleButtonText,
   toggleButtonIcon,
   toggleContainerClassName,
+  hideToggle,
   isOpen: externalIsOpen,
   onOpen: externalOnOpen,
 }) => {
@@ -71,7 +73,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
 
   return (
     <>
-      {!isOpen && (
+      {!isOpen && !hideToggle && (
         <SidebarToggle
           onOpen={() => setIsOpen(true)}
           t={t}

@@ -7,17 +7,27 @@ import BaseSidebarHeader from '../base/BaseSidebarHeader';
 
 interface GrammarSidebarProps {
   className?: string;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  hideToggle?: boolean;
+  onRequestClose?: () => void;
 }
 
-const GrammarSidebar: React.FC<GrammarSidebarProps> = ({ className }) => {
+const GrammarSidebar: React.FC<GrammarSidebarProps> = ({
+  className,
+  isOpen: controlledIsOpen,
+  onOpen: controlledOnOpen,
+  hideToggle,
+  onRequestClose,
+}) => {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
 
   const header = (
     <BaseSidebarHeader
       title={t('grammarSidebar.title') || 'Grammar'}
       icon={<BookOpen className='w-5 h-5 text-primary' />}
-      onClose={() => setIsOpen(false)}
+      onClose={() => (onRequestClose ? onRequestClose() : setInternalIsOpen(false))}
       t={t}
     />
   );
@@ -29,11 +39,12 @@ const GrammarSidebar: React.FC<GrammarSidebarProps> = ({ className }) => {
       className={className}
       header={header}
       footerText={footerText}
-      isOpen={isOpen}
-      onOpen={() => setIsOpen(true)}
+      isOpen={controlledIsOpen ?? internalIsOpen}
+      onOpen={controlledOnOpen ?? (() => setInternalIsOpen(true))}
       toggleButtonText={t('grammarSidebar.title') || 'Grammar'}
       toggleButtonIcon={<BookOpen className='w-4 h-4' />}
       toggleContainerClassName='top-32'
+      hideToggle={hideToggle}
     >
       <div />
     </BaseSidebar>

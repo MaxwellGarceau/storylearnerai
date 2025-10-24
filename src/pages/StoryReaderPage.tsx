@@ -104,6 +104,9 @@ const StoryReaderPage: React.FC = () => {
     void navigate('/');
   };
 
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [grammarOpen, setGrammarOpen] = useState(false);
+
   // Loading state when fetching by id
   if (!translationData && urlSavedTranslationId && loadingById) {
     return (
@@ -207,8 +210,25 @@ const StoryReaderPage: React.FC = () => {
       </div>
 
       {/* Combined Sidebars */}
-      <StorySidebar translationData={finalTranslationData} />
-      <GrammarSidebar />
+      <StorySidebar
+        translationData={finalTranslationData}
+        isOpen={storyOpen}
+        onOpen={() => {
+          setGrammarOpen(false);
+          setStoryOpen(true);
+        }}
+        hideToggle={grammarOpen}
+        onRequestClose={() => setStoryOpen(false)}
+      />
+      <GrammarSidebar
+        isOpen={grammarOpen}
+        onOpen={() => {
+          setStoryOpen(false);
+          setGrammarOpen(true);
+        }}
+        hideToggle={storyOpen}
+        onRequestClose={() => setGrammarOpen(false)}
+      />
     </div>
   );
 };
