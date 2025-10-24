@@ -3,7 +3,7 @@ import { cn } from '../../../lib/utils';
 import { useViewport } from '../../../hooks/useViewport';
 import { logger } from '../../../lib/logger';
 import { useTranslation } from 'react-i18next';
-import SidebarToggle from '../SidebarToggle';
+import SidebarToggle from './SidebarToggle';
 
 interface BaseSidebarProps {
   className?: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import SidebarToggle from '../SidebarToggle';
+import SidebarToggle from '../base/SidebarToggle';
 import { setupSidebarMocks, resetSidebarMocks, mockT } from './sidebarMocks';
 
 // Setup mocks before tests
