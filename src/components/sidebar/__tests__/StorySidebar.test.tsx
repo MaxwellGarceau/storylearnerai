@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import StorySidebar from '../StorySidebar';
+import StorySidebar from '../story/StorySidebar';
 vi.mock('../../../hooks/useLanguageFilter', () => ({
   useLanguageFilter: () => ({
     fromLanguage: 'es',

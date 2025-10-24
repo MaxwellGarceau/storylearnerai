@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import { AuthPrompt } from '../ui/AuthPrompt';
-import { cn } from '../../lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/Card';
+import { Badge } from '../../ui/Badge';
+import { AuthPrompt } from '../../ui/AuthPrompt';
+import { cn } from '../../../lib/utils';
 import type { TFunction } from 'i18next';
-import type { DifficultyLevel } from '../../types/llm/prompts';
-import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
+import type { DifficultyLevel } from '../../../types/llm/prompts';
+import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
 import type { User } from '@supabase/supabase-js';
 
 interface StoriesSectionProps {

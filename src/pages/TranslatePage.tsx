@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryContainer from '../components/story/StoryContainer';
-import StorySidebar from '../components/sidebar/StorySidebar';
+import StorySidebar from '../components/sidebar/story/StorySidebar';
 import { TranslationResponse } from '../lib/translationService';
 
 const TranslatePage: React.FC = () => {

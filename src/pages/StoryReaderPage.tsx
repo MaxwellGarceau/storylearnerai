@@ -6,7 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { TranslationResponse } from '../lib/translationService';
 import SaveTranslationButton from '../components/story/SaveTranslationButton';
 import { useLanguages } from '../hooks/useLanguages';
-import StorySidebar from '../components/sidebar/StorySidebar';
+import StorySidebar from '../components/sidebar/story/StorySidebar';
 import { testWalkthroughTranslationData } from '../__tests__/utils/testData';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
