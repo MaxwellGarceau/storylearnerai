@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import savedStoriesData from '../../data/savedStoriesEsToEn.json';
-import savedStoriesEnToEsData from '../../data/savedStoriesEnToEs.json';
+import savedStoriesData from '../../../data/savedStoriesEsToEn.json';
+import savedStoriesEnToEsData from '../../../data/savedStoriesEnToEs.json';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { translationService } from '../../lib/translationService';
-import type { DifficultyLevel } from '../../types/llm/prompts';
-import type { DatabaseSavedTranslationWithDetails } from '../../types/database/translation';
-import { useLanguages } from '../../hooks/useLanguages';
-import { useSavedTranslations } from '../../hooks/useSavedTranslations';
-import { useAuth } from '../../hooks/useAuth';
-import { logger } from '../../lib/logger';
+import { translationService } from '../../../lib/translationService';
+import type { DifficultyLevel } from '../../../types/llm/prompts';
+import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
+import { useLanguages } from '../../../hooks/useLanguages';
+import { useSavedTranslations } from '../../../hooks/useSavedTranslations';
+import { useAuth } from '../../../hooks/useAuth';
+import { logger } from '../../../lib/logger';
 import { useTranslation } from 'react-i18next';
-import { useLanguageFilter } from '../../hooks/useLanguageFilter';
-import { TokenConverter } from '../../lib/llm/tokens/tokenConverter';
-import { Button } from '../ui/Button';
+import { useLanguageFilter } from '../../../hooks/useLanguageFilter';
+import { TokenConverter } from '../../../lib/llm/tokens/tokenConverter';
+import { Button } from '../../ui/Button';
 import { BookOpen, BookMarked, Settings } from 'lucide-react';
 
 import BaseSidebar from '../base/BaseSidebar';
@@ -20,7 +20,7 @@ import BaseSidebarHeader from '../base/BaseSidebarHeader';
 import StoriesSection from './StoriesSection';
 import VocabularySection from './VocabularySection';
 import InfoSection from './InfoSection';
-import type { TranslationResponse } from '../../lib/translationService';
+import type { TranslationResponse } from '../../../lib/translationService';
 
 interface StorySidebarProps {
   className?: string;

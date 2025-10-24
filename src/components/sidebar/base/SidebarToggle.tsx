@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../ui/Button';
+import { Button } from '../../ui/Button';
 import { BookOpen } from 'lucide-react';
 import type { TFunction } from 'i18next';
 
