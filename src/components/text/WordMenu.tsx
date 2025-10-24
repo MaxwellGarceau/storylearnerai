@@ -15,6 +15,7 @@ import { useWordActions } from '../../hooks/useWordActions';
 import { useLanguageSettings } from '../../hooks/useLanguageFilter';
 import { useStoryContext } from '../../contexts/StoryContext';
 import { useTokenSentenceContexts } from '../../hooks/interactiveText/useTokenSentenceContexts';
+import { WordMetadataBadges } from './WordMetadataBadges';
 
 interface WordMenuProps {
   children: React.ReactNode;
@@ -130,6 +131,12 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                     {translation}
                   </div>
                 )}
+                <div className='mt-2 flex justify-center'>
+                  <WordMetadataBadges
+                    partOfSpeech={metadata.pos}
+                    difficulty={metadata.difficulty}
+                  />
+                </div>
               </div>
               <div className='flex flex-wrap gap-2 justify-center'>
                 {user ? (
