@@ -131,6 +131,11 @@ const WordMenu: React.FC<WordMenuProps> = ({ children, word, position }) => {
                     {translation}
                   </div>
                 )}
+                {translation && metadata.from_definition && (
+                  <div className='text-xs text-muted-foreground mt-1 italic'>
+                    {metadata.from_definition}
+                  </div>
+                )}
                 <div className='mt-2 flex justify-center'>
                   <WordMetadataBadges
                     partOfSpeech={metadata.pos}
