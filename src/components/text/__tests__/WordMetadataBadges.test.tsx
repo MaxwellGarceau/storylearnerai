@@ -15,11 +15,7 @@ vi.mock('../../ui/Badge', () => ({
     variant?: string;
     className?: string;
   }) => (
-    <div
-      data-testid='badge'
-      data-variant={variant}
-      className={className}
-    >
+    <div data-testid='badge' data-variant={variant} className={className}>
       {children}
     </div>
   ),
@@ -30,15 +26,13 @@ describe('WordMetadataBadges Component', () => {
     const { container } = render(
       <WordMetadataBadges partOfSpeech={null} difficulty={null} />
     );
-    
+
     expect(container.firstChild).toBeNull();
   });
 
   it('renders only part of speech badge when only part of speech is provided', () => {
-    render(
-      <WordMetadataBadges partOfSpeech='noun' difficulty={null} />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech='noun' difficulty={null} />);
+
     const badges = screen.getAllByTestId('badge');
     expect(badges).toHaveLength(1);
     expect(badges[0]).toHaveTextContent('Noun');
@@ -46,10 +40,8 @@ describe('WordMetadataBadges Component', () => {
   });
 
   it('renders only difficulty badge when only difficulty is provided', () => {
-    render(
-      <WordMetadataBadges partOfSpeech={null} difficulty='a1' />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech={null} difficulty='a1' />);
+
     const badges = screen.getAllByTestId('badge');
     expect(badges).toHaveLength(1);
     expect(badges[0]).toHaveTextContent('A1');
@@ -57,18 +49,16 @@ describe('WordMetadataBadges Component', () => {
   });
 
   it('renders both badges when both metadata are provided', () => {
-    render(
-      <WordMetadataBadges partOfSpeech='verb' difficulty='b2' />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech='verb' difficulty='b2' />);
+
     const badges = screen.getAllByTestId('badge');
     expect(badges).toHaveLength(2);
-    
+
     // Check part of speech badge
     const posBadge = badges.find(badge => badge.textContent === 'Verb');
     expect(posBadge).toBeInTheDocument();
     expect(posBadge).toHaveAttribute('data-variant', 'outline');
-    
+
     // Check difficulty badge
     const difficultyBadge = badges.find(badge => badge.textContent === 'B2');
     expect(difficultyBadge).toBeInTheDocument();
@@ -94,7 +84,7 @@ describe('WordMetadataBadges Component', () => {
       const { unmount } = render(
         <WordMetadataBadges partOfSpeech={input} difficulty={null} />
       );
-      
+
       expect(screen.getByText(expected)).toBeInTheDocument();
       unmount();
     });
@@ -112,7 +102,7 @@ describe('WordMetadataBadges Component', () => {
       const { unmount } = render(
         <WordMetadataBadges partOfSpeech={null} difficulty={input} />
       );
-      
+
       expect(screen.getByText(expected)).toBeInTheDocument();
       unmount();
     });
@@ -130,7 +120,7 @@ describe('WordMetadataBadges Component', () => {
       const { unmount } = render(
         <WordMetadataBadges partOfSpeech={null} difficulty={input} />
       );
-      
+
       const badge = screen.getByTestId('badge');
       expect(badge).toHaveAttribute('data-variant', expectedVariant);
       unmount();
@@ -139,13 +129,13 @@ describe('WordMetadataBadges Component', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <WordMetadataBadges 
-        partOfSpeech='noun' 
-        difficulty='a1' 
+      <WordMetadataBadges
+        partOfSpeech='noun'
+        difficulty='a1'
         className='custom-class'
       />
     );
-    
+
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper).toHaveClass('custom-class');
   });
@@ -154,16 +144,14 @@ describe('WordMetadataBadges Component', () => {
     const { container } = render(
       <WordMetadataBadges partOfSpeech='noun' difficulty='a1' />
     );
-    
+
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper).toHaveClass('flex', 'flex-wrap', 'gap-1.5');
   });
 
   it('applies text-xs class to badges', () => {
-    render(
-      <WordMetadataBadges partOfSpeech='noun' difficulty='a1' />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech='noun' difficulty='a1' />);
+
     const badges = screen.getAllByTestId('badge');
     badges.forEach(badge => {
       expect(badge).toHaveClass('text-xs');
@@ -172,10 +160,8 @@ describe('WordMetadataBadges Component', () => {
 
   it('handles edge case with empty strings', () => {
     // This test ensures the component handles edge cases gracefully
-    render(
-      <WordMetadataBadges partOfSpeech={null} difficulty={null} />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech={null} difficulty={null} />);
+
     expect(screen.queryByTestId('badge')).not.toBeInTheDocument();
   });
 
@@ -183,21 +169,19 @@ describe('WordMetadataBadges Component', () => {
     const { container } = render(
       <WordMetadataBadges partOfSpeech='noun' difficulty='a1' />
     );
-    
+
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.tagName).toBe('DIV');
     expect(wrapper.children).toHaveLength(2);
-    
+
     const badges = wrapper.children;
     expect(badges[0].tagName).toBe('DIV');
     expect(badges[1].tagName).toBe('DIV');
   });
 
   it('renders badges in correct order', () => {
-    render(
-      <WordMetadataBadges partOfSpeech='verb' difficulty='b1' />
-    );
-    
+    render(<WordMetadataBadges partOfSpeech='verb' difficulty='b1' />);
+
     const badges = screen.getAllByTestId('badge');
     expect(badges[0]).toHaveTextContent('Verb');
     expect(badges[1]).toHaveTextContent('B1');
@@ -205,16 +189,24 @@ describe('WordMetadataBadges Component', () => {
 
   it('handles all part of speech types', () => {
     const allPartOfSpeech: PartOfSpeech[] = [
-      'noun', 'verb', 'adjective', 'adverb', 'pronoun',
-      'preposition', 'conjunction', 'interjection', 'article',
-      'determiner', 'other'
+      'noun',
+      'verb',
+      'adjective',
+      'adverb',
+      'pronoun',
+      'preposition',
+      'conjunction',
+      'interjection',
+      'article',
+      'determiner',
+      'other',
     ];
 
     allPartOfSpeech.forEach(pos => {
       const { unmount } = render(
         <WordMetadataBadges partOfSpeech={pos} difficulty={null} />
       );
-      
+
       const expectedText = pos.charAt(0).toUpperCase() + pos.slice(1);
       expect(screen.getByText(expectedText)).toBeInTheDocument();
       unmount();
@@ -228,7 +220,7 @@ describe('WordMetadataBadges Component', () => {
       const { unmount } = render(
         <WordMetadataBadges partOfSpeech={null} difficulty={difficulty} />
       );
-      
+
       const expectedText = difficulty.toUpperCase();
       expect(screen.getByText(expectedText)).toBeInTheDocument();
       unmount();
