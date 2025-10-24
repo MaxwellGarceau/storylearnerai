@@ -1,6 +1,5 @@
 import React from 'react';
 import { Badge } from '../ui/Badge';
-import { useLocalization } from '../../hooks/useLocalization';
 import type { PartOfSpeech } from '../../types/llm/tokens';
 import type { DifficultyLevel } from '../../types/llm/prompts';
 
@@ -15,7 +14,6 @@ export function WordMetadataBadges({
   difficulty,
   className = '',
 }: WordMetadataBadgesProps) {
-  const { t } = useLocalization();
 
   // Helper function to get badge variant based on difficulty
   const getDifficultyVariant = (diff: string) => {
@@ -51,12 +49,12 @@ export function WordMetadataBadges({
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
       {partOfSpeech && (
-        <Badge variant="outline" className="text-xs">
+        <Badge variant='outline' className='text-xs'>
           {formatPartOfSpeech(partOfSpeech)}
         </Badge>
       )}
       {difficulty && (
-        <Badge variant={getDifficultyVariant(difficulty)} className="text-xs">
+        <Badge variant={getDifficultyVariant(difficulty)} className='text-xs'>
           {formatDifficulty(difficulty)}
         </Badge>
       )}
