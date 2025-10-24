@@ -779,4 +779,137 @@ describe('WordMenu Component', () => {
     // Should not be disabled
     expect(translateButton).not.toBeDisabled();
   });
+
+  it('displays part of speech and difficulty level badges when metadata is available', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' position={0}>
+        <span>test</span>
+      </WordMenu>
+    );
+
+    // Check that part of speech badge is displayed
+    expect(screen.getByText('Noun')).toBeInTheDocument();
+    
+    // Check that difficulty level badge is displayed
+    expect(screen.getByText('A1')).toBeInTheDocument();
+  });
+
+  it('displays definition when translation and definition are available', async () => {
+    mockLoggedIn();
+
+    // Mock useWordActions to return translated state with definition
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: false,
+      translation: 'hola',
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'hello',
+        from_lemma: 'hello',
+        to_word: 'hola',
+        to_lemma: 'hola',
+        pos: 'interjection',
+        difficulty: 'a1',
+        from_definition: 'A greeting used when meeting someone',
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: false,
+        translation: 'hola',
+        metadata: {
+          from_word: 'hello',
+          from_lemma: 'hello',
+          to_word: 'hola',
+          to_lemma: 'hola',
+          pos: 'interjection',
+          difficulty: 'a1',
+          from_definition: 'A greeting used when meeting someone',
+        },
+        position: 0,
+      },
+    });
+
+    renderWithRouter(
+      <WordMenu word='hello' position={0}>
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    // Check that translation is displayed (in the muted text)
+    expect(screen.getByText('hola', { selector: '.text-muted-foreground' })).toBeInTheDocument();
+    
+    // Check that definition is displayed
+    expect(screen.getByText('A greeting used when meeting someone')).toBeInTheDocument();
+  });
+
+  it('does not display definition when translation is not available', () => {
+    mockLoggedIn();
+    renderWithRouter(
+      <WordMenu word='test' position={0}>
+        <span>test</span>
+      </WordMenu>
+    );
+
+    // Check that definition is not displayed when no translation
+    expect(screen.queryByText('A test word')).not.toBeInTheDocument();
+  });
+
+  it('does not display definition when definition is not available', async () => {
+    mockLoggedIn();
+
+    // Mock useWordActions to return translated state without definition
+    const { useWordActions } = await import('../../../hooks/useWordActions');
+    vi.mocked(useWordActions).mockReturnValue({
+      isSaved: false,
+      isTranslating: false,
+      translation: 'hola',
+      isOpen: true,
+      handleTranslate: vi.fn(),
+      handleToggleMenu: vi.fn(),
+      handleSave: vi.fn(),
+      metadata: {
+        from_word: 'hello',
+        from_lemma: 'hello',
+        to_word: 'hola',
+        to_lemma: 'hola',
+        pos: 'interjection',
+        difficulty: 'a1',
+        from_definition: null,
+      },
+      wordState: {
+        isOpen: true,
+        isSaved: false,
+        isTranslating: false,
+        translation: 'hola',
+        metadata: {
+          from_word: 'hello',
+          from_lemma: 'hello',
+          to_word: 'hola',
+          to_lemma: 'hola',
+          pos: 'interjection',
+          difficulty: 'a1',
+          from_definition: null,
+        },
+        position: 0,
+      },
+    });
+
+    renderWithRouter(
+      <WordMenu word='hello' position={0}>
+        <span>hello</span>
+      </WordMenu>
+    );
+
+    // Check that translation is displayed (in the muted text)
+    expect(screen.getByText('hola', { selector: '.text-muted-foreground' })).toBeInTheDocument();
+    
+    // Check that definition is not displayed
+    expect(screen.queryByText('A greeting used when meeting someone')).not.toBeInTheDocument();
+  });
 });
