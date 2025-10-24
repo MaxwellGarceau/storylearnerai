@@ -1,8 +1,10 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import VocabularySection from '../VocabularySection';
-import { setupSidebarMocks, resetSidebarMocks } from '../../__tests__/sidebarMocks';
+import {
+  setupSidebarMocks,
+  resetSidebarMocks,
+} from '../../__tests__/sidebarMocks';
 
 type VocabularySidebarProps = {
   currentLanguageId?: number;

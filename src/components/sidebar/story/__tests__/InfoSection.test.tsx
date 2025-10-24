@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import InfoSection from '../InfoSection';
@@ -10,7 +9,10 @@ import {
   mockTranslationDataAllIncluded,
   mockT,
 } from '../../__tests__/sidebarMocks';
-import type { DifficultyLevel, LanguageCode } from '../../../types/llm/prompts';
+import type {
+  DifficultyLevel,
+  LanguageCode,
+} from '../../../../types/llm/prompts';
 
 // Setup mocks before tests
 setupSidebarMocks();
@@ -34,14 +36,6 @@ describe('InfoSection Component', () => {
       const names: Record<LanguageCode, string> = {
         en: 'English',
         es: 'Spanish',
-        fr: 'French',
-        de: 'German',
-        it: 'Italian',
-        pt: 'Portuguese',
-        ru: 'Russian',
-        ja: 'Japanese',
-        ko: 'Korean',
-        zh: 'Chinese',
       };
       return names[code] || code;
     });
@@ -360,7 +354,7 @@ describe('InfoSection Component', () => {
       render(<InfoSection {...defaultProps} />);
 
       // Check for the text that contains the translation keys using getAllByText
-      const totalSelectedElements = screen.getAllByText((content, element) => {
+      const totalSelectedElements = screen.getAllByText((_, element) => {
         return (
           element?.textContent?.includes('storySidebar.totalSelected') ?? false
         );
@@ -368,7 +362,7 @@ describe('InfoSection Component', () => {
       expect(totalSelectedElements.length).toBeGreaterThan(0);
       expect(screen.getByText('4')).toBeInTheDocument(); // selectedVocabulary.length
 
-      const totalIncludedElements = screen.getAllByText((content, element) => {
+      const totalIncludedElements = screen.getAllByText((_, element) => {
         return (
           element?.textContent?.includes('storySidebar.totalIncluded') ?? false
         );
@@ -376,7 +370,7 @@ describe('InfoSection Component', () => {
       expect(totalIncludedElements.length).toBeGreaterThan(0);
       expect(screen.getAllByText('2')).toHaveLength(2); // includedVocabulary.length and missingVocabulary.length
 
-      const totalMissingElements = screen.getAllByText((content, element) => {
+      const totalMissingElements = screen.getAllByText((_, element) => {
         return (
           element?.textContent?.includes('storySidebar.totalMissing') ?? false
         );
@@ -494,7 +488,7 @@ describe('InfoSection Component', () => {
       expect(missingCard).toBeInTheDocument();
 
       // Check summary card - look for the text that contains "totalSelected"
-      const summaryTexts = screen.getAllByText((content, element) => {
+      const summaryTexts = screen.getAllByText((_, element) => {
         return (
           element?.textContent?.includes('storySidebar.totalSelected') ?? false
         );

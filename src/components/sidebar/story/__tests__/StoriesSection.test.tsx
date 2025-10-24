@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import StoriesSection from '../StoriesSection';
@@ -10,8 +9,8 @@ import {
   mockUser,
   mockT,
 } from '../../__tests__/sidebarMocks';
-import type { DatabaseSavedTranslationWithDetails } from '../../../types/database/translation';
-import type { DifficultyLevel } from '../../../types/llm/prompts';
+import type { DatabaseSavedTranslationWithDetails } from '../../../../types/database/translation';
+import type { DifficultyLevel } from '../../../../types/llm/prompts';
 
 // Setup mocks before tests
 setupSidebarMocks();
