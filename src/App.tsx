@@ -5,6 +5,7 @@ import StoryReaderPage from './pages/StoryReaderPage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import SavedTranslationsPage from './pages/SavedTranslationsPage';
+import GrammarPage from './pages/GrammarPage';
 import PageLayout from './components/PageLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Toaster } from './components/ui/Toaster';
@@ -88,6 +89,14 @@ function AppContent() {
                 <SavedTranslationsPage />
               </PageLayout>
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/grammar'
+          element={
+            <PageLayout>
+              <GrammarPage />
+            </PageLayout>
           }
         />
       </Routes>
